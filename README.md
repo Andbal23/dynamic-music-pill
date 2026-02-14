@@ -1,4 +1,4 @@
-Dynamic Music Pill 🎵
+**Dynamic Music Pill 🎵**
 
 A "Dynamic Island" inspired, adaptive music widget for GNOME Shell (45+).
 
