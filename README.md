@@ -47,8 +47,9 @@ From Source (GitHub)
 
 Clone the repository:
 `
-git clone https://github.com/Andbal23/dynamic-music-pill.git]
+git clone https://github.com/Andbal23/dynamic-music-pill.git 
 `
+<br>
 `
 cd dynamic-music-pill
 `
@@ -69,6 +70,9 @@ cp -r * ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal/
 # Compile schemas
 `
 cd ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
+`
+<br>
+`
 glib-compile-schemas schemas/
 `
 
