@@ -2,7 +2,13 @@
     "name": "Dynamic Music Pill",
     "description": "Music Pill into the Dash",
     "uuid": "dynamic-music-pill@andbal",
-    "shell-version": [ "45", "46", "47", "48", "49" ],
+    "shell-version": [
+        "45",
+        "46",
+        "47",
+        "48",
+        "49"
+    ],
     "url": "https://github.com/Andbal23/dynamic-music-pill",
     "settings-schema": "org.gnome.shell.extensions.dynamic-music-pill",
     "version": 1
