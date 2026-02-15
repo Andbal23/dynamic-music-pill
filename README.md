@@ -69,7 +69,7 @@ From Source (GitHub)
 `
 cd dynamic-music-pill
 `
-`
+
 
 ## **3.** Create the directory
 `
