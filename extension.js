@@ -121,25 +121,26 @@ class ScrollLabel extends St.Widget {
         this._settings = settings;
         this._styleClass = styleClass;
         this._text = "";
-        
+        this._gameMode = false; // Add flag
+
         this._container = new St.BoxLayout({ vertical: false });
         this.add_child(this._container);
 
         this._label1 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER });
         this._label2 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER });
-        
+
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         this._label1.clutter_text.line_wrap = false;
         this._label2.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         this._label2.clutter_text.line_wrap = false;
 
         this._container.add_child(this._label1);
-        this._separator = new St.Widget({ width: 30 }); 
+        this._separator = new St.Widget({ width: 30 });
         this._container.add_child(this._separator);
         this._container.add_child(this._label2);
 
         this._settings.connect('changed::scroll-text', () => this.setText(this._text, true));
-        
+
         this.connect('notify::allocation', () => {
             if (this._resizeTimer) GLib.source_remove(this._resizeTimer);
             this._resizeTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
@@ -150,17 +151,26 @@ class ScrollLabel extends St.Widget {
         });
     }
 
+    setGameMode(active) {
+        this._gameMode = active;
+        if (active) {
+            this._stopAnimation(); // Stop scrolling in game
+        } else {
+            this._checkResize(); // Resume if needed
+        }
+    }
+
     _checkResize() {
-        if (!this._text) return;
+        if (!this._text || this._gameMode) return; // Don't scroll in game mode
         let boxWidth = this.get_allocation_box().get_width();
         let textWidth = this._label1.get_preferred_width(-1)[1];
-        
+
         let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
         let isScrolling = (this._scrollTimer != null);
-    
+
         if (needsScroll && !isScrolling) {
             this._startInfiniteScroll(textWidth);
-        } 
+        }
         else if (!needsScroll && isScrolling) {
             this._stopAnimation();
             this._label2.hide();
@@ -202,7 +212,7 @@ class ScrollLabel extends St.Widget {
     }
 
     _checkOverflow() {
-        if (!this._settings.get_boolean('scroll-text')) return;
+        if (!this._settings.get_boolean('scroll-text') || this._gameMode) return;
         let boxWidth = this.get_allocation_box().get_width();
         let textWidth = this._label1.get_preferred_width(-1)[1];
         if (textWidth > boxWidth) {
@@ -213,9 +223,9 @@ class ScrollLabel extends St.Widget {
     _startInfiniteScroll(textWidth) {
         this._label2.show();
         this._separator.show();
-        const gap = 30; 
+        const gap = 30;
         const distance = textWidth + gap;
-        const speed = 30; 
+        const speed = 30;
         const duration = (distance / speed) * 1000;
         const loop = () => {
             this._scrollTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
@@ -242,14 +252,14 @@ class WaveformVisualizer extends St.BoxLayout {
     super._init({ vertical: false, style: 'spacing: 3px;', y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
     this._bars = [];
     this._color = '255,255,255';
-    this._mode = 1; 
+    this._mode = 1;
     for (let i = 0; i < 4; i++) {
       let bar = new St.Bin({ style_class: 'visualizer-bar', y_align: Clutter.ActorAlign.END });
       this.add_child(bar);
       this._bars.push(bar);
     }
   }
-  
+
   setMode(m) {
       this._mode = m;
       let align = (m === 2) ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.END;
@@ -258,18 +268,18 @@ class WaveformVisualizer extends St.BoxLayout {
       });
   }
 
-  setColor(c) { 
+  setColor(c) {
       let r = Math.min(255, c.r + 100);
       let g = Math.min(255, c.g + 100);
       let b = Math.min(255, c.b + 100);
       this._color = `${r},${g},${b}`;
   }
-  
+
   setPlaying(playing) {
     if (this._isPlaying === playing) return;
     this._isPlaying = playing;
     if (this._timerId) { GLib.source_remove(this._timerId); this._timerId = null; }
-    
+
     if (playing) {
       this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
         let t = Date.now() / 200;
@@ -294,44 +304,45 @@ class WaveformVisualizer extends St.BoxLayout {
 const MusicPill = GObject.registerClass(
 class MusicPill extends St.Widget {
   _init(controller) {
-    super._init({ 
-        style_class: 'music-pill-container', 
-        reactive: true, 
-        y_align: Clutter.ActorAlign.CENTER, 
+    super._init({
+        style_class: 'music-pill-container',
+        reactive: true,
+        y_align: Clutter.ActorAlign.CENTER,
         x_align: Clutter.ActorAlign.CENTER,
         opacity: 0,
         visible: false
     });
     this._controller = controller;
     this._settings = controller._settings;
-    
+
     this._padX = 14;
     this._padY = 6;
     this._radius = 28;
     this._shadowCSS = 'box-shadow: none;';
     this._inPanel = false;
-    
+    this._gameModeActive = false; // New flag to track game state
+
     this._settings.connect('changed::pill-width', () => this._updateDimensions());
     this._settings.connect('changed::pill-height', () => this._updateDimensions());
     this._settings.connect('changed::art-size', () => this._updateDimensions());
-    
+
     this._settings.connect('changed::panel-pill-height', () => this._updateDimensions());
     this._settings.connect('changed::panel-art-size', () => this._updateDimensions());
-    
+
     this._settings.connect('changed::vertical-offset', () => this._updateDimensions());
     this._settings.connect('changed::horizontal-offset', () => this._updateDimensions());
-    
+
     // Trigger injection logic
     this._settings.connect('changed::dock-position', () => this._controller._queueInject());
     this._settings.connect('changed::position-mode', () => this._controller._queueInject());
     this._settings.connect('changed::target-container', () => this._controller._queueInject());
-    
+
     this._settings.connect('changed::visualizer-style', () => this._updateDimensions());
     this._settings.connect('changed::border-radius', () => this._updateDimensions());
     this._settings.connect('changed::enable-shadow', () => this._updateDimensions());
     this._settings.connect('changed::shadow-opacity', () => this._updateDimensions());
     this._settings.connect('changed::shadow-blur', () => this._updateDimensions());
-    
+
     this._currentBusName = null;
     this._displayedColor = { r: 40, g: 40, b: 40 };
     this._targetColor = { r: 40, g: 40, b: 40 };
@@ -340,7 +351,7 @@ class MusicPill extends St.Widget {
 
     this._body = new St.BoxLayout({ style_class: 'pill-body', x_expand: false });
     this._body.set_pivot_point(0.5, 0.5);
-    
+
     this._artWidget = new CrossfadeArt();
     this._artBin = new St.Bin({ child: this._artWidget, style: 'margin-right: 8px;' });
     this._body.add_child(this._artBin);
@@ -348,15 +359,15 @@ class MusicPill extends St.Widget {
     this._textWrapper = new St.Widget({
         layout_manager: new Clutter.BinLayout(),
         x_expand: true, y_expand: true,
-        style: 'min-width: 50px; overflow: hidden; margin-right: 4px; margin-left: 2px;' 
+        style: 'min-width: 50px; overflow: hidden; margin-right: 4px; margin-left: 2px;'
     });
 
-    this._textBox = new St.BoxLayout({ 
-        vertical: true, 
-        x_expand: true, 
+    this._textBox = new St.BoxLayout({
+        vertical: true,
+        x_expand: true,
         y_align: Clutter.ActorAlign.CENTER,
         x_align: Clutter.ActorAlign.FILL,
-        style: 'padding-left: 0px; padding-right: 0px;' 
+        style: 'padding-left: 0px; padding-right: 0px;'
     });
     this._titleScroll = new ScrollLabel('music-label-title', this._controller._settings);
     this._artistScroll = new ScrollLabel('music-label-artist', this._controller._settings);
@@ -364,18 +375,18 @@ class MusicPill extends St.Widget {
     this._textBox.add_child(this._artistScroll);
     this._textWrapper.add_child(this._textBox);
 
-    this._fadeLeft = new St.Widget({ 
+    this._fadeLeft = new St.Widget({
         x_expand: false, y_expand: true,
-        x_align: Clutter.ActorAlign.START, 
+        x_align: Clutter.ActorAlign.START,
         y_align: Clutter.ActorAlign.FILL,
     });
     this._fadeLeft.set_width(30);
     this._fadeLeft.set_z_position(9999);
     this._textWrapper.add_child(this._fadeLeft);
 
-    this._fadeRight = new St.Widget({ 
+    this._fadeRight = new St.Widget({
         x_expand: false, y_expand: true,
-        x_align: Clutter.ActorAlign.END, 
+        x_align: Clutter.ActorAlign.END,
         y_align: Clutter.ActorAlign.FILL,
     });
     this._fadeRight.set_width(30);
@@ -385,10 +396,10 @@ class MusicPill extends St.Widget {
     this._body.add_child(this._textWrapper);
 
     this._visualizer = new WaveformVisualizer();
-    this._visBin = new St.Bin({ 
-        child: this._visualizer, 
+    this._visBin = new St.Bin({
+        child: this._visualizer,
         style: 'margin-left: 8px;',
-        x_align: Clutter.ActorAlign.END 
+        x_align: Clutter.ActorAlign.END
     });
     this._body.add_child(this._visBin);
     this.add_child(this._body);
@@ -415,18 +426,35 @@ class MusicPill extends St.Widget {
         }
         return Clutter.EVENT_STOP;
     });
-    
+
     this._updateDimensions();
   }
-  
+
+  // --- ÚJ METÓDUS: Game Mode kezelése (csak fagyasztás) ---
+  setGameMode(active) {
+      if (this._gameModeActive === active) return;
+      this._gameModeActive = active;
+
+      if (active) {
+          // Ha játék van: leállítjuk az animációkat
+          this._visualizer.setPlaying(false);
+          this._titleScroll.setGameMode(true);
+          this._artistScroll.setGameMode(true);
+      } else {
+          // Ha vége a játéknak: visszaállítjuk az állapotot
+          this._visualizer.setPlaying(this._currentStatus === 'Playing');
+          this._titleScroll.setGameMode(false);
+          this._artistScroll.setGameMode(false);
+      }
+  }
+
   _updateDimensions() {
-        let target = this._settings.get_int('target-container'); 
+        let target = this._settings.get_int('target-container');
         this._inPanel = (target > 0);
 
         let width = this._settings.get_int('pill-width');
         let height, prefArtSize;
 
-        // Choose Dimensions based on mode
         if (this._inPanel) {
             height = this._settings.get_int('panel-pill-height');
             prefArtSize = this._settings.get_int('panel-art-size');
@@ -434,12 +462,12 @@ class MusicPill extends St.Widget {
             height = this._settings.get_int('pill-height');
             prefArtSize = this._settings.get_int('art-size');
         }
-        
+
         let vOffset = this._settings.get_int('vertical-offset');
         let hOffset = this._settings.get_int('horizontal-offset');
         let visStyle = this._settings.get_int('visualizer-style');
         this._radius = this._settings.get_int('border-radius');
-        
+
         let shadowEnabled = this._settings.get_boolean('enable-shadow');
         let shadowBlur = this._settings.get_int('shadow-blur');
         let shadowOpacity = this._settings.get_int('shadow-opacity') / 100.0;
@@ -448,7 +476,7 @@ class MusicPill extends St.Widget {
         let fontSizeArtist = '9pt';
 
         if (this._inPanel) {
-            this._padY = 0; 
+            this._padY = 0;
             fontSizeTitle = '9.5pt';
             fontSizeArtist = '8pt';
         } else {
@@ -458,7 +486,7 @@ class MusicPill extends St.Widget {
 
         this._body.set_width(width);
         this._body.set_height(height);
-        
+
         this.translation_y = vOffset;
         this.translation_x = hOffset;
 
@@ -472,7 +500,7 @@ class MusicPill extends St.Widget {
         this._padX = Math.max(4, Math.min(14, rawPadX));
 
         let artRadius = Math.max(4, this._radius - this._padY);
-        let maxArtHeight = height - (2 * this._padY); 
+        let maxArtHeight = height - (2 * this._padY);
         let finalArtSize = Math.min(prefArtSize, maxArtHeight);
 
         this._artWidget.set_width(finalArtSize);
@@ -492,7 +520,7 @@ class MusicPill extends St.Widget {
         } else {
             this._visBin.show();
             this._visBin.set_width(finalArtSize);
-            let sideMargin = 12; 
+            let sideMargin = 12;
             this._artBin.set_style(`margin-right: ${sideMargin}px;`);
             this._visBin.set_style(`margin-left: ${sideMargin}px;`);
             this._fadeLeft.set_width(30);
@@ -506,7 +534,7 @@ class MusicPill extends St.Widget {
         } else {
             this._artistScroll.show();
         }
-        
+
         this._titleScroll.set_style(`font-size: ${fontSizeTitle}; font-weight: 800; color: white;`);
         this._artistScroll.set_style(`font-size: ${fontSizeArtist}; font-weight: 500; color: rgba(255,255,255,0.7);`);
 
@@ -537,17 +565,18 @@ class MusicPill extends St.Widget {
     }
 
     if (!title || status === 'Stopped') {
-        if (isSkipActive) return; 
+        if (isSkipActive) return;
         if (!this._hideGraceTimer && this.visible) {
             this._hideGraceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
-                this.ease({ 
-                    opacity: 0, duration: 500, 
-                    onComplete: () => { 
-                        this.hide(); 
-                        this._lastTitle = null; 
+                this.ease({
+                    opacity: 0, duration: 500,
+                    onComplete: () => {
+                        this.hide();
+                        this._lastTitle = null;
                         this._lastArtist = null;
                         this._lastArtUrl = null;
                         this._currentBusName = null;
+                        if (this.get_parent() && !this._inPanel) this.get_parent().queue_relayout();
                     }
                 });
                 this._visualizer.setPlaying(false);
@@ -555,7 +584,7 @@ class MusicPill extends St.Widget {
                 return GLib.SOURCE_REMOVE;
             });
         }
-        return; 
+        return;
     }
 
     if (this._hideGraceTimer) {
@@ -566,6 +595,7 @@ class MusicPill extends St.Widget {
     if (!this.visible || this.opacity === 0) {
         this.show();
         this.ease({ opacity: 255, duration: 400 });
+        if (this.get_parent() && !this._inPanel) this.get_parent().queue_relayout();
     }
 
     if (this._lastTitle !== title || this._lastArtist !== artist || forceUpdate) {
@@ -575,8 +605,9 @@ class MusicPill extends St.Widget {
         this._lastArtist = artist;
     }
 
-    this._visualizer.setPlaying(status === 'Playing');
-    
+    // --- JAVÍTÁS: Csak akkor indítjuk a visualizert, ha NINCS Game Mode ---
+    this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive);
+
     if (forceUpdate || (artUrl && this._lastArtUrl !== artUrl)) {
         this._lastArtUrl = artUrl;
         this._artWidget.setArt(artUrl, forceUpdate);
@@ -614,7 +645,7 @@ class MusicPill extends St.Widget {
       this._colorAnimId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 33, () => {
           count++;
           let progress = count / steps;
-          let t = progress * progress * (3 - 2 * progress); 
+          let t = progress * progress * (3 - 2 * progress);
           let r = Math.floor(this._displayedColor.r + (targetR - this._displayedColor.r) * t);
           let g = Math.floor(this._displayedColor.g + (targetG - this._displayedColor.g) * t);
           let b = Math.floor(this._displayedColor.b + (targetB - this._displayedColor.b) * t);
@@ -644,53 +675,54 @@ export default class DynamicMusicExtension extends Extension {
     this._proxies = new Map();
     this._lastWinnerName = null;
     this._lastStatusTime = 0;
-    this._lastActionTime = 0; 
+    this._lastActionTime = 0;
     this._recheckTimer = null;
     this._connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
-    
 
     this._dockSignals = [];
     this._currentDock = null;
     this._injectTimeout = null;
     this._isMovingItem = false;
 
+    // AZONNALI Game Mode érzékelés
+    this._focusSignal = global.display.connect('notify::focus-window', () => {
+        this._monitorGameMode();
+    });
+
     this._inject();
     this._ownerId = this._connection.signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus', 'NameOwnerChanged', '/org/freedesktop/DBus', null, Gio.DBusSignalFlags.NONE, () => this._scan());
     this._scan();
-    
-    // Watchdog
-    this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => { 
+
+    // Watchdog (most már csak Game Mode állapotot ellenőriz, nem injektál feleslegesen)
+    this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
         this._monitorGameMode();
-        this._inject(); 
-        return GLib.SOURCE_CONTINUE; 
+        // Ha nagyon muszáj, itt lehetne ellenőrizni, hogy megvan-e a szülő
+        if (!this._pill.get_parent()) {
+             this._inject();
+        }
+        return GLib.SOURCE_CONTINUE;
     });
   }
-  
-  _monitorGameMode() {
-      if (!this._settings.get_boolean('enable-gamemode')) {
-          if (!this._pill.visible && this._pill._currentBusName) this._pill.show(); 
-          return;
-      }
+
+  _isGameModeActive() {
+      if (!this._settings.get_boolean('enable-gamemode')) return false;
+      if (Main.overview.visible) return false;
 
       let win = global.display.get_focus_window();
-      let isGame = false;
       if (win && win.get_monitor() === Main.layoutManager.primaryIndex) {
           if (win.is_fullscreen()) {
-              isGame = true;
+              return true;
           }
       }
-
-      if (isGame) {
-          if (this._pill.visible) {
-              this._pill.hide();
-          }
-      } else {
-          if (!this._pill.visible && this._pill._currentBusName) {
-              this._pill.show();
-          }
-      }
+      return false;
   }
-  
+
+  _monitorGameMode() {
+      let isGame = this._isGameModeActive();
+      // Mostantól nem rejtjük el a widgetet, csak "Game Mode"-ba tesszük (animáció stop)
+      this._pill.setGameMode(isGame);
+  }
+
   _queueInject() {
       if (this._injectTimeout) GLib.source_remove(this._injectTimeout);
       this._injectTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
@@ -709,25 +741,20 @@ export default class DynamicMusicExtension extends Extension {
   }
 
   _ensurePosition(container) {
-      if (!container || this._isMovingItem) return;
+      if (!container || this._isMovingItem) return false;
 
       let mode = this._settings ? this._settings.get_int('position-mode') : 1;
       let manualIndex = this._settings ? this._settings.get_int('dock-position') : 0;
-      
+
       let children = container.get_children();
       let otherChildren = children.filter(c => c !== this._pill);
       let realItemCount = otherChildren.length;
       let targetIndex = 0;
 
-      if (mode === 0) { // Manual
-          targetIndex = manualIndex;
-      } else if (mode === 1) { // Left (Start)
-          targetIndex = 0;
-      } else if (mode === 2) { // Center
-          targetIndex = Math.floor(realItemCount / 2);
-      } else if (mode === 3) { // Right (End)
-          targetIndex = realItemCount; 
-      }
+      if (mode === 0) { targetIndex = manualIndex; }
+      else if (mode === 1) { targetIndex = 0; }
+      else if (mode === 2) { targetIndex = Math.floor(realItemCount / 2); }
+      else if (mode === 3) { targetIndex = realItemCount; }
 
       if (targetIndex > realItemCount) targetIndex = realItemCount;
       if (targetIndex < 0) targetIndex = 0;
@@ -737,20 +764,14 @@ export default class DynamicMusicExtension extends Extension {
       if (currentIndex !== targetIndex) {
           this._isMovingItem = true;
           try {
-              if (currentIndex !== -1) {
-                  container.remove_child(this._pill);
-              }
+              if (currentIndex !== -1) { container.remove_child(this._pill); }
               container.insert_child_at_index(this._pill, targetIndex);
-              
-
-
-              this._pill._updateDimensions();
-              
-          } catch(e) {
-              console.error(e);
-          }
+              this._isMovingItem = false;
+              return true;
+          } catch(e) { console.error(e); }
           this._isMovingItem = false;
       }
+      return false;
   }
 
   _inject() {
@@ -762,28 +783,24 @@ export default class DynamicMusicExtension extends Extension {
     if (target === 0) {
         let dtd = Main.panel.statusArea['dash-to-dock'];
         container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
-    } else if (target === 1) {
-        container = Main.panel._leftBox;
-    } else if (target === 2) {
-        container = Main.panel._centerBox;
-    } else if (target === 3) {
-        container = Main.panel._rightBox;
-    }
-    
+    } else if (target === 1) container = Main.panel._leftBox;
+    else if (target === 2) container = Main.panel._centerBox;
+    else if (target === 3) container = Main.panel._rightBox;
+
     if (!container) return;
 
-
     let oldParent = this._pill.get_parent();
-    if (oldParent && oldParent !== container) {
+    let parentChanged = (oldParent && oldParent !== container);
+
+    if (parentChanged) {
         oldParent.remove_child(this._pill);
         this._disconnectDockSignals();
     }
 
-
     if (target === 0 && this._currentDock !== container) {
         this._disconnectDockSignals();
         this._currentDock = container;
-        
+
         let addId = container.connect('child-added', (c, actor) => {
             if (actor !== this._pill && !this._isMovingItem) this._queueInject();
         });
@@ -794,10 +811,11 @@ export default class DynamicMusicExtension extends Extension {
         this._dockSignals.push(remId);
     }
 
-    this._ensurePosition(container);
-    
+    let moved = this._ensurePosition(container);
 
-    this._pill._updateDimensions();
+    if (parentChanged || moved || !oldParent) {
+        this._pill._updateDimensions();
+    }
   }
 
   _scan() {
@@ -822,9 +840,9 @@ export default class DynamicMusicExtension extends Extension {
         p._busName = name;
         p._lastSeen = Date.now();
         p._lastStatusTime = Date.now();
-        p._lastPlayingTime = 0; 
+        p._lastPlayingTime = 0;
 
-        p.connect('g-properties-changed', (proxy, changed) => { 
+        p.connect('g-properties-changed', (proxy, changed) => {
             let keys = changed.unpack();
             let now = Date.now();
             p._lastSeen = now;
@@ -837,7 +855,7 @@ export default class DynamicMusicExtension extends Extension {
             if (keys.PlaybackStatus && smartUnpack(keys.PlaybackStatus) === 'Playing') {
                 p._lastPlayingTime = now;
             }
-            this._updateUI(); 
+            this._updateUI();
         });
         this._proxies.set(name, p);
     } catch (e) {}
@@ -857,7 +875,7 @@ export default class DynamicMusicExtension extends Extension {
     } else if (target === 1) container = Main.panel._leftBox;
     else if (target === 2) container = Main.panel._centerBox;
     else if (target === 3) container = Main.panel._rightBox;
-    
+
     if (container) {
         this._ensurePosition(container);
     }
@@ -874,7 +892,7 @@ export default class DynamicMusicExtension extends Extension {
             artUrl = smartUnpack(m['mpris:artUrl']);
         }
         let now = Date.now();
-        let isSkipActive = (now - this._lastActionTime < 3000); 
+        let isSkipActive = (now - this._lastActionTime < 3000);
         this._pill.updateDisplay(title, artist, artUrl, active.PlaybackStatus, active._busName, isSkipActive);
     } else {
         this._pill.updateDisplay(null, null, null, 'Stopped', null, false);
@@ -940,7 +958,8 @@ export default class DynamicMusicExtension extends Extension {
   previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
 
   disable() {
-    this._disconnectDockSignals(); 
+    this._disconnectDockSignals();
+    if (this._focusSignal) global.display.disconnect(this._focusSignal);
     if (this._injectTimeout) GLib.source_remove(this._injectTimeout);
     if (this._watchdog) GLib.source_remove(this._watchdog);
     if (this._recheckTimer) GLib.source_remove(this._recheckTimer);
