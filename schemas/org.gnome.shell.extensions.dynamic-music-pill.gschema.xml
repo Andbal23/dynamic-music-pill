@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.dynamic-music-pill" path="/org/gnome/shell/extensions/dynamic-music-pill/">
+
+    <key name="show-album-art" type="b">
+      <default>true</default>
+      <summary>Show Album Art</summary>
+      <description>Toggle the display of the album cover art</description>
+    </key>
+
+    <key name="fix-dock-autohide" type="b">
+      <default>false</default>
+      <summary>Fix Dock Autohide</summary>
+      <description>Keep widget visible at 1px to prevent dock issues</description>
+    </key>
+
     <key name="scroll-text" type="b">
       <default>true</default>
       <summary>Scrolling Text</summary>
@@ -9,9 +22,16 @@
 
     <key name="pill-width" type="i">
       <default>250</default>
-      <range min="100" max="400"/>
-      <summary>Pill Width</summary>
-      <description>Width of the widget</description>
+      <range min="100" max="600"/>
+      <summary>Pill Width (Dock)</summary>
+      <description>Width of the widget in Dock mode</description>
+    </key>
+
+    <key name="panel-pill-width" type="i">
+      <default>250</default>
+      <range min="100" max="600"/>
+      <summary>Pill Width (Panel)</summary>
+      <description>Width of the widget in Panel mode</description>
     </key>
 
     <key name="pill-height" type="i">
@@ -46,7 +66,7 @@
       <default>0</default>
       <range min="-30" max="30"/>
       <summary>Vertical Offset</summary>
-      <description>Move the widget up (negative) or down (positive). In Dash mode -2 is probably the center because of the Dash indicator.</description>
+      <description>Move the widget up (negative) or down (positive)</description>
     </key>
 
     <key name="horizontal-offset" type="i">
@@ -57,7 +77,7 @@
     </key>
 
     <key name="position-mode" type="i">
-      <default>3</default> 
+      <default>3</default>
       <range min="0" max="3"/>
       <summary>Position Mode</summary>
       <description>0=Manual, 1=Start, 2=Center, 3=End</description>

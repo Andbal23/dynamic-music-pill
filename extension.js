@@ -50,78 +50,111 @@ function getAverageColor(pixbuf) {
     return { r: Math.floor(r / count), g: Math.floor(g / count), b: Math.floor(b / count) };
 }
 
-// --- Crossfade Art
+
 const CrossfadeArt = GObject.registerClass(
 class CrossfadeArt extends St.Widget {
     _init() {
-        super._init({ 
-            layout_manager: new Clutter.BinLayout(), 
+        super._init({
+            layout_manager: new Clutter.BinLayout(),
             style_class: 'art-widget',
+
+            clip_to_allocation: false,
+            x_expand: false,
+            y_expand: false
         });
-        const layerStyle = 'background-size: cover; background-position: center;';
-        this._back = new St.Widget({ x_expand: true, y_expand: true, style: layerStyle });
-        this._front = new St.Widget({ x_expand: true, y_expand: true, style: layerStyle });
-        this.add_child(this._back);
-        this.add_child(this._front);
-        this._currentUrl = null;
         this._radius = 10;
         this._shadowCSS = 'box-shadow: none;';
+
+        const layerStyle = 'background-size: cover; background-position: center;';
+
+
+        this._layerA = new St.Widget({ x_expand: true, y_expand: true, opacity: 255, style: layerStyle });
+        this._layerB = new St.Widget({ x_expand: true, y_expand: true, opacity: 0, style: layerStyle });
+
+
+        this._layerA._bgUrl = null;
+        this._layerB._bgUrl = null;
+
+        this.add_child(this._layerA);
+        this.add_child(this._layerB);
+
+        this._activeLayer = this._layerA;
+        this._nextLayer = this._layerB;
+
+        this._currentUrl = null;
     }
 
     setRadius(r) {
         this._radius = r;
-        this._updateStyle();
+        this._refreshLayerStyle(this._layerA);
+        this._refreshLayerStyle(this._layerB);
     }
 
     setShadowStyle(cssString) {
         this._shadowCSS = cssString;
-        this._updateStyle();
+        this._refreshLayerStyle(this._layerA);
+        this._refreshLayerStyle(this._layerB);
     }
 
-    _updateStyle() {
+
+    _refreshLayerStyle(layer) {
+        let url = layer._bgUrl;
+        let bgPart = url ? `background-image: url("${url}");` : '';
         let common = `border-radius: ${this._radius}px; background-size: cover; background-position: center; ${this._shadowCSS}`;
-        let backUrl = this._currentUrl ? `background-image: url("${this._currentUrl}");` : '';
-        this._back.set_style(`${backUrl} ${common}`);
-        this._front.set_style(`${backUrl} ${common}`);
+        layer.set_style(`${bgPart} ${common}`);
     }
 
-    setArt(url, force = false) {
-        if (!force && this._currentUrl === url) return;
-        this._currentUrl = url;
-        let common = `border-radius: ${this._radius}px; background-size: cover; background-position: center; ${this._shadowCSS}`;
+    setArt(newUrl, force = false) {
+        if (!force && this._currentUrl === newUrl) return;
+        this._currentUrl = newUrl;
 
-        if (!url) {
-            this._back.set_style(common);
-            this._front.set_style(common);
-            return;
-        }
-        this._back.set_style(`background-image: url("${url}"); ${common}`);
-        this._front.ease({
+
+        this._nextLayer._bgUrl = newUrl;
+
+        this._refreshLayerStyle(this._nextLayer);
+
+        this._nextLayer.opacity = 0;
+        this._nextLayer.show();
+
+
+        this.set_child_below_sibling(this._nextLayer, this._activeLayer);
+
+
+        this._activeLayer.remove_all_transitions();
+        this._activeLayer.ease({
             opacity: 0,
             duration: 600,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
-                this._front.set_style(`background-image: url("${url}"); ${common}`);
-                this._front.opacity = 255;
+                // Csere
+                let temp = this._activeLayer;
+                this._activeLayer = this._nextLayer;
+                this._nextLayer = temp;
+
+
+                this._nextLayer.opacity = 0;
             }
         });
+
+
+        this._nextLayer.opacity = 255;
     }
 });
 
-// --- Scroll Label 
+// --- Scroll Label
 const ScrollLabel = GObject.registerClass(
 class ScrollLabel extends St.Widget {
     _init(styleClass, settings) {
-        super._init({ 
+        super._init({
             layout_manager: new Clutter.BinLayout(),
-            x_expand: true, 
-            y_expand: false, 
-            clip_to_allocation: true 
+            x_expand: true,
+            y_expand: false,
+            clip_to_allocation: true
         });
         this._settings = settings;
         this._styleClass = styleClass;
         this._text = "";
-        this._gameMode = false; // Add flag
+        this._gameMode = false;
 
         this._container = new St.BoxLayout({ vertical: false });
         this.add_child(this._container);
@@ -154,14 +187,14 @@ class ScrollLabel extends St.Widget {
     setGameMode(active) {
         this._gameMode = active;
         if (active) {
-            this._stopAnimation(); // Stop scrolling in game
+            this._stopAnimation();
         } else {
-            this._checkResize(); // Resume if needed
+            this._checkResize();
         }
     }
 
     _checkResize() {
-        if (!this._text || this._gameMode) return; // Don't scroll in game mode
+        if (!this._text || this._gameMode) return;
         let boxWidth = this.get_allocation_box().get_width();
         let textWidth = this._label1.get_preferred_width(-1)[1];
 
@@ -306,21 +339,27 @@ class MusicPill extends St.Widget {
   _init(controller) {
     super._init({
         style_class: 'music-pill-container',
-        reactive: true,
+        reactive: false,
         y_align: Clutter.ActorAlign.CENTER,
         x_align: Clutter.ActorAlign.CENTER,
         opacity: 0,
+        width: 0,
         visible: false
     });
     this._controller = controller;
     this._settings = controller._settings;
+
+    this._isActiveState = false;
+    this._targetWidth = 250;
+
+    this._artDebounceTimer = null;
 
     this._padX = 14;
     this._padY = 6;
     this._radius = 28;
     this._shadowCSS = 'box-shadow: none;';
     this._inPanel = false;
-    this._gameModeActive = false; // New flag to track game state
+    this._gameModeActive = false;
 
     this._settings.connect('changed::pill-width', () => this._updateDimensions());
     this._settings.connect('changed::pill-height', () => this._updateDimensions());
@@ -328,11 +367,11 @@ class MusicPill extends St.Widget {
 
     this._settings.connect('changed::panel-pill-height', () => this._updateDimensions());
     this._settings.connect('changed::panel-art-size', () => this._updateDimensions());
+    this._settings.connect('changed::panel-pill-width', () => this._updateDimensions());
 
     this._settings.connect('changed::vertical-offset', () => this._updateDimensions());
     this._settings.connect('changed::horizontal-offset', () => this._updateDimensions());
 
-    // Trigger injection logic
     this._settings.connect('changed::dock-position', () => this._controller._queueInject());
     this._settings.connect('changed::position-mode', () => this._controller._queueInject());
     this._settings.connect('changed::target-container', () => this._controller._queueInject());
@@ -342,6 +381,12 @@ class MusicPill extends St.Widget {
     this._settings.connect('changed::enable-shadow', () => this._updateDimensions());
     this._settings.connect('changed::shadow-opacity', () => this._updateDimensions());
     this._settings.connect('changed::shadow-blur', () => this._updateDimensions());
+
+    this._settings.connect('changed::show-album-art', () => this._updateArtVisibility());
+
+    this._settings.connect('changed::fix-dock-autohide', () => {
+         if (!this._isActiveState) this._updateDimensions();
+    });
 
     this._currentBusName = null;
     this._displayedColor = { r: 40, g: 40, b: 40 };
@@ -353,7 +398,12 @@ class MusicPill extends St.Widget {
     this._body.set_pivot_point(0.5, 0.5);
 
     this._artWidget = new CrossfadeArt();
-    this._artBin = new St.Bin({ child: this._artWidget, style: 'margin-right: 8px;' });
+    this._artBin = new St.Bin({
+        child: this._artWidget,
+        style: 'margin-right: 8px;',
+        x_expand: false,
+        y_expand: false
+    });
     this._body.add_child(this._artBin);
 
     this._textWrapper = new St.Widget({
@@ -430,21 +480,53 @@ class MusicPill extends St.Widget {
     this._updateDimensions();
   }
 
-  // --- ÚJ METÓDUS: Game Mode kezelése (csak fagyasztás) ---
   setGameMode(active) {
       if (this._gameModeActive === active) return;
       this._gameModeActive = active;
 
       if (active) {
-          // Ha játék van: leállítjuk az animációkat
           this._visualizer.setPlaying(false);
           this._titleScroll.setGameMode(true);
           this._artistScroll.setGameMode(true);
       } else {
-          // Ha vége a játéknak: visszaállítjuk az állapotot
           this._visualizer.setPlaying(this._currentStatus === 'Playing');
           this._titleScroll.setGameMode(false);
           this._artistScroll.setGameMode(false);
+          if (this._isActiveState) {
+              this.opacity = 255;
+          }
+      }
+  }
+
+  _updateArtVisibility() {
+      let showSetting = this._settings.get_boolean('show-album-art');
+
+      if (!showSetting) {
+          if (this._artDebounceTimer) {
+              GLib.source_remove(this._artDebounceTimer);
+              this._artDebounceTimer = null;
+          }
+          this._artBin.visible = false;
+          return;
+      }
+
+      let hasMeta = this._lastArtUrl && this._lastArtUrl.length > 0;
+
+      if (hasMeta) {
+          if (this._artDebounceTimer) {
+              GLib.source_remove(this._artDebounceTimer);
+              this._artDebounceTimer = null;
+          }
+          this._artBin.visible = true;
+      } else {
+          if (!this._artDebounceTimer) {
+              this._artDebounceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+                   this._artBin.visible = false;
+                   this._artWidget.setArt(null);
+                   this._artDebounceTimer = null;
+                   return GLib.SOURCE_REMOVE;
+              });
+          }
       }
   }
 
@@ -452,13 +534,14 @@ class MusicPill extends St.Widget {
         let target = this._settings.get_int('target-container');
         this._inPanel = (target > 0);
 
-        let width = this._settings.get_int('pill-width');
-        let height, prefArtSize;
+        let width, height, prefArtSize;
 
         if (this._inPanel) {
+            width = this._settings.get_int('panel-pill-width');
             height = this._settings.get_int('panel-pill-height');
             prefArtSize = this._settings.get_int('panel-art-size');
         } else {
+            width = this._settings.get_int('pill-width');
             height = this._settings.get_int('pill-height');
             prefArtSize = this._settings.get_int('art-size');
         }
@@ -484,6 +567,8 @@ class MusicPill extends St.Widget {
             this._padY = Math.max(2, Math.min(8, rawPadY));
         }
 
+        this._targetWidth = width;
+
         this._body.set_width(width);
         this._body.set_height(height);
 
@@ -505,24 +590,33 @@ class MusicPill extends St.Widget {
 
         this._artWidget.set_width(finalArtSize);
         this._artWidget.set_height(finalArtSize);
+        this._artBin.set_width(finalArtSize);
+        this._artBin.set_height(finalArtSize);
+
         this._artWidget.setRadius(artRadius);
         this._artWidget.setShadowStyle(this._shadowCSS);
 
         this._visualizer.setMode(visStyle);
 
+        // --- VISUALIZER "OFF" JAVÍTÁS ---
         if (width < 220 || visStyle === 0) {
             this._visBin.hide();
-            this._visBin.set_style('margin-left: 0px;');
+
+            this._visBin.set_width(0);
+            this._visBin.set_style('margin: 0px;');
+
             let artMargin = (width < 180) ? 4 : 8;
             this._artBin.set_style(`margin-right: ${artMargin}px;`);
             this._fadeLeft.set_width(10);
             this._fadeRight.set_width(10);
         } else {
             this._visBin.show();
-            this._visBin.set_width(finalArtSize);
+
             let sideMargin = 12;
-            this._artBin.set_style(`margin-right: ${sideMargin}px;`);
             this._visBin.set_style(`margin-left: ${sideMargin}px;`);
+            this._visBin.set_width(-1);
+
+            this._artBin.set_style(`margin-right: ${sideMargin}px;`);
             this._fadeLeft.set_width(30);
             this._fadeRight.set_width(30);
         }
@@ -539,6 +633,25 @@ class MusicPill extends St.Widget {
         this._artistScroll.set_style(`font-size: ${fontSizeArtist}; font-weight: 500; color: rgba(255,255,255,0.7);`);
 
         this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+
+        let fixDock = this._settings.get_boolean('fix-dock-autohide');
+
+        if (!this._isActiveState) {
+            if (fixDock) {
+                this.set_width(1);
+                this.set_height(height);
+                this.opacity = 0;
+                this.visible = true;
+            } else {
+                this.visible = false;
+                this.set_width(0);
+            }
+            return;
+        }
+
+        this.set_width(width);
+        this.set_height(height);
+        this.visible = true;
     }
 
   _animateSlide(offset) {
@@ -566,19 +679,41 @@ class MusicPill extends St.Widget {
 
     if (!title || status === 'Stopped') {
         if (isSkipActive) return;
-        if (!this._hideGraceTimer && this.visible) {
+        if (!this._hideGraceTimer && this._isActiveState) {
             this._hideGraceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
+
+                let fixDock = this._settings.get_boolean('fix-dock-autohide');
+                this._isActiveState = false;
+                this.reactive = false;
+
+                let targetW = fixDock ? 1 : 0;
+
+                this.ease({ opacity: 0, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                this._body.ease({
+                    width: targetW,
+                    duration: 500,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                });
+
                 this.ease({
-                    opacity: 0, duration: 500,
+                    width: targetW,
+                    duration: 500,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => {
-                        this.hide();
                         this._lastTitle = null;
                         this._lastArtist = null;
                         this._lastArtUrl = null;
                         this._currentBusName = null;
-                        if (this.get_parent() && !this._inPanel) this.get_parent().queue_relayout();
+                        this.set_width(targetW);
+
+                        if (!fixDock) {
+                            this.visible = false;
+                        } else {
+                            this.visible = true;
+                        }
                     }
                 });
+
                 this._visualizer.setPlaying(false);
                 this._hideGraceTimer = null;
                 return GLib.SOURCE_REMOVE;
@@ -592,10 +727,31 @@ class MusicPill extends St.Widget {
         this._hideGraceTimer = null;
     }
 
-    if (!this.visible || this.opacity === 0) {
-        this.show();
-        this.ease({ opacity: 255, duration: 400 });
-        if (this.get_parent() && !this._inPanel) this.get_parent().queue_relayout();
+    if (!this._isActiveState || this.opacity === 0 || this.width <= 1) {
+        this._isActiveState = true;
+        this.reactive = true;
+        this.visible = true;
+
+        let fixDock = this._settings.get_boolean('fix-dock-autohide');
+        let startW = fixDock ? 1 : 0;
+
+        this._updateDimensions();
+
+        this.set_width(startW);
+        this._body.set_width(startW);
+
+        this.ease({
+            width: this._targetWidth,
+            opacity: 255,
+            duration: 500,
+            mode: Clutter.AnimationMode.EASE_OUT_BACK
+        });
+
+        this._body.ease({
+            width: this._targetWidth,
+            duration: 500,
+            mode: Clutter.AnimationMode.EASE_OUT_BACK
+        });
     }
 
     if (this._lastTitle !== title || this._lastArtist !== artist || forceUpdate) {
@@ -605,16 +761,19 @@ class MusicPill extends St.Widget {
         this._lastArtist = artist;
     }
 
-    // --- JAVÍTÁS: Csak akkor indítjuk a visualizert, ha NINCS Game Mode ---
     this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive);
 
-    if (forceUpdate || (artUrl && this._lastArtUrl !== artUrl)) {
+    if (forceUpdate || (artUrl && artUrl !== this._lastArtUrl)) {
         this._lastArtUrl = artUrl;
         this._artWidget.setArt(artUrl, forceUpdate);
-        if (artUrl) this._loadColorFromArt(artUrl);
+        if (artUrl) {
+             this._loadColorFromArt(artUrl);
+        }
     } else {
         this._startColorTransition();
     }
+
+    this._updateArtVisibility();
   }
 
   _loadColorFromArt(artUrl) {
@@ -684,7 +843,6 @@ export default class DynamicMusicExtension extends Extension {
     this._injectTimeout = null;
     this._isMovingItem = false;
 
-    // AZONNALI Game Mode érzékelés
     this._focusSignal = global.display.connect('notify::focus-window', () => {
         this._monitorGameMode();
     });
@@ -693,10 +851,8 @@ export default class DynamicMusicExtension extends Extension {
     this._ownerId = this._connection.signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus', 'NameOwnerChanged', '/org/freedesktop/DBus', null, Gio.DBusSignalFlags.NONE, () => this._scan());
     this._scan();
 
-    // Watchdog (most már csak Game Mode állapotot ellenőriz, nem injektál feleslegesen)
     this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
         this._monitorGameMode();
-        // Ha nagyon muszáj, itt lehetne ellenőrizni, hogy megvan-e a szülő
         if (!this._pill.get_parent()) {
              this._inject();
         }
@@ -719,7 +875,6 @@ export default class DynamicMusicExtension extends Extension {
 
   _monitorGameMode() {
       let isGame = this._isGameModeActive();
-      // Mostantól nem rejtjük el a widgetet, csak "Game Mode"-ba tesszük (animáció stop)
       this._pill.setGameMode(isGame);
   }
 
