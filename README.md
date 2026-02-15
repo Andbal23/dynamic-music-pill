@@ -1,6 +1,6 @@
 # 🎵 Dynamic Music Pill
 
-A dynamic, elegant, and highly customizable music widget for GNOME Shell. It brings a pill-shaped media controller with a live waveform visualizer directly to your Dash-to-Dock or Top Panel.
+A dynamic, elegant, and highly customizable music widget for GNOME Shell. It brings a pill-shaped media controller with a live waveform visualizer directly to your Dash or Panel.
 
 <p align="center">
   <img src="screenshots/picture.png" alt="Dynamic Music Pill Logo" width="400">
