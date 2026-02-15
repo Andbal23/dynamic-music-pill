@@ -99,7 +99,7 @@ via **GNOME Extensions** or **Extension Manager** or `gnome-extensions enable dy
 
 ## 🛠️ Configuration
 <p align="center">
-<img src="screenshots/settings.png" width="400">
+<img src="screenshots/setting.png" width="400">
 </p>
 
 Open the **Settings** to customize the appearance:
@@ -107,6 +107,7 @@ Open the **Settings** to customize the appearance:
 * **Visualizer Style:** Toggle between "Wave" (smooth) or "Beat" (energetic) modes.
 * **Target Container:** Switch between Dock and Top Panel instantly.
 * **Customize the look:** Height, width, offstets, border radius and more.
+* **Album art** You can turn it off or on.
 
 ---
 <div align="center">
