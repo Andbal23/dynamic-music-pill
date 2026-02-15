@@ -21,7 +21,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 * **Live Visualizer:** Real-time waveform or beat animation that reacts to your music.
 * **🎮 Game Mode:** Automatically stop the visual and the scrolling when a fullscreen application is active to ensure maximum performance (FPS).
 * **Smart Scrolling:** Long titles and artist names scroll smoothly to stay readable.
-* **Customization:** Fine-tune width, height, offsets, corner radius, and shadow effects independently for both Dock and Panel modes.
+* **Customization:** Fine-tune width, height, offsets, corner radius, and shadow effects independently for both Dock and Panel modes. You can also enable or disable album art.
 * **Controls:** You can skip or resume the media by clicking it or scroll for skip or rewind.
 
 ---
