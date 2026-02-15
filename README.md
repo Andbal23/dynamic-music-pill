@@ -36,30 +36,31 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 
 # 🚀 Installation
 
-## 1. Manual Installation
+##  Manual Installation
 From Source (GitHub)
 
-Clone the repository:
+## **1.** Clone the repository:
+
 `
-git clone https://github.com/Andbal23/dynamic-music-pill.git 
+ git clone https://github.com/Andbal23/dynamic-music-pill.git 
 `
-and
+## **2.** Go into the directory
 `
 cd dynamic-music-pill
 `
-
-Build and Install:
-You need to compile the schemas and move the files to your extensions folder.
 `
-## Create the directory
+
+## **3.** Create the directory
 `
 mkdir -p ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
 `
-## Copy files
+
+## **4.** Copy files
 `
 cp -r * ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal/
 `
-## Compile schemas
+## 
+## **5.** Compile schemas
 `
 cd ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
 `
@@ -68,10 +69,12 @@ cd ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
 glib-compile-schemas schemas/
 `
 
-5.  Restart GNOME Shell (`Alt+F2`, type `r`, then `Enter`) or log out/in if you are on Wayland.
-6.  Enable the extension via **GNOME Extensions** or **Extension Manager**.
+## **6.**  Restart GNOME Shell 
+(`Alt+F2`, type `r`, then `Enter`) or log out/in if you are on Wayland.
+## **7.**  Enable the extension 
+via **GNOME Extensions** or **Extension Manager** or `gnome-extensions enable dynamic-music-pill@andbal`
 
-### 2. From GNOME Extensions Store
+## 🌐 From GNOME Extensions Store
 Search for **Dynamic Music Pill** on the [GNOME Extensions website](https://extensions.gnome.org/extension/9334/dynamic-music-pill/).
 
 ---
