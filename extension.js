@@ -58,28 +58,50 @@ class CrossfadeArt extends St.Widget {
             layout_manager: new Clutter.BinLayout(), 
             style_class: 'art-widget',
         });
-        const layerStyle = 'border-radius: 10px; background-size: cover; background-position: center;';
+        const layerStyle = 'background-size: cover; background-position: center;';
         this._back = new St.Widget({ x_expand: true, y_expand: true, style: layerStyle });
         this._front = new St.Widget({ x_expand: true, y_expand: true, style: layerStyle });
         this.add_child(this._back);
         this.add_child(this._front);
         this._currentUrl = null;
+        this._radius = 10;
+        this._shadowCSS = 'box-shadow: none;';
     }
+
+    setRadius(r) {
+        this._radius = r;
+        this._updateStyle();
+    }
+
+    setShadowStyle(cssString) {
+        this._shadowCSS = cssString;
+        this._updateStyle();
+    }
+
+    _updateStyle() {
+        let common = `border-radius: ${this._radius}px; background-size: cover; background-position: center; ${this._shadowCSS}`;
+        let backUrl = this._currentUrl ? `background-image: url("${this._currentUrl}");` : '';
+        this._back.set_style(`${backUrl} ${common}`);
+        this._front.set_style(`${backUrl} ${common}`);
+    }
+
     setArt(url, force = false) {
         if (!force && this._currentUrl === url) return;
         this._currentUrl = url;
+        let common = `border-radius: ${this._radius}px; background-size: cover; background-position: center; ${this._shadowCSS}`;
+
         if (!url) {
-            this._back.set_style('');
-            this._front.set_style('');
+            this._back.set_style(common);
+            this._front.set_style(common);
             return;
         }
-        this._back.set_style(`background-image: url("${url}"); border-radius: 10px; background-size: cover; background-position: center;`);
+        this._back.set_style(`background-image: url("${url}"); ${common}`);
         this._front.ease({
             opacity: 0,
             duration: 600,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
-                this._front.set_style(`background-image: url("${url}"); border-radius: 10px; background-size: cover; background-position: center;`);
+                this._front.set_style(`background-image: url("${url}"); ${common}`);
                 this._front.opacity = 255;
             }
         });
@@ -117,17 +139,42 @@ class ScrollLabel extends St.Widget {
         this._container.add_child(this._label2);
 
         this._settings.connect('changed::scroll-text', () => this.setText(this._text, true));
+        
+        this.connect('notify::allocation', () => {
+            if (this._resizeTimer) GLib.source_remove(this._resizeTimer);
+            this._resizeTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                this._checkResize();
+                this._resizeTimer = null;
+                return GLib.SOURCE_REMOVE;
+            });
+        });
+    }
+
+    _checkResize() {
+        if (!this._text) return;
+        let boxWidth = this.get_allocation_box().get_width();
+        let textWidth = this._label1.get_preferred_width(-1)[1];
+        
+        let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
+        let isScrolling = (this._scrollTimer != null);
+    
+        if (needsScroll && !isScrolling) {
+            this._startInfiniteScroll(textWidth);
+        } 
+        else if (!needsScroll && isScrolling) {
+            this._stopAnimation();
+            this._label2.hide();
+            this._separator.hide();
+            this._label1.clutter_text.ellipsize = (textWidth > boxWidth) ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
+        }
     }
 
     setText(text, force = false) {
         if (!force && this._text === text) return;
         this._text = text || "";
-        
         this._stopAnimation();
-
         this._label1.text = this._text;
         this._label2.text = this._text;
-        
         this._label2.hide();
         this._separator.hide();
 
@@ -135,7 +182,6 @@ class ScrollLabel extends St.Widget {
             this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             return;
         }
-
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
 
         if (this._measureTimeout) GLib.source_remove(this._measureTimeout);
@@ -159,7 +205,6 @@ class ScrollLabel extends St.Widget {
         if (!this._settings.get_boolean('scroll-text')) return;
         let boxWidth = this.get_allocation_box().get_width();
         let textWidth = this._label1.get_preferred_width(-1)[1];
-
         if (textWidth > boxWidth) {
             this._startInfiniteScroll(textWidth);
         }
@@ -172,7 +217,6 @@ class ScrollLabel extends St.Widget {
         const distance = textWidth + gap;
         const speed = 30; 
         const duration = (distance / speed) * 1000;
-
         const loop = () => {
             this._scrollTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
                 this._container.ease({
@@ -198,27 +242,44 @@ class WaveformVisualizer extends St.BoxLayout {
     super._init({ vertical: false, style: 'spacing: 3px;', y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
     this._bars = [];
     this._color = '255,255,255';
+    this._mode = 1; 
     for (let i = 0; i < 4; i++) {
       let bar = new St.Bin({ style_class: 'visualizer-bar', y_align: Clutter.ActorAlign.END });
       this.add_child(bar);
       this._bars.push(bar);
     }
   }
+  
+  setMode(m) {
+      this._mode = m;
+      let align = (m === 2) ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.END;
+      this._bars.forEach(bar => {
+          bar.y_align = align;
+      });
+  }
+
   setColor(c) { 
       let r = Math.min(255, c.r + 100);
       let g = Math.min(255, c.g + 100);
       let b = Math.min(255, c.b + 100);
       this._color = `${r},${g},${b}`;
   }
+  
   setPlaying(playing) {
     if (this._isPlaying === playing) return;
     this._isPlaying = playing;
     if (this._timerId) { GLib.source_remove(this._timerId); this._timerId = null; }
+    
     if (playing) {
       this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
         let t = Date.now() / 200;
         this._bars.forEach((bar, idx) => {
-          let h = 4 + Math.abs(Math.sin(t + idx)) * 14;
+          let h = 4;
+          if (this._mode === 1) {
+              h = 4 + Math.abs(Math.sin(t + idx)) * 14;
+          } else if (this._mode === 2) {
+              h = 4 + Math.abs(Math.sin(t + (idx * 1.3))) * 14;
+          }
           bar.set_style(`height: ${Math.floor(h)}px; background-color: rgb(${this._color});`);
         });
         return GLib.SOURCE_CONTINUE;
@@ -242,8 +303,36 @@ class MusicPill extends St.Widget {
         visible: false
     });
     this._controller = controller;
-    this._currentBusName = null;
+    this._settings = controller._settings;
     
+    this._padX = 14;
+    this._padY = 6;
+    this._radius = 28;
+    this._shadowCSS = 'box-shadow: none;';
+    this._inPanel = false;
+    
+    this._settings.connect('changed::pill-width', () => this._updateDimensions());
+    this._settings.connect('changed::pill-height', () => this._updateDimensions());
+    this._settings.connect('changed::art-size', () => this._updateDimensions());
+    
+    this._settings.connect('changed::panel-pill-height', () => this._updateDimensions());
+    this._settings.connect('changed::panel-art-size', () => this._updateDimensions());
+    
+    this._settings.connect('changed::vertical-offset', () => this._updateDimensions());
+    this._settings.connect('changed::horizontal-offset', () => this._updateDimensions());
+    
+    // Trigger injection logic
+    this._settings.connect('changed::dock-position', () => this._controller._queueInject());
+    this._settings.connect('changed::position-mode', () => this._controller._queueInject());
+    this._settings.connect('changed::target-container', () => this._controller._queueInject());
+    
+    this._settings.connect('changed::visualizer-style', () => this._updateDimensions());
+    this._settings.connect('changed::border-radius', () => this._updateDimensions());
+    this._settings.connect('changed::enable-shadow', () => this._updateDimensions());
+    this._settings.connect('changed::shadow-opacity', () => this._updateDimensions());
+    this._settings.connect('changed::shadow-blur', () => this._updateDimensions());
+    
+    this._currentBusName = null;
     this._displayedColor = { r: 40, g: 40, b: 40 };
     this._targetColor = { r: 40, g: 40, b: 40 };
     this._colorAnimId = null;
@@ -253,19 +342,21 @@ class MusicPill extends St.Widget {
     this._body.set_pivot_point(0.5, 0.5);
     
     this._artWidget = new CrossfadeArt();
-    this._body.add_child(new St.Bin({ child: this._artWidget, style: 'margin-right: 8px;' }));
+    this._artBin = new St.Bin({ child: this._artWidget, style: 'margin-right: 8px;' });
+    this._body.add_child(this._artBin);
 
     this._textWrapper = new St.Widget({
         layout_manager: new Clutter.BinLayout(),
         x_expand: true, y_expand: true,
-        style: 'min-width: 140px; overflow: hidden; margin-right: 4px; margin-left: 2px;' 
+        style: 'min-width: 50px; overflow: hidden; margin-right: 4px; margin-left: 2px;' 
     });
 
     this._textBox = new St.BoxLayout({ 
-        vertical: true, x_expand: true, 
+        vertical: true, 
+        x_expand: true, 
         y_align: Clutter.ActorAlign.CENTER,
         x_align: Clutter.ActorAlign.FILL,
-        style: 'padding-left: 4px; padding-right: 4px;' 
+        style: 'padding-left: 0px; padding-right: 0px;' 
     });
     this._titleScroll = new ScrollLabel('music-label-title', this._controller._settings);
     this._artistScroll = new ScrollLabel('music-label-artist', this._controller._settings);
@@ -278,7 +369,7 @@ class MusicPill extends St.Widget {
         x_align: Clutter.ActorAlign.START, 
         y_align: Clutter.ActorAlign.FILL,
     });
-    this._fadeLeft.set_width(40);
+    this._fadeLeft.set_width(30);
     this._fadeLeft.set_z_position(9999);
     this._textWrapper.add_child(this._fadeLeft);
 
@@ -287,14 +378,19 @@ class MusicPill extends St.Widget {
         x_align: Clutter.ActorAlign.END, 
         y_align: Clutter.ActorAlign.FILL,
     });
-    this._fadeRight.set_width(40);
+    this._fadeRight.set_width(30);
     this._fadeRight.set_z_position(9999);
     this._textWrapper.add_child(this._fadeRight);
 
     this._body.add_child(this._textWrapper);
 
     this._visualizer = new WaveformVisualizer();
-    this._body.add_child(new St.Bin({ child: this._visualizer, style: 'margin-left: 8px;' }));
+    this._visBin = new St.Bin({ 
+        child: this._visualizer, 
+        style: 'margin-left: 8px;',
+        x_align: Clutter.ActorAlign.END 
+    });
+    this._body.add_child(this._visBin);
     this.add_child(this._body);
 
     this.connect('button-press-event', () => {
@@ -319,7 +415,103 @@ class MusicPill extends St.Widget {
         }
         return Clutter.EVENT_STOP;
     });
+    
+    this._updateDimensions();
   }
+  
+  _updateDimensions() {
+        let target = this._settings.get_int('target-container'); 
+        this._inPanel = (target > 0);
+
+        let width = this._settings.get_int('pill-width');
+        let height, prefArtSize;
+
+        // Choose Dimensions based on mode
+        if (this._inPanel) {
+            height = this._settings.get_int('panel-pill-height');
+            prefArtSize = this._settings.get_int('panel-art-size');
+        } else {
+            height = this._settings.get_int('pill-height');
+            prefArtSize = this._settings.get_int('art-size');
+        }
+        
+        let vOffset = this._settings.get_int('vertical-offset');
+        let hOffset = this._settings.get_int('horizontal-offset');
+        let visStyle = this._settings.get_int('visualizer-style');
+        this._radius = this._settings.get_int('border-radius');
+        
+        let shadowEnabled = this._settings.get_boolean('enable-shadow');
+        let shadowBlur = this._settings.get_int('shadow-blur');
+        let shadowOpacity = this._settings.get_int('shadow-opacity') / 100.0;
+
+        let fontSizeTitle = '11pt';
+        let fontSizeArtist = '9pt';
+
+        if (this._inPanel) {
+            this._padY = 0; 
+            fontSizeTitle = '9.5pt';
+            fontSizeArtist = '8pt';
+        } else {
+            let rawPadY = Math.floor(height / 10);
+            this._padY = Math.max(2, Math.min(8, rawPadY));
+        }
+
+        this._body.set_width(width);
+        this._body.set_height(height);
+        
+        this.translation_y = vOffset;
+        this.translation_x = hOffset;
+
+        if (shadowEnabled) {
+            this._shadowCSS = `box-shadow: 0 2px ${shadowBlur}px rgba(0,0,0,${shadowOpacity});`;
+        } else {
+            this._shadowCSS = `box-shadow: none;`;
+        }
+
+        let rawPadX = Math.floor((width - 160) * (10 / 140) + 4);
+        this._padX = Math.max(4, Math.min(14, rawPadX));
+
+        let artRadius = Math.max(4, this._radius - this._padY);
+        let maxArtHeight = height - (2 * this._padY); 
+        let finalArtSize = Math.min(prefArtSize, maxArtHeight);
+
+        this._artWidget.set_width(finalArtSize);
+        this._artWidget.set_height(finalArtSize);
+        this._artWidget.setRadius(artRadius);
+        this._artWidget.setShadowStyle(this._shadowCSS);
+
+        this._visualizer.setMode(visStyle);
+
+        if (width < 220 || visStyle === 0) {
+            this._visBin.hide();
+            this._visBin.set_style('margin-left: 0px;');
+            let artMargin = (width < 180) ? 4 : 8;
+            this._artBin.set_style(`margin-right: ${artMargin}px;`);
+            this._fadeLeft.set_width(10);
+            this._fadeRight.set_width(10);
+        } else {
+            this._visBin.show();
+            this._visBin.set_width(finalArtSize);
+            let sideMargin = 12; 
+            this._artBin.set_style(`margin-right: ${sideMargin}px;`);
+            this._visBin.set_style(`margin-left: ${sideMargin}px;`);
+            this._fadeLeft.set_width(30);
+            this._fadeRight.set_width(30);
+        }
+
+        if (height < 46 && !this._inPanel) {
+            this._artistScroll.hide();
+        } else if (this._inPanel && height < 30) {
+             this._artistScroll.hide();
+        } else {
+            this._artistScroll.show();
+        }
+        
+        this._titleScroll.set_style(`font-size: ${fontSizeTitle}; font-weight: 800; color: white;`);
+        this._artistScroll.set_style(`font-size: ${fontSizeArtist}; font-weight: 500; color: rgba(255,255,255,0.7);`);
+
+        this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+    }
 
   _animateSlide(offset) {
       this._body.ease({
@@ -338,7 +530,6 @@ class MusicPill extends St.Widget {
         this._lastArtist = null;
         this._lastArtUrl = null;
         forceUpdate = true;
-        
         if (this._hideGraceTimer) {
             GLib.source_remove(this._hideGraceTimer);
             this._hideGraceTimer = null;
@@ -347,7 +538,6 @@ class MusicPill extends St.Widget {
 
     if (!title || status === 'Stopped') {
         if (isSkipActive) return; 
-
         if (!this._hideGraceTimer && this.visible) {
             this._hideGraceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
                 this.ease({ 
@@ -437,7 +627,9 @@ class MusicPill extends St.Widget {
   _applyStyle(r, g, b) {
       let bgStyle = `background-color: rgba(${r}, ${g}, ${b}, 0.95);`;
       let borderStyle = `border: 1px solid rgba(255,255,255,${this._currentStatus === 'Playing' ? 0.2 : 0.1});`;
-      this._body.set_style(`${bgStyle} ${borderStyle} box-shadow: 0 4px 12px rgba(0,0,0,0.4);`);
+      let paddingStyle = `padding: ${this._padY}px ${this._padX}px;`;
+      let radiusStyle = `border-radius: ${this._radius}px;`;
+      this._body.set_style(`${bgStyle} ${borderStyle} ${paddingStyle} ${radiusStyle} ${this._shadowCSS}`);
       this._fadeLeft.set_style(`background-gradient-direction: horizontal; background-gradient-start: rgba(${r}, ${g}, ${b}, 1); background-gradient-end: rgba(${r}, ${g}, ${b}, 0);`);
       this._fadeRight.set_style(`background-gradient-direction: horizontal; background-gradient-start: rgba(${r}, ${g}, ${b}, 0); background-gradient-end: rgba(${r}, ${g}, ${b}, 1);`);
       this._displayedColor = { r, g, b };
@@ -455,19 +647,157 @@ export default class DynamicMusicExtension extends Extension {
     this._lastActionTime = 0; 
     this._recheckTimer = null;
     this._connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
+    
+    // Dock figyelés
+    this._dockSignals = [];
+    this._currentDock = null;
+    this._injectTimeout = null;
+    this._isMovingItem = false;
+
     this._inject();
     this._ownerId = this._connection.signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus', 'NameOwnerChanged', '/org/freedesktop/DBus', null, Gio.DBusSignalFlags.NONE, () => this._scan());
     this._scan();
-    this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => { this._inject(); return GLib.SOURCE_CONTINUE; });
+    
+    // Watchdog
+    this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => { 
+        this._monitorGameMode();
+        this._inject(); 
+        return GLib.SOURCE_CONTINUE; 
+    });
   }
   
+  _monitorGameMode() {
+      if (!this._settings.get_boolean('enable-gamemode')) {
+          if (!this._pill.visible && this._pill._currentBusName) this._pill.show(); 
+          return;
+      }
+
+      let win = global.display.get_focus_window();
+      let isGame = false;
+      if (win && win.get_monitor() === Main.layoutManager.primaryIndex) {
+          if (win.is_fullscreen()) {
+              isGame = true;
+          }
+      }
+
+      if (isGame) {
+          if (this._pill.visible) {
+              this._pill.hide();
+          }
+      } else {
+          if (!this._pill.visible && this._pill._currentBusName) {
+              this._pill.show();
+          }
+      }
+  }
+  
+  _queueInject() {
+      if (this._injectTimeout) GLib.source_remove(this._injectTimeout);
+      this._injectTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+          this._inject();
+          this._injectTimeout = null;
+          return GLib.SOURCE_REMOVE;
+      });
+  }
+
+  _disconnectDockSignals() {
+      if (this._currentDock && this._dockSignals.length > 0) {
+          this._dockSignals.forEach(id => this._currentDock.disconnect(id));
+          this._dockSignals = [];
+      }
+      this._currentDock = null;
+  }
+
+  _ensurePosition(container) {
+      if (!container || this._isMovingItem) return;
+
+      let mode = this._settings ? this._settings.get_int('position-mode') : 1;
+      let manualIndex = this._settings ? this._settings.get_int('dock-position') : 0;
+      
+      let children = container.get_children();
+      let otherChildren = children.filter(c => c !== this._pill);
+      let realItemCount = otherChildren.length;
+      let targetIndex = 0;
+
+      if (mode === 0) { // Manual
+          targetIndex = manualIndex;
+      } else if (mode === 1) { // Left (Start)
+          targetIndex = 0;
+      } else if (mode === 2) { // Center
+          targetIndex = Math.floor(realItemCount / 2);
+      } else if (mode === 3) { // Right (End)
+          targetIndex = realItemCount; 
+      }
+
+      if (targetIndex > realItemCount) targetIndex = realItemCount;
+      if (targetIndex < 0) targetIndex = 0;
+
+      let currentIndex = children.indexOf(this._pill);
+
+      if (currentIndex !== targetIndex) {
+          this._isMovingItem = true;
+          try {
+              if (currentIndex !== -1) {
+                  container.remove_child(this._pill);
+              }
+              container.insert_child_at_index(this._pill, targetIndex);
+              
+              // JAVÍTÁS: Amint a helyére került, frissítsük a méreteket is azonnal!
+              // Ez oldja meg a "ki-be kapcsolás kell" problémát váltáskor.
+              this._pill._updateDimensions();
+              
+          } catch(e) {
+              console.error(e);
+          }
+          this._isMovingItem = false;
+      }
+  }
+
   _inject() {
-    let dtd = Main.panel.statusArea['dash-to-dock'];
-    let container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
-    if (container && this._pill.get_parent() !== container) {
-        if (this._pill.get_parent()) this._pill.get_parent().remove_child(this._pill);
-        container.insert_child_at_index(this._pill, 0);
+    if (this._isMovingItem) return;
+
+    let target = this._settings ? this._settings.get_int('target-container') : 0;
+    let container = null;
+
+    if (target === 0) {
+        let dtd = Main.panel.statusArea['dash-to-dock'];
+        container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
+    } else if (target === 1) {
+        container = Main.panel._leftBox;
+    } else if (target === 2) {
+        container = Main.panel._centerBox;
+    } else if (target === 3) {
+        container = Main.panel._rightBox;
     }
+    
+    if (!container) return;
+
+    // Ha váltottunk, vegyük ki a régiből
+    let oldParent = this._pill.get_parent();
+    if (oldParent && oldParent !== container) {
+        oldParent.remove_child(this._pill);
+        this._disconnectDockSignals();
+    }
+
+    // Dock figyelés
+    if (target === 0 && this._currentDock !== container) {
+        this._disconnectDockSignals();
+        this._currentDock = container;
+        
+        let addId = container.connect('child-added', (c, actor) => {
+            if (actor !== this._pill && !this._isMovingItem) this._queueInject();
+        });
+        let remId = container.connect('child-removed', (c, actor) => {
+            if (actor !== this._pill && !this._isMovingItem) this._queueInject();
+        });
+        this._dockSignals.push(addId);
+        this._dockSignals.push(remId);
+    }
+
+    this._ensurePosition(container);
+    
+    // JAVÍTÁS: Injektálás végén is kényszerítsük a frissítést, biztos ami biztos
+    this._pill._updateDimensions();
   }
 
   _scan() {
@@ -519,6 +849,19 @@ export default class DynamicMusicExtension extends Extension {
         this._recheckTimer = null;
     }
 
+    let target = this._settings ? this._settings.get_int('target-container') : 0;
+    let container = null;
+    if (target === 0) {
+        let dtd = Main.panel.statusArea['dash-to-dock'];
+        container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
+    } else if (target === 1) container = Main.panel._leftBox;
+    else if (target === 2) container = Main.panel._centerBox;
+    else if (target === 3) container = Main.panel._rightBox;
+    
+    if (container) {
+        this._ensurePosition(container);
+    }
+
     let active = this._getActivePlayer();
     if (active) {
         this._lastWinnerName = active._busName;
@@ -543,11 +886,9 @@ export default class DynamicMusicExtension extends Extension {
       if (proxiesArr.length === 0) return null;
       let now = Date.now();
 
-      // 1. HARD LOCK
       if (now - this._lastActionTime < 3000 && this._lastWinnerName) {
           let lockedPlayer = proxiesArr.find(p => p._busName === this._lastWinnerName);
           if (lockedPlayer) {
-          
               if (lockedPlayer.PlaybackStatus !== 'Playing' && !this._recheckTimer) {
                   let remaining = 3100 - (now - this._lastActionTime);
                   this._recheckTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, remaining, () => {
@@ -559,7 +900,6 @@ export default class DynamicMusicExtension extends Extension {
           }
       }
 
-      // 2. Scoreing
       let scoredPlayers = proxiesArr.map(p => {
           let score = 0;
           let status = p.PlaybackStatus;
@@ -600,6 +940,8 @@ export default class DynamicMusicExtension extends Extension {
   previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
 
   disable() {
+    this._disconnectDockSignals(); 
+    if (this._injectTimeout) GLib.source_remove(this._injectTimeout);
     if (this._watchdog) GLib.source_remove(this._watchdog);
     if (this._recheckTimer) GLib.source_remove(this._recheckTimer);
     if (this._ownerId) this._connection.signal_unsubscribe(this._ownerId);
