@@ -9,7 +9,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 
 ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=blue)
 
-![GitHub All Releases](https://img.shields.io/github/downloads/Andbal23/dynamic-music-pill/total?label=Downloads from release&color=orange)
+![GitHub All Releases](https://img.shields.io/github/downloads/Andbal23/dynamic-music-pill/total?label=Downloads&color=orange)
 
 ---
 
