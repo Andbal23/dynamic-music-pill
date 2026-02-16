@@ -1,5 +1,6 @@
 {
     "name": "Dynamic Music Pill",
+    "gettext-domain": "dynamic-music-pill",
     "description": "An elegant, pill-shaped music player for your desktop. Features a smooth audio visualizer, scrolling text, and seamless integration with Dash-to-Dock and the Top Panel.",
     "uuid": "dynamic-music-pill@andbal",
     "shell-version": [
@@ -11,5 +12,5 @@
     ],
     "url": "https://github.com/Andbal23/dynamic-music-pill",
     "settings-schema": "org.gnome.shell.extensions.dynamic-music-pill",
-    "version": 2.4
+    "version": 2.5
 }

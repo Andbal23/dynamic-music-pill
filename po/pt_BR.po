@@ -1,0 +1,348 @@
+# Brazilian Portuguese translations for Dynamic Music Pill.
+msgid ""
+msgstr ""
+"Project-Id-Version: Dynamic Music Pill\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-16 23:57+0100\n"
+"PO-Revision-Date: 2026-02-17 00:00+0100\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: prefs.js:21
+msgid "General Settings"
+msgstr "Configurações Gerais"
+
+#: prefs.js:22
+msgid "Basic display settings for track information"
+msgstr "Configurações básicas de exibição da faixa"
+
+#: prefs.js:26
+msgid "Show Album Art"
+msgstr "Mostrar Capa do Álbum"
+
+#: prefs.js:27
+msgid "Display the cover art of the currently playing song"
+msgstr "Exibir a capa da música atual"
+
+#: prefs.js:30 prefs.js:33
+msgid "show-album-art"
+msgstr ""
+
+#: prefs.js:38
+msgid "Enable Scroll Controls"
+msgstr "Ativar Controle por Rolagem"
+
+#: prefs.js:39
+msgid "Switch tracks using scroll wheel or touchpad"
+msgstr "Trocar faixas usando a roda do mouse ou touchpad"
+
+#: prefs.js:50
+msgid "Invert Scroll Animation"
+msgstr "Inverter Animação de Rolagem"
+
+#: prefs.js:51
+msgid "Direction of the jump effect (Natural vs Traditional)"
+msgstr "Direção do efeito de pulo (Natural vs Tradicional)"
+
+#: prefs.js:63
+msgid "Scrolling Text"
+msgstr "Texto Rolante"
+
+#: prefs.js:64
+msgid "Animate long track titles and artist names"
+msgstr "Animar títulos longos e nomes de artistas"
+
+#: prefs.js:81
+msgid "Background and Transparency"
+msgstr "Fundo e Transparência"
+
+#: prefs.js:82
+msgid "Customize the visibility and opacity"
+msgstr "Personalizar visibilidade e opacidade"
+
+#: prefs.js:86
+msgid "Enable Transparency"
+msgstr "Ativar Transparência"
+
+#: prefs.js:87
+msgid "Switch between a solid theme background and a custom transparent look"
+msgstr "Alternar entre fundo sólido do tema e visual transparente personalizado"
+
+#: prefs.js:99
+msgid "Background Opacity"
+msgstr "Opacidade do Fundo"
+
+#: prefs.js:100
+msgid "Adjust transparency level (0% is invisible, 100% is solid)"
+msgstr "Nível de transparência (0% invisível, 100% sólido)"
+
+#: prefs.js:109
+msgid "Apply to Album Art"
+msgstr "Aplicar na Capa do Álbum"
+
+#: prefs.js:110
+msgid "Make the album cover follow the transparency setting"
+msgstr "A capa do álbum segue a configuração de transparência"
+
+#: prefs.js:119
+msgid "Apply to Text"
+msgstr "Aplicar ao Texto"
+
+#: prefs.js:120
+msgid "Make the song title and artist follow the transparency setting"
+msgstr "Tornar o título e artista semi-transparentes"
+
+#: prefs.js:129
+msgid "Apply to Visualizer"
+msgstr "Aplicar ao Visualizador"
+
+#: prefs.js:130
+msgid "Make the audio visualizer bar follow the transparency setting"
+msgstr "Tornar as barras do visualizador semi-transparentes"
+
+#: prefs.js:145
+msgid "Visualizer and Shape"
+msgstr "Visualizador e Forma"
+
+#: prefs.js:146
+msgid "Configure the audio visualizer animation"
+msgstr "Configurar a animação do visualizador de áudio"
+
+#: prefs.js:150
+msgid "Off (Disabled)"
+msgstr "Desligado"
+
+#: prefs.js:151
+msgid "Wave (Smooth)"
+msgstr "Onda (Suave)"
+
+#: prefs.js:152
+msgid "Beat (Jumpy)"
+msgstr "Batida (Saltitante)"
+
+#: prefs.js:155
+msgid "Visualizer Animation"
+msgstr "Animação do Visualizador"
+
+#: prefs.js:156
+msgid "Select the style of the audio reaction bars"
+msgstr "Selecione o estilo das barras de reação"
+
+#: prefs.js:165
+msgid "Corner Radius"
+msgstr "Raio da Borda"
+
+#: prefs.js:166
+msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
+msgstr "Arredondamento das bordas (0 = Quadrado, 25 = Pílula)"
+
+#: prefs.js:179
+msgid "Drop Shadow"
+msgstr "Sombra Projetada"
+
+#: prefs.js:180
+msgid "Add depth to the widget with a configurable shadow"
+msgstr "Adicionar profundidade com sombra configurável"
+
+#: prefs.js:183
+msgid "Enable Shadow"
+msgstr "Ativar Sombra"
+
+#: prefs.js:184
+msgid "Draw a shadow behind the main widget and album art"
+msgstr "Desenhar sombra atrás do widget e capa"
+
+#: prefs.js:192
+msgid "Shadow Intensity"
+msgstr "Intensidade da Sombra"
+
+#: prefs.js:193
+msgid "Darkness of the shadow (higher is darker)"
+msgstr "Escuridão da sombra (maior é mais escuro)"
+
+#: prefs.js:200
+msgid "Shadow Blur"
+msgstr "Desfoque da Sombra"
+
+#: prefs.js:201
+msgid "Softness of the shadow edges (spread radius)"
+msgstr "Suavidade das bordas da sombra (raio de propagação)"
+
+#: prefs.js:214
+msgid "Positioning and Layout"
+msgstr "Posicionamento e Layout"
+
+#: prefs.js:215
+msgid "Choose where the widget appears on your screen"
+msgstr "Escolha onde o widget aparece na tela"
+
+#: prefs.js:218
+msgid "Dock"
+msgstr "Dock"
+
+#: prefs.js:219
+msgid "Panel: Left Box"
+msgstr "Painel: Esquerda"
+
+#: prefs.js:220
+msgid "Panel: Center Box"
+msgstr "Painel: Centro"
+
+#: prefs.js:221
+msgid "Panel: Right Box"
+msgstr "Painel: Direita"
+
+#: prefs.js:224
+msgid "Container Target"
+msgstr "Container Alvo"
+
+#: prefs.js:225
+msgid "Select which UI element should host the music pill"
+msgstr "Selecione qual elemento da UI deve hospedar a pílula"
+
+#: prefs.js:232
+msgid "Manual Index"
+msgstr "Índice Manual"
+
+#: prefs.js:233
+msgid "First (Start)"
+msgstr "Primeiro (Início)"
+
+#: prefs.js:234
+msgid "Center"
+msgstr "Centro"
+
+#: prefs.js:235
+msgid "Last (End)"
+msgstr "Último (Fim)"
+
+#: prefs.js:238
+msgid "Alignment Preset"
+msgstr "Predefinição de Alinhamento"
+
+#: prefs.js:239
+msgid "How the widget aligns relative to other items"
+msgstr "Como o widget se alinha em relação a outros itens"
+
+#: prefs.js:247
+msgid "Manual Index Position"
+msgstr "Posição de Índice Manual"
+
+#: prefs.js:248
+msgid "Order in the list (0 is first). Only for Manual mode."
+msgstr "Ordem na lista (0 é o primeiro). Apenas modo Manual."
+
+#: prefs.js:255
+msgid "Vertical Offset (Y)"
+msgstr "Deslocamento Vertical (Y)"
+
+#: prefs.js:256
+msgid "Shift Up (-) or Down (+)"
+msgstr "Mover para Cima (-) ou Baixo (+)"
+
+#: prefs.js:263
+msgid "Horizontal Offset (X)"
+msgstr "Deslocamento Horizontal (X)"
+
+#: prefs.js:264
+msgid "Shift Left (-) or Right (+)"
+msgstr "Mover para Esquerda (-) ou Direita (+)"
+
+#: prefs.js:279
+msgid "Dimensions (Dock Mode)"
+msgstr "Dimensões (Modo Dock)"
+
+#: prefs.js:282 prefs.js:304
+msgid "Widget Width"
+msgstr "Largura do Widget"
+
+#: prefs.js:283 prefs.js:305
+msgid "Total horizontal size in pixels"
+msgstr "Tamanho horizontal total em pixels"
+
+#: prefs.js:290 prefs.js:312
+msgid "Widget Height"
+msgstr "Altura do Widget"
+
+#: prefs.js:291 prefs.js:313
+msgid "Total vertical size in pixels"
+msgstr "Tamanho vertical total em pixels"
+
+#: prefs.js:301
+msgid "Dimensions (Panel Mode)"
+msgstr "Dimensões (Modo Painel)"
+
+#: prefs.js:326
+msgid "System and Compatibility"
+msgstr "Sistema e Compatibilidade"
+
+#: prefs.js:329
+msgid "Fix Dock Auto-hide"
+msgstr "Corrigir Auto-ocultar da Dock"
+
+#: prefs.js:330
+msgid ""
+"WARNING! Use it only if you have problem, keeps a 1px invisible spacer to "
+"prevent Dash-to-Dock from collapsing"
+msgstr "AVISO! Use apenas se tiver problemas, mantém um espaçador invisível de 1px para evitar colapso do Dash-to-Dock"
+
+#: prefs.js:341
+msgid "Game Mode"
+msgstr "Modo Jogo"
+
+#: prefs.js:342
+msgid "Disable animations when a fullscreen app is active"
+msgstr "Desativar animações quando um app em tela cheia estiver ativo"
+
+#: prefs.js:359
+msgid "Danger Zone"
+msgstr "Zona de Perigo"
+
+#: prefs.js:362
+msgid "Factory Reset"
+msgstr "Restaurar Padrões"
+
+#: prefs.js:363
+msgid "Reset all configuration options to defaults"
+msgstr "Redefinir todas as opções para o padrão"
+
+#: prefs.js:366
+msgid "Reset All"
+msgstr "Redefinir Tudo"
+
+#: prefs.js:400
+msgid "About"
+msgstr "Sobre"
+
+#: prefs.js:405
+msgid "Support the Project"
+msgstr "Apoie o Projeto"
+
+#: prefs.js:408
+msgid "Support on Ko-fi"
+msgstr "Apoie no Ko-fi"
+
+#: prefs.js:409
+msgid "Buy me a coffee on Ko-fi"
+msgstr "Compre-me um café no Ko-fi"
+
+#: prefs.js:417
+msgid "Buy Me a Coffee"
+msgstr "Buy Me a Coffee"
+
+#: prefs.js:418
+msgid "Support via BuyMeACoffee"
+msgstr "Apoie via BuyMeACoffee"
+
+#: prefs.js:426
+msgid "Source Code"
+msgstr "Código Fonte"
+
+#: prefs.js:427
+msgid "Report bugs or view source on GitHub"
+msgstr "Reportar bugs ou ver código no GitHub"
