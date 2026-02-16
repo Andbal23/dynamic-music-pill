@@ -14,7 +14,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
 
         // =========================================
-        // 1. GENERAL CONTENT (Általános)
+        // 1. GENERAL CONTENT
         // =========================================
         const genGroup = new Adw.PreferencesGroup();
         genGroup.set_title('General Settings'); // "&" jel nélkül
@@ -32,6 +32,30 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('show-album-art', artToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         artRow.add_suffix(artToggle);
         genGroup.add(artRow);
+        /// SKIP
+        const scrollCtrlRow = new Adw.ActionRow({
+            title: 'Enable Scroll Controls',
+            subtitle: 'Switch tracks using scroll wheel or touchpad'
+        });
+        const scrollCtrlToggle = new Gtk.Switch({
+            active: settings.get_boolean('enable-scroll-controls'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('enable-scroll-controls', scrollCtrlToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        scrollCtrlRow.add_suffix(scrollCtrlToggle);
+        genGroup.add(scrollCtrlRow);
+
+        const invertRow = new Adw.ActionRow({
+            title: 'Invert Scroll Animation',
+            subtitle: 'Direction of the jump effect (Natural vs Traditional)'
+        });
+        const invertToggle = new Gtk.Switch({
+            active: settings.get_boolean('invert-scroll-animation'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('invert-scroll-animation', invertToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        invertRow.add_suffix(invertToggle);
+        genGroup.add(invertRow);
 
         // Scrolling Text
         const scrollRow = new Adw.ActionRow({
@@ -50,7 +74,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
 
         // =========================================
-        // 2. BACKGROUND (Háttér)
+        // 2. BACKGROUND
         // =========================================
         const transGroup = new Adw.PreferencesGroup();
         transGroup.set_title('Background and Transparency'); // "&" helyett "and"
@@ -114,7 +138,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
 
         // =========================================
-        // 3. VISUALIZER (Megjelenés)
+        // 3. VISUALIZER
         // =========================================
         const appearGroup = new Adw.PreferencesGroup();
         appearGroup.set_title('Visualizer and Shape');
@@ -148,7 +172,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
 
         // =========================================
-        // 4. DROP SHADOW (Árnyék)
+        // 4. DROP SHADOW
         // =========================================
         const shadowGroup = new Adw.PreferencesGroup();
         shadowGroup.set_title('Drop Shadow');
@@ -183,7 +207,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
 
         // =========================================
-        // 5. POSITIONING (Pozíció)
+        // 5. POSITIONING
         // =========================================
         const posGroup = new Adw.PreferencesGroup();
         posGroup.set_title('Positioning and Layout');
@@ -246,7 +270,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
 
         // =========================================
-        // 6. SIZE CONFIGURATION (Méretezés)
+        // 6. SIZE CONFIGURATION
         // =========================================
 
         // 6a. DOCK SIZES

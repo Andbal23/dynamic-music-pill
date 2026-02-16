@@ -42,7 +42,17 @@
       <default>false</default>
       <summary>Transparent Visualizer</summary>
     </key>
+    <key name="invert-scroll-animation" type="b">
+      <default>false</default>
+      <summary>Invert Scroll Animation</summary>
+      <description>Invert the direction of the pill animation during scrolling</description>
+    </key>
 
+    <key name="enable-scroll-controls" type="b">
+      <default>true</default>
+      <summary>Enable Scroll Controls</summary>
+      <description>Allow switching tracks using mouse wheel or touchpad scroll</description>
+    </key>
     <key name="pill-width" type="i">
       <default>250</default>
       <range min="100" max="600"/>

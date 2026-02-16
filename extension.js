@@ -320,7 +320,7 @@ class MusicPill extends St.Widget {
         width: 0,
         visible: false
     });
-
+    this._lastScrollTime = 0;
     this._controller = controller;
     this._settings = controller._settings;
 
@@ -412,17 +412,44 @@ class MusicPill extends St.Widget {
         return Clutter.EVENT_STOP;
     });
 
-    this.connect('scroll-event', (actor, event) => {
-        let direction = event.get_scroll_direction();
-        if (direction === Clutter.ScrollDirection.UP || direction === Clutter.ScrollDirection.RIGHT) {
-            this._animateSlide(12);
+this.connect('scroll-event', (actor, event) => {
+    if (!this._settings.get_boolean('enable-scroll-controls')) return Clutter.EVENT_STOP;
+
+    let direction = event.get_scroll_direction();
+    let shouldNext = false;
+    let shouldPrev = false;
+
+
+    if (direction === Clutter.ScrollDirection.UP || direction === Clutter.ScrollDirection.RIGHT) {
+        shouldNext = true;
+    } else if (direction === Clutter.ScrollDirection.DOWN || direction === Clutter.ScrollDirection.LEFT) {
+        shouldPrev = true;
+    } else if (direction === Clutter.ScrollDirection.SMOOTH) {
+        let [dx, dy] = event.get_scroll_delta();
+        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+            if (dy < 0 || dx > 0) shouldNext = true;
+            else if (dy > 0 || dx < 0) shouldPrev = true;
+        }
+    }
+
+    if (shouldNext || shouldPrev) {
+        let now = Date.now();
+        if (now - this._lastScrollTime < 500) return Clutter.EVENT_STOP;
+        this._lastScrollTime = now;
+
+        let invert = this._settings.get_boolean('invert-scroll-animation');
+        let offset = 12;
+
+        if (shouldNext) {
+            this._animateSlide(invert ? -offset : offset);
             this._controller.next();
-        } else if (direction === Clutter.ScrollDirection.DOWN || direction === Clutter.ScrollDirection.LEFT) {
-            this._animateSlide(-12);
+        } else {
+            this._animateSlide(invert ? offset : -offset);
             this._controller.previous();
         }
-        return Clutter.EVENT_STOP;
-    });
+    }
+    return Clutter.EVENT_STOP;
+});
 
     // Listeners for Transparency
     this._settings.connect('changed::enable-transparency', () => this._updateTransparencyConfig());
@@ -832,6 +859,7 @@ export default class DynamicMusicExtension extends Extension {
 
     this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
         this._monitorGameMode();
+        this._updateUI();
         if (!this._pill.get_parent()) {
              this._inject();
         }
@@ -967,7 +995,7 @@ export default class DynamicMusicExtension extends Extension {
     });
   }
 
-  _add(name) {
+_add(name) {
     if (this._proxies.has(name)) return;
     try {
         let p = new PlayerProxy(this._connection, name, '/org/mpris/MediaPlayer2');
@@ -989,10 +1017,23 @@ export default class DynamicMusicExtension extends Extension {
             if (keys.PlaybackStatus && smartUnpack(keys.PlaybackStatus) === 'Playing') {
                 p._lastPlayingTime = now;
             }
+
             this._updateUI();
+
+            // Zen Browser/YouTube fix
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                this._updateUI();
+                return GLib.SOURCE_REMOVE;
+            });
         });
+
         this._proxies.set(name, p);
-    } catch (e) {}
+
+
+        this._updateUI();
+    } catch (e) {
+        console.error(e);
+    }
   }
 
   _updateUI() {
