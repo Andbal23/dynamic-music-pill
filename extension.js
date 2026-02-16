@@ -1,3 +1,4 @@
+import Shell from 'gi://Shell';
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
@@ -50,37 +51,27 @@ function getAverageColor(pixbuf) {
     return { r: Math.floor(r / count), g: Math.floor(g / count), b: Math.floor(b / count) };
 }
 
-
 const CrossfadeArt = GObject.registerClass(
 class CrossfadeArt extends St.Widget {
     _init() {
         super._init({
             layout_manager: new Clutter.BinLayout(),
             style_class: 'art-widget',
-
             clip_to_allocation: false,
             x_expand: false,
             y_expand: false
         });
         this._radius = 10;
         this._shadowCSS = 'box-shadow: none;';
-
         const layerStyle = 'background-size: cover; background-position: center;';
-
-
         this._layerA = new St.Widget({ x_expand: true, y_expand: true, opacity: 255, style: layerStyle });
         this._layerB = new St.Widget({ x_expand: true, y_expand: true, opacity: 0, style: layerStyle });
-
-
         this._layerA._bgUrl = null;
         this._layerB._bgUrl = null;
-
         this.add_child(this._layerA);
         this.add_child(this._layerB);
-
         this._activeLayer = this._layerA;
         this._nextLayer = this._layerB;
-
         this._currentUrl = null;
     }
 
@@ -96,7 +87,6 @@ class CrossfadeArt extends St.Widget {
         this._refreshLayerStyle(this._layerB);
     }
 
-
     _refreshLayerStyle(layer) {
         let url = layer._bgUrl;
         let bgPart = url ? `background-image: url("${url}");` : '';
@@ -107,41 +97,27 @@ class CrossfadeArt extends St.Widget {
     setArt(newUrl, force = false) {
         if (!force && this._currentUrl === newUrl) return;
         this._currentUrl = newUrl;
-
-
         this._nextLayer._bgUrl = newUrl;
-
         this._refreshLayerStyle(this._nextLayer);
-
         this._nextLayer.opacity = 0;
         this._nextLayer.show();
-
-
         this.set_child_below_sibling(this._nextLayer, this._activeLayer);
-
-
         this._activeLayer.remove_all_transitions();
         this._activeLayer.ease({
             opacity: 0,
             duration: 600,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
-                // Csere
                 let temp = this._activeLayer;
                 this._activeLayer = this._nextLayer;
                 this._nextLayer = temp;
-
-
                 this._nextLayer.opacity = 0;
             }
         });
-
-
         this._nextLayer.opacity = 255;
     }
 });
 
-// --- Scroll Label
 const ScrollLabel = GObject.registerClass(
 class ScrollLabel extends St.Widget {
     _init(styleClass, settings) {
@@ -197,7 +173,6 @@ class ScrollLabel extends St.Widget {
         if (!this._text || this._gameMode) return;
         let boxWidth = this.get_allocation_box().get_width();
         let textWidth = this._label1.get_preferred_width(-1)[1];
-
         let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
         let isScrolling = (this._scrollTimer != null);
 
@@ -278,7 +253,6 @@ class ScrollLabel extends St.Widget {
     }
 });
 
-// --- Waveform Visualizer ---
 const WaveformVisualizer = GObject.registerClass(
 class WaveformVisualizer extends St.BoxLayout {
   _init() {
@@ -346,14 +320,13 @@ class MusicPill extends St.Widget {
         width: 0,
         visible: false
     });
+
     this._controller = controller;
     this._settings = controller._settings;
 
     this._isActiveState = false;
     this._targetWidth = 250;
-
     this._artDebounceTimer = null;
-
     this._padX = 14;
     this._padY = 6;
     this._radius = 28;
@@ -361,39 +334,13 @@ class MusicPill extends St.Widget {
     this._inPanel = false;
     this._gameModeActive = false;
 
-    this._settings.connect('changed::pill-width', () => this._updateDimensions());
-    this._settings.connect('changed::pill-height', () => this._updateDimensions());
-    this._settings.connect('changed::art-size', () => this._updateDimensions());
-
-    this._settings.connect('changed::panel-pill-height', () => this._updateDimensions());
-    this._settings.connect('changed::panel-art-size', () => this._updateDimensions());
-    this._settings.connect('changed::panel-pill-width', () => this._updateDimensions());
-
-    this._settings.connect('changed::vertical-offset', () => this._updateDimensions());
-    this._settings.connect('changed::horizontal-offset', () => this._updateDimensions());
-
-    this._settings.connect('changed::dock-position', () => this._controller._queueInject());
-    this._settings.connect('changed::position-mode', () => this._controller._queueInject());
-    this._settings.connect('changed::target-container', () => this._controller._queueInject());
-
-    this._settings.connect('changed::visualizer-style', () => this._updateDimensions());
-    this._settings.connect('changed::border-radius', () => this._updateDimensions());
-    this._settings.connect('changed::enable-shadow', () => this._updateDimensions());
-    this._settings.connect('changed::shadow-opacity', () => this._updateDimensions());
-    this._settings.connect('changed::shadow-blur', () => this._updateDimensions());
-
-    this._settings.connect('changed::show-album-art', () => this._updateArtVisibility());
-
-    this._settings.connect('changed::fix-dock-autohide', () => {
-         if (!this._isActiveState) this._updateDimensions();
-    });
-
     this._currentBusName = null;
     this._displayedColor = { r: 40, g: 40, b: 40 };
     this._targetColor = { r: 40, g: 40, b: 40 };
     this._colorAnimId = null;
     this._hideGraceTimer = null;
 
+    // UI Construction
     this._body = new St.BoxLayout({ style_class: 'pill-body', x_expand: false });
     this._body.set_pivot_point(0.5, 0.5);
 
@@ -477,7 +424,74 @@ class MusicPill extends St.Widget {
         return Clutter.EVENT_STOP;
     });
 
+    // Listeners for Transparency
+    this._settings.connect('changed::enable-transparency', () => this._updateTransparencyConfig());
+    this._settings.connect('changed::transparency-strength', () => this._updateTransparencyConfig());
+    this._settings.connect('changed::transparency-art', () => this._updateTransparencyConfig());
+    this._settings.connect('changed::transparency-text', () => this._updateTransparencyConfig());
+    this._settings.connect('changed::transparency-vis', () => this._updateTransparencyConfig());
+
+    // Other listeners
+    this._settings.connect('changed::pill-width', () => this._updateDimensions());
+    this._settings.connect('changed::pill-height', () => this._updateDimensions());
+    this._settings.connect('changed::art-size', () => this._updateDimensions());
+    this._settings.connect('changed::panel-pill-height', () => this._updateDimensions());
+    this._settings.connect('changed::panel-art-size', () => this._updateDimensions());
+    this._settings.connect('changed::panel-pill-width', () => this._updateDimensions());
+    this._settings.connect('changed::vertical-offset', () => this._updateDimensions());
+    this._settings.connect('changed::horizontal-offset', () => this._updateDimensions());
+    this._settings.connect('changed::dock-position', () => this._controller._queueInject());
+    this._settings.connect('changed::position-mode', () => this._controller._queueInject());
+    this._settings.connect('changed::target-container', () => this._controller._queueInject());
+    this._settings.connect('changed::visualizer-style', () => this._updateDimensions());
+    this._settings.connect('changed::border-radius', () => this._updateDimensions());
+    this._settings.connect('changed::enable-shadow', () => this._updateDimensions());
+    this._settings.connect('changed::shadow-opacity', () => this._updateDimensions());
+    this._settings.connect('changed::shadow-blur', () => this._updateDimensions());
+    this._settings.connect('changed::show-album-art', () => this._updateArtVisibility());
+    this._settings.connect('changed::fix-dock-autohide', () => {
+         if (!this._isActiveState) this._updateDimensions();
+    });
+
+    // Initial Apply
+    this._updateTransparencyConfig();
     this._updateDimensions();
+  }
+
+  _updateTransparencyConfig() {
+      if (!this._body) return;
+
+      let enableTrans = this._settings.get_boolean('enable-transparency');
+      let strength = this._settings.get_int('transparency-strength'); // 0-100
+
+      let enableArtTrans = this._settings.get_boolean('transparency-art');
+      let enableTextTrans = this._settings.get_boolean('transparency-text');
+      let enableVisTrans = this._settings.get_boolean('transparency-vis');
+
+      // 1. Háttér Opacity
+      // Ha ki van kapcsolva, akkor 1.0 (SOLID)
+      let bgAlpha = enableTrans ? (strength / 100.0) : 1.0;
+
+      // 2. Elemek Opacity-je
+      // Ha az elemre is vonatkozik a transzparencia, akkor megkapja a strength értékét
+      // (Skálázva 0-255). Ha nem, akkor 255 (Tömör).
+      let targetOpacity = Math.floor(bgAlpha * 255);
+
+      const setOp = (actor, isEnabled) => {
+          if (isEnabled && enableTrans) {
+              actor.set_opacity(targetOpacity);
+          } else {
+              actor.set_opacity(255);
+          }
+      };
+
+      setOp(this._artBin, enableArtTrans);
+      setOp(this._textBox, enableTextTrans);
+      setOp(this._visBin, enableVisTrans);
+
+      // Tárolás és stílusfrissítés
+      this._currentBgAlpha = bgAlpha;
+      this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
   }
 
   setGameMode(active) {
@@ -500,7 +514,6 @@ class MusicPill extends St.Widget {
 
   _updateArtVisibility() {
       let showSetting = this._settings.get_boolean('show-album-art');
-
       if (!showSetting) {
           if (this._artDebounceTimer) {
               GLib.source_remove(this._artDebounceTimer);
@@ -509,9 +522,7 @@ class MusicPill extends St.Widget {
           this._artBin.visible = false;
           return;
       }
-
       let hasMeta = this._lastArtUrl && this._lastArtUrl.length > 0;
-
       if (hasMeta) {
           if (this._artDebounceTimer) {
               GLib.source_remove(this._artDebounceTimer);
@@ -533,7 +544,6 @@ class MusicPill extends St.Widget {
   _updateDimensions() {
         let target = this._settings.get_int('target-container');
         this._inPanel = (target > 0);
-
         let width, height, prefArtSize;
 
         if (this._inPanel) {
@@ -598,24 +608,19 @@ class MusicPill extends St.Widget {
 
         this._visualizer.setMode(visStyle);
 
-        // --- VISUALIZER "OFF" JAVÍTÁS ---
         if (width < 220 || visStyle === 0) {
             this._visBin.hide();
-
             this._visBin.set_width(0);
             this._visBin.set_style('margin: 0px;');
-
             let artMargin = (width < 180) ? 4 : 8;
             this._artBin.set_style(`margin-right: ${artMargin}px;`);
             this._fadeLeft.set_width(10);
             this._fadeRight.set_width(10);
         } else {
             this._visBin.show();
-
             let sideMargin = 12;
             this._visBin.set_style(`margin-left: ${sideMargin}px;`);
             this._visBin.set_width(-1);
-
             this._artBin.set_style(`margin-right: ${sideMargin}px;`);
             this._fadeLeft.set_width(30);
             this._fadeRight.set_width(30);
@@ -681,39 +686,23 @@ class MusicPill extends St.Widget {
         if (isSkipActive) return;
         if (!this._hideGraceTimer && this._isActiveState) {
             this._hideGraceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
-
                 let fixDock = this._settings.get_boolean('fix-dock-autohide');
                 this._isActiveState = false;
                 this.reactive = false;
-
                 let targetW = fixDock ? 1 : 0;
-
                 this.ease({ opacity: 0, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                this._body.ease({
-                    width: targetW,
-                    duration: 500,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                });
-
+                this._body.ease({ width: targetW, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 this.ease({
-                    width: targetW,
-                    duration: 500,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    width: targetW, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => {
                         this._lastTitle = null;
                         this._lastArtist = null;
                         this._lastArtUrl = null;
                         this._currentBusName = null;
                         this.set_width(targetW);
-
-                        if (!fixDock) {
-                            this.visible = false;
-                        } else {
-                            this.visible = true;
-                        }
+                        if (!fixDock) this.visible = false; else this.visible = true;
                     }
                 });
-
                 this._visualizer.setPlaying(false);
                 this._hideGraceTimer = null;
                 return GLib.SOURCE_REMOVE;
@@ -731,27 +720,13 @@ class MusicPill extends St.Widget {
         this._isActiveState = true;
         this.reactive = true;
         this.visible = true;
-
         let fixDock = this._settings.get_boolean('fix-dock-autohide');
         let startW = fixDock ? 1 : 0;
-
         this._updateDimensions();
-
         this.set_width(startW);
         this._body.set_width(startW);
-
-        this.ease({
-            width: this._targetWidth,
-            opacity: 255,
-            duration: 500,
-            mode: Clutter.AnimationMode.EASE_OUT_BACK
-        });
-
-        this._body.ease({
-            width: this._targetWidth,
-            duration: 500,
-            mode: Clutter.AnimationMode.EASE_OUT_BACK
-        });
+        this.ease({ width: this._targetWidth, opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_BACK });
+        this._body.ease({ width: this._targetWidth, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_BACK });
     }
 
     if (this._lastTitle !== title || this._lastArtist !== artist || forceUpdate) {
@@ -772,7 +747,6 @@ class MusicPill extends St.Widget {
     } else {
         this._startColorTransition();
     }
-
     this._updateArtVisibility();
   }
 
@@ -815,13 +789,18 @@ class MusicPill extends St.Widget {
   }
 
   _applyStyle(r, g, b) {
-      let bgStyle = `background-color: rgba(${r}, ${g}, ${b}, 0.95);`;
+      let alpha = (this._currentBgAlpha !== undefined) ? this._currentBgAlpha : 1.0;
+
+      let bgStyle = `background-color: rgba(${r}, ${g}, ${b}, ${alpha});`;
       let borderStyle = `border: 1px solid rgba(255,255,255,${this._currentStatus === 'Playing' ? 0.2 : 0.1});`;
       let paddingStyle = `padding: ${this._padY}px ${this._padX}px;`;
       let radiusStyle = `border-radius: ${this._radius}px;`;
+
       this._body.set_style(`${bgStyle} ${borderStyle} ${paddingStyle} ${radiusStyle} ${this._shadowCSS}`);
-      this._fadeLeft.set_style(`background-gradient-direction: horizontal; background-gradient-start: rgba(${r}, ${g}, ${b}, 1); background-gradient-end: rgba(${r}, ${g}, ${b}, 0);`);
-      this._fadeRight.set_style(`background-gradient-direction: horizontal; background-gradient-start: rgba(${r}, ${g}, ${b}, 0); background-gradient-end: rgba(${r}, ${g}, ${b}, 1);`);
+
+      this._fadeLeft.set_style(`background-gradient-direction: horizontal; background-gradient-start: rgba(${r}, ${g}, ${b}, ${alpha}); background-gradient-end: rgba(${r}, ${g}, ${b}, 0);`);
+      this._fadeRight.set_style(`background-gradient-direction: horizontal; background-gradient-start: rgba(${r}, ${g}, ${b}, 0); background-gradient-end: rgba(${r}, ${g}, ${b}, ${alpha});`);
+
       this._displayedColor = { r, g, b };
   }
 });

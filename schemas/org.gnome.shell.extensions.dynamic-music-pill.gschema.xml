@@ -5,136 +5,111 @@
     <key name="show-album-art" type="b">
       <default>true</default>
       <summary>Show Album Art</summary>
-      <description>Toggle the display of the album cover art</description>
     </key>
-
     <key name="fix-dock-autohide" type="b">
       <default>false</default>
       <summary>Fix Dock Autohide</summary>
-      <description>Keep widget visible at 1px to prevent dock issues</description>
     </key>
-
     <key name="scroll-text" type="b">
       <default>true</default>
       <summary>Scrolling Text</summary>
-      <description>Automatically animate long track titles</description>
+    </key>
+
+    <key name="enable-transparency" type="b">
+      <default>false</default>
+      <summary>Enable Transparency</summary>
+      <description>If true, background uses the set opacity. If false, it is solid.</description>
+    </key>
+
+    <key name="transparency-strength" type="i">
+      <default>60</default>
+      <range min="0" max="100"/>
+      <summary>Opacity Level</summary>
+      <description>0 = Invisible, 100 = Solid</description>
+    </key>
+
+    <key name="transparency-art" type="b">
+      <default>false</default>
+      <summary>Transparent Art</summary>
+    </key>
+
+    <key name="transparency-text" type="b">
+      <default>false</default>
+      <summary>Transparent Text</summary>
+    </key>
+
+    <key name="transparency-vis" type="b">
+      <default>false</default>
+      <summary>Transparent Visualizer</summary>
     </key>
 
     <key name="pill-width" type="i">
       <default>250</default>
       <range min="100" max="600"/>
-      <summary>Pill Width (Dock)</summary>
-      <description>Width of the widget in Dock mode</description>
     </key>
-
     <key name="panel-pill-width" type="i">
       <default>250</default>
       <range min="100" max="600"/>
-      <summary>Pill Width (Panel)</summary>
-      <description>Width of the widget in Panel mode</description>
     </key>
-
     <key name="pill-height" type="i">
       <default>64</default>
       <range min="20" max="100"/>
-      <summary>Pill Height (Dock)</summary>
-      <description>Height of the widget in Dock mode</description>
     </key>
-
     <key name="art-size" type="i">
       <default>42</default>
       <range min="10" max="100"/>
-      <summary>Cover Art Size (Dock)</summary>
-      <description>Preferred size of the album art in Dock mode</description>
     </key>
-
     <key name="panel-pill-height" type="i">
       <default>28</default>
       <range min="20" max="60"/>
-      <summary>Pill Height (Panel)</summary>
-      <description>Height of the widget in Panel mode</description>
     </key>
-
     <key name="panel-art-size" type="i">
       <default>22</default>
       <range min="10" max="50"/>
-      <summary>Cover Art Size (Panel)</summary>
-      <description>Preferred size of the album art in Panel mode</description>
     </key>
-
     <key name="vertical-offset" type="i">
       <default>0</default>
       <range min="-30" max="30"/>
-      <summary>Vertical Offset</summary>
-      <description>Move the widget up (negative) or down (positive)</description>
     </key>
-
     <key name="horizontal-offset" type="i">
       <default>0</default>
       <range min="-50" max="50"/>
-      <summary>Horizontal Offset</summary>
-      <description>Fine tune position left/right in pixels</description>
     </key>
-
     <key name="position-mode" type="i">
       <default>3</default>
       <range min="0" max="3"/>
-      <summary>Position Mode</summary>
-      <description>0=Manual, 1=Start, 2=Center, 3=End</description>
     </key>
-
     <key name="dock-position" type="i">
       <default>0</default>
       <range min="0" max="20"/>
-      <summary>Dock Position Index</summary>
-      <description>Used only when mode is Manual</description>
     </key>
-
     <key name="target-container" type="i">
       <default>0</default>
       <range min="0" max="3"/>
-      <summary>Target Container</summary>
-      <description>0=Dock, 1=Left, 2=Center, 3=Right</description>
     </key>
-
     <key name="enable-gamemode" type="b">
       <default>true</default>
       <summary>Game Mode</summary>
-      <description>Hide widget when a fullscreen app is active</description>
     </key>
-
     <key name="visualizer-style" type="i">
       <default>2</default>
       <range min="0" max="2"/>
-      <summary>Visualizer Style</summary>
-      <description>0=Off, 1=Wave, 2=Beat</description>
     </key>
-
     <key name="border-radius" type="i">
       <default>24</default>
       <range min="0" max="50"/>
-      <summary>Corner Radius</summary>
-      <description>Roundness of the widget corners</description>
     </key>
 
     <key name="enable-shadow" type="b">
       <default>true</default>
-      <summary>Enable Shadow</summary>
-      <description>Show drop shadow around the pill and art</description>
     </key>
-
     <key name="shadow-opacity" type="i">
       <default>15</default>
       <range min="0" max="100"/>
-      <summary>Shadow Opacity</summary>
-      <description>Opacity of the shadow in percent</description>
     </key>
-
     <key name="shadow-blur" type="i">
       <default>8</default>
       <range min="0" max="50"/>
-      <summary>Shadow Blur Radius</summary>
-      <description>Blur radius of the shadow in pixels</description>
     </key>
   </schema>
 </schemalist>
