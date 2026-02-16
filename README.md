@@ -108,7 +108,6 @@ Open the **Settings** to customize the appearance:
 * **Target Container:** Switch between Dock and Top Panel instantly.
 * **Customize the look:** Height, width, offstets, border radius and more.
 * **Album art** You can turn it off or on.
-
 ---
 <div align="center">
   
@@ -116,6 +115,11 @@ Open the **Settings** to customize the appearance:
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-red?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/andbal)
 </div>
 
+---
+
+## Stars
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Andbal23/dynamic-music-pill&type=Date)](https://star-history.com/#Andbal23/dynamic-music-pill&Date)
   ---
 ## 📜 License
 
