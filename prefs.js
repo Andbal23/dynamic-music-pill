@@ -27,7 +27,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             subtitle: _('Display the cover art of the currently playing song')
         });
         const artToggle = new Gtk.Switch({
-            active: settings.get_boolean(_('show-album-art')),
+            active: settings.get_boolean('show-album-art'),
             valign: Gtk.Align.CENTER
         });
         settings.bind(_('show-album-art'), artToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
