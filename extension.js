@@ -7,7 +7,7 @@ import St from 'gi://St';
 import Pango from 'gi://Pango';
 import GdkPixbuf from 'gi://GdkPixbuf';
 
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const MPRIS_IFACE = `
@@ -835,6 +835,7 @@ this.connect('scroll-event', (actor, event) => {
 // --- Extension Entry ---
 export default class DynamicMusicExtension extends Extension {
   enable() {
+    this.initTranslations();
     this._settings = this.getSettings('org.gnome.shell.extensions.dynamic-music-pill');
     this._pill = new MusicPill(this);
     this._proxies = new Map();
