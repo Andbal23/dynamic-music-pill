@@ -29,10 +29,6 @@ msgstr "Mostra Copertina Album"
 msgid "Display the cover art of the currently playing song"
 msgstr "Mostra la copertina del brano in riproduzione"
 
-#: prefs.js:30 prefs.js:33
-msgid "show-album-art"
-msgstr ""
-
 #: prefs.js:38
 msgid "Enable Scroll Controls"
 msgstr "Abilita Controllo Scorrimento"
