@@ -29,10 +29,6 @@ msgstr "Показывать обложку альбома"
 msgid "Display the cover art of the currently playing song"
 msgstr "Отображать обложку текущей песни"
 
-#: prefs.js:30 prefs.js:33
-msgid "show-album-art"
-msgstr ""
-
 #: prefs.js:38
 msgid "Enable Scroll Controls"
 msgstr "Управление прокруткой"
