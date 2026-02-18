@@ -1366,6 +1366,7 @@ export default class DynamicMusicExtension extends Extension {
     this._lastWinnerName = null;
     this._lastStatusTime = 0;
     this._lastActionTime = 0;
+    this._updateTimeoutId = null;
     this._recheckTimer = null;
     this._connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
 
@@ -1419,7 +1420,7 @@ export default class DynamicMusicExtension extends Extension {
 
       let tracker = Shell.WindowTracker.get_default();
       let appSys = Shell.AppSystem.get_default();
-      
+
       if (pid) {
           let app = tracker.get_app_from_pid(pid);
           if (app) {
@@ -1444,7 +1445,7 @@ export default class DynamicMusicExtension extends Extension {
           };
           if (map[desktopId]) desktopId = map[desktopId];
 
-          let app = appSys.lookup_app(desktopId) || 
+          let app = appSys.lookup_app(desktopId) ||
                     appSys.lookup_app(`${desktopId}.desktop`) ||
                     appSys.lookup_app(desktopId.toLowerCase()) ||
                     appSys.lookup_app(`${desktopId.toLowerCase()}.desktop`);
@@ -1467,25 +1468,25 @@ export default class DynamicMusicExtension extends Extension {
       let [px, py] = this._pill.get_transformed_position();
       let [pw, ph] = this._pill.get_transformed_size();
       let monitor = Main.layoutManager.findMonitorForActor(this._pill);
-      
-      let menuW = 320; 
-      
+
+      let menuW = 320;
+
       let targetX = px + (pw / 2) - (menuW / 2);
       if (targetX < monitor.x + 10) targetX = monitor.x + 10;
       if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
 
       let targetY;
       if (py > monitor.height / 2) {
-          targetY = py - 240; 
+          targetY = py - 240;
       } else {
           targetY = py + ph + 10;
       }
 
       this._expandedPlayer.setPosition(targetX, targetY);
-      
+
       let c = this._pill._displayedColor;
       this._expandedPlayer.updateStyle(c.r, c.g, c.b, this._pill._currentBgAlpha);
-      
+
       let artUrl = this._pill._lastArtUrl;
       this._expandedPlayer.showFor(player, artUrl);
   }
@@ -1627,80 +1628,89 @@ export default class DynamicMusicExtension extends Extension {
   }
 
 _add(name) {
-    if (this._proxies.has(name)) return;
-    try {
-        let p = new PlayerProxy(this._connection, name, '/org/mpris/MediaPlayer2');
-        p._busName = name;
-        p._lastSeen = Date.now();
-        p._lastStatusTime = Date.now();
-        p._lastPlayingTime = 0;
-        p._lastPosition = 0; 
-        p._lastPositionTime = Date.now();
+        if (this._proxies.has(name)) return;
+        try {
+            let p = new PlayerProxy(this._connection, name, '/org/mpris/MediaPlayer2');
+            p._busName = name;
+            p._lastSeen = Date.now();
+            p._lastStatusTime = Date.now();
+            p._lastPlayingTime = 0;
+            p._lastPosition = 0;
+            p._lastPositionTime = Date.now();
 
-        // --- ÚJ KÓD: Seeked jel kezelése ---
-        // Amikor a YouTube-on vagy más lejátszóban tekersz, ez fut le:
-        p.connectSignal('Seeked', (proxy, senderName, [position]) => {
-            let now = Date.now();
-            // Frissítjük a belső számlálót az új pozícióra
-            p._lastPosition = position;
-            p._lastPositionTime = now;
-            
-            // Ha épp meg van nyitva a popup, azonnal frissítjük a csúszkát
-            if (this._expandedPlayer && this._expandedPlayer.visible && this._lastWinnerName === p._busName) {
-                this._expandedPlayer._tick();
-            }
-        });
+            p.connectSignal('Seeked', (proxy, senderName, [position]) => {
+                let now = Date.now();
+                p._lastPosition = position;
+                p._lastPositionTime = now;
 
-        p.connect('g-properties-changed', (proxy, changed) => {
-            if (!this._proxies.has(p._busName)) return;
+                if (this._expandedPlayer && this._expandedPlayer.visible && this._lastWinnerName === p._busName) {
+                    this._expandedPlayer._tick();
+                }
+            });
 
-            let keys = changed.unpack();
-            let now = Date.now();
-            p._lastSeen = now;
-            p._lastStatusTime = now;
+            p.connect('g-properties-changed', (proxy, changed) => {
+                if (!this._proxies.has(p._busName)) return;
 
-            if (keys.PlaybackStatus) {
-                let status = smartUnpack(keys.PlaybackStatus);
-                if (status !== 'Playing') {
-                    p._lastPosition += (now - p._lastPositionTime) * 1000;
+                let keys = changed.unpack();
+                let now = Date.now();
+                p._lastSeen = now;
+                p._lastStatusTime = now;
+
+                if (keys.PlaybackStatus) {
+                    let status = smartUnpack(keys.PlaybackStatus);
+                    if (status !== 'Playing') {
+                        p._lastPosition += (now - p._lastPositionTime) * 1000;
+                        p._lastPositionTime = now;
+                    } else {
+                        p._lastPositionTime = now;
+                    }
+                }
+
+                if (keys.Position) {
+                    p._lastPosition = keys.Position.deep_unpack();
                     p._lastPositionTime = now;
-                } else {
+                    this._triggerUpdate();
+                    return;
+                }
+
+                if (keys.Metadata && this._lastWinnerName === p._busName) {
+                    this._lastActionTime = now;
+                    p._lastPosition = 0;
                     p._lastPositionTime = now;
                 }
-            }
 
-            if (keys.Position) {
-                p._lastPosition = keys.Position.deep_unpack();
-                p._lastPositionTime = now;
-                return; 
-            }
+                if (keys.PlaybackStatus && smartUnpack(keys.PlaybackStatus) === 'Playing') {
+                    p._lastPlayingTime = now;
+                }
 
-            if (keys.Metadata && this._lastWinnerName === p._busName) {
-                this._lastActionTime = now;
-                p._lastPosition = 0; // RESET AZ ÚJ SZÁMHOZ
-                p._lastPositionTime = now;
-            }
+                if (keys.Metadata || keys.PlaybackStatus) {
+                    this._triggerUpdate();
+                }
+            });
 
-            if (keys.PlaybackStatus && smartUnpack(keys.PlaybackStatus) === 'Playing') {
-                p._lastPlayingTime = now;
-            }
+            p.connect('notify::g-name-owner', () => {
+                 this._scan();
+            });
 
-            if (keys.Metadata || keys.PlaybackStatus) {
-                this._updateUI();
-            }
-        });
-        
-        p.connect('notify::g-name-owner', () => {
-             this._scan();
-        });
+            this._proxies.set(name, p);
+            this._triggerUpdate();
 
-        this._proxies.set(name, p);
-        this._updateUI();
-    } catch (e) {
-        console.error(e);
+        } catch (e) {
+            console.error(e);
+        }
     }
-  }
 
+    _triggerUpdate() {
+        if (this._updateTimeoutId) {
+            GLib.Source.remove(this._updateTimeoutId);
+        }
+
+        this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+            this._updateUI();
+            this._updateTimeoutId = null;
+            return GLib.SOURCE_REMOVE;
+        });
+    }
   _updateUI() {
     if (this._recheckTimer) {
         GLib.source_remove(this._recheckTimer);
@@ -1733,7 +1743,7 @@ _add(name) {
         }
         let now = Date.now();
         let isSkipActive = (now - this._lastActionTime < 3000);
-        
+
         this._pill.updateDisplay(title, artist, artUrl, active.PlaybackStatus, active._busName, isSkipActive, active);
     } else {
         this._pill.updateDisplay(null, null, null, 'Stopped', null, false);
@@ -1781,16 +1791,19 @@ _add(name) {
       let winner = scoredPlayers[0].player;
 
       if (winner.PlaybackStatus !== 'Playing') {
-          let anyPlaying = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata?.['xesam:title']));
-          if (anyPlaying) winner = anyPlaying.player;
-      }
 
-      let winM = winner.Metadata;
-      if (!winM || !smartUnpack(winM?.['xesam:title']) || (winner.PlaybackStatus === 'Stopped' && (now - this._lastActionTime >= 3000))) {
-          let backup = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata?.['xesam:title']));
-          if (backup) return backup.player;
-          return null;
-      }
+    let anyPlaying = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata['xesam:title']));
+    if (anyPlaying) winner = anyPlaying.player;
+}
+
+let winM = winner.Metadata;
+
+if (!winM || !smartUnpack(winM['xesam:title']) || (winner.PlaybackStatus === 'Stopped' && (now - this._lastActionTime >= 3000))) {
+
+    let backup = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata['xesam:title']));
+    if (backup) return backup.player;
+    return null;
+}
       return winner;
   }
 
