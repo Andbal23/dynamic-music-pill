@@ -11,7 +11,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 <div align="center">
   
 ![GitHub all releases](https://img.shields.io/github/downloads/Andbal23/dynamic-music-pill/total?style=flat-square&logo=github&label=GitHub%20Downloads) ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2049-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
- [![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/stargazers) [![Watchers](https://img.shields.io/github/watchers/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/watchers)
+ [![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/stargazers) [![Watchers](https://img.shields.io/github/watchers/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/watchers) [![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
 </div>
 
 ---
@@ -96,6 +96,46 @@ glib-compile-schemas schemas/
 ## **7.**  Enable the extension 
 via **GNOME Extensions** or **Extension Manager** or `gnome-extensions enable dynamic-music-pill@andbal`
 
+---
+# 💬 Manual Translation Installation (for GitHub Clones, Release)
+
+If you are installing this extension by cloning the repository manually, the translation files (`.po`) must be compiled into binary files (`.mo`) for GNOME Shell to recognize them.
+
+### 1. Prerequisites
+Ensure you have the **gettext** package installed on your system:
+
+* **Ubuntu/Debian:** `sudo apt install gettext`
+* **Fedora:** `sudo dnf install gettext`
+* **Arch:** `sudo pacman -S gettext`
+
+### 2. Compile Translations
+Run the following commands in the extension's root directory to enable your preferred language:
+
+| Language | Flag | Command |
+| :--- | :---: | :--- |
+| **Hungarian** | 🇭🇺 | `mkdir -p locale/hu/LC_MESSAGES && msgfmt po/hu.po -o locale/hu/LC_MESSAGES/dynamic-music-pill.mo` |
+| **German** | 🇩🇪 | `mkdir -p locale/de/LC_MESSAGES && msgfmt po/de.po -o locale/de/LC_MESSAGES/dynamic-music-pill.mo` |
+| **French** | 🇫🇷 | `mkdir -p locale/fr/LC_MESSAGES && msgfmt po/fr.po -o locale/fr/LC_MESSAGES/dynamic-music-pill.mo` |
+| **Spanish** | 🇪🇸 | `mkdir -p locale/es/LC_MESSAGES && msgfmt po/es.po -o locale/es/LC_MESSAGES/dynamic-music-pill.mo` |
+| **Portuguese (BR)** | 🇧🇷 | `mkdir -p locale/pt_BR/LC_MESSAGES && msgfmt po/pt_BR.po -o locale/pt_BR/LC_MESSAGES/dynamic-music-pill.mo` |
+| **Russian** | 🇷🇺 | `mkdir -p locale/ru/LC_MESSAGES && msgfmt po/ru.po -o locale/ru/LC_MESSAGES/dynamic-music-pill.mo` |
+| **Italian** | 🇮🇹 | `mkdir -p locale/it/LC_MESSAGES && msgfmt po/it.po -o locale/it/LC_MESSAGES/dynamic-music-pill.mo` |
+
+### 3. Restart GNOME Shell
+After compilation, restart the shell to apply the changes:
+* **X11:** Press `Alt+F2`, type `r`, and hit `Enter`.
+* **Wayland:** Log out and log back in.
+---
+# Help Translate!
+
+I want to make **Dynamic Music Pill** available to everyone in their native language! If you'd like to help translate the extension, you can easily do so via our translation platform. No coding skills required!
+
+### How to contribute:
+1. Click the badge below to visit the translation page.
+2. Sign in with your GitHub account.
+3. Start translating the strings!
+
+[![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
 ---
 
 ## 🛠️ Configuration
