@@ -1781,13 +1781,13 @@ _add(name) {
       let winner = scoredPlayers[0].player;
 
       if (winner.PlaybackStatus !== 'Playing') {
-          let anyPlaying = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata['xesam:title']));
+          let anyPlaying = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata?.['xesam:title']));
           if (anyPlaying) winner = anyPlaying.player;
       }
 
       let winM = winner.Metadata;
-      if (!winM || !smartUnpack(winM['xesam:title']) || (winner.PlaybackStatus === 'Stopped' && (now - this._lastActionTime >= 3000))) {
-          let backup = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata['xesam:title']));
+      if (!winM || !smartUnpack(winM?.['xesam:title']) || (winner.PlaybackStatus === 'Stopped' && (now - this._lastActionTime >= 3000))) {
+          let backup = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata?.['xesam:title']));
           if (backup) return backup.player;
           return null;
       }
