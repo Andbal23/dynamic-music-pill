@@ -4,7 +4,6 @@
 }
 
 .pill-body {
-    /* border-radius, padding, shadow: JS SETS THIS NOW */
     transition: width 0.3s ease, height 0.3s ease, border-radius 0.3s ease, transform 0.3s ease;
 }
 
@@ -12,18 +11,99 @@
     transform: translateY(-1px) scale(1.02);
 }
 
+/* --- Popover (Expanded) Styles --- */
+.music-pill-expanded {
+    background-color: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    min-width: 320px;
+}
+
+.expanded-top-row {
+    spacing: 15px;
+    margin-bottom: 20px;
+}
+
+.vinyl-container {
+    width: 100px;
+    height: 100px;
+    /* A bakelit kerek */
+    border-radius: 50px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+.track-info-box {
+    spacing: 5px;
+}
+
+.expanded-title {
+    font-weight: 800;
+    font-size: 13pt;
+    color: white;
+}
+
+.expanded-artist {
+    font-weight: 500;
+    font-size: 10pt;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Progress Bar */
+.progress-container {
+    height: 20px;
+    margin-bottom: 15px;
+}
+
+.progress-time {
+    font-size: 9pt;
+    font-feature-settings: "tnum";
+    color: rgba(255, 255, 255, 0.6);
+    min-width: 45px;
+}
+
+.progress-slider-bg {
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    margin: 0 10px;
+}
+
+.progress-slider-fill {
+    height: 6px;
+    background-color: white;
+    border-radius: 3px;
+    min-width: 6px; 
+}
+
+/* Controls Row */
+.controls-row {
+    spacing: 20px;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.control-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.control-btn:active {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Eredeti elemek */
 .art-widget {
-    /* méretet, margót és shadow-t a JS kezeli */
-    /* box-shadow TÖRÖLVE INNEN */
     background-color: transparent; 
 }
 
-.fade-overlay-left {
-    background-color: transparent;
-    z-index: 999; 
-}
-
-.fade-overlay-right {
+.fade-overlay-left, .fade-overlay-right {
     background-color: transparent;
     z-index: 999; 
 }

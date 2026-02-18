@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.dynamic-music-pill" path="/org/gnome/shell/extensions/dynamic-music-pill/" gettext-domain="dynamic-music-pill">
+  <key name="popup-vinyl-rotate" type="b">
+      <default>true</default>
+      <summary>Rotate Vinyl in Pop-up</summary>
+    </key>
+  <key name="popup-enable-shadow" type="b">
+      <default>true</default>
+      <summary>Enable shadow for the pop-up menu</summary>
+    </key>
+    <key name="popup-follow-transparency" type="b">
+      <default>true</default>
+      <summary>Pop-up inherits transparency settings</summary>
+    </key>
+    <key name="popup-follow-radius" type="b">
+      <default>true</default>
+      <summary>Pop-up inherits border radius</summary>
+    </key>
 
     <key name="show-album-art" type="b">
       <default>true</default>
@@ -14,30 +30,23 @@
       <default>true</default>
       <summary>Scrolling Text</summary>
     </key>
-
     <key name="enable-transparency" type="b">
       <default>false</default>
       <summary>Enable Transparency</summary>
-      <description>If true, background uses the set opacity. If false, it is solid.</description>
     </key>
-
     <key name="transparency-strength" type="i">
       <default>60</default>
       <range min="0" max="100"/>
       <summary>Opacity Level</summary>
-      <description>0 = Invisible, 100 = Solid</description>
     </key>
-
     <key name="transparency-art" type="b">
       <default>false</default>
       <summary>Transparent Art</summary>
     </key>
-
     <key name="transparency-text" type="b">
       <default>false</default>
       <summary>Transparent Text</summary>
     </key>
-
     <key name="transparency-vis" type="b">
       <default>false</default>
       <summary>Transparent Visualizer</summary>
@@ -45,14 +54,12 @@
     <key name="invert-scroll-animation" type="b">
       <default>false</default>
       <summary>Invert Scroll Animation</summary>
-      <description>Invert the direction of the pill animation during scrolling</description>
     </key>
-
     <key name="enable-scroll-controls" type="b">
       <default>true</default>
       <summary>Enable Scroll Controls</summary>
-      <description>Allow switching tracks using mouse wheel or touchpad scroll</description>
     </key>
+    
     <key name="pill-width" type="i">
       <default>250</default>
       <range min="100" max="600"/>
@@ -109,7 +116,6 @@
       <default>24</default>
       <range min="0" max="50"/>
     </key>
-
     <key name="enable-shadow" type="b">
       <default>true</default>
     </key>
@@ -121,5 +127,23 @@
       <default>8</default>
       <range min="0" max="50"/>
     </key>
+
+    <key name="action-left-click" type="s">
+      <default>'play_pause'</default>
+      <summary>Left Click Action</summary>
+    </key>
+    <key name="action-middle-click" type="s">
+      <default>'open_app'</default>
+      <summary>Middle Click Action</summary>
+    </key>
+    <key name="action-right-click" type="s">
+      <default>'toggle_menu'</default>
+      <summary>Right Click Action</summary>
+    </key>
+    <key name="action-double-click" type="s">
+      <default>'next'</default>
+      <summary>Double Click Action</summary>
+    </key>
+
   </schema>
 </schemalist>

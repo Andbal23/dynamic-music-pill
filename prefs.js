@@ -5,35 +5,33 @@ import Gtk from 'gi://Gtk';
 
 export default class DynamicMusicPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
-    this.initTranslations();
-
+        this.initTranslations();
         const settings = this.getSettings('org.gnome.shell.extensions.dynamic-music-pill');
 
-        const page = new Adw.PreferencesPage({
-            title: 'Dynamic Music Pill',
-            icon_name: 'emblem-music-symbolic'
+        // =========================================
+        // 1. MAIN PILL PAGE (General & Controls)
+        // =========================================
+        const mainPage = new Adw.PreferencesPage({
+            title: _('Main Pill'),
+            icon_name: 'preferences-system-symbolic'
         });
 
-        // =========================================
-        // 1. GENERAL CONTENT
-        // =========================================
-        const genGroup = new Adw.PreferencesGroup();
-        genGroup.set_title(_('General Settings')); //
-        genGroup.set_description(_('Basic display settings for track information'));
-
+        const genGroup = new Adw.PreferencesGroup({ title: _('General Settings') });
+        
         // Album Art
         const artRow = new Adw.ActionRow({
             title: _('Show Album Art'),
             subtitle: _('Display the cover art of the currently playing song')
         });
         const artToggle = new Gtk.Switch({
-            active: settings.get_boolean(_('show-album-art')),
+            active: settings.get_boolean('show-album-art'),
             valign: Gtk.Align.CENTER
         });
-        settings.bind(_('show-album-art'), artToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('show-album-art', artToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         artRow.add_suffix(artToggle);
         genGroup.add(artRow);
-        /// SKIP
+
+        // Scroll Controls
         const scrollCtrlRow = new Adw.ActionRow({
             title: _('Enable Scroll Controls'),
             subtitle: _('Switch tracks using scroll wheel or touchpad')
@@ -46,6 +44,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         scrollCtrlRow.add_suffix(scrollCtrlToggle);
         genGroup.add(scrollCtrlRow);
 
+        // Invert Scroll
         const invertRow = new Adw.ActionRow({
             title: _('Invert Scroll Animation'),
             subtitle: _('Direction of the jump effect (Natural vs Traditional)')
@@ -58,94 +57,132 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         invertRow.add_suffix(invertToggle);
         genGroup.add(invertRow);
 
-        // Scrolling Text
-        const scrollRow = new Adw.ActionRow({
+        // Text Scrolling
+        const scrollTextRow = new Adw.ActionRow({
             title: _('Scrolling Text'),
             subtitle: _('Animate long track titles and artist names')
         });
-        const scrollToggle = new Gtk.Switch({
+        const scrollTextToggle = new Gtk.Switch({
             active: settings.get_boolean('scroll-text'),
             valign: Gtk.Align.CENTER
         });
-        settings.bind('scroll-text', scrollToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
-        scrollRow.add_suffix(scrollToggle);
-        genGroup.add(scrollRow);
+        settings.bind('scroll-text', scrollTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        scrollTextRow.add_suffix(scrollTextToggle);
+        genGroup.add(scrollTextRow);
 
-        page.add(genGroup);
+        mainPage.add(genGroup);
 
+        // Mouse Actions Group
+        const actionGroup = new Adw.PreferencesGroup({ title: _('Mouse Actions') });
+        const actionModel = new Gtk.StringList();
+        const actionNames = ["Play / Pause", "Next Track", "Previous Track", "Open Player App", "Open Menu"];
+        const actionValues = ['play_pause', 'next', 'previous', 'open_app', 'toggle_menu'];
+        
+        actionNames.forEach(name => actionModel.append(_(name)));
 
-        // =========================================
-        // 2. BACKGROUND
-        // =========================================
-        const transGroup = new Adw.PreferencesGroup();
-        transGroup.set_title(_('Background and Transparency'));
-        transGroup.set_description(_('Customize the visibility and opacity'));
-
-        // Enable Transparency
-        const transRow = new Adw.ActionRow({
-            title: _('Enable Transparency'),
-            subtitle: _('Switch between a solid theme background and a custom transparent look')
+        const leftRow = new Adw.ComboRow({
+            title: _('Left Click'),
+            model: actionModel,
+            selected: actionValues.indexOf(settings.get_string('action-left-click'))
         });
-        const transToggle = new Gtk.Switch({
-            active: settings.get_boolean('enable-transparency'),
+        leftRow.connect('notify::selected', () => { settings.set_string('action-left-click', actionValues[leftRow.selected]); });
+        actionGroup.add(leftRow);
+
+        const midRow = new Adw.ComboRow({
+            title: _('Middle Click'),
+            model: actionModel,
+            selected: actionValues.indexOf(settings.get_string('action-middle-click'))
+        });
+        midRow.connect('notify::selected', () => { settings.set_string('action-middle-click', actionValues[midRow.selected]); });
+        actionGroup.add(midRow);
+
+        const rightRow = new Adw.ComboRow({
+            title: _('Right Click'),
+            model: actionModel,
+            selected: actionValues.indexOf(settings.get_string('action-right-click'))
+        });
+        rightRow.connect('notify::selected', () => { settings.set_string('action-right-click', actionValues[rightRow.selected]); });
+        actionGroup.add(rightRow);
+
+        mainPage.add(actionGroup);
+        window.add(mainPage);
+
+
+        // =========================================
+        // 2. POP-UP MENU PAGE (ÚJ!)
+        // =========================================
+        const popupPage = new Adw.PreferencesPage({
+            title: _('Pop-up Menu'),
+            icon_name: 'view-more-symbolic'
+        });
+
+        const popupGroup = new Adw.PreferencesGroup({ title: _('Pop-up Appearance') });
+        const popRotateRow = new Adw.ActionRow({
+            title: _('Rotate Vinyl'),
+            subtitle: _('Spin the album art when playing')
+        });
+        const popRotateToggle = new Gtk.Switch({
+            active: settings.get_boolean('popup-vinyl-rotate'),
             valign: Gtk.Align.CENTER
         });
-        settings.bind('enable-transparency', transToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
-        transRow.add_suffix(transToggle);
-        transGroup.add(transRow);
+        settings.bind('popup-vinyl-rotate', popRotateToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popRotateRow.add_suffix(popRotateToggle);
+        popupGroup.add(popRotateRow);
 
-        // Opacity Slider
-        const opacityRow = new Adw.SpinRow({
-            title: _('Background Opacity'),
-            subtitle: _('Adjust transparency level (0% is invisible, 100% is solid)'),
-            adjustment: new Gtk.Adjustment({ lower: 0, upper: 100, step_increment: 5 })
+        // Shadow Toggle
+        const popShadowRow = new Adw.ActionRow({
+            title: _('Enable Shadow'),
+            subtitle: _('Show drop shadow behind the pop-up menu')
         });
-        settings.bind('transparency-strength', opacityRow, 'value', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('enable-transparency', opacityRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
-        transGroup.add(opacityRow);
-
-        // Transparency Targets
-        const transArtRow = new Adw.ActionRow({
-            title: _('Apply to Album Art'),
-            subtitle: _('Make the album cover follow the transparency setting')
+        const popShadowToggle = new Gtk.Switch({
+            active: settings.get_boolean('popup-enable-shadow'),
+            valign: Gtk.Align.CENTER
         });
-        const transArtToggle = new Gtk.Switch({ active: settings.get_boolean('transparency-art'), valign: Gtk.Align.CENTER });
-        settings.bind('transparency-art', transArtToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('enable-transparency', transArtRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
-        transArtRow.add_suffix(transArtToggle);
-        transGroup.add(transArtRow);
+        settings.bind('popup-enable-shadow', popShadowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popShadowRow.add_suffix(popShadowToggle);
+        popupGroup.add(popShadowRow);
 
-        const transTextRow = new Adw.ActionRow({
-            title: _('Apply to Text'),
-            subtitle: _('Make the song title and artist follow the transparency setting')
+        // Follow Transparency
+        const popTransRow = new Adw.ActionRow({
+            title: _('Follow Transparency'),
+            subtitle: _('Inherit opacity settings from the main pill')
         });
-        const transTextToggle = new Gtk.Switch({ active: settings.get_boolean('transparency-text'), valign: Gtk.Align.CENTER });
-        settings.bind('transparency-text', transTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('enable-transparency', transTextRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
-        transTextRow.add_suffix(transTextToggle);
-        transGroup.add(transTextRow);
-
-        const transVisRow = new Adw.ActionRow({
-            title: _('Apply to Visualizer'),
-            subtitle: _('Make the audio visualizer bar follow the transparency setting')
+        const popTransToggle = new Gtk.Switch({
+            active: settings.get_boolean('popup-follow-transparency'),
+            valign: Gtk.Align.CENTER
         });
-        const transVisToggle = new Gtk.Switch({ active: settings.get_boolean('transparency-vis'), valign: Gtk.Align.CENTER });
-        settings.bind('transparency-vis', transVisToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind('enable-transparency', transVisRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
-        transVisRow.add_suffix(transVisToggle);
-        transGroup.add(transVisRow);
+        settings.bind('popup-follow-transparency', popTransToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popTransRow.add_suffix(popTransToggle);
+        popupGroup.add(popTransRow);
 
-        page.add(transGroup);
+        // Follow Radius
+        const popRadRow = new Adw.ActionRow({
+            title: _('Follow Border Radius'),
+            subtitle: _('Inherit corner roundness from the main pill')
+        });
+        const popRadToggle = new Gtk.Switch({
+            active: settings.get_boolean('popup-follow-radius'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('popup-follow-radius', popRadToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popRadRow.add_suffix(popRadToggle);
+        popupGroup.add(popRadRow);
+
+        popupPage.add(popupGroup);
+        window.add(popupPage);
 
 
         // =========================================
-        // 3. VISUALIZER
+        // 3. STYLE & LAYOUT PAGE
         // =========================================
-        const appearGroup = new Adw.PreferencesGroup();
-        appearGroup.set_title(_('Visualizer and Shape'));
-        appearGroup.set_description(_('Configure the audio visualizer animation'));
+        const stylePage = new Adw.PreferencesPage({
+            title: _('Style & Layout'),
+            icon_name: 'applications-graphics-symbolic'
+        });
 
-        // Visualizer Style
+        // Appearance Group (Visualizer & Radius)
+        const lookGroup = new Adw.PreferencesGroup({ title: _('Visualizer and Shape') });
+        
         const visModel = new Gtk.StringList();
         visModel.append(_("Off (Disabled)"));
         visModel.append(_("Wave (Smooth)"));
@@ -158,31 +195,67 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             selected: settings.get_int('visualizer-style')
         });
         visRow.connect('notify::selected', () => { settings.set_int('visualizer-style', visRow.selected); });
-        appearGroup.add(visRow);
+        lookGroup.add(visRow);
 
-        // Corner Radius
         const radiusRow = new Adw.SpinRow({
             title: _('Corner Radius'),
             subtitle: _('Roundness of the widget edges (0 = Square, 25 = Pill)'),
-            adjustment: new Gtk.Adjustment({ lower: 0, upper: 50, step_increment: 2 })
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 50, step_increment: 1 })
         });
         settings.bind('border-radius', radiusRow, 'value', Gio.SettingsBindFlags.DEFAULT);
-        appearGroup.add(radiusRow);
+        lookGroup.add(radiusRow);
+        stylePage.add(lookGroup);
 
-        page.add(appearGroup);
-
-
-        // =========================================
-        // 4. DROP SHADOW
-        // =========================================
-        const shadowGroup = new Adw.PreferencesGroup();
-        shadowGroup.set_title(_('Drop Shadow'));
-        shadowGroup.set_description(_('Add depth to the widget with a configurable shadow'));
-
-        const shadowRow = new Adw.ActionRow({
-            title: _('Enable Shadow'),
-            subtitle: _('Draw a shadow behind the main widget and album art')
+        // Transparency Group
+        const transGroup = new Adw.PreferencesGroup({ title: _('Background and Transparency') });
+        
+        const transRow = new Adw.ActionRow({
+            title: _('Enable Transparency'),
+            subtitle: _('Switch between a solid theme background and a custom transparent look')
         });
+        const transToggle = new Gtk.Switch({
+            active: settings.get_boolean('enable-transparency'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('enable-transparency', transToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        transRow.add_suffix(transToggle);
+        transGroup.add(transRow);
+
+        const opacityRow = new Adw.SpinRow({
+            title: _('Background Opacity'),
+            subtitle: _('Adjust transparency level'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 100, step_increment: 5 })
+        });
+        settings.bind('transparency-strength', opacityRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('enable-transparency', opacityRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        transGroup.add(opacityRow);
+
+        const transArtRow = new Adw.ActionRow({ title: _('Apply to Album Art') });
+        const transArtToggle = new Gtk.Switch({ active: settings.get_boolean('transparency-art'), valign: Gtk.Align.CENTER });
+        settings.bind('transparency-art', transArtToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('enable-transparency', transArtRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        transArtRow.add_suffix(transArtToggle);
+        transGroup.add(transArtRow);
+
+        const transTextRow = new Adw.ActionRow({ title: _('Apply to Text') });
+        const transTextToggle = new Gtk.Switch({ active: settings.get_boolean('transparency-text'), valign: Gtk.Align.CENTER });
+        settings.bind('transparency-text', transTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('enable-transparency', transTextRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        transTextRow.add_suffix(transTextToggle);
+        transGroup.add(transTextRow);
+
+        const transVisRow = new Adw.ActionRow({ title: _('Apply to Visualizer') });
+        const transVisToggle = new Gtk.Switch({ active: settings.get_boolean('transparency-vis'), valign: Gtk.Align.CENTER });
+        settings.bind('transparency-vis', transVisToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('enable-transparency', transVisRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        transVisRow.add_suffix(transVisToggle);
+        transGroup.add(transVisRow);
+        
+        stylePage.add(transGroup);
+
+        // Shadow Group (Main Pill)
+        const shadowGroup = new Adw.PreferencesGroup({ title: _('Main Pill Shadow') });
+        const shadowRow = new Adw.ActionRow({ title: _('Enable Shadow') });
         const shadowToggle = new Gtk.Switch({ active: settings.get_boolean('enable-shadow'), valign: Gtk.Align.CENTER });
         settings.bind('enable-shadow', shadowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         shadowRow.add_suffix(shadowToggle);
@@ -190,7 +263,6 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const shadowOpacityRow = new Adw.SpinRow({
             title: _('Shadow Intensity'),
-            subtitle: _('Darkness of the shadow (higher is darker)'),
             adjustment: new Gtk.Adjustment({ lower: 0, upper: 100, step_increment: 5 })
         });
         settings.bind('shadow-opacity', shadowOpacityRow, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -198,22 +270,15 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const shadowBlurRow = new Adw.SpinRow({
             title: _('Shadow Blur'),
-            subtitle: _('Softness of the shadow edges (spread radius)'),
             adjustment: new Gtk.Adjustment({ lower: 0, upper: 50, step_increment: 1 })
         });
         settings.bind('shadow-blur', shadowBlurRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         shadowGroup.add(shadowBlurRow);
+        stylePage.add(shadowGroup);
 
-        page.add(shadowGroup);
-
-
-        // =========================================
-        // 5. POSITIONING
-        // =========================================
-        const posGroup = new Adw.PreferencesGroup();
-        posGroup.set_title(_('Positioning and Layout'));
-        posGroup.set_description(_('Choose where the widget appears on your screen'));
-
+        // Positioning Group
+        const posGroup = new Adw.PreferencesGroup({ title: _('Positioning') });
+        
         const targetModel = new Gtk.StringList();
         targetModel.append(_("Dock"));
         targetModel.append(_("Panel: Left Box"));
@@ -225,6 +290,11 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             subtitle: _('Select which UI element should host the music pill'),
             model: targetModel,
             selected: settings.get_int('target-container')
+        });
+        targetRow.connect('notify::selected', () => {
+            let val = targetRow.selected;
+            settings.set_int('target-container', val);
+            updateGroupVisibility(val);
         });
         posGroup.add(targetRow);
 
@@ -267,20 +337,10 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('horizontal-offset', hOffsetRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         posGroup.add(hOffsetRow);
 
-        page.add(posGroup);
-
-
-        // =========================================
-        // 6. SIZE CONFIGURATION
-        // =========================================
-
-        // 6a. DOCK SIZES
-        const dockDimGroup = new Adw.PreferencesGroup();
-        dockDimGroup.set_title(_('Dimensions (Dock Mode)'));
-
+        // Size Groups
+        const dockDimGroup = new Adw.PreferencesGroup({ title: _('Dimensions (Dock Mode)') });
         const dockWidthRow = new Adw.SpinRow({
             title: _('Widget Width'),
-            subtitle: _('Total horizontal size in pixels'),
             adjustment: new Gtk.Adjustment({ lower: 100, upper: 600, step_increment: 10 })
         });
         settings.bind('pill-width', dockWidthRow, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -288,21 +348,15 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const dockHeightRow = new Adw.SpinRow({
             title: _('Widget Height'),
-            subtitle: _('Total vertical size in pixels'),
             adjustment: new Gtk.Adjustment({ lower: 32, upper: 100, step_increment: 4 })
         });
         settings.bind('pill-height', dockHeightRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         dockDimGroup.add(dockHeightRow);
+        posGroup.add(dockDimGroup);
 
-        page.add(dockDimGroup);
-
-        // 6b. PANEL SIZES
-        const panelDimGroup = new Adw.PreferencesGroup();
-        panelDimGroup.set_title(_('Dimensions (Panel Mode)'));
-
+        const panelDimGroup = new Adw.PreferencesGroup({ title: _('Dimensions (Panel Mode)') });
         const panelWidthRow = new Adw.SpinRow({
             title: _('Widget Width'),
-            subtitle: _('Total horizontal size in pixels'),
             adjustment: new Gtk.Adjustment({ lower: 100, upper: 600, step_increment: 10 })
         });
         settings.bind('panel-pill-width', panelWidthRow, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -310,21 +364,25 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const panelHeightRow = new Adw.SpinRow({
             title: _('Widget Height'),
-            subtitle: _('Total vertical size in pixels'),
             adjustment: new Gtk.Adjustment({ lower: 20, upper: 60, step_increment: 2 })
         });
         settings.bind('panel-pill-height', panelHeightRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         panelDimGroup.add(panelHeightRow);
+        posGroup.add(panelDimGroup);
 
-        page.add(panelDimGroup);
+        stylePage.add(posGroup);
+        window.add(stylePage);
 
 
         // =========================================
-        // 7. SYSTEM & COMPATIBILITY
+        // 4. SYSTEM & RESET PAGE
         // =========================================
-        const compatGroup = new Adw.PreferencesGroup();
-        compatGroup.set_title(_('System and Compatibility'));
-
+        const otherPage = new Adw.PreferencesPage({
+            title: _('System & Reset'),
+            icon_name: 'utilities-terminal-symbolic'
+        });
+        
+        const compatGroup = new Adw.PreferencesGroup({ title: _('System') });
         const fixRow = new Adw.ActionRow({
             title: _('Fix Dock Auto-hide'),
             subtitle: _('WARNING! Use it only if you have problem, keeps a 1px invisible spacer to prevent Dash-to-Dock from collapsing')
@@ -348,16 +406,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('enable-gamemode', gameToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         gameRow.add_suffix(gameToggle);
         compatGroup.add(gameRow);
+        otherPage.add(compatGroup);
 
-        page.add(compatGroup);
-
-
-        // =========================================
-        // 8. RESET
-        // =========================================
-        const resetGroup = new Adw.PreferencesGroup();
-        resetGroup.set_title(_('Danger Zone'));
-
+        const resetGroup = new Adw.PreferencesGroup({ title: _('Danger Zone') });
         const resetRow = new Adw.ActionRow({
             title: _('Factory Reset'),
             subtitle: _('Reset all configuration options to defaults')
@@ -376,25 +427,30 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 'vertical-offset', 'horizontal-offset', 'position-mode', 'dock-position',
                 'target-container', 'enable-gamemode', 'visualizer-style', 'border-radius',
                 'enable-transparency', 'transparency-strength', 'transparency-art',
-                'transparency-text', 'transparency-vis'
+                'transparency-text', 'transparency-vis',
+                'action-left-click', 'action-middle-click', 'action-right-click',
+                
+                'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius'
             ];
             keys.forEach(k => settings.reset(k));
 
-            // Manually refresh non-bound UI elements
             visRow.selected = settings.get_int('visualizer-style');
             modeRow.selected = settings.get_int('position-mode');
             targetRow.selected = settings.get_int('target-container');
+            leftRow.selected = actionValues.indexOf(settings.get_string('action-left-click'));
+            midRow.selected = actionValues.indexOf(settings.get_string('action-middle-click'));
+            rightRow.selected = actionValues.indexOf(settings.get_string('action-right-click'));
             updateGroupVisibility(targetRow.selected);
         });
 
         resetRow.add_suffix(resetBtn);
         resetGroup.add(resetRow);
-        page.add(resetGroup);
+        otherPage.add(resetGroup);
+        window.add(otherPage);
 
-        window.add(page);
 
         // =========================================
-        // 9. ABOUT & SUPPORT PAGE
+        // 5. ABOUT PAGE
         // =========================================
         const aboutPage = new Adw.PreferencesPage({
             title: _('About'),
@@ -434,15 +490,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         aboutPage.add(supportGroup);
         window.add(aboutPage);
 
-        // =========================================
-        // LOGIC HANDLERS
-        // =========================================
-        targetRow.connect('notify::selected', () => {
-            let val = targetRow.selected;
-            settings.set_int('target-container', val);
-            updateGroupVisibility(val);
-        });
-
+        // Logic for hiding/showing dock/panel options
         function updateGroupVisibility(targetVal) {
             if (targetVal === 0) {
                 dockDimGroup.set_visible(true);
@@ -452,7 +500,6 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 panelDimGroup.set_visible(true);
             }
         }
-
         updateGroupVisibility(settings.get_int('target-container'));
     }
 }
