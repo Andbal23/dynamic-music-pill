@@ -10,12 +10,14 @@
         "48",
         "49"
     ],
-    "url": "https://github.com/Andbal23/dynamic-music-pill",
     "donations": {
+    	"github": "Andbal23",
         "paypal": "andraslaszlo23",
         "buymeacoffee": "andbal",
         "kofi": "andbal"
     },
+    "url": "https://github.com/Andbal23/dynamic-music-pill",
+    
     "settings-schema": "org.gnome.shell.extensions.dynamic-music-pill",
     "version": 3.1
 }
