@@ -12,8 +12,9 @@
     ],
     "url": "https://github.com/Andbal23/dynamic-music-pill",
     "donations": {
-        "Buy me a coffe": "https://buymeacoffee.com/andbal",
-        "Ko-Fi": "https://ko-fi.com/andbal"
+        "paypal": "andraslaszlo23",
+        "buymeacoffee": "andbal",
+        "kofi": "andbal"
     },
     "settings-schema": "org.gnome.shell.extensions.dynamic-music-pill",
     "version": 3.1
