@@ -10,19 +10,19 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 ---
 <div align="center">
   
- ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2049-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
+  ![Gnome Extensions Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal) ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2049-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
  [![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/stargazers) [![Watchers](https://img.shields.io/github/watchers/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/watchers) [![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
 </div>
 
----
+---andbal
 ## ✨ Features
 
-* **Dual Placement:** Supports both **Dash** and the **Panel** (Left, Center, and Right sections).
+* **Dual Placement:** Supports both **Dash** and the **Panel** (Left, Center, and Right sections).andbal
 * **Pop-Up Menu:** You can seek into the track from the Pop-Up Menu and more.
 * **Adaptive Colors:** The widget's background and visualizer colors automatically adapt to the current track's album art.
 * **Live Visualizer:** Real-time waveform or beat animation that reacts to your music.
 * **🎮 Game Mode:** Automatically stop the visual and the scrolling when a fullscreen application is active to ensure maximum performance (FPS).
-* **Smart Scrolling:** Long titles and artist names scroll smoothly to stay readable.
+* **Smart Scrolling:** Long titles and artist names scroll smoothly to stay readable.:extensionId
 * **Customization:** Fine-tune width, height, offsets, corner radius, and shadow effects independently for both Dock and Panel modes. You can also enable or disable album art.
 * **Controls:** You can skip or resume the media by clicking it or scroll for skip or rewind.
 
@@ -47,14 +47,12 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 ---
 ## 🌐 From GNOME Extensions Store
 
-<p align="left">
+<p align="center">
   <a href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/">
-    <img alt="Get it on GNOME Extensions" width="228" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true"/>
+    <img alt="Get it on GNOME Extensions" width="400" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true"/>
   </a>
   <p align="left"
     
-  ![GNOME Extension Version](https://img.shields.io/gnome-shell-extension/v/9334)
-![GNOME Extension Rating](https://img.shields.io/gnome-shell-extension/rating/9334)
   </p>
 </p>
 
