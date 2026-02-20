@@ -35,7 +35,7 @@ msgid "Enable Scroll Controls"
 msgstr "Управление прокруткой"
 
 #: prefs.js:50
-msgid "Change Tracks or Volume  using scroll wheel or touchpad"
+msgid "Change Tracks or Volume using scroll wheel or touchpad"
 msgstr ""
 
 #: prefs.js:61
