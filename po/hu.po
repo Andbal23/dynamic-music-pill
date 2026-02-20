@@ -38,7 +38,7 @@ msgid "Enable Scroll Controls"
 msgstr "Görgetéssel való irányítás engedélyezése"
 
 #: prefs.js:50
-msgid "Change Tracks or Volume  using scroll wheel or touchpad"
+msgid "Change Tracks or Volume using scroll wheel or touchpad"
 msgstr ""
 
 #: prefs.js:61
