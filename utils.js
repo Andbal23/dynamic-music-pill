@@ -1,14 +1,5 @@
 import GLib from 'gi://GLib';
-import GdkPixbuf from 'gi://GdkPixbuf';
 
-export function setStyleSafe(actor, css) {
-    if (!actor) return;
-    try {
-        actor.set_style(css);
-    } catch (e) {
-        console.error(e.message);
-    }
-}
 
 export function smartUnpack(value) {
     if (value === null || value === undefined) return null;

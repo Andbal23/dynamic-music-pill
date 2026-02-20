@@ -5,6 +5,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
 import { smartUnpack } from './utils.js';
 import { MusicPill, ExpandedPlayer } from './ui.js';
+import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 
 const MPRIS_IFACE = `
 <node>
@@ -12,6 +13,7 @@ const MPRIS_IFACE = `
     <property name="Metadata" type="a{sv}" access="read" />
     <property name="PlaybackStatus" type="s" access="read" />
     <property name="Position" type="x" access="read" />
+    <property name="Volume" type="d" access="readwrite" />
     <method name="PlayPause"/>
     <method name="Next"/>
     <method name="Previous"/>
@@ -510,6 +512,37 @@ export class MusicController {
     togglePlayback() { let p = this._getActivePlayer(); if (p) p.PlayPauseRemote(); }
     next() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.NextRemote(); }
     previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
+    changeVolume(up) {
+            let mixer = getMixerControl();
+            if (!mixer) return;
+
+            let stream = mixer.get_default_sink();
+            if (!stream) return;
+
+            let maxVolume = mixer.get_vol_max_norm();
+            let step = Math.round(maxVolume * 0.05);
+
+            if (up && stream.is_muted) {
+                stream.change_is_muted(false);
+            }
+
+            let newVolume = up ? stream.volume + step : stream.volume - step;
+            newVolume = Math.max(0, Math.min(maxVolume, newVolume));
+
+            if (stream.volume !== newVolume) {
+                stream.volume = newVolume;
+                stream.push_volume();
+
+                let iconName = 'audio-volume-high-symbolic';
+                if (stream.is_muted || newVolume === 0) iconName = 'audio-volume-muted-symbolic';
+                else if (newVolume < maxVolume / 3) iconName = 'audio-volume-low-symbolic';
+                else if (newVolume < maxVolume * 2 / 3) iconName = 'audio-volume-medium-symbolic';
+
+                let icon = Gio.Icon.new_for_string(iconName);
+
+                Main.osdWindowManager.show(-1, icon, null, newVolume / maxVolume, 1);
+            }
+        }
 
     _updateDefaultPlayerVisibility(shouldReset = false) {
         if (!this._settings) return;

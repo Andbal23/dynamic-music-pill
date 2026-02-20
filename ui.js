@@ -1,3 +1,4 @@
+import GdkPixbuf from 'gi://GdkPixbuf';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
@@ -5,7 +6,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Pango from 'gi://Pango';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import { setStyleSafe, formatTime, getAverageColor, smartUnpack } from './utils.js';
+import { formatTime, getAverageColor, smartUnpack } from './utils.js';
 
 export const CrossfadeArt = GObject.registerClass(
 class CrossfadeArt extends St.Widget {
@@ -43,7 +44,7 @@ class CrossfadeArt extends St.Widget {
         let newCss = `border-radius: ${safeR}px; background-size: cover; ${activeShadow} ${bgPart}`;
         if (layer._lastCss === newCss) return;
         layer._lastCss = newCss;
-        setStyleSafe(layer, newCss);
+        layer.set_style(newCss);
     }
 
     setArt(newUrl, force = false) {
@@ -204,6 +205,7 @@ export const WaveformVisualizer = GObject.registerClass(
 class WaveformVisualizer extends St.BoxLayout {
     _init() {
         super._init({ vertical: false, style: 'spacing: 3px;', y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
+        this.set_height(22);
         this._bars = [];
         this._color = '255,255,255';
         this._mode = 1;
@@ -211,11 +213,13 @@ class WaveformVisualizer extends St.BoxLayout {
         this._timerId = null;
 
         for (let i = 0; i < 4; i++) {
-            let bar = new St.Bin({ style_class: 'visualizer-bar', y_align: Clutter.ActorAlign.END });
-            setStyleSafe(bar, 'height: 4px; background-color: rgba(255,255,255,0.5);');
+            let bar = new St.Widget({ style_class: 'visualizer-bar' });
+            bar.set_size(3, 20);
+            bar.set_pivot_point(0.5, 1.0);
             this.add_child(bar);
             this._bars.push(bar);
         }
+        this._updateBarsCss();
     }
 
     destroy() {
@@ -225,8 +229,8 @@ class WaveformVisualizer extends St.BoxLayout {
 
     setMode(m) {
         this._mode = m;
-        let align = (m === 2) ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.END;
-        this._bars.forEach(bar => { bar.y_align = align; });
+        let pivotY = (m === 2) ? 0.5 : 1.0;
+        this._bars.forEach(bar => { bar.set_pivot_point(0.5, pivotY); });
     }
 
     setColor(c) {
@@ -235,18 +239,22 @@ class WaveformVisualizer extends St.BoxLayout {
         if (c && typeof c.g === 'number' && !isNaN(c.g)) g = Math.min(255, c.g + 100);
         if (c && typeof c.b === 'number' && !isNaN(c.b)) b = Math.min(255, c.b + 100);
         this._color = `${Math.floor(r)},${Math.floor(g)},${Math.floor(b)}`;
+        this._updateBarsCss();
         if (!this._isPlaying) this._updateVisuals(0);
     }
 
     setPlaying(playing) {
         if (this._isPlaying === playing) return;
         this._isPlaying = playing;
+
+        this._updateBarsCss();
+
         if (this._timerId) { GLib.source_remove(this._timerId); this._timerId = null; }
 
         if (playing && this._mode !== 0) {
-            this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
+            this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
                 if (!this.get_parent()) return GLib.SOURCE_REMOVE;
-                let t = Date.now() / 200;
+                let t = Date.now() / 250;
                 this._updateVisuals(t);
                 return GLib.SOURCE_CONTINUE;
             });
@@ -255,31 +263,40 @@ class WaveformVisualizer extends St.BoxLayout {
         }
     }
 
+    _updateBarsCss() {
+        let opacity = this._isPlaying ? 1.0 : 0.4;
+        let css = `background-color: rgba(${this._color}, ${opacity}); border-radius: 2px;`;
+        this._bars.forEach(bar => {
+            bar.set_style(css);
+        });
+    }
+
+
     _updateVisuals(t) {
         if (!this.get_parent()) return;
+
         this._bars.forEach((bar, idx) => {
-            let h = 4;
-            let opacity = this._isPlaying ? 1.0 : 0.4;
+            let scaleY = 0.2;
+
             if (this._isPlaying) {
-                if (this._mode === 1) h = 6 + Math.abs(Math.sin(t + idx)) * 12;
+                if (this._mode === 1) {
+                    let wave = (Math.sin(t - idx * 1.0) + 1) / 2;
+                    scaleY = 0.3 + (wave * 0.7);
+                }
                 else if (this._mode === 2) {
-                    h = 6 + Math.abs(Math.sin(t + (idx * 1.3))) * 12;
-                    if (Math.random() > 0.8) h += 4;
+                    let speeds = [1.1, 1.6, 1.3, 1.8];
+                    let pulse = (Math.sin(t * speeds[idx]) + 1) / 2;
+                    scaleY = 0.3 + (pulse * 0.7);
                 }
             }
-            if (typeof h !== 'number' || isNaN(h) || !isFinite(h)) h = 4;
-            bar.set_height(h);
-            let css = `background-color: rgba(${this._color}, ${opacity});`;
-            if (bar._lastCss !== css) {
-                bar._lastCss = css;
-                setStyleSafe(bar, css);
-            }
+
+            bar.scale_y = scaleY;
         });
     }
 });
 
 export const ExpandedPlayer = GObject.registerClass(
-class ExpandedPlayer extends St.Widget { 
+class ExpandedPlayer extends St.Widget {
     _init(controller) {
         let [bgW, bgH] = global.display.get_size();
 
@@ -288,10 +305,10 @@ class ExpandedPlayer extends St.Widget {
             height: bgH,
             reactive: true,
             visible: false,
-            x: 0, 
+            x: 0,
             y: 0
         });
-        
+
         this._controller = controller;
         this._settings = controller._settings;
         this._player = null;
@@ -300,11 +317,11 @@ class ExpandedPlayer extends St.Widget {
         this._currentArtUrl = null;
         this._lastPopupCss = null;
         this._isSpinning = false;
-        
+
         this._backgroundBtn = new St.Button({
             style: 'background-color: transparent;',
             reactive: true,
-            x_expand: true, 
+            x_expand: true,
             y_expand: true,
             width: bgW,
             height: bgH
@@ -319,25 +336,25 @@ class ExpandedPlayer extends St.Widget {
         });
         this._box.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
         this.add_child(this._box);
-        
+
         let topRow = new St.BoxLayout({ style_class: 'expanded-top-row', vertical: false, y_align: Clutter.ActorAlign.CENTER });
-        
-        this._vinyl = new St.Widget({ 
-            style_class: 'vinyl-container', 
+
+        this._vinyl = new St.Widget({
+            style_class: 'vinyl-container',
             layout_manager: new Clutter.BinLayout(),
             width: 100,
-            height: 100 
+            height: 100
         });
-        this._vinyl.set_pivot_point(0.5, 0.5); 
-        
+        this._vinyl.set_pivot_point(0.5, 0.5);
+
         this._artBottom = new St.Widget({ style: 'background-size: cover; border-radius: 50px;', width: 100, height: 100, opacity: 255 });
         this._artTop = new St.Widget({ style: 'background-size: cover; border-radius: 50px;', width: 100, height: 100, opacity: 0 });
-        
+
         this._vinyl.add_child(this._artBottom);
         this._vinyl.add_child(this._artTop);
         this._topIsActive = false;
 
-        this._vinylBin = new St.Bin({ 
+        this._vinylBin = new St.Bin({
             child: this._vinyl,
             width: 100,
             height: 100,
@@ -347,12 +364,12 @@ class ExpandedPlayer extends St.Widget {
         topRow.add_child(this._vinylBin);
 
         let infoBox = new St.BoxLayout({
-            style_class: 'track-info-box', 
-            vertical: true, 
-            y_align: Clutter.ActorAlign.CENTER, 
-            x_expand: true, 
+            style_class: 'track-info-box',
+            vertical: true,
+            y_align: Clutter.ActorAlign.CENTER,
+            x_expand: true,
             clip_to_allocation: true,
-            style: 'min-width: 0px;' 
+            style: 'min-width: 0px;'
         });
         this._titleLabel = new ScrollLabel('expanded-title', this._settings);
         this._artistLabel = new ScrollLabel('expanded-artist', this._settings);
@@ -365,7 +382,7 @@ class ExpandedPlayer extends St.Widget {
         let progressBox = new St.BoxLayout({ style_class: 'progress-container', vertical: false, y_align: Clutter.ActorAlign.CENTER });
         this._currentTimeLabel = new St.Label({ style_class: 'progress-time', text: '0:00', x_align: Clutter.ActorAlign.END });
         this._totalTimeLabel = new St.Label({ style_class: 'progress-time', text: '0:00', x_align: Clutter.ActorAlign.START });
-        
+
         this._sliderBin = new St.Widget({ style_class: 'progress-slider-bg', x_expand: true, reactive: true, y_align: Clutter.ActorAlign.CENTER });
         this._sliderFill = new St.Widget({ style_class: 'progress-slider-fill' });
         this._sliderBin.add_child(this._sliderFill);
@@ -381,10 +398,10 @@ class ExpandedPlayer extends St.Widget {
         this._box.add_child(progressBox);
 
         let controlsRow = new St.BoxLayout({ style_class: 'controls-row', vertical: false, x_align: Clutter.ActorAlign.CENTER, reactive: true });
-        
+
         let prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic' }), reactive: true, can_focus: true });
         prevBtn.connectObject('button-release-event', () => { this._controller.previous(); return Clutter.EVENT_STOP; }, this);
-        
+
         this._playPauseIcon = new St.Icon({ icon_name: 'media-playback-start-symbolic' });
         let playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: true });
         playPauseBtn.connectObject('button-release-event', () => { this._controller.togglePlayback(); return Clutter.EVENT_STOP; }, this);
@@ -414,38 +431,38 @@ class ExpandedPlayer extends St.Widget {
         let useShadow = this._settings.get_boolean('popup-enable-shadow');
         let followTrans = this._settings.get_boolean('popup-follow-transparency');
         let followRadius = this._settings.get_boolean('popup-follow-radius');
-        
+
         let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
         let radius = (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
 
         let finalAlpha = 0.95;
         let enableTrans = this._settings.get_boolean('enable-transparency');
-        
+
         if (followTrans) {
             if (enableTrans) {
                 finalAlpha = this._settings.get_int('transparency-strength') / 100.0;
             } else {
-                finalAlpha = 1.0; 
+                finalAlpha = 1.0;
             }
         }
-        
+
         let safeR = (typeof r === 'number' && !isNaN(r)) ? Math.floor(r) : 40;
         let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : 40;
         let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : 40;
 
         let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${finalAlpha});`;
-        
-        let shadowOp = Math.min(0.5, finalAlpha); 
+
+        let shadowOp = Math.min(0.5, finalAlpha);
         let shadowStyle = useShadow ? `box-shadow: 0px 8px 30px rgba(0,0,0,${shadowOp});` : 'box-shadow: none;';
-        
+
         let borderOp = Math.min(0.1, finalAlpha * 0.2);
         let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255,255,255,${borderOp});`;
-        
+
         let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; padding: 20px; ${shadowStyle} min-width: 320px; max-width: 600px;`;
-        
+
         if (this._lastPopupCss !== css) {
             this._lastPopupCss = css;
-            setStyleSafe(this._box, css);
+            this._box.set_style(css);
         }
 
         if (this._vinylBin) this._vinylBin.opacity = 255;
@@ -460,9 +477,9 @@ class ExpandedPlayer extends St.Widget {
         if (this._artistLabel && this._artistLabel._text !== artist) {
             this._artistLabel.setText(artist || 'Unknown Artist', false);
         }
-        
-        this._seekLockTime = 0; 
-        
+
+        this._seekLockTime = 0;
+
         let trackChanged = (this._currentArtUrl !== artUrl || this._lastTrackTitle !== title);
         this._lastTrackTitle = title;
 
@@ -471,16 +488,16 @@ class ExpandedPlayer extends St.Widget {
             this._stopVinyl();
             this._currentArtUrl = null;
         } else {
-            this._vinylBin.show(); 
+            this._vinylBin.show();
             if (trackChanged) {
                 this._currentArtUrl = artUrl;
                 let bg = `url("${artUrl}")`;
                 let style = `background-image: ${bg}; background-size: cover; border-radius: 50px;`;
 
                 if (this._topIsActive) {
-                    setStyleSafe(this._artBottom, style);
+                    this._artBottom.set_style(style);
                     this._artBottom.opacity = 255;
-                    
+
                     this._artTop.ease({
                         opacity: 0,
                         duration: 800,
@@ -488,10 +505,10 @@ class ExpandedPlayer extends St.Widget {
                     });
                     this._topIsActive = false;
                 } else {
-                    setStyleSafe(this._artTop, style);
+                    this._artTop.set_style(style);
                     this._artTop.opacity = 0;
                     this._artTop.show();
-                    
+
                     this._artTop.ease({
                         opacity: 255,
                         duration: 800,
@@ -533,7 +550,7 @@ class ExpandedPlayer extends St.Widget {
         if (Array.isArray(artist)) artist = artist.join(', ');
 
         this.updateContent(title, artist, artUrl, status);
-        
+
         if (this._controller && this._controller._connection) {
             this._controller._connection.call(
                 player._busName,
@@ -561,9 +578,9 @@ class ExpandedPlayer extends St.Widget {
     hide() {
         this._stopTimer();
         this._stopVinyl();
-        this.ease({ 
-            opacity: 0, 
-            duration: 200, 
+        this.ease({
+            opacity: 0,
+            duration: 200,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: (isFinished) => {
                 if (!isFinished) return;
@@ -571,7 +588,7 @@ class ExpandedPlayer extends St.Widget {
                 if (this._controller) {
                     this._controller.closeMenu();
                 }
-            } 
+            }
         });
     }
 
@@ -598,7 +615,7 @@ class ExpandedPlayer extends St.Widget {
 
     _tick() {
         if (!this._player || !this.get_parent()) return GLib.SOURCE_REMOVE;
-        
+
         let meta = this._player.Metadata;
         let length = meta ? smartUnpack(meta['mpris:length']) : 0;
         if (length <= 0) return;
@@ -608,7 +625,7 @@ class ExpandedPlayer extends St.Widget {
 
         let cachedPos = this._player._lastPosition || 0;
         let lastUpdate = this._player._lastPositionTime || now;
-        
+
         let currentPos = cachedPos;
         if (this._player.PlaybackStatus === 'Playing') {
             currentPos += (now - lastUpdate) * 1000;
@@ -617,7 +634,7 @@ class ExpandedPlayer extends St.Widget {
 
         this._currentTimeLabel.text = formatTime(currentPos);
         this._totalTimeLabel.text = formatTime(length);
-        
+
         let percent = Math.min(1, Math.max(0, currentPos / length));
         let totalW = this._sliderBin.width;
         if (totalW > 0) {
@@ -635,14 +652,14 @@ class ExpandedPlayer extends St.Widget {
         let [sliderX, sliderY] = this._sliderBin.get_transformed_position();
         let relX = x - sliderX;
         let width = this._sliderBin.width;
-        
+
         let percent = Math.min(1, Math.max(0, relX / width));
         let targetPos = Math.floor(length * percent);
 
         this._seekLockTime = Date.now();
         this._player._lastPosition = targetPos;
         this._player._lastPositionTime = Date.now();
-        
+
         this._currentTimeLabel.text = formatTime(targetPos);
         let totalW = this._sliderBin.width;
         if (totalW > 0) {
@@ -697,12 +714,12 @@ class ExpandedPlayer extends St.Widget {
     _stopVinyl() {
         if (!this._vinyl || !this._isSpinning) return;
         this._isSpinning = false;
-        
+
         let currentAngle = this._vinyl.rotation_angle_z || 0;
         this._vinyl.remove_all_transitions();
-        
+
         this._vinyl.ease({
-            rotation_angle_z: currentAngle + 90, 
+            rotation_angle_z: currentAngle + 90,
             duration: 800,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: (isFinished) => {
@@ -728,8 +745,8 @@ class ExpandedPlayer extends St.Widget {
             let currentW = this._box.width;
             let currentX = Math.floor(this._box.x);
             let currentY = Math.floor(this._box.y);
-            
-            this._box.set_width(-1); 
+
+            this._box.set_width(-1);
             let [minW, natW] = this._box.get_preferred_width(-1);
             let [minH, natH] = this._box.get_preferred_height(natW);
 
@@ -836,7 +853,7 @@ class MusicPill extends St.Widget {
     this._textWrapper = new St.Widget({
         layout_manager: new Clutter.BinLayout(),
         x_expand: true, y_expand: true,
-        clip_to_allocation: true, 
+        clip_to_allocation: true,
         style: 'min-width: 50px; margin-right: 4px; margin-left: 2px;'
     });
 
@@ -908,44 +925,67 @@ class MusicPill extends St.Widget {
     }, this);
 
     this.connectObject('scroll-event', (actor, event) => {
-        if (!this._settings.get_boolean('enable-scroll-controls')) return Clutter.EVENT_STOP;
+        try {
+            if (!this._settings.get_boolean('enable-scroll-controls')) return Clutter.EVENT_STOP;
 
-        let direction = event.get_scroll_direction();
-        let shouldNext = false;
-        let shouldPrev = false;
+            let direction = event.get_scroll_direction();
+            let shouldNext = false;
+            let shouldPrev = false;
 
-        if (direction === Clutter.ScrollDirection.UP || direction === Clutter.ScrollDirection.RIGHT) {
-            shouldNext = true;
-        } else if (direction === Clutter.ScrollDirection.DOWN || direction === Clutter.ScrollDirection.LEFT) {
-            shouldPrev = true;
-        } else if (direction === Clutter.ScrollDirection.SMOOTH) {
-            let [dx, dy] = event.get_scroll_delta();
-            if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-                if (dy < 0 || dx > 0) shouldNext = true;
-                else if (dy > 0 || dx < 0) shouldPrev = true;
+            if (direction === Clutter.ScrollDirection.UP || direction === Clutter.ScrollDirection.RIGHT) {
+                shouldNext = true;
+            } else if (direction === Clutter.ScrollDirection.DOWN || direction === Clutter.ScrollDirection.LEFT) {
+                shouldPrev = true;
+            } else if (direction === Clutter.ScrollDirection.SMOOTH) {
+                let [dx, dy] = event.get_scroll_delta();
+                
+                if (this._scrollDelta === undefined) this._scrollDelta = 0;
+                let delta = Math.abs(dy) > Math.abs(dx) ? dy : -dx;
+                this._scrollDelta += delta;
+
+                let threshold = 1.0; 
+                if (this._scrollDelta > threshold) {
+                    shouldPrev = true;
+                    this._scrollDelta = 0;
+                } else if (this._scrollDelta < -threshold) {
+                    shouldNext = true;
+                    this._scrollDelta = 0;
+                } else {
+                    return Clutter.EVENT_STOP;
+                }
             }
-        }
 
-        if (shouldNext || shouldPrev) {
-            let now = Date.now();
-            if (now - this._lastScrollTime < 500) return Clutter.EVENT_STOP;
-            this._lastScrollTime = now;
+            if (shouldNext || shouldPrev) {
+                let now = Date.now();
+                let action = this._settings.get_string('scroll-action');
+                let delayLimit = (action === 'volume') ? 50 : 500;
 
-            let invert = this._settings.get_boolean('invert-scroll-animation');
-            let offset = 12;
+                if (now - this._lastScrollTime < delayLimit) return Clutter.EVENT_STOP;
+                this._lastScrollTime = now;
 
-            if (shouldNext) {
-                this._animateSlide(invert ? -offset : offset);
-                this._controller.next();
-            } else {
-                this._animateSlide(invert ? offset : -offset);
-                this._controller.previous();
+                let invert = this._settings.get_boolean('invert-scroll-animation');
+                let offset = 12;
+
+                if (shouldNext) {
+                    this._animateSlide(invert ? -offset : offset);
+                    if (action === 'volume') this._controller.changeVolume(true);
+                    else this._controller.next();
+                } else {
+                    this._animateSlide(invert ? offset : -offset);
+                    if (action === 'volume') this._controller.changeVolume(false);
+                    else this._controller.previous();
+                }
             }
+        } catch (e) {
+            // Without it sometimes trigger the virtal windows switching on the dash-to-dock, maybe if you scroll too fast. 
+            console.debug(`[Dynamic Music Pill] Scroll handled with safe-skip: ${e.message}`);
         }
+        
         return Clutter.EVENT_STOP;
     }, this);
 
     // Listeners
+    this._settings.connectObject('changed::scroll-action', () => {  this._scrollDelta = 0; }, this);
     this._settings.connectObject('changed::enable-transparency', () => this._updateTransparencyConfig(), this);
     this._settings.connectObject('changed::transparency-strength', () => this._updateTransparencyConfig(), this);
     this._settings.connectObject('changed::transparency-art', () => this._updateTransparencyConfig(), this);
@@ -1143,18 +1183,18 @@ class MusicPill extends St.Widget {
         if (width < 220 || visStyle === 0) {
             this._visBin.hide();
             this._visBin.set_width(0);
-            setStyleSafe(this._visBin, 'margin: 0px;');
+            this._visBin.set_style('margin: 0px;');
             let artMargin = (width < 180) ? 4 : 8;
-            setStyleSafe(this._artBin, `margin-right: ${artMargin}px;`);
+            this._artBin.set_style(`margin-right: ${artMargin}px;`);
             this._fadeLeft.set_width(10);
             this._fadeRight.set_width(10);
         } else {
             this._visBin.show();
             let sideMargin = this._settings.get_int('visualizer-padding');
-            
-            setStyleSafe(this._visBin, `margin-left: ${sideMargin}px;`);
+
+            this._visBin.set_style(`margin-left: ${sideMargin}px;`);
             this._visBin.set_width(-1);
-            setStyleSafe(this._artBin, `margin-right: ${sideMargin}px;`);
+            this._artBin.set_style(`margin-right: ${sideMargin}px;`);
             this._fadeLeft.set_width(30);
             this._fadeRight.set_width(30);
         }
@@ -1167,8 +1207,8 @@ class MusicPill extends St.Widget {
             this._artistScroll.show();
         }
 
-        setStyleSafe(this._titleScroll, `font-size: ${fontSizeTitle}; font-weight: 800; color: white;`);
-        setStyleSafe(this._artistScroll, `font-size: ${fontSizeArtist}; font-weight: 500; color: rgba(255,255,255,0.7);`);
+        this._titleScroll.set_style(`font-size: ${fontSizeTitle}; font-weight: 800; color: white;`);
+        this._artistScroll.set_style(`font-size: ${fontSizeArtist}; font-weight: 500; color: rgba(255,255,255,0.7);`);
 
         this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
 
@@ -1186,9 +1226,9 @@ class MusicPill extends St.Widget {
       if (!this._body) return;
       this._body.ease({
           translation_x: offset, duration: 100, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-          onStopped: (isFinished) => { 
+          onStopped: (isFinished) => {
               if (isFinished && this._body) {
-                  this._body.ease({ translation_x: 0, duration: 250, mode: Clutter.AnimationMode.EASE_OUT_BACK }); 
+                  this._body.ease({ translation_x: 0, duration: 250, mode: Clutter.AnimationMode.EASE_OUT_BACK });
               }
           }
       });
@@ -1220,14 +1260,14 @@ class MusicPill extends St.Widget {
 
                 this._isActiveState = false;
                 this.reactive = false;
-                
-                let targetW = 0; 
+
+                let targetW = 0;
                 this.ease({ opacity: 0, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 this._body.ease({ width: targetW, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                
+
                 this.ease({
-                    width: targetW, 
-                    duration: 500, 
+                    width: targetW,
+                    duration: 500,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: (isFinished) => {
                         if (!isFinished) return;
@@ -1236,10 +1276,10 @@ class MusicPill extends St.Widget {
                         this._lastArtUrl = null;
                         this._currentBusName = null;
                         this.set_width(targetW);
-                        this.visible = false; 
+                        this.visible = false;
                     }
                 });
-                
+
                 this._visualizer.setPlaying(false);
                 this._hideGraceTimer = null;
                 return GLib.SOURCE_REMOVE;
@@ -1257,21 +1297,21 @@ class MusicPill extends St.Widget {
         this._isActiveState = true;
         this.reactive = true;
         this.visible = true;
-        
+
         this._updateDimensions();
         let finalWidth = this._targetWidth;
-        
+
         this.set_width(0);
         this._body.set_width(0);
         this.opacity = 0;
-        
+
         this.ease({
             width: finalWidth,
             opacity: 255,
             duration: 500,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD
         });
-        
+
         this._body.ease({
             width: finalWidth,
             duration: 500,
@@ -1388,7 +1428,7 @@ class MusicPill extends St.Widget {
 
       if (this._lastBodyCss !== css) {
           this._lastBodyCss = css;
-          setStyleSafe(this._body, css);
+          this._body.set_style(css);
       }
 
       let startColor = `rgba(${safeR}, ${safeG}, ${safeB}, ${alpha})`;
@@ -1397,13 +1437,13 @@ class MusicPill extends St.Widget {
       let gradientLeft = `background-image: linear-gradient(to right, ${startColor}, ${endColor});`;
       if (this._lastLeftCss !== gradientLeft) {
           this._lastLeftCss = gradientLeft;
-          setStyleSafe(this._fadeLeft, gradientLeft);
+          this._fadeLeft.set_style(gradientLeft);
       }
 
       let gradientRight = `background-image: linear-gradient(to right, ${endColor}, ${startColor});`;
       if (this._lastRightCss !== gradientRight) {
           this._lastRightCss = gradientRight;
-          setStyleSafe(this._fadeRight, gradientRight);
+          this._fadeRight.set_style(gradientRight);
       }
 
       this._displayedColor = { r: safeR, g: safeG, b: safeB };

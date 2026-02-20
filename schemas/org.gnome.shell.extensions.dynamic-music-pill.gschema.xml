@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.dynamic-music-pill" path="/org/gnome/shell/extensions/dynamic-music-pill/" gettext-domain="dynamic-music-pill">
+    <key name="scroll-action" type="s">
+      <default>'track'</default>
+      <summary>Scroll Action</summary>
+      <description>What to do when scrolling (track or volume)</description>
+    </key>
     <key name="visualizer-padding" type="i">
       <default>12</default>
       <summary>Visualizer Margin</summary>

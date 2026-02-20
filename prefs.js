@@ -18,7 +18,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'enable-scroll-controls', 'action-left-click', 'action-middle-click', 
             'action-right-click', 'action-double-click', 'dock-art-size', 'panel-art-size',          
             'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius', 
-            'popup-vinyl-rotate', 'visualizer-padding'
+            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action'
         ];
 
         // =========================================
@@ -47,7 +47,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         // Scroll Controls
         const scrollCtrlRow = new Adw.ActionRow({
             title: _('Enable Scroll Controls'),
-            subtitle: _('Switch tracks using scroll wheel or touchpad')
+            subtitle: _('Change Tracks or Volume  using scroll wheel or touchpad')
         });
         const scrollCtrlToggle = new Gtk.Switch({
             active: settings.get_boolean('enable-scroll-controls'),
@@ -56,6 +56,31 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('enable-scroll-controls', scrollCtrlToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         scrollCtrlRow.add_suffix(scrollCtrlToggle);
         genGroup.add(scrollCtrlRow);
+
+        const scrollActionModel = new Gtk.StringList();
+        scrollActionModel.append(_("Change Track"));
+        scrollActionModel.append(_("Change Volume"));
+
+        let currentAction = settings.get_string('scroll-action');
+
+        const scrollActionRow = new Adw.ComboRow({
+            title: _('Scroll Action'),
+            subtitle: _('Choose what scrolling on the pill should do'),
+            model: scrollActionModel,
+            selected: currentAction === 'volume' ? 1 : 0
+        });
+
+        settings.connect('changed::scroll-action', () => {
+            const action = settings.get_string('scroll-action');
+            scrollActionRow.selected = (action === 'volume') ? 1 : 0;
+        });
+
+        scrollActionRow.connect('notify::selected', () => {
+            settings.set_string('scroll-action', scrollActionRow.selected === 1 ? 'volume' : 'track');
+        });
+
+        settings.bind('enable-scroll-controls', scrollActionRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        genGroup.add(scrollActionRow);
 
         // Invert Scroll
         const invertRow = new Adw.ActionRow({
