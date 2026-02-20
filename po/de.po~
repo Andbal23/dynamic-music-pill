@@ -1,0 +1,448 @@
+# German translations for Dynamic Music Pill.
+msgid ""
+msgstr ""
+"Project-Id-Version: Dynamic Music Pill\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-19 20:24+0100\n"
+"PO-Revision-Date: 2026-02-17 00:00+0100\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: prefs.js:28
+msgid "Main Pill"
+msgstr ""
+
+#: prefs.js:32
+msgid "General Settings"
+msgstr "Allgemeine Einstellungen"
+
+#: prefs.js:36
+msgid "Show Album Art"
+msgstr "Albumcover anzeigen"
+
+#: prefs.js:37
+msgid "Display the cover art of the currently playing song"
+msgstr "Cover des aktuell gespielten Titels anzeigen"
+
+#: prefs.js:49
+msgid "Enable Scroll Controls"
+msgstr "Scroll-Steuerung aktivieren"
+
+#: prefs.js:50
+msgid "Switch tracks using scroll wheel or touchpad"
+msgstr "Titelwechsel mit Mausrad oder Touchpad"
+
+#: prefs.js:62
+msgid "Invert Scroll Animation"
+msgstr "Scroll-Animation umkehren"
+
+#: prefs.js:63
+msgid "Direction of the jump effect (Natural vs Traditional)"
+msgstr "Richtung des Sprungeffekts (Natürlich vs Traditionell)"
+
+#: prefs.js:75
+msgid "Scrolling Text"
+msgstr "Lauftext"
+
+#: prefs.js:76
+msgid "Animate long track titles and artist names"
+msgstr "Lange Titel und Künstlernamen animieren"
+
+#: prefs.js:89
+msgid "Mouse Actions"
+msgstr ""
+
+#: prefs.js:97
+msgid "Left Click"
+msgstr ""
+
+#: prefs.js:105
+msgid "Middle Click"
+msgstr ""
+
+#: prefs.js:113
+msgid "Right Click"
+msgstr ""
+
+#: prefs.js:128
+msgid "Pop-up Menu"
+msgstr ""
+
+#: prefs.js:132
+msgid "Pop-up Appearance"
+msgstr ""
+
+#: prefs.js:134
+msgid "Rotate Vinyl"
+msgstr ""
+
+#: prefs.js:135
+msgid "Spin the album art when playing"
+msgstr ""
+
+#: prefs.js:147 prefs.js:278
+msgid "Enable Shadow"
+msgstr "Schatten aktivieren"
+
+#: prefs.js:148
+msgid "Show drop shadow behind the pop-up menu"
+msgstr ""
+
+#: prefs.js:160
+msgid "Follow Transparency"
+msgstr ""
+
+#: prefs.js:161
+msgid "Inherit opacity settings from the main pill"
+msgstr ""
+
+#: prefs.js:173
+msgid "Follow Border Radius"
+msgstr ""
+
+#: prefs.js:174
+msgid "Inherit corner roundness from the main pill"
+msgstr ""
+
+#: prefs.js:192
+msgid "Style & Layout"
+msgstr ""
+
+#: prefs.js:197
+msgid "Visualizer and Shape"
+msgstr "Visualizer und Form"
+
+#: prefs.js:200
+msgid "Off (Disabled)"
+msgstr "Aus (Deaktiviert)"
+
+#: prefs.js:201
+msgid "Wave (Smooth)"
+msgstr "Welle (Glatt)"
+
+#: prefs.js:202
+msgid "Beat (Jumpy)"
+msgstr "Beat (Sprunghaft)"
+
+#: prefs.js:205
+msgid "Visualizer Animation"
+msgstr "Visualizer-Animation"
+
+#: prefs.js:206
+msgid "Select the style of the audio reaction bars"
+msgstr "Stil der Audio-Reaktionsbalken auswählen"
+
+#: prefs.js:213
+msgid "Visualizer Margin"
+msgstr ""
+
+#: prefs.js:214
+msgid "Distance between the text and the wave animation"
+msgstr ""
+
+#: prefs.js:221
+msgid "Corner Radius"
+msgstr "Eckenradius"
+
+#: prefs.js:222
+msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
+msgstr "Rundung der Widget-Ecken (0 = Eckig, 25 = Pille)"
+
+#: prefs.js:230
+msgid "Background and Transparency"
+msgstr "Hintergrund und Transparenz"
+
+#: prefs.js:233
+msgid "Enable Transparency"
+msgstr "Transparenz aktivieren"
+
+#: prefs.js:234
+msgid "Switch between a solid theme background and a custom transparent look"
+msgstr "Zwischen festem Themenhintergrund und transparentem Look wechseln"
+
+#: prefs.js:245
+msgid "Background Opacity"
+msgstr "Hintergrund-Deckkraft"
+
+#: prefs.js:246
+msgid "Adjust transparency level"
+msgstr ""
+
+#: prefs.js:253
+msgid "Apply to Album Art"
+msgstr "Auf Albumcover anwenden"
+
+#: prefs.js:260
+msgid "Apply to Text"
+msgstr "Auf Text anwenden"
+
+#: prefs.js:267
+msgid "Apply to Visualizer"
+msgstr "Auf Visualizer anwenden"
+
+#: prefs.js:277
+msgid "Main Pill Shadow"
+msgstr ""
+
+#: prefs.js:285
+msgid "Shadow Intensity"
+msgstr "Schattenintensität"
+
+#: prefs.js:292
+msgid "Shadow Blur"
+msgstr "Schattenunschärfe"
+
+#: prefs.js:300
+msgid "Positioning"
+msgstr "Positionierung und Layout"
+
+#: prefs.js:303
+msgid "Dock"
+msgstr "Dock"
+
+#: prefs.js:304
+msgid "Panel: Left Box"
+msgstr "Panel: Linke Box"
+
+#: prefs.js:305
+msgid "Panel: Center Box"
+msgstr "Panel: Mittlere Box"
+
+#: prefs.js:306
+msgid "Panel: Right Box"
+msgstr "Panel: Rechte Box"
+
+#: prefs.js:309
+msgid "Container Target"
+msgstr "Container-Ziel"
+
+#: prefs.js:310
+msgid "Select which UI element should host the music pill"
+msgstr "Wählen Sie das UI-Element, das die Musik-Pille enthalten soll"
+
+#: prefs.js:322
+msgid "Manual Index"
+msgstr "Manueller Index"
+
+#: prefs.js:323
+msgid "First (Start)"
+msgstr "Erster (Anfang)"
+
+#: prefs.js:324
+msgid "Center"
+msgstr "Mitte"
+
+#: prefs.js:325
+msgid "Last (End)"
+msgstr "Letzter (Ende)"
+
+#: prefs.js:328
+msgid "Alignment Preset"
+msgstr "Ausrichtungsvoreinstellung"
+
+#: prefs.js:329
+msgid "How the widget aligns relative to other items"
+msgstr "Wie sich das Widget relativ zu anderen Elementen ausrichtet"
+
+#: prefs.js:337
+msgid "Manual Index Position"
+msgstr "Manuelle Indexposition"
+
+#: prefs.js:338
+msgid "Order in the list (0 is first). Only for Manual mode."
+msgstr "Reihenfolge in der Liste (0 ist erster). Nur im manuellen Modus."
+
+#: prefs.js:345
+msgid "Vertical Offset (Y)"
+msgstr "Vertikaler Versatz (Y)"
+
+#: prefs.js:346
+msgid "Shift Up (-) or Down (+)"
+msgstr "Nach oben (-) oder unten (+) verschieben"
+
+#: prefs.js:353
+msgid "Horizontal Offset (X)"
+msgstr "Horizontaler Versatz (X)"
+
+#: prefs.js:354
+msgid "Shift Left (-) or Right (+)"
+msgstr "Nach links (-) oder rechts (+) verschieben"
+
+#: prefs.js:361
+msgid "Dimensions (Dock Mode)"
+msgstr "Abmessungen (Dock-Modus)"
+
+#: prefs.js:363 prefs.js:385
+msgid "Album Art Size"
+msgstr ""
+
+#: prefs.js:369 prefs.js:391
+msgid "Widget Width"
+msgstr "Widget-Breite"
+
+#: prefs.js:376 prefs.js:398
+msgid "Widget Height"
+msgstr "Widget-Höhe"
+
+#: prefs.js:383
+msgid "Dimensions (Panel Mode)"
+msgstr "Abmessungen (Panel-Modus)"
+
+#: prefs.js:413
+msgid "System & Reset"
+msgstr ""
+
+#: prefs.js:417
+msgid "System"
+msgstr ""
+
+#: prefs.js:420
+msgid "Hide Default GNOME Player"
+msgstr ""
+
+#: prefs.js:421
+msgid "Remove the duplicate built-in media controls"
+msgstr ""
+
+#: prefs.js:431
+msgid "Game Mode"
+msgstr "Spielmodus"
+
+#: prefs.js:431
+msgid "Disable animations when a fullscreen app is active"
+msgstr "Animationen bei Vollbild-Apps deaktivieren"
+
+#: prefs.js:438
+msgid "Backup & Restore"
+msgstr ""
+
+#: prefs.js:441
+msgid "Export Settings"
+msgstr ""
+
+#: prefs.js:442
+msgid "Export"
+msgstr ""
+
+#: prefs.js:446
+msgid "Save Settings"
+msgstr ""
+
+#: prefs.js:461
+msgid "Import Settings"
+msgstr ""
+
+#: prefs.js:462
+msgid "Import"
+msgstr ""
+
+#: prefs.js:464
+msgid "Open Settings Backup"
+msgstr ""
+
+#: prefs.js:491
+msgid "Danger Zone"
+msgstr "Gefahrenzone"
+
+#: prefs.js:492
+msgid "Reset All"
+msgstr "Alles zurücksetzen"
+
+#: prefs.js:494
+msgid "Factory Reset"
+msgstr "Werksreset"
+
+#: prefs.js:506
+msgid "About"
+msgstr "Über"
+
+#: prefs.js:511
+msgid "Support the Project"
+msgstr "Projekt unterstützen"
+
+#: prefs.js:514
+msgid "Support on Ko-fi"
+msgstr "Auf Ko-fi unterstützen"
+
+#: prefs.js:515
+msgid "Buy me a coffee on Ko-fi"
+msgstr "Kauf mir einen Kaffee auf Ko-fi"
+
+#: prefs.js:523
+msgid "Buy Me a Coffee"
+msgstr "Buy Me a Coffee"
+
+#: prefs.js:524
+msgid "Support via BuyMeACoffee"
+msgstr "Unterstützung über BuyMeACoffee"
+
+#: prefs.js:532
+msgid "Source Code"
+msgstr "Quellcode"
+
+#: prefs.js:533
+msgid "Report bugs or view source on GitHub"
+msgstr "Fehler melden oder Code auf GitHub ansehen"
+
+#~ msgid "Fix Dock Auto-hide"
+#~ msgstr "Dock Auto-Hide beheben"
+
+#~ msgid ""
+#~ "WARNING! Use it only if you have problem, keeps a 1px invisible spacer to "
+#~ "prevent Dash-to-Dock from collapsing"
+#~ msgstr ""
+#~ "WARNUNG! Nur bei Problemen verwenden, behält einen 1px unsichtbaren "
+#~ "Platzhalter, um das Zusammenklappen von Dash-to-Dock zu verhindern"
+
+#~ msgid "Reset all configuration options to defaults"
+#~ msgstr "Alle Einstellungen auf Standardwerte zurücksetzen"
+
+#~ msgid "Basic display settings for track information"
+#~ msgstr "Grundlegende Anzeigeeinstellungen für Titelinformationen"
+
+#~ msgid "Customize the visibility and opacity"
+#~ msgstr "Sichtbarkeit und Deckkraft anpassen"
+
+#~ msgid "Make the album cover follow the transparency setting"
+#~ msgstr "Das Albumcover folgt der Transparenzeinstellung"
+
+#~ msgid "Make the song title and artist follow the transparency setting"
+#~ msgstr "Songtitel und Künstler halbtransparent machen"
+
+#~ msgid "Make the audio visualizer bar follow the transparency setting"
+#~ msgstr "Die Visualizer-Balken halbtransparent machen"
+
+#~ msgid "Configure the audio visualizer animation"
+#~ msgstr "Audio-Visualizer-Animation konfigurieren"
+
+#~ msgid "Drop Shadow"
+#~ msgstr "Schlagschatten"
+
+#~ msgid "Add depth to the widget with a configurable shadow"
+#~ msgstr "Tiefe durch konfigurierbaren Schatten hinzufügen"
+
+#~ msgid "Draw a shadow behind the main widget and album art"
+#~ msgstr "Schatten hinter Widget und Albumcover zeichnen"
+
+#~ msgid "Darkness of the shadow (higher is darker)"
+#~ msgstr "Dunkelheit des Schattens (höher ist dunkler)"
+
+#~ msgid "Softness of the shadow edges (spread radius)"
+#~ msgstr "Weichheit der Schattenkanten (Streuungsradius)"
+
+#~ msgid "Choose where the widget appears on your screen"
+#~ msgstr "Wählen Sie, wo das Widget erscheinen soll"
+
+#~ msgid "Total horizontal size in pixels"
+#~ msgstr "Gesamte horizontale Größe in Pixel"
+
+#~ msgid "Total vertical size in pixels"
+#~ msgstr "Gesamte vertikale Größe in Pixel"
+
+#~ msgid "System and Compatibility"
+#~ msgstr "System und Kompatibilität"
