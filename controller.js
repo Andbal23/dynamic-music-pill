@@ -14,6 +14,8 @@ const MPRIS_IFACE = `
     <property name="PlaybackStatus" type="s" access="read" />
     <property name="Position" type="x" access="read" />
     <property name="Volume" type="d" access="readwrite" />
+    <property name="LoopStatus" type="s" access="readwrite" />
+    <property name="Shuffle" type="b" access="readwrite" />
     <method name="PlayPause"/>
     <method name="Next"/>
     <method name="Previous"/>
@@ -56,6 +58,18 @@ export class MusicController {
         global.display.connectObject('notify::focus-window', () => this._monitorGameMode(), this);
         this._settings.connectObject('changed::hide-default-player', () => this._updateDefaultPlayerVisibility(), this);
 
+        if (Main.layoutManager._startingUp) {
+            this._startupCompleteId = Main.layoutManager.connect('startup-complete', () => {
+                Main.layoutManager.disconnect(this._startupCompleteId);
+                this._startupCompleteId = null;
+                this._doEnable();
+            });
+        } else {
+            this._doEnable();
+        }
+    }
+    
+    _doEnable() {
         this._inject();
         this._ownerId = this._connection.signal_subscribe(
             'org.freedesktop.DBus', 'org.freedesktop.DBus', 'NameOwnerChanged', 
@@ -75,6 +89,11 @@ export class MusicController {
     }
 
     disable() {
+        if (this._startupCompleteId) {
+            Main.layoutManager.disconnect(this._startupCompleteId);
+            this._startupCompleteId = null;
+        }
+
         if (this._currentDock) {
             this._currentDock.disconnectObject(this);
             this._currentDock = null;
@@ -88,21 +107,11 @@ export class MusicController {
         if (this._updateTimeoutId) { GLib.source_remove(this._updateTimeoutId); this._updateTimeoutId = null; }
         if (this._retryArtTimer) { GLib.source_remove(this._retryArtTimer); this._retryArtTimer = null; }
         
-        if (this._ownerId) this._connection.signal_unsubscribe(this._ownerId);
-        
-        if (this._expandedPlayer) {
-            this._expandedPlayer.destroy();
-            this._expandedPlayer = null;
+        if (this._ownerId) {
+            this._connection.signal_unsubscribe(this._ownerId);
+            this._ownerId = null;
         }
-        if (this._pill) {
-            this._pill.destroy();
-            this._pill = null;
-        }
-        this._proxies.clear();
-        
-        this._updateDefaultPlayerVisibility(true);
-    }
-
+	}
     performAction(action) {
         if (action === 'play_pause') this.togglePlayback();
         else if (action === 'next') this.next();
@@ -379,7 +388,7 @@ export class MusicController {
                             return;
                         }
 
-                        if (keys.Metadata || keys.PlaybackStatus) {
+                        if (keys.Metadata || keys.PlaybackStatus || keys.Shuffle !== undefined || keys.LoopStatus !== undefined) {
                             if (keys.Metadata) p._lastPosition = 0;
                             p._lastPositionTime = now;
                             this._triggerUpdate();
@@ -543,6 +552,33 @@ export class MusicController {
                 Main.osdWindowManager.show(-1, icon, null, newVolume / maxVolume, 1);
             }
         }
+    
+    toggleShuffle() {
+        let p = this._getActivePlayer();
+        if (!p || p.Shuffle === undefined) return; 
+        
+        this._connection.call(
+            p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
+            new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'Shuffle', new GLib.Variant('b', !p.Shuffle)]),
+            null, Gio.DBusCallFlags.NONE, -1, null,
+            (conn, res) => { try { conn.call_finish(res); } catch(e) {} }
+        );
+    }
+
+    toggleLoop() {
+        let p = this._getActivePlayer();
+        if (!p || p.LoopStatus === undefined) return;
+        
+        let current = p.LoopStatus || 'None';
+        let next = current === 'None' ? 'Playlist' : (current === 'Playlist' ? 'Track' : 'None');
+        
+        this._connection.call(
+            p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
+            new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'LoopStatus', new GLib.Variant('s', next)]),
+            null, Gio.DBusCallFlags.NONE, -1, null,
+            (conn, res) => { try { conn.call_finish(res); } catch(e) {} }
+        );
+    }    
 
     _updateDefaultPlayerVisibility(shouldReset = false) {
         if (!this._settings) return;
