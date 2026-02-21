@@ -4,14 +4,16 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-20 17:26+0100\n"
-"PO-Revision-Date: 2026-02-17 00:00+0100\n"
-"Last-Translator: \n"
-"Language-Team: Portuguese (Brazil)\n"
+"PO-Revision-Date: 2026-02-21 08:27+0000\n"
+"Last-Translator: Arthur Lincoln <arthurlincolndev@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"dynamic-music-pill/settings/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: prefs.js:28
 msgid "Main Pill"
@@ -71,35 +73,35 @@ msgstr "Animar títulos longos e nomes de artistas"
 
 #: prefs.js:114
 msgid "Mouse Actions"
-msgstr ""
+msgstr "Ações do mouse"
 
 #: prefs.js:122
 msgid "Left Click"
-msgstr ""
+msgstr "Botão esquerdo"
 
 #: prefs.js:130
 msgid "Middle Click"
-msgstr ""
+msgstr "Botão do meio"
 
 #: prefs.js:138
 msgid "Right Click"
-msgstr ""
+msgstr "Botão direito"
 
 #: prefs.js:153
 msgid "Pop-up Menu"
-msgstr ""
+msgstr "Menu Pop-up"
 
 #: prefs.js:157
 msgid "Pop-up Appearance"
-msgstr ""
+msgstr "Aparência do pop-up"
 
 #: prefs.js:159
 msgid "Rotate Vinyl"
-msgstr ""
+msgstr "Rotação do vinil"
 
 #: prefs.js:160
 msgid "Spin the album art when playing"
-msgstr ""
+msgstr "Gira a arte de álbum enquanto reproduz a mídia"
 
 #: prefs.js:171 prefs.js:295
 msgid "Enable Shadow"
@@ -107,27 +109,27 @@ msgstr "Ativar Sombra"
 
 #: prefs.js:172
 msgid "Show drop shadow behind the pop-up menu"
-msgstr ""
+msgstr "Exibe sombra atrás do menu pop-up"
 
 #: prefs.js:183
 msgid "Follow Transparency"
-msgstr ""
+msgstr "Seguir transparência"
 
 #: prefs.js:184
 msgid "Inherit opacity settings from the main pill"
-msgstr ""
+msgstr "Herda as configurações de opacidade da pílula principal"
 
 #: prefs.js:195
 msgid "Follow Border Radius"
-msgstr ""
+msgstr "Seguir arredondamento de borda"
 
 #: prefs.js:196
 msgid "Inherit corner roundness from the main pill"
-msgstr ""
+msgstr "Herda o arredondamento de borda da pílula principal"
 
 #: prefs.js:214
 msgid "Style & Layout"
-msgstr ""
+msgstr "Estilo e layout"
 
 #: prefs.js:218
 msgid "Visualizer and Shape"
@@ -155,11 +157,11 @@ msgstr "Selecione o estilo das barras de reação"
 
 #: prefs.js:234
 msgid "Visualizer Margin"
-msgstr ""
+msgstr "Margem do visualizador"
 
 #: prefs.js:235
 msgid "Distance between the text and the wave animation"
-msgstr ""
+msgstr "Distância entre o texto e a animação de onda"
 
 #: prefs.js:242
 msgid "Corner Radius"
@@ -188,7 +190,7 @@ msgstr "Opacidade do Fundo"
 
 #: prefs.js:265
 msgid "Adjust transparency level"
-msgstr ""
+msgstr "Ajustar nível de transparência"
 
 #: prefs.js:272
 msgid "Apply to Album Art"
@@ -204,7 +206,7 @@ msgstr "Aplicar ao Visualizador"
 
 #: prefs.js:294
 msgid "Main Pill Shadow"
-msgstr ""
+msgstr "Sombra da pílula principal"
 
 #: prefs.js:302
 msgid "Shadow Intensity"
@@ -216,7 +218,7 @@ msgstr "Desfoque da Sombra"
 
 #: prefs.js:316
 msgid "Positioning"
-msgstr ""
+msgstr "Posicionamento"
 
 #: prefs.js:318
 msgid "Dock"

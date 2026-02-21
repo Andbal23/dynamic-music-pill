@@ -8,18 +8,20 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-20 17:26+0100\n"
-"PO-Revision-Date: 2026-02-17 00:00+0100\n"
-"Last-Translator: \n"
-"Language-Team: Hungarian\n"
+"PO-Revision-Date: 2026-02-21 14:15+0000\n"
+"Last-Translator: László András <laszlo2002andras@gmail.com>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/dynamic-music-"
+"pill/settings/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: prefs.js:28
 msgid "Main Pill"
-msgstr ""
+msgstr "Fő Elem"
 
 #: prefs.js:32
 msgid "General Settings"
@@ -39,23 +41,23 @@ msgstr "Görgetéssel való irányítás engedélyezése"
 
 #: prefs.js:50
 msgid "Change Tracks or Volume using scroll wheel or touchpad"
-msgstr ""
+msgstr "Számok vagy Hangerő módosítása görgővel vagy érintőpaddal"
 
 #: prefs.js:61
 msgid "Change Track"
-msgstr ""
+msgstr "Szám Váltás"
 
 #: prefs.js:62
 msgid "Change Volume"
-msgstr ""
+msgstr "Hangerő Állítás"
 
 #: prefs.js:67
 msgid "Scroll Action"
-msgstr ""
+msgstr "Görgetés Művelete"
 
 #: prefs.js:68
 msgid "Choose what scrolling on the pill should do"
-msgstr ""
+msgstr "Válassza ki, hogy mit tegyen a Pill görgetése"
 
 #: prefs.js:87
 msgid "Invert Scroll Animation"
@@ -75,35 +77,35 @@ msgstr "Hosszú címek és előadók animálása"
 
 #: prefs.js:114
 msgid "Mouse Actions"
-msgstr ""
+msgstr "Egér Műveletek"
 
 #: prefs.js:122
 msgid "Left Click"
-msgstr ""
+msgstr "Bal Kattintás"
 
 #: prefs.js:130
 msgid "Middle Click"
-msgstr ""
+msgstr "Középső Kattintás"
 
 #: prefs.js:138
 msgid "Right Click"
-msgstr ""
+msgstr "Jobb Kattintás"
 
 #: prefs.js:153
 msgid "Pop-up Menu"
-msgstr ""
+msgstr "Előugró Menü"
 
 #: prefs.js:157
 msgid "Pop-up Appearance"
-msgstr ""
+msgstr "Előugró Menü Megjelenése"
 
 #: prefs.js:159
 msgid "Rotate Vinyl"
-msgstr ""
+msgstr "Lemez Forgatása"
 
 #: prefs.js:160
 msgid "Spin the album art when playing"
-msgstr ""
+msgstr "Az albumborító forgatása lejátszás közben"
 
 #: prefs.js:171 prefs.js:295
 msgid "Enable Shadow"
@@ -111,27 +113,27 @@ msgstr "Árnyék Engedélyezése"
 
 #: prefs.js:172
 msgid "Show drop shadow behind the pop-up menu"
-msgstr ""
+msgstr "Árnyék megjelenítése a felugró menü mögött"
 
 #: prefs.js:183
 msgid "Follow Transparency"
-msgstr ""
+msgstr "Kövesse az átláthatóságot"
 
 #: prefs.js:184
 msgid "Inherit opacity settings from the main pill"
-msgstr ""
+msgstr "Átlátszatlansági beállítások öröklése a fő Pill alapján"
 
 #: prefs.js:195
 msgid "Follow Border Radius"
-msgstr ""
+msgstr "Lekerekítés átvétele"
 
 #: prefs.js:196
 msgid "Inherit corner roundness from the main pill"
-msgstr ""
+msgstr "Lekerekítés öröklése a fő elemtől"
 
 #: prefs.js:214
 msgid "Style & Layout"
-msgstr ""
+msgstr "Stílus & Elrendezés"
 
 #: prefs.js:218
 msgid "Visualizer and Shape"
@@ -159,11 +161,11 @@ msgstr "Válaszd ki a vizualizáció stílusát"
 
 #: prefs.js:234
 msgid "Visualizer Margin"
-msgstr ""
+msgstr "Vizualizáló Margója"
 
 #: prefs.js:235
 msgid "Distance between the text and the wave animation"
-msgstr ""
+msgstr "Szöveg és Vizuáció távolsága"
 
 #: prefs.js:242
 msgid "Corner Radius"
@@ -191,7 +193,7 @@ msgstr "Háttér átlátszósága"
 
 #: prefs.js:265
 msgid "Adjust transparency level"
-msgstr ""
+msgstr "Átlátszóság mértéke"
 
 #: prefs.js:272
 msgid "Apply to Album Art"
@@ -207,7 +209,7 @@ msgstr "Alkalmazás a Vizualizáción"
 
 #: prefs.js:294
 msgid "Main Pill Shadow"
-msgstr ""
+msgstr "Fő Elem Árnyéka"
 
 #: prefs.js:302
 msgid "Shadow Intensity"
@@ -299,7 +301,7 @@ msgstr "Méretek (Dokk Mód)"
 
 #: prefs.js:377 prefs.js:399
 msgid "Album Art Size"
-msgstr ""
+msgstr "Album Kép Mérete"
 
 #: prefs.js:383 prefs.js:405
 msgid "Widget Width"
@@ -315,19 +317,19 @@ msgstr "Méretek (Panel Mód)"
 
 #: prefs.js:426
 msgid "System & Reset"
-msgstr ""
+msgstr "Rendszer & Visszaállítás"
 
 #: prefs.js:430
 msgid "System"
-msgstr ""
+msgstr "Rendszer"
 
 #: prefs.js:433
 msgid "Hide Default GNOME Player"
-msgstr ""
+msgstr "Alap GNOME Lejátszó elrejtése"
 
 #: prefs.js:434
 msgid "Remove the duplicate built-in media controls"
-msgstr ""
+msgstr "Beépített médiavezérlők elrejtése"
 
 #: prefs.js:444
 msgid "Game Mode"
@@ -339,31 +341,31 @@ msgstr "Animációk tiltása teljes képernyős alkalmazásnál"
 
 #: prefs.js:451
 msgid "Backup & Restore"
-msgstr ""
+msgstr "Mentés & Visszaállítás"
 
 #: prefs.js:454
 msgid "Export Settings"
-msgstr ""
+msgstr "Beállítások Exportálása"
 
 #: prefs.js:455
 msgid "Export"
-msgstr ""
+msgstr "Exportálás"
 
 #: prefs.js:459
 msgid "Save Settings"
-msgstr ""
+msgstr "Beállítások Mentése"
 
 #: prefs.js:474
 msgid "Import Settings"
-msgstr ""
+msgstr "Beállítások Importálása"
 
 #: prefs.js:475
 msgid "Import"
-msgstr ""
+msgstr "Importálás"
 
 #: prefs.js:477
 msgid "Open Settings Backup"
-msgstr ""
+msgstr "Mentési fájl megnyitása"
 
 #: prefs.js:504
 msgid "Danger Zone"
