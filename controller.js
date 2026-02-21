@@ -111,7 +111,19 @@ export class MusicController {
             this._connection.signal_unsubscribe(this._ownerId);
             this._ownerId = null;
         }
-	}
+        
+        if (this._expandedPlayer) {
+            this._expandedPlayer.destroy();
+            this._expandedPlayer = null;
+        }
+        if (this._pill) {
+            this._pill.destroy();
+            this._pill = null;
+        }
+        this._proxies.clear();
+        
+        this._updateDefaultPlayerVisibility(true);
+    }
     performAction(action) {
         if (action === 'play_pause') this.togglePlayback();
         else if (action === 'next') this.next();
