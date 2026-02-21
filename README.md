@@ -26,7 +26,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 * **Configurable Mouse Actions:** Assign custom actions (Play/Pause, Next, Prev, Open App, Open Menu) to Left, Middle, and Right clicks.
 * **Hide Default GNOME Player:** Optionally disable the built-in GNOME media controls in the Quick Settings to avoid duplicate widgets.
 
-📱 **Smart Pop-Up Menu**https://hosted.weblate.org/translate/dynamic-music-pill
+📱 **Smart Pop-Up Menu**
 * **Dynamic Transitions:** Skipping tracks directly from the pop-up menu dynamically resizes the menu with smooth crossfade animations.
 * **Spinning Vinyl Effect:** The album art rotates like a vinyl record while the music is playing.
 * **Seek Bar:** Jump to any part of the song directly from the pop-up.
@@ -48,7 +48,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 | Pop-Up Dash | Pop-Up Panel |
 |:---:|:---:|
 | <img src="screenshots/popdash.png" width="400"> | <img src="screenshots/poppanel.png" width="400"> |
-https://hosted.weblate.org/translate/dynamic-music-pill
+
 ### 🎬 Preview
 <p align="center">
   <img src="screenshots/demo.gif" alt="Dynamic Music Pill Demo">
