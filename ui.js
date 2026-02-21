@@ -123,6 +123,7 @@ class ScrollLabel extends St.Widget {
     _checkResize() {
         if (!this._text || this._gameMode || !this.get_parent()) return;
         let boxWidth = this.get_allocation_box().get_width();
+        if (boxWidth <= 1) return;
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         let textWidth = this._label1.get_preferred_width(-1)[1];
         let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
@@ -168,6 +169,7 @@ class ScrollLabel extends St.Widget {
     _checkOverflow() {
         if (!this._settings.get_boolean('scroll-text') || this._gameMode || !this.get_parent()) return;
         let boxWidth = this.get_allocation_box().get_width();
+        if (boxWidth <= 1) return;
         let textWidth = this._label1.get_preferred_width(-1)[1];
         if (textWidth > boxWidth) this._startInfiniteScroll(textWidth);
         else this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
@@ -399,14 +401,14 @@ class ExpandedPlayer extends St.Widget {
 
         let controlsRow = new St.BoxLayout({ style_class: 'controls-row', vertical: false, x_align: Clutter.ActorAlign.CENTER, reactive: true });
 
-        let prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic' }), reactive: true, can_focus: true });
+        let prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 20 }), reactive: true, can_focus: true });
         prevBtn.connectObject('button-release-event', () => { this._controller.previous(); return Clutter.EVENT_STOP; }, this);
 
-        this._playPauseIcon = new St.Icon({ icon_name: 'media-playback-start-symbolic' });
+        this._playPauseIcon = new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 20 });
         let playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: true });
         playPauseBtn.connectObject('button-release-event', () => { this._controller.togglePlayback(); return Clutter.EVENT_STOP; }, this);
 
-        let nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic' }), reactive: true, can_focus: true });
+        let nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 20 }), reactive: true, can_focus: true });
         nextBtn.connectObject('button-release-event', () => { this._controller.next(); return Clutter.EVENT_STOP; }, this);
 
         controlsRow.add_child(prevBtn);
