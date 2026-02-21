@@ -134,7 +134,7 @@ Run the following commands in the extension's root directory to enable your pref
 | **Russian** | 🇷🇺 | `mkdir -p locale/ru/LC_MESSAGES && msgfmt po/ru.po -o locale/ru/LC_MESSAGES/dynamic-music-pill.mo` |
 | **Italian** | 🇮🇹 | `mkdir -p locale/it/LC_MESSAGES && msgfmt po/it.po -o locale/it/LC_MESSAGES/dynamic-music-pill.mo` |
 
-### 3. Restart GNOME Shell[![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
+### 3. Restart GNOME Shell
 After compilation, restart the shell to apply the changes:
 * **X11:** Press `Alt+F2`, type `r`, and hit `Enter`.
 * **Wayland:** Log out and log back in.
