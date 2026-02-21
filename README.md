@@ -6,7 +6,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
     
 </p>
 
-
+https://hosted.weblate.org/translate/dynamic-music-pill
 ---
 <div align="center">
   
@@ -27,7 +27,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 * **Configurable Mouse Actions:** Assign custom actions (Play/Pause, Next, Prev, Open App, Open Menu) to Left, Middle, and Right clicks.
 * **Hide Default GNOME Player:** Optionally disable the built-in GNOME media controls in the Quick Settings to avoid duplicate widgets.
 
-📱 **Smart Pop-Up Menu**
+📱 **Smart Pop-Up Menu**https://hosted.weblate.org/translate/dynamic-music-pill
 * **Dynamic Transitions:** Skipping tracks directly from the pop-up menu dynamically resizes the menu with smooth crossfade animations.
 * **Spinning Vinyl Effect:** The album art rotates like a vinyl record while the music is playing.
 * **Seek Bar:** Jump to any part of the song directly from the pop-up.
@@ -49,7 +49,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 | Pop-Up Dash | Pop-Up Panel |
 |:---:|:---:|
 | <img src="screenshots/popdash.png" width="400"> | <img src="screenshots/poppanel.png" width="400"> |
-
+https://hosted.weblate.org/translate/dynamic-music-pill
 ### 🎬 Preview
 <p align="center">
   <img src="screenshots/demo.gif" alt="Dynamic Music Pill Demo">
@@ -134,7 +134,7 @@ Run the following commands in the extension's root directory to enable your pref
 | **Russian** | 🇷🇺 | `mkdir -p locale/ru/LC_MESSAGES && msgfmt po/ru.po -o locale/ru/LC_MESSAGES/dynamic-music-pill.mo` |
 | **Italian** | 🇮🇹 | `mkdir -p locale/it/LC_MESSAGES && msgfmt po/it.po -o locale/it/LC_MESSAGES/dynamic-music-pill.mo` |
 
-### 3. Restart GNOME Shell
+### 3. Restart GNOME Shell[![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
 After compilation, restart the shell to apply the changes:
 * **X11:** Press `Alt+F2`, type `r`, and hit `Enter`.
 * **Wayland:** Log out and log back in.
@@ -148,7 +148,12 @@ I want to make **Dynamic Music Pill** available to everyone in their native lang
 2. Sign in with your GitHub account.
 3. Start translating the strings!
 
+
+
+
+[![Translation status Image](https://hosted.weblate.org/widget/dynamic-music-pill/multi-auto.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
 [![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
+
 ---
 
 ## 🛠️ Configuration
