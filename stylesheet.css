@@ -83,9 +83,9 @@
 }
 
 .control-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
@@ -96,6 +96,24 @@
 
 .control-btn:active {
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+
+.control-btn-secondary {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    margin: 0 4px;
+}
+
+.control-btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.control-btn-secondary:active {
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
 /* Eredeti elemek */
