@@ -6,7 +6,6 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
     
 </p>
 
-https://hosted.weblate.org/translate/dynamic-music-pill
 ---
 <div align="center">
   
