@@ -226,7 +226,7 @@ settings.bind('popup-vinyl-square', popSquareToggle, 'active', Gio.SettingsBindF
 popSquareRow.add_suffix(popSquareToggle);
 popupGroup.add(popSquareRow);
 
-const showShuffleRow = new Adw.ActionRow({ title: _('Show Shuffle & Loop'), subtitle: _('Display extra controls in the pop-up') });
+const showShuffleRow = new Adw.ActionRow({ title: _('Show Shuffle and Loop'), subtitle: _('Display extra controls in the pop-up') });
 const showShuffleToggle = new Gtk.Switch({ active: settings.get_boolean('show-shuffle-loop'), valign: Gtk.Align.CENTER });
 settings.bind('show-shuffle-loop', showShuffleToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
 showShuffleRow.add_suffix(showShuffleToggle);
