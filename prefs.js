@@ -3,10 +3,10 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import GLib from 'gi://GLib';
+import Gdk from 'gi://Gdk';
 
 export default class DynamicMusicPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
-        // 1 & 2 pont: Nincs initTranslations() és paraméter a getSettings-ben
         const settings = this.getSettings();
         const PREFS_KEYS = [
             'scroll-text', 'show-album-art', 'enable-shadow', 'hide-default-player',
@@ -18,7 +18,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'enable-scroll-controls', 'action-left-click', 'action-middle-click', 
             'action-right-click', 'action-double-click', 'dock-art-size', 'panel-art-size',          
             'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius', 
-            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action'
+            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action','popup-vinyl-square', 'popup-show-vinyl', 'show-shuffle-loop', 'use-custom-colors', 'custom-bg-color', 'custom-text-color', 'tablet-mode', 'inline-artist'
         ];
 
         // =========================================
@@ -107,6 +107,18 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('scroll-text', scrollTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         scrollTextRow.add_suffix(scrollTextToggle);
         genGroup.add(scrollTextRow);
+        
+        const tabletModeRow = new Adw.ActionRow({ title: _('Tablet Mode'), subtitle: _('Show skip buttons directly on the pill') });
+const tabletModeToggle = new Gtk.Switch({ active: settings.get_boolean('tablet-mode'), valign: Gtk.Align.CENTER });
+settings.bind('tablet-mode', tabletModeToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+tabletModeRow.add_suffix(tabletModeToggle);
+genGroup.add(tabletModeRow);
+
+const inlineArtistRow = new Adw.ActionRow({ title: _('Inline Artist'), subtitle: _('Show "Title • Artist" when the widget is squeezed') });
+const inlineArtistToggle = new Gtk.Switch({ active: settings.get_boolean('inline-artist'), valign: Gtk.Align.CENTER });
+settings.bind('inline-artist', inlineArtistToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+inlineArtistRow.add_suffix(inlineArtistToggle);
+genGroup.add(inlineArtistRow);
 
         mainPage.add(genGroup);
 
@@ -202,6 +214,23 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('popup-follow-radius', popRadToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         popRadRow.add_suffix(popRadToggle);
         popupGroup.add(popRadRow);
+        const popShowRow = new Adw.ActionRow({ title: _('Show Vinyl'), subtitle: _('Display the album art in the pop-up') });
+const popShowToggle = new Gtk.Switch({ active: settings.get_boolean('popup-show-vinyl'), valign: Gtk.Align.CENTER });
+settings.bind('popup-show-vinyl', popShowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+popShowRow.add_suffix(popShowToggle);
+popupGroup.add(popShowRow);
+
+const popSquareRow = new Adw.ActionRow({ title: _('Square Vinyl Image'), subtitle: _('Use a square album art (disables rotation)') });
+const popSquareToggle = new Gtk.Switch({ active: settings.get_boolean('popup-vinyl-square'), valign: Gtk.Align.CENTER });
+settings.bind('popup-vinyl-square', popSquareToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+popSquareRow.add_suffix(popSquareToggle);
+popupGroup.add(popSquareRow);
+
+const showShuffleRow = new Adw.ActionRow({ title: _('Show Shuffle & Loop'), subtitle: _('Display extra controls in the pop-up') });
+const showShuffleToggle = new Gtk.Switch({ active: settings.get_boolean('show-shuffle-loop'), valign: Gtk.Align.CENTER });
+settings.bind('show-shuffle-loop', showShuffleToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+showShuffleRow.add_suffix(showShuffleToggle);
+popupGroup.add(showShuffleRow);
 
         popupPage.add(popupGroup);
         window.add(popupPage);
@@ -332,6 +361,13 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             updateGroupVisibility(val);
         });
         posGroup.add(targetRow);
+        settings.connect('changed::target-container', () => {
+            let val = settings.get_int('target-container');
+            if (targetRow.selected !== val) {
+                targetRow.selected = val;
+            }
+            updateGroupVisibility(val);
+        });
 
         const posModel = new Gtk.StringList();
         posModel.append(_("Manual Index"));
@@ -415,6 +451,40 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('panel-pill-height', panelHeightRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         panelDimGroup.add(panelHeightRow);
         posGroup.add(panelDimGroup);
+        const colorGroup = new Adw.PreferencesGroup({ title: _('Custom Colors') });
+        const customColorRow = new Adw.ActionRow({ title: _('Use Custom Colors'), subtitle: _('Override dynamic colors') });
+        const customColorToggle = new Gtk.Switch({ active: settings.get_boolean('use-custom-colors'), valign: Gtk.Align.CENTER });
+        settings.bind('use-custom-colors', customColorToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        customColorRow.add_suffix(customColorToggle);
+        colorGroup.add(customColorRow);
+
+        function createColorButtonRow(title, settingKey) {
+            const row = new Adw.ActionRow({ title: title });
+            let cStr = settings.get_string(settingKey).split(',');
+            let c = new Gdk.RGBA();
+            c.parse(`rgb(${cStr[0] || 40},${cStr[1] || 40},${cStr[2] || 40})`);
+            
+            const btn = new Gtk.ColorButton({ rgba: c, use_alpha: false, valign: Gtk.Align.CENTER });
+            btn.connect('color-set', () => {
+                let rgba = btn.get_rgba();
+                settings.set_string(settingKey, `${Math.round(rgba.red * 255)},${Math.round(rgba.green * 255)},${Math.round(rgba.blue * 255)}`);
+            });
+            settings.connect(`changed::${settingKey}`, () => {
+                let parts = settings.get_string(settingKey).split(',');
+                let newC = new Gdk.RGBA();
+                newC.parse(`rgb(${parts[0]},${parts[1]},${parts[2]})`);
+                btn.set_rgba(newC);
+            });
+            
+            settings.bind('use-custom-colors', btn, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+            row.add_suffix(btn);
+            return row;
+        }
+
+        colorGroup.add(createColorButtonRow(_('Background Color'), 'custom-bg-color'));
+        colorGroup.add(createColorButtonRow(_('Text Color'), 'custom-text-color'));
+
+        stylePage.add(colorGroup);
 
         stylePage.add(posGroup);
         window.add(stylePage);
