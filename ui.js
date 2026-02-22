@@ -106,6 +106,10 @@ class ScrollLabel extends St.Widget {
             });
         }, this);
     }
+    setLabelStyle(css) {
+        if (this._label1) this._label1.set_style(css);
+        if (this._label2) this._label2.set_style(css);
+    }
 
     destroy() {
         this._stopAnimation();
@@ -402,8 +406,8 @@ class ExpandedPlayer extends St.Widget {
         let controlsRow = new St.BoxLayout({ style_class: 'controls-row', vertical: false, x_align: Clutter.ActorAlign.CENTER, reactive: true });
         
         this._shuffleIcon = new St.Icon({ icon_name: 'media-playlist-shuffle-symbolic', icon_size: 16 });
-        let shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: true });
-        shuffleBtn.connectObject('button-release-event', () => { this._controller.toggleShuffle(); return Clutter.EVENT_STOP; }, this);
+        this._shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: true });
+        this._shuffleBtn.connectObject('button-release-event', () => { this._controller.toggleShuffle(); return Clutter.EVENT_STOP; }, this);
 
         let prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
         prevBtn.connectObject('button-release-event', () => { this._controller.previous(); return Clutter.EVENT_STOP; }, this);
@@ -416,14 +420,15 @@ class ExpandedPlayer extends St.Widget {
         nextBtn.connectObject('button-release-event', () => { this._controller.next(); return Clutter.EVENT_STOP; }, this);
 
         this._repeatIcon = new St.Icon({ icon_name: 'media-playlist-repeat-symbolic', icon_size: 16 });
-        let repeatBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._repeatIcon, reactive: true, can_focus: true });
-        repeatBtn.connectObject('button-release-event', () => { this._controller.toggleLoop(); return Clutter.EVENT_STOP; }, this);
+        this._repeatBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._repeatIcon, reactive: true, can_focus: true });
+        this._repeatBtn.connectObject('button-release-event', () => { this._controller.toggleLoop(); return Clutter.EVENT_STOP; }, this);
 
-        controlsRow.add_child(shuffleBtn);
+        controlsRow.add_child(this._shuffleBtn);
         controlsRow.add_child(prevBtn);
         controlsRow.add_child(playPauseBtn);
         controlsRow.add_child(nextBtn);
-        controlsRow.add_child(repeatBtn);
+        controlsRow.add_child(this._repeatBtn);
+
         this._box.add_child(controlsRow);
     }
 
@@ -495,16 +500,25 @@ class ExpandedPlayer extends St.Widget {
         let trackChanged = (this._currentArtUrl !== artUrl || this._lastTrackTitle !== title);
         this._lastTrackTitle = title;
 
-        if (!artUrl) {
+        let showVinyl = this._settings.get_boolean('popup-show-vinyl');
+        if (!artUrl || !showVinyl) {
             this._vinylBin.hide();
             this._stopVinyl();
             this._currentArtUrl = null;
         } else {
             this._vinylBin.show();
+            let isSquare = this._settings.get_boolean('popup-vinyl-square');
+            let radius = isSquare ? 12 : 50;
+            let newClass = isSquare ? 'vinyl-container-square' : 'vinyl-container';
+            
+            if (this._vinyl.get_style_class_name() !== newClass) {
+                this._vinyl.set_style_class_name(newClass);
+            }
+            
             if (trackChanged) {
                 this._currentArtUrl = artUrl;
                 let bg = `url("${artUrl}")`;
-                let style = `background-image: ${bg}; background-size: cover; border-radius: 50px;`;
+                let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
 
                 if (this._topIsActive) {
                     this._artBottom.set_style(style);
@@ -569,6 +583,9 @@ class ExpandedPlayer extends St.Widget {
                 }
             }
         }
+        let showShufLoop = this._settings.get_boolean('show-shuffle-loop');
+        if (this._shuffleBtn) this._shuffleBtn.visible = showShufLoop;
+        if (this._repeatBtn) this._repeatBtn.visible = showShufLoop;
     }
 
     showFor(player, artUrl) {
@@ -723,7 +740,9 @@ class ExpandedPlayer extends St.Widget {
 
     _startVinyl() {
         if (!this._vinyl || !this._settings.get_boolean('popup-vinyl-rotate')) return;
+        if (this._settings.get_boolean('popup-vinyl-square')) return;
         if (this._isSpinning) return;
+        
         this._isSpinning = true;
 
         this._vinyl.remove_all_transitions();
@@ -883,12 +902,32 @@ class MusicPill extends St.Widget {
         y_expand: false
     });
     this._body.add_child(this._artBin);
+    this._prevBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 20 }), reactive: true });
+    this._nextBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 20 }), reactive: true });
+   
+    this._prevBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
+    this._nextBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
+
+    this._prevBtn.connectObject('button-release-event', () => { 
+        this._controller.previous(); 
+        return Clutter.EVENT_STOP; 
+    }, this);
+    
+    this._nextBtn.connectObject('button-release-event', () => { 
+        this._controller.next(); 
+        return Clutter.EVENT_STOP; 
+    }, this);
+
+    this._tabletControls = new St.BoxLayout({ vertical: false, y_align: Clutter.ActorAlign.CENTER, style: 'margin-left: 6px;' });
+    this._tabletControls.add_child(this._prevBtn);
+    this._tabletControls.add_child(this._nextBtn);
+    this._body.add_child(this._tabletControls);
 
     this._textWrapper = new St.Widget({
         layout_manager: new Clutter.BinLayout(),
         x_expand: true, y_expand: true,
         clip_to_allocation: true,
-        style: 'min-width: 50px; margin-right: 4px; margin-left: 2px;'
+        style: 'min-width: 10px; margin-right: 4px; margin-left: 2px;'
     });
 
     this._textBox = new St.BoxLayout({
@@ -1019,6 +1058,11 @@ class MusicPill extends St.Widget {
     }, this);
 
     // Listeners
+this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
+    this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); }, this);
+    this._settings.connectObject('changed::custom-bg-color', () => this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b), this);
+    this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
+    this._settings.connectObject('changed::tablet-mode', () => this._updateDimensions(), this);
     this._settings.connectObject('changed::scroll-action', () => {  this._scrollDelta = 0; }, this);
     this._settings.connectObject('changed::enable-transparency', () => this._updateTransparencyConfig(), this);
     this._settings.connectObject('changed::transparency-strength', () => this._updateTransparencyConfig(), this);
@@ -1150,6 +1194,9 @@ class MusicPill extends St.Widget {
   _updateDimensions() {
         let target = this._settings.get_int('target-container');
         this._inPanel = (target > 0);
+        
+        this.set_width(-1);
+
         let width, height, prefArtSize;
 
         if (this._inPanel) {
@@ -1184,7 +1231,6 @@ class MusicPill extends St.Widget {
         }
 
         this._targetWidth = width;
-
         this._body.set_width(width);
         this._body.set_height(height);
 
@@ -1211,40 +1257,67 @@ class MusicPill extends St.Widget {
 
         this._artWidget.setRadius(artRadius);
         this._artWidget.setShadowStyle(this._shadowCSS);
-
         this._visualizer.setMode(visStyle);
+
+        let tabletMode = this._settings.get_boolean('tablet-mode');
+        
+        if (tabletMode && !this._gameModeActive) {
+            this._tabletControls.show();
+        } else {
+            this._tabletControls.hide();
+        }
 
         if (width < 220 || visStyle === 0) {
             this._visBin.hide();
             this._visBin.set_width(0);
             this._visBin.set_style('margin: 0px;');
-            let artMargin = (width < 180) ? 4 : 8;
-            this._artBin.set_style(`margin-right: ${artMargin}px;`);
             this._fadeLeft.set_width(10);
             this._fadeRight.set_width(10);
+            
+            if (!tabletMode || this._gameModeActive) {
+                let artMargin = (width < 180) ? 4 : 8;
+                this._artBin.set_style(`margin-right: ${artMargin}px;`);
+            } else {
+                this._artBin.set_style('margin-right: 2px;');
+            }
         } else {
             this._visBin.show();
             let sideMargin = this._settings.get_int('visualizer-padding');
-
             this._visBin.set_style(`margin-left: ${sideMargin}px;`);
             this._visBin.set_width(-1);
-            this._artBin.set_style(`margin-right: ${sideMargin}px;`);
             this._fadeLeft.set_width(30);
             this._fadeRight.set_width(30);
+            
+            if (!tabletMode || this._gameModeActive) {
+                this._artBin.set_style(`margin-right: ${sideMargin}px;`);
+            } else {
+                this._artBin.set_style('margin-right: 2px;');
+            }
         }
+
+        let customTextStr = this._settings.get_boolean('use-custom-colors') ? `rgb(${this._settings.get_string('custom-text-color')})` : 'white';
+        let customTextAlpha = this._settings.get_boolean('use-custom-colors') ? `rgba(${this._settings.get_string('custom-text-color')}, 0.7)` : 'rgba(255,255,255,0.7)';
 
         if (height < 46 && !this._inPanel) {
             this._artistScroll.hide();
         } else if (this._inPanel && height < 30) {
-             this._artistScroll.hide();
+            this._artistScroll.hide();
         } else {
             this._artistScroll.show();
         }
 
-        this._titleScroll.set_style(`font-size: ${fontSizeTitle}; font-weight: 800; color: white;`);
-        this._artistScroll.set_style(`font-size: ${fontSizeArtist}; font-weight: 500; color: rgba(255,255,255,0.7);`);
+        this._titleScroll.setLabelStyle(`font-size: ${fontSizeTitle}; font-weight: 800; color: ${customTextStr};`);
+        this._artistScroll.setLabelStyle(`font-size: ${fontSizeArtist}; font-weight: 500; color: ${customTextAlpha};`);
 
         this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+        
+        this._updateTextDisplay();
+        
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            if (this._titleScroll) this._titleScroll._checkResize();
+            if (this._artistScroll) this._artistScroll._checkResize();
+            return GLib.SOURCE_REMOVE;
+        });
 
         if (!this._isActiveState) {
             this.visible = false;
@@ -1297,9 +1370,8 @@ class MusicPill extends St.Widget {
 
                 let targetW = 0;
                 this.ease({ opacity: 0, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                this._body.ease({ width: targetW, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-
-                this.ease({
+                
+                this._body.ease({
                     width: targetW,
                     duration: 500,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
@@ -1335,12 +1407,11 @@ class MusicPill extends St.Widget {
         this._updateDimensions();
         let finalWidth = this._targetWidth;
 
-        this.set_width(0);
+        this.set_width(-1);
         this._body.set_width(0);
         this.opacity = 0;
 
         this.ease({
-            width: finalWidth,
             opacity: 255,
             duration: 500,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD
@@ -1351,6 +1422,18 @@ class MusicPill extends St.Widget {
             duration: 500,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD
         });
+    }
+    let origTitle = title;
+    let origArtist = artist;
+    
+    this._origTitle = origTitle;
+    this._origArtist = origArtist;
+    this._updateTextDisplay(forceUpdate);
+
+    let isSqueezed = (this._inPanel && this._settings.get_int('panel-pill-height') < 30) || (!this._inPanel && this._settings.get_int('pill-height') < 46);
+    if (this._settings.get_boolean('inline-artist') && isSqueezed && artist && title) {
+        title = `${title} • ${artist}`;
+        artist = null; 
     }
 
     if (this._lastTitle !== title || this._lastArtist !== artist || forceUpdate) {
@@ -1370,8 +1453,14 @@ class MusicPill extends St.Widget {
                 GLib.source_remove(this._artDebounceTimer);
                 this._artDebounceTimer = null;
             }
-            this._artBin.show();
-            this._artBin.opacity = 255;
+            
+            if (this._settings.get_boolean('show-album-art')) {
+                this._artBin.show();
+                this._artBin.opacity = 255;
+            } else {
+                this._artBin.hide();
+            }
+
             this._artWidget.setArt(artUrl, true);
             this._loadColorFromArt(artUrl);
         } else {
@@ -1385,8 +1474,25 @@ class MusicPill extends St.Widget {
         if (player) {
             this._controller._expandedPlayer.setPlayer(player);
         }
-        this._controller._expandedPlayer.updateContent(this._lastTitle, this._lastArtist, this._lastArtUrl, this._currentStatus);
+        this._controller._expandedPlayer.updateContent(origTitle, origArtist, this._lastArtUrl, this._currentStatus);
     }
+  }
+  _updateTextDisplay(forceUpdate = false) {
+      let t = this._origTitle;
+      let a = this._origArtist;
+
+      let isSqueezed = (this._inPanel && this._settings.get_int('panel-pill-height') < 30) || (!this._inPanel && this._settings.get_int('pill-height') < 46);
+      if (this._settings.get_boolean('inline-artist') && isSqueezed && a && t) {
+          t = `${t} • ${a}`;
+          a = null; 
+      }
+
+      if (this._lastTitle !== t || this._lastArtist !== a || forceUpdate) {
+          if (this._titleScroll) this._titleScroll.setText(t || 'Loading...', forceUpdate);
+          if (this._artistScroll) this._artistScroll.setText(a || '', forceUpdate);
+          this._lastTitle = t;
+          this._lastArtist = a;
+      }
   }
 
   _loadColorFromArt(artUrl) {
@@ -1438,6 +1544,12 @@ class MusicPill extends St.Widget {
   }
 
   _applyStyle(r, g, b) {
+  if (this._settings.get_boolean('use-custom-colors')) {
+          let customBg = this._settings.get_string('custom-bg-color').split(',');
+          r = parseInt(customBg[0]) || 40;
+          g = parseInt(customBg[1]) || 40;
+          b = parseInt(customBg[2]) || 40;
+      }
       if (!this._body || !this._body.get_parent()) return;
 
       let alpha = (typeof this._currentBgAlpha === 'number' && !isNaN(this._currentBgAlpha)) ? this._currentBgAlpha : 1.0;
