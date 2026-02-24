@@ -21,7 +21,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action', 'popup-vinyl-square', 
             'popup-show-vinyl', 'show-shuffle-loop', 'use-custom-colors', 'custom-bg-color', 
             'custom-text-color', 'tablet-mode', 'inline-artist', 'pill-dynamic-width', 
-            'popup-use-custom-width', 'popup-custom-width'
+            'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list','hide-text',
+            'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay'
         ];
 
         // =========================================
@@ -46,6 +47,60 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('show-album-art', artToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         artRow.add_suffix(artToggle);
         genGroup.add(artRow);
+        
+        const fallbackRow = new Adw.ActionRow({
+            title: _('Fallback Album Art'),
+            subtitle: settings.get_string('fallback-art-path') || _('No image selected')
+        });
+
+        const fallbackBtn = new Gtk.Button({
+            icon_name: 'document-open-symbolic',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat']
+        });
+
+        fallbackBtn.connect('clicked', () => {
+            let dialog = new Gtk.FileDialog({ title: _('Select Fallback Image') });
+            
+            let filter = new Gtk.FileFilter();
+            filter.set_name("Images");
+            filter.add_mime_type("image/png");
+            filter.add_mime_type("image/jpeg");
+            let filterList = new Gio.ListStore({ item_type: Gtk.FileFilter });
+            filterList.append(filter);
+            dialog.set_filters(filterList);
+
+            dialog.open(null, null, (dlg, res) => {
+                try {
+                    let file = dlg.open_finish(res);
+                    if (file) {
+                        let path = file.get_path();
+                        settings.set_string('fallback-art-path', path);
+                        fallbackRow.subtitle = path;
+                    }
+                } catch (e) { console.error(e); }
+            });
+        });
+
+        const clearFallbackBtn = new Gtk.Button({
+            icon_name: 'edit-clear-symbolic',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat', 'error']
+        });
+        
+        clearFallbackBtn.connect('clicked', () => {
+            settings.set_string('fallback-art-path', '');
+            fallbackRow.subtitle = _('No image selected');
+        });
+
+        let btnBox = new Gtk.Box({ spacing: 6, valign: Gtk.Align.CENTER });
+        btnBox.append(fallbackBtn);
+        btnBox.append(clearFallbackBtn);
+        fallbackRow.add_suffix(btnBox);
+        
+        settings.bind('show-album-art', fallbackRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+
+        genGroup.add(fallbackRow);
 
         // Scroll Controls
         const scrollCtrlRow = new Adw.ActionRow({
@@ -122,6 +177,18 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 	settings.bind('inline-artist', inlineArtistToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
 	inlineArtistRow.add_suffix(inlineArtistToggle);
 	genGroup.add(inlineArtistRow);
+	
+	const hideTextRow = new Adw.ActionRow({ 
+            title: _('Compact Mode (Hide Text)'), 
+            subtitle: _('Hide title and artist') 
+        });
+        const hideTextToggle = new Gtk.Switch({ 
+            active: settings.get_boolean('hide-text'), 
+            valign: Gtk.Align.CENTER 
+        });
+        settings.bind('hide-text', hideTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        hideTextRow.add_suffix(hideTextToggle);
+        genGroup.add(hideTextRow);
 
         mainPage.add(genGroup);
 
@@ -240,7 +307,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('popup-use-custom-width', popUseCustomToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         popUseCustomRow.add_suffix(popUseCustomToggle);
         popupGroup.add(popUseCustomRow);
-
+        
         const popCustomWidthRow = new Adw.SpinRow({
             title: _('Custom Width Value'),
             adjustment: new Gtk.Adjustment({ lower: 260, upper: 800, step_increment: 10 })
@@ -260,7 +327,24 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('popup-custom-width', popCustomWidthRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         settings.bind('popup-use-custom-width', popCustomWidthRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
         popupGroup.add(popCustomWidthRow);
+        
+        const popVisRow = new Adw.ActionRow({ title: _('Show Visualizer in Pop-up') });
+        const popVisToggle = new Gtk.Switch({ active: settings.get_boolean('popup-show-visualizer'), valign: Gtk.Align.CENTER });
+        settings.bind('popup-show-visualizer', popVisToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popVisRow.add_suffix(popVisToggle);
+        popupGroup.add(popVisRow);
 
+        const hidePillVisRow = new Adw.ActionRow({ 
+            title: _('Hide Pill Visualizer'), 
+            subtitle: _('Creates a "moving" effect by hiding the main pill visualizer') 
+        });
+        const hidePillVisToggle = new Gtk.Switch({ active: settings.get_boolean('popup-hide-pill-visualizer'), valign: Gtk.Align.CENTER });
+        settings.bind('popup-hide-pill-visualizer', hidePillVisToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        hidePillVisRow.add_suffix(hidePillVisToggle);
+        settings.bind('popup-show-visualizer', hidePillVisRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        popupGroup.add(hidePillVisRow);
+
+        
         popupPage.add(popupGroup);
         window.add(popupPage);
 
@@ -552,6 +636,114 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('enable-gamemode', gameToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         gameRow.add_suffix(gameToggle);
         compatGroup.add(gameRow);
+        
+        const compatDelayRow = new Adw.ActionRow({ 
+            title: _('Slow Player Workaround'), 
+            subtitle: _('Adds a slight delay to track changes (fixes sync issues)') 
+        });
+        const compatDelayToggle = new Gtk.Switch({ active: settings.get_boolean('compatibility-delay'), valign: Gtk.Align.CENTER });
+        settings.bind('compatibility-delay', compatDelayToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        compatDelayRow.add_suffix(compatDelayToggle);
+        compatGroup.add(compatDelayRow);
+        
+        const filterModel = new Gtk.StringList();
+        filterModel.append(_("Off (Allow All)"));
+        filterModel.append(_("Blacklist (Exclude listed)"));
+        filterModel.append(_("Whitelist (Only allow listed)"));
+
+        const filterModeRow = new Adw.ComboRow({
+            title: _('Player Filter Mode'),
+            subtitle: _('Choose how to filter media players (e.g. browsers)'),
+            model: filterModel,
+            selected: settings.get_int('player-filter-mode')
+        });
+        
+        filterModeRow.connect('notify::selected', () => {
+            settings.set_int('player-filter-mode', filterModeRow.selected);
+        });
+        compatGroup.add(filterModeRow);
+
+        const filterListRow = new Adw.EntryRow({
+            title: _('Filtered Players (comma separated)'),
+            text: settings.get_string('player-filter-list')
+        });
+        
+        settings.bind('player-filter-list', filterListRow, 'text', Gio.SettingsBindFlags.DEFAULT);
+
+        const updateFilterState = () => {
+            filterListRow.set_sensitive(settings.get_int('player-filter-mode') !== 0);
+        };
+        settings.connect('changed::player-filter-mode', updateFilterState);
+        updateFilterState();
+
+        compatGroup.add(filterListRow);
+        const detectedPlayersRow = new Adw.ActionRow({
+            title: _('Detected Players'),
+            subtitle: _('Click an active player to add it to the filter list')
+        });
+
+        const refreshBtn = new Gtk.Button({ 
+            icon_name: 'view-refresh-symbolic', 
+            valign: Gtk.Align.CENTER, 
+            margin_end: 10,
+            css_classes: ['flat']
+        });
+        detectedPlayersRow.add_prefix(refreshBtn);
+
+        const playerBox = new Gtk.Box({ spacing: 6, valign: Gtk.Align.CENTER });
+        detectedPlayersRow.add_suffix(playerBox);
+
+        const updateDetected = () => {
+            let child = playerBox.get_first_child();
+            while (child) {
+                let next = child.get_next_sibling();
+                playerBox.remove(child);
+                child = next;
+            }
+
+            let connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
+            connection.call(
+                'org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus', 'ListNames',
+                null, null, Gio.DBusCallFlags.NONE, -1, null,
+                (c, res) => {
+                    try {
+                        let r = c.call_finish(res);
+                        let names = r.deep_unpack()[0];
+                        let mpris = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.'));
+                        
+                        let apps = [...new Set(mpris.map(n => n.replace('org.mpris.MediaPlayer2.', '').split('.')[0]))];
+                        
+                        if (apps.length === 0) {
+                            playerBox.append(new Gtk.Label({ label: _('No players found') }));
+                        } else {
+                            apps.forEach(app => {
+                                let btn = new Gtk.Button({ label: app, css_classes: ['suggested-action'] });
+                                btn.connect('clicked', () => {
+                                    let current = settings.get_string('player-filter-list');
+                                    let list = current.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                                    if (!list.includes(app)) {
+                                        list.push(app);
+                                        settings.set_string('player-filter-list', list.join(', '));
+                                    }
+                                });
+                                playerBox.append(btn);
+                            });
+                        }
+                    } catch(e) {}
+                }
+            );
+        };
+
+        refreshBtn.connect('clicked', updateDetected);
+        updateDetected();
+
+        const updateDetectedState = () => {
+            detectedPlayersRow.set_sensitive(settings.get_int('player-filter-mode') !== 0);
+        };
+        settings.connect('changed::player-filter-mode', updateDetectedState);
+        updateDetectedState();
+
+        compatGroup.add(detectedPlayersRow);
         otherPage.add(compatGroup);
 
         const backupGroup = new Adw.PreferencesGroup({ title: _('Backup & Restore') });
