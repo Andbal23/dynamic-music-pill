@@ -126,9 +126,14 @@ class ScrollLabel extends St.Widget {
     }
 
     _checkResize() {
-        if (!this._text || this._gameMode || !this.get_parent()) return;
+    if (!this._text || this._gameMode || !this.get_parent()) return;
+    
+    GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+        if (!this.get_parent()) return GLib.SOURCE_REMOVE;
+        
         let boxWidth = this.get_allocation_box().get_width();
-        if (boxWidth <= 1) return;
+        if (boxWidth <= 1) return GLib.SOURCE_REMOVE;
+        
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         let textWidth = this._label1.get_preferred_width(-1)[1];
         let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
@@ -141,7 +146,9 @@ class ScrollLabel extends St.Widget {
             this._separator.hide();
             this._label1.clutter_text.ellipsize = (textWidth > boxWidth) ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
         }
-    }
+        return GLib.SOURCE_REMOVE;
+    });
+}
 
     setText(text, force = false) {
         if (!force && this._text === text) return;
@@ -212,18 +219,18 @@ class ScrollLabel extends St.Widget {
 
 export const WaveformVisualizer = GObject.registerClass(
 class WaveformVisualizer extends St.BoxLayout {
-    _init() {
-        super._init({ vertical: false, style: 'spacing: 3px;', y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
-        this.set_height(22);
+    _init(height = 22, barCount = 4, barWidth = 3, barHeight = 20, spacing = 3) {
+        super._init({ vertical: false, style: `spacing: ${spacing}px;`, y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
+        this.set_height(height);
         this._bars = [];
         this._color = '255,255,255';
         this._mode = 1;
         this._isPlaying = false;
         this._timerId = null;
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < barCount; i++) {
             let bar = new St.Widget({ style_class: 'visualizer-bar' });
-            bar.set_size(3, 20);
+            bar.set_size(barWidth, barHeight);
             bar.set_pivot_point(0.5, 1.0);
             this.add_child(bar);
             this._bars.push(bar);
@@ -232,7 +239,10 @@ class WaveformVisualizer extends St.BoxLayout {
     }
 
     destroy() {
-        if (this._timerId) { GLib.source_remove(this._timerId); this._timerId = null; }
+        if (this._timerId) {
+            GLib.source_remove(this._timerId);
+            this._timerId = null;
+        }
         super.destroy();
     }
 
@@ -293,8 +303,8 @@ class WaveformVisualizer extends St.BoxLayout {
                     scaleY = 0.3 + (wave * 0.7);
                 }
                 else if (this._mode === 2) {
-                    let speeds = [1.1, 1.6, 1.3, 1.8];
-                    let pulse = (Math.sin(t * speeds[idx]) + 1) / 2;
+                    let speeds = [1.1, 1.6, 1.3, 1.8, 1.5, 1.2, 1.7, 1.4];
+                    let pulse = (Math.sin(t * speeds[idx % speeds.length]) + 1) / 2;
                     scaleY = 0.3 + (pulse * 0.7);
                 }
             }
@@ -378,14 +388,24 @@ class ExpandedPlayer extends St.Widget {
             y_align: Clutter.ActorAlign.CENTER,
             x_expand: true,
             clip_to_allocation: true,
-            style: 'min-width: 0px;'
+            style: 'min-width: 0px; margin-left: 10px; margin-right: 10px;'
         });
         this._titleLabel = new ScrollLabel('expanded-title', this._settings);
         this._artistLabel = new ScrollLabel('expanded-artist', this._settings);
 
+
+        this._visualizer = new WaveformVisualizer(80, 4, 6, 80, 5);
+        this._visBin = new St.Bin({ 
+            child: this._visualizer, 
+            x_align: Clutter.ActorAlign.END, 
+            y_align: Clutter.ActorAlign.CENTER 
+        });
+
         infoBox.add_child(this._titleLabel);
         infoBox.add_child(this._artistLabel);
+        
         topRow.add_child(infoBox);
+        topRow.add_child(this._visBin);
         this._box.add_child(topRow);
 
         let progressBox = new St.BoxLayout({ style_class: 'progress-container', vertical: false, y_align: Clutter.ActorAlign.CENTER });
@@ -478,7 +498,7 @@ class ExpandedPlayer extends St.Widget {
         let borderOp = Math.min(0.1, finalAlpha * 0.2);
         let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255,255,255,${borderOp});`;
 
-        let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 360 : 260;
+	let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
         let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; padding: 20px; ${shadowStyle} min-width: ${minWLimit}px; max-width: 600px;`;
 
         if (this._lastPopupCss !== css) {
@@ -489,6 +509,7 @@ class ExpandedPlayer extends St.Widget {
         if (this._vinylBin) this._vinylBin.opacity = 255;
         if (this._titleLabel) this._titleLabel.opacity = 255;
         if (this._artistLabel) this._artistLabel.opacity = 255;
+        if (this._visualizer) { this._visualizer.setColor({ r: safeR, g: safeG, b: safeB }); }
     }
 
     updateContent(title, artist, artUrl, status) {
@@ -551,11 +572,13 @@ class ExpandedPlayer extends St.Widget {
 
         if (status === 'Playing') {
             this._playPauseIcon.icon_name = 'media-playback-pause-symbolic';
+            if (this._visualizer) this._visualizer.setPlaying(true);
             if (this._lastStatus !== 'Playing' || trackChanged) {
                 this._startVinyl();
             }
         } else {
             this._playPauseIcon.icon_name = 'media-playback-start-symbolic';
+            if (this._visualizer) this._visualizer.setPlaying(false);
             if (this._lastStatus === 'Playing') {
                 this._stopVinyl();
             }
@@ -568,7 +591,7 @@ class ExpandedPlayer extends St.Widget {
         
         if (this._player) {
             let shuffle = this._player.Shuffle;
-            let loop = this._player.LoopStatus;
+            let loop = this._player.LoopStatus;           
 
             if (this._shuffleIcon && shuffle !== undefined) {
                 this._shuffleIcon.opacity = shuffle ? 255 : 100;
@@ -628,11 +651,19 @@ class ExpandedPlayer extends St.Widget {
         }
 
         this._startTimer();
+        this._visualizer.setMode(this._settings.get_int('visualizer-style'));
+        let showVis = this._settings.get_boolean('popup-show-visualizer') && this._settings.get_int('visualizer-style') !== 0;
+        this._visBin.visible = showVis;
+        
+        if (showVis && this._settings.get_boolean('popup-hide-pill-visualizer')) {
+            if (this._controller._pill) this._controller._pill._setPopupOpen(true);
+        }
     }
 
     hide() {
         this._stopTimer();
         this._stopVinyl();
+        if (this._controller._pill) this._controller._pill._setPopupOpen(false);
         this.ease({
             opacity: 0,
             duration: 200,
@@ -650,6 +681,12 @@ class ExpandedPlayer extends St.Widget {
     destroy() {
         if (this._updateTimer) { GLib.source_remove(this._updateTimer); this._updateTimer = null; }
         if (this._resizeDebounceId) { GLib.source_remove(this._resizeDebounceId); this._resizeDebounceId = null; }
+        
+        if (this._visualizer) {
+            this._visualizer.destroy();
+            this._visualizer = null;
+        }
+
         if (this._titleLabel) { this._titleLabel.destroy(); this._titleLabel = null; }
         if (this._artistLabel) { this._artistLabel.destroy(); this._artistLabel = null; }
         super.destroy();
@@ -807,7 +844,7 @@ class ExpandedPlayer extends St.Widget {
             let [minW, natW] = this._box.get_preferred_width(-1);
             let [minH, natH] = this._box.get_preferred_height(natW);
 
-            let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 360 : 260;
+	    let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
             let menuW;
             if (this._settings.get_boolean('popup-use-custom-width')) {
                 menuW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
@@ -945,7 +982,7 @@ class MusicPill extends St.Widget {
         x_expand: true,
         y_align: Clutter.ActorAlign.CENTER,
         x_align: Clutter.ActorAlign.FILL,
-        style: 'padding-left: 0px; padding-right: 0px;'
+	style: 'padding-left: 0px; padding-right: 0px; spacing: 0px;'
     });
     this._titleScroll = new ScrollLabel('music-label-title', this._settings);
     this._artistScroll = new ScrollLabel('music-label-artist', this._settings);
@@ -1068,6 +1105,7 @@ class MusicPill extends St.Widget {
     }, this);
 
     // Listeners
+    this._settings.connectObject('changed::hide-text', () => this._updateDimensions(), this);
     this._settings.connectObject('changed::pill-dynamic-width', () => { this._updateDimensions(); if(this._isActiveState) 		this._body.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD }); }, this);
     this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
     this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); }, this);
@@ -1102,10 +1140,10 @@ class MusicPill extends St.Widget {
     this._settings.connectObject('changed::position-mode', () => this._controller._queueInject(), this);
     this._settings.connectObject('changed::target-container', () => this._controller._queueInject(), this);
     this._settings.connectObject('changed::visualizer-style', () => this._updateDimensions(), this);
-    this._settings.connectObject('changed::border-radius', () => this._updateDimensions(), this);
-    this._settings.connectObject('changed::enable-shadow', () => this._updateDimensions(), this);
-    this._settings.connectObject('changed::shadow-opacity', () => this._updateDimensions(), this);
-    this._settings.connectObject('changed::shadow-blur', () => this._updateDimensions(), this);
+    this._settings.connectObject('changed::border-radius', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+    this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+    this._settings.connectObject('changed::shadow-opacity', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+    this._settings.connectObject('changed::shadow-blur', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
     this._settings.connectObject('changed::show-album-art', () => this._updateArtVisibility(), this);
     this._settings.connectObject('changed::visualizer-padding', () => this._updateDimensions(), this);
 
@@ -1168,6 +1206,11 @@ class MusicPill extends St.Widget {
               this.opacity = 255;
           }
       }
+  }
+  
+  _setPopupOpen(isOpen) {
+      this._isPopupOpen = isOpen;
+      this._updateDimensions(); 
   }
 
   _updateArtVisibility() {
@@ -1243,6 +1286,11 @@ class MusicPill extends St.Widget {
         }
 
         this._targetWidth = width;
+        if (this._settings.get_boolean('hide-text')) {
+	    this._textWrapper.hide();
+	} else {
+	    this._textWrapper.show();
+	}
         this._body.set_height(height);
 
         this.translation_y = vOffset;
@@ -1278,7 +1326,11 @@ class MusicPill extends St.Widget {
             this._tabletControls.hide();
         }
 
-        if (width < 220 || visStyle === 0) {
+        let hideText = this._settings.get_boolean('hide-text');
+
+        let forceHideVis = this._isPopupOpen && this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
+
+        if ((width < 220 && !hideText) || visStyle === 0 || forceHideVis) {
             this._visBin.hide();
             this._visBin.set_width(0);
             this._visBin.set_style('margin: 0px;');
@@ -1286,7 +1338,7 @@ class MusicPill extends St.Widget {
             this._fadeRight.set_width(10);
             
             if (!tabletMode || this._gameModeActive) {
-                let artMargin = (width < 180) ? 4 : 8;
+                let artMargin = (width < 180 && !hideText) ? 4 : 8;
                 this._artBin.set_style(`margin-right: ${artMargin}px;`);
             } else {
                 this._artBin.set_style('margin-right: 2px;');
@@ -1324,25 +1376,25 @@ class MusicPill extends St.Widget {
 
         let targetWidth = confWidth;
 
-        if (this._settings.get_boolean('pill-dynamic-width')) {
+        if (this._settings.get_boolean('pill-dynamic-width') || hideText) {
             let currentWidth = this._body.width;
             this._body.remove_transition('width');
             
             let elementsW = this._padX * 2;
             
             if (this._artBin.visible) {
-                let artM = (!tabletMode || this._gameModeActive) ? ((confWidth < 220 || visStyle === 0) ? ((confWidth < 180) ? 4 : 8) : this._settings.get_int('visualizer-padding')) : 2;
+                let artM = (!tabletMode || this._gameModeActive) ? (((confWidth < 220 && !hideText) || visStyle === 0) ? ((confWidth < 180 && !hideText) ? 4 : 8) : this._settings.get_int('visualizer-padding')) : 2;
                 elementsW += finalArtSize + artM;
             }
             if (this._tabletControls.visible) elementsW += this._tabletControls.get_preferred_width(-1)[1];
             if (this._visBin.visible) elementsW += this._visBin.get_preferred_width(-1)[1] + this._settings.get_int('visualizer-padding');
             
-            let titleW = this._titleScroll._label1.get_preferred_width(-1)[1];
-            let artistW = this._artistScroll.visible ? this._artistScroll._label1.get_preferred_width(-1)[1] : 0;
+            let titleW = hideText ? 0 : this._titleScroll._label1.get_preferred_width(-1)[1];
+            let artistW = (hideText || !this._artistScroll.visible) ? 0 : this._artistScroll._label1.get_preferred_width(-1)[1];
             
-            elementsW += Math.max(titleW, artistW) + 12;
+            elementsW += Math.max(titleW, artistW) + (hideText ? 0 : 12);
             
-            targetWidth = Math.min(Math.max(elementsW, 120), confWidth);
+            targetWidth = hideText ? Math.max(elementsW, 60) : Math.min(Math.max(elementsW, 120), confWidth);
             
             if (currentWidth > 0 && Math.abs(targetWidth - currentWidth) < 10) {
                 targetWidth = currentWidth;
