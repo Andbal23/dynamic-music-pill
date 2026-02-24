@@ -80,6 +80,7 @@ class ScrollLabel extends St.Widget {
         this._settings = settings;
         this._text = "";
         this._gameMode = false;
+        this._isScrolling = false;
         this._container = new St.BoxLayout({ vertical: false });
         this.add_child(this._container);
 
@@ -131,7 +132,7 @@ class ScrollLabel extends St.Widget {
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         let textWidth = this._label1.get_preferred_width(-1)[1];
         let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
-        let isScrolling = (this._scrollTimer != null);
+        let isScrolling = (this._scrollTimer != null) || this._isScrolling;
 
         if (needsScroll && !isScrolling) this._startInfiniteScroll(textWidth);
         else if (!needsScroll && isScrolling) {
@@ -165,6 +166,7 @@ class ScrollLabel extends St.Widget {
     }
 
     _stopAnimation() {
+        this._isScrolling = false;
         this._container.remove_all_transitions();
         this._container.translation_x = 0;
         if (this._scrollTimer) { GLib.source_remove(this._scrollTimer); this._scrollTimer = null; }
@@ -181,6 +183,7 @@ class ScrollLabel extends St.Widget {
 
     _startInfiniteScroll(textWidth) {
         this._stopAnimation();
+        this._isScrolling = true;
         this._label2.show();
         this._separator.show();
         const distance = textWidth + 30;
