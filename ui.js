@@ -475,7 +475,8 @@ class ExpandedPlayer extends St.Widget {
         let borderOp = Math.min(0.1, finalAlpha * 0.2);
         let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255,255,255,${borderOp});`;
 
-        let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; padding: 20px; ${shadowStyle} min-width: 320px; max-width: 600px;`;
+        let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 360 : 260;
+        let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; padding: 20px; ${shadowStyle} min-width: ${minWLimit}px; max-width: 600px;`;
 
         if (this._lastPopupCss !== css) {
             this._lastPopupCss = css;
@@ -803,7 +804,13 @@ class ExpandedPlayer extends St.Widget {
             let [minW, natW] = this._box.get_preferred_width(-1);
             let [minH, natH] = this._box.get_preferred_height(natW);
 
-            let menuW = Math.min(Math.max(natW > 0 ? natW : 320, 320), 600);
+            let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 360 : 260;
+            let menuW;
+            if (this._settings.get_boolean('popup-use-custom-width')) {
+                menuW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
+            } else {
+                menuW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
+            }
             let menuH = natH > 0 ? natH : 260;
 
             if (currentW > 0 && Math.abs(menuW - currentW) < 20) {
@@ -1058,7 +1065,8 @@ class MusicPill extends St.Widget {
     }, this);
 
     // Listeners
-this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
+    this._settings.connectObject('changed::pill-dynamic-width', () => { this._updateDimensions(); if(this._isActiveState) 		this._body.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD }); }, this);
+    this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
     this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); }, this);
     this._settings.connectObject('changed::custom-bg-color', () => this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b), this);
     this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
@@ -1198,13 +1206,14 @@ this._settings.connectObject('changed::inline-artist', () => this._updateTextDis
         this.set_width(-1);
 
         let width, height, prefArtSize;
+        
+        let confWidth = this._inPanel ? this._settings.get_int('panel-pill-width') : this._settings.get_int('pill-width');
+        width = confWidth; 
 
         if (this._inPanel) {
-            width = this._settings.get_int('panel-pill-width');
             height = this._settings.get_int('panel-pill-height');
             prefArtSize = this._settings.get_int('panel-art-size');
         } else {
-            width = this._settings.get_int('pill-width');
             height = this._settings.get_int('pill-height');
             prefArtSize = this._settings.get_int('dock-art-size');
         }
@@ -1231,7 +1240,6 @@ this._settings.connectObject('changed::inline-artist', () => this._updateTextDis
         }
 
         this._targetWidth = width;
-        this._body.set_width(width);
         this._body.set_height(height);
 
         this.translation_y = vOffset;
@@ -1308,10 +1316,48 @@ this._settings.connectObject('changed::inline-artist', () => this._updateTextDis
 
         this._titleScroll.setLabelStyle(`font-size: ${fontSizeTitle}; font-weight: 800; color: ${customTextStr};`);
         this._artistScroll.setLabelStyle(`font-size: ${fontSizeArtist}; font-weight: 500; color: ${customTextAlpha};`);
-
-        this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
         
         this._updateTextDisplay();
+
+        let targetWidth = confWidth;
+
+        if (this._settings.get_boolean('pill-dynamic-width')) {
+            let currentWidth = this._body.width;
+            this._body.remove_transition('width');
+            
+            let elementsW = this._padX * 2;
+            
+            if (this._artBin.visible) {
+                let artM = (!tabletMode || this._gameModeActive) ? ((confWidth < 220 || visStyle === 0) ? ((confWidth < 180) ? 4 : 8) : this._settings.get_int('visualizer-padding')) : 2;
+                elementsW += finalArtSize + artM;
+            }
+            if (this._tabletControls.visible) elementsW += this._tabletControls.get_preferred_width(-1)[1];
+            if (this._visBin.visible) elementsW += this._visBin.get_preferred_width(-1)[1] + this._settings.get_int('visualizer-padding');
+            
+            let titleW = this._titleScroll._label1.get_preferred_width(-1)[1];
+            let artistW = this._artistScroll.visible ? this._artistScroll._label1.get_preferred_width(-1)[1] : 0;
+            
+            elementsW += Math.max(titleW, artistW) + 12;
+            
+            targetWidth = Math.min(Math.max(elementsW, 120), confWidth);
+            
+            if (currentWidth > 0 && Math.abs(targetWidth - currentWidth) < 10) {
+                targetWidth = currentWidth;
+            }
+        }
+
+        this._targetWidth = targetWidth;
+
+
+        if (this._isActiveState && this._body.width > 0 && this._body.width !== targetWidth) {
+            this._body.ease({
+                width: targetWidth,
+                duration: 400,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+        } else if (!this._isActiveState) {
+            this._body.set_width(targetWidth);
+        }
         
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             if (this._titleScroll) this._titleScroll._checkResize();
@@ -1399,6 +1445,12 @@ this._settings.connectObject('changed::inline-artist', () => this._updateTextDis
         this._hideGraceTimer = null;
     }
 
+    let origTitle = title;
+    let origArtist = artist;
+    this._origTitle = origTitle;
+    this._origArtist = origArtist;
+    this._updateTextDisplay(forceUpdate);
+
     if (!this._isActiveState || this.opacity === 0 || this.width <= 1) {
         this._isActiveState = true;
         this.reactive = true;
@@ -1411,36 +1463,10 @@ this._settings.connectObject('changed::inline-artist', () => this._updateTextDis
         this._body.set_width(0);
         this.opacity = 0;
 
-        this.ease({
-            opacity: 255,
-            duration: 500,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD
-        });
-
-        this._body.ease({
-            width: finalWidth,
-            duration: 500,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD
-        });
-    }
-    let origTitle = title;
-    let origArtist = artist;
-    
-    this._origTitle = origTitle;
-    this._origArtist = origArtist;
-    this._updateTextDisplay(forceUpdate);
-
-    let isSqueezed = (this._inPanel && this._settings.get_int('panel-pill-height') < 30) || (!this._inPanel && this._settings.get_int('pill-height') < 46);
-    if (this._settings.get_boolean('inline-artist') && isSqueezed && artist && title) {
-        title = `${title} • ${artist}`;
-        artist = null; 
-    }
-
-    if (this._lastTitle !== title || this._lastArtist !== artist || forceUpdate) {
-        this._titleScroll.setText(title || 'Loading...', forceUpdate);
-        this._artistScroll.setText(artist || '', forceUpdate);
-        this._lastTitle = title;
-        this._lastArtist = artist;
+        this.ease({ opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        this._body.ease({ width: finalWidth, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+    } else {
+        this._updateDimensions();
     }
 
     this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive);
