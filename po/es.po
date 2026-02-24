@@ -30,9 +30,8 @@ msgid "Display the cover art of the currently playing song"
 msgstr "Mostrar la portada de la canción actual"
 
 #: prefs.js:52
-
 msgid "Fallback Album Art"
-msgstr "Mostrar portada del álbum"
+msgstr ""
 
 #: prefs.js:53 prefs.js:93
 msgid "No image selected"
@@ -103,9 +102,8 @@ msgid "Compact Mode (Hide Text)"
 msgstr ""
 
 #: prefs.js:183
-
 msgid "Hide title and artist"
-msgstr "Animar títulos largos y nombres de artistas"
+msgstr ""
 
 #: prefs.js:196
 msgid "Mouse Actions"
