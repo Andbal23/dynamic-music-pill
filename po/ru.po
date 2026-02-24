@@ -31,9 +31,8 @@ msgid "Display the cover art of the currently playing song"
 msgstr "Отображать обложку текущей песни"
 
 #: prefs.js:52
-
 msgid "Fallback Album Art"
-msgstr "Показывать обложку альбома"
+msgstr ""
 
 #: prefs.js:53 prefs.js:93
 msgid "No image selected"
@@ -104,9 +103,8 @@ msgid "Compact Mode (Hide Text)"
 msgstr ""
 
 #: prefs.js:183
-
 msgid "Hide title and artist"
-msgstr "Анимировать длинные названия треков и исполнителей"
+msgstr ""
 
 #: prefs.js:196
 msgid "Mouse Actions"
