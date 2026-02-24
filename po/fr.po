@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 09:11+0100\n"
-"PO-Revision-Date: 2026-02-24 19:06+0000\n"
+"PO-Revision-Date: 2026-02-24 21:32+0000\n"
 "Last-Translator: elmagio <mistermagio@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/fr/>\n"
@@ -90,7 +90,7 @@ msgstr ""
 
 #: prefs.js:126
 msgid "Mouse Actions"
-msgstr ""
+msgstr "Actions de la souris"
 
 #: prefs.js:134
 msgid "Left Click"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: prefs.js:217
 msgid "Show Vinyl"
-msgstr ""
+msgstr "Afficher le Vinyle"
 
 #: prefs.js:217
 msgid "Display the album art in the pop-up"
@@ -154,7 +154,7 @@ msgstr ""
 
 #: prefs.js:223
 msgid "Square Vinyl Image"
-msgstr ""
+msgstr "Vinyle au format carré"
 
 #: prefs.js:223
 msgid "Use a square album art (disables rotation)"
