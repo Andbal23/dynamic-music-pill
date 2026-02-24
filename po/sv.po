@@ -37,7 +37,7 @@ msgstr "Visa skivomslag för spelande låt"
 
 #: prefs.js:52
 msgid "Fallback Album Art"
-msgstr "Visa skivomslag"
+msgstr ""
 
 #: prefs.js:53 prefs.js:93
 msgid "No image selected"
@@ -108,9 +108,8 @@ msgid "Compact Mode (Hide Text)"
 msgstr ""
 
 #: prefs.js:183
-
 msgid "Hide title and artist"
-msgstr "Animera långa låttitlar och artistnamn"
+msgstr ""
 
 #: prefs.js:196
 msgid "Mouse Actions"
@@ -210,9 +209,8 @@ msgid "Show Visualizer in Pop-up"
 msgstr "Visualizer och form"
 
 #: prefs.js:338
-
 msgid "Hide Pill Visualizer"
-msgstr "Applicera på visualizer"
+msgstr ""
 
 #: prefs.js:339
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
