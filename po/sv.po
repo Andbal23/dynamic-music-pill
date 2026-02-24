@@ -8,202 +8,204 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 09:11+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-02-24 21:32+0000\n"
+"Last-Translator: Andreas Rheindorf <andreas.rheindorf@inbox.eu>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/dynamic-music-"
+"pill/settings/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: prefs.js:28
 msgid "Main Pill"
-msgstr ""
+msgstr "Huvudpiller"
 
 #: prefs.js:32
 msgid "General Settings"
-msgstr ""
+msgstr "Grundläggande inställningar"
 
 #: prefs.js:36
 msgid "Show Album Art"
-msgstr ""
+msgstr "Visa skivomslag"
 
 #: prefs.js:37
 msgid "Display the cover art of the currently playing song"
-msgstr ""
+msgstr "Visa skivomslag för spelande låt"
 
 #: prefs.js:49
 msgid "Enable Scroll Controls"
-msgstr ""
+msgstr "Slå på rullningskontroller"
 
 #: prefs.js:50
 msgid "Change Tracks or Volume using scroll wheel or touchpad"
-msgstr ""
+msgstr "Byt låt eller justera volym med rullhjul eller pekplatta"
 
 #: prefs.js:61
 msgid "Change Track"
-msgstr ""
+msgstr "Byt låt"
 
 #: prefs.js:62
 msgid "Change Volume"
-msgstr ""
+msgstr "Justera volym"
 
 #: prefs.js:67
 msgid "Scroll Action"
-msgstr ""
+msgstr "Rullkontroller"
 
 #: prefs.js:68
 msgid "Choose what scrolling on the pill should do"
-msgstr ""
+msgstr "Välj vad som ska hända när du rullar på pillret"
 
 #: prefs.js:87
 msgid "Invert Scroll Animation"
-msgstr ""
+msgstr "Invertera rullningsanimation"
 
 #: prefs.js:88
 msgid "Direction of the jump effect (Natural vs Traditional)"
-msgstr ""
+msgstr "Riktning för hoppeffekt (naturlig eller traditionell)"
 
 #: prefs.js:100
 msgid "Scrolling Text"
-msgstr ""
+msgstr "Rullande text"
 
 #: prefs.js:101
 msgid "Animate long track titles and artist names"
-msgstr ""
+msgstr "Animera långa låttitlar och artistnamn"
 
 #: prefs.js:111
 msgid "Tablet Mode"
-msgstr ""
+msgstr "Surfplatteläge"
 
 #: prefs.js:111
 msgid "Show skip buttons directly on the pill"
-msgstr ""
+msgstr "Visa knappar för spårbyte på pillret"
 
 #: prefs.js:117
 msgid "Inline Artist"
-msgstr ""
+msgstr "Artistnamn på samma rad"
 
 #: prefs.js:117
 msgid "Show \"Title • Artist\" when the widget is squeezed"
-msgstr ""
+msgstr "Visa \"titel • artist\" när widgeten är komprimerad"
 
 #: prefs.js:126
 msgid "Mouse Actions"
-msgstr ""
+msgstr "Muskontroller"
 
 #: prefs.js:134
 msgid "Left Click"
-msgstr ""
+msgstr "Vänsterklick"
 
 #: prefs.js:142
 msgid "Middle Click"
-msgstr ""
+msgstr "Mittenklick"
 
 #: prefs.js:150
 msgid "Right Click"
-msgstr ""
+msgstr "Högerklick"
 
 #: prefs.js:165
 msgid "Pop-up Menu"
-msgstr ""
+msgstr "Pop-up-meny"
 
 #: prefs.js:169
 msgid "Pop-up Appearance"
-msgstr ""
+msgstr "Pop-up-menyns utseende"
 
 #: prefs.js:171
 msgid "Rotate Vinyl"
-msgstr ""
+msgstr "Roterande vinylskiva"
 
 #: prefs.js:172
 msgid "Spin the album art when playing"
-msgstr ""
+msgstr "Snurra skivomslag vid uppspelning"
 
 #: prefs.js:183 prefs.js:350
 msgid "Enable Shadow"
-msgstr ""
+msgstr "Slå på skugga"
 
 #: prefs.js:184
 msgid "Show drop shadow behind the pop-up menu"
-msgstr ""
+msgstr "Visa droppskugga bakom pop-up-menyn"
 
 #: prefs.js:195
 msgid "Follow Transparency"
-msgstr ""
+msgstr "Följ transparens"
 
 #: prefs.js:196
 msgid "Inherit opacity settings from the main pill"
-msgstr ""
+msgstr "Ärv inställningar för opacitet från pillret"
 
 #: prefs.js:207
 msgid "Follow Border Radius"
-msgstr ""
+msgstr "Följ böjningsradie"
 
 #: prefs.js:208
 msgid "Inherit corner roundness from the main pill"
-msgstr ""
+msgstr "Ärv inställning för rundade hörn från pillret"
 
 #: prefs.js:217
 msgid "Show Vinyl"
-msgstr ""
+msgstr "Visa vinylskiva"
 
 #: prefs.js:217
 msgid "Display the album art in the pop-up"
-msgstr ""
+msgstr "Visa skivomslag i pop-up-menyn"
 
 #: prefs.js:223
 msgid "Square Vinyl Image"
-msgstr ""
+msgstr "Kvadratisk vinylskiva"
 
 #: prefs.js:223
 msgid "Use a square album art (disables rotation)"
-msgstr ""
+msgstr "Använd kvadratiskt skivomslag (inaktiverar rotation)"
 
 #: prefs.js:229
 msgid "Show Shuffle and Loop"
-msgstr ""
+msgstr "Visa alternativen blanda och repetera"
 
 #: prefs.js:229
 msgid "Display extra controls in the pop-up"
-msgstr ""
+msgstr "Visa ytterligare kontroller i pop-up-menyn"
 
 #: prefs.js:235
 msgid "Use Custom Width"
-msgstr ""
+msgstr "Anpassa bredd"
 
 #: prefs.js:235
 msgid "Disable dynamic sizing for the pop-up"
-msgstr ""
+msgstr "Slå av dynamisk storlek på pop-up-menyn"
 
 #: prefs.js:242
 msgid "Custom Width Value"
-msgstr ""
+msgstr "Värde för anpassad bredd"
 
 #: prefs.js:269
 msgid "Style & Layout"
-msgstr ""
+msgstr "Stil och layout"
 
 #: prefs.js:273
 msgid "Visualizer and Shape"
-msgstr ""
+msgstr "Visualizer och form"
 
 #: prefs.js:276
 msgid "Off (Disabled)"
-msgstr ""
+msgstr "Av (inaktiverad)"
 
 #: prefs.js:277
 msgid "Wave (Smooth)"
-msgstr ""
+msgstr "Vågor (jämn)"
 
 #: prefs.js:278
 msgid "Beat (Jumpy)"
-msgstr ""
+msgstr "Beat (hoppande)"
 
 #: prefs.js:281
 msgid "Visualizer Animation"
-msgstr ""
+msgstr "Animering av visualizer"
 
 #: prefs.js:282
 msgid "Select the style of the audio reaction bars"
@@ -211,280 +213,282 @@ msgstr ""
 
 #: prefs.js:289
 msgid "Visualizer Margin"
-msgstr ""
+msgstr "Marginal för visualizer"
 
 #: prefs.js:290
 msgid "Distance between the text and the wave animation"
-msgstr ""
+msgstr "Distans mellan texten och våganimationen"
 
 #: prefs.js:297
 msgid "Corner Radius"
-msgstr ""
+msgstr "Hörnradie"
 
 #: prefs.js:298
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
-msgstr ""
+msgstr "Värde för rundade hörn (0 = kvadrat, 25 = piller)"
 
 #: prefs.js:305
 msgid "Background and Transparency"
-msgstr ""
+msgstr "Bakgrund och transparens"
 
 #: prefs.js:307
 msgid "Enable Transparency"
-msgstr ""
+msgstr "Slå på genomskinlighet"
 
 #: prefs.js:308
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr ""
+"Byt mellan ett tema med solid bakgrund och ett anpassat genomskinligt "
+"utseende"
 
 #: prefs.js:319
 msgid "Background Opacity"
-msgstr ""
+msgstr "Bakgrundsopacitet"
 
 #: prefs.js:320
 msgid "Adjust transparency level"
-msgstr ""
+msgstr "Justera genomskinlighet"
 
 #: prefs.js:327
 msgid "Apply to Album Art"
-msgstr ""
+msgstr "Applicera på skivomslag"
 
 #: prefs.js:334
 msgid "Apply to Text"
-msgstr ""
+msgstr "Applicera på text"
 
 #: prefs.js:341
 msgid "Apply to Visualizer"
-msgstr ""
+msgstr "Applicera på visualizer"
 
 #: prefs.js:349
 msgid "Main Pill Shadow"
-msgstr ""
+msgstr "Skuggning av pillret"
 
 #: prefs.js:357
 msgid "Shadow Intensity"
-msgstr ""
+msgstr "Skuggans intensitet"
 
 #: prefs.js:364
 msgid "Shadow Blur"
-msgstr ""
+msgstr "Suddig skugga"
 
 #: prefs.js:371
 msgid "Positioning"
-msgstr ""
+msgstr "Positionering"
 
 #: prefs.js:373
 msgid "Dock"
-msgstr ""
+msgstr "Dock"
 
 #: prefs.js:374
 msgid "Panel: Left Box"
-msgstr ""
+msgstr "Panel: vänster område"
 
 #: prefs.js:375
 msgid "Panel: Center Box"
-msgstr ""
+msgstr "Panel: mittområde"
 
 #: prefs.js:376
 msgid "Panel: Right Box"
-msgstr ""
+msgstr "Panel: höger område"
 
 #: prefs.js:379
 msgid "Container Target"
-msgstr ""
+msgstr "Containerns målområde"
 
 #: prefs.js:380
 msgid "Select which UI element should host the music pill"
-msgstr ""
+msgstr "Välj vilken del av gränssnittet som ska visa musikpillret"
 
 #: prefs.js:391
 msgid "Dynamic Width"
-msgstr ""
+msgstr "Dynamisk bredd"
 
 #: prefs.js:391
 msgid "Auto-adjust pill width (slider acts as max width)"
-msgstr ""
+msgstr "Justera pillrets bredd automatiskt (reglaget bestämmer maxbredd)"
 
 #: prefs.js:406
 msgid "Manual Index"
-msgstr ""
+msgstr "Manuellt index"
 
 #: prefs.js:407
 msgid "First (Start)"
-msgstr ""
+msgstr "Först (början)"
 
 #: prefs.js:408
 msgid "Center"
-msgstr ""
+msgstr "Mitten"
 
 #: prefs.js:409
 msgid "Last (End)"
-msgstr ""
+msgstr "Sist (slutet)"
 
 #: prefs.js:412
 msgid "Alignment Preset"
-msgstr ""
+msgstr "Förinställning av justering"
 
 #: prefs.js:413
 msgid "How the widget aligns relative to other items"
-msgstr ""
+msgstr "Widgetens justering i relation till andra objekt"
 
 #: prefs.js:421
 msgid "Manual Index Position"
-msgstr ""
+msgstr "Manuell indexposition"
 
 #: prefs.js:422
 msgid "Order in the list (0 is first). Only for Manual mode."
-msgstr ""
+msgstr "Position i listan (0 är först). Endast för manuellt läge."
 
 #: prefs.js:429
 msgid "Vertical Offset (Y)"
-msgstr ""
+msgstr "Vertikal kompensering (Y)"
 
 #: prefs.js:430
 msgid "Shift Up (-) or Down (+)"
-msgstr ""
+msgstr "Justera uppåt (-) eller nedåt (+)"
 
 #: prefs.js:437
 msgid "Horizontal Offset (X)"
-msgstr ""
+msgstr "Horisontell kompensering (X)"
 
 #: prefs.js:438
 msgid "Shift Left (-) or Right (+)"
-msgstr ""
+msgstr "Justera åt vänster (-) eller höger (+)"
 
 #: prefs.js:444
 msgid "Dimensions (Dock Mode)"
-msgstr ""
+msgstr "Dimensioner (dockläge)"
 
 #: prefs.js:446 prefs.js:468
 msgid "Album Art Size"
-msgstr ""
+msgstr "Storlek på skivomslag"
 
 #: prefs.js:452 prefs.js:474
 msgid "Widget Width"
-msgstr ""
+msgstr "Widgetens bredd"
 
 #: prefs.js:459 prefs.js:481
 msgid "Widget Height"
-msgstr ""
+msgstr "Widgetens höjd"
 
 #: prefs.js:466
 msgid "Dimensions (Panel Mode)"
-msgstr ""
+msgstr "Dimensioner (panelläge)"
 
 #: prefs.js:487
 msgid "Custom Colors"
-msgstr ""
+msgstr "Anpassade färger"
 
 #: prefs.js:488
 msgid "Use Custom Colors"
-msgstr ""
+msgstr "Använd anpassade färger"
 
 #: prefs.js:488
 msgid "Override dynamic colors"
-msgstr ""
+msgstr "Åsidosätt dynamiska färger"
 
 #: prefs.js:517
 msgid "Background Color"
-msgstr ""
+msgstr "Bakgrundsfärg"
 
 #: prefs.js:518
 msgid "Text Color"
-msgstr ""
+msgstr "Textfärg"
 
 #: prefs.js:529
 msgid "System & Reset"
-msgstr ""
+msgstr "System och återställning"
 
 #: prefs.js:533
 msgid "System"
-msgstr ""
+msgstr "System"
 
 #: prefs.js:536
 msgid "Hide Default GNOME Player"
-msgstr ""
+msgstr "Dölj förinställd GNOME-spelare"
 
 #: prefs.js:537
 msgid "Remove the duplicate built-in media controls"
-msgstr ""
+msgstr "Inaktivera dom inbyggda uppspelningskontrollerna"
 
 #: prefs.js:547
 msgid "Game Mode"
-msgstr ""
+msgstr "Spelläge"
 
 #: prefs.js:547
 msgid "Disable animations when a fullscreen app is active"
-msgstr ""
+msgstr "Slå av animationer när en applikation körs i helskärmsläge"
 
 #: prefs.js:554
 msgid "Backup & Restore"
-msgstr ""
+msgstr "Säkerhetskopiera och återställ"
 
 #: prefs.js:557
 msgid "Export Settings"
-msgstr ""
+msgstr "Exportera inställningar"
 
 #: prefs.js:558
 msgid "Export"
-msgstr ""
+msgstr "Exportera"
 
 #: prefs.js:562
 msgid "Save Settings"
-msgstr ""
+msgstr "Spara inställningar"
 
 #: prefs.js:577
 msgid "Import Settings"
-msgstr ""
+msgstr "Importera inställningar"
 
 #: prefs.js:578
 msgid "Import"
-msgstr ""
+msgstr "Importera"
 
 #: prefs.js:580
 msgid "Open Settings Backup"
-msgstr ""
+msgstr "Öppna säkerhetskopiering av inställningar"
 
 #: prefs.js:607
 msgid "Danger Zone"
-msgstr ""
+msgstr "Farozon"
 
 #: prefs.js:608
 msgid "Reset All"
-msgstr ""
+msgstr "Återställ samtliga"
 
 #: prefs.js:610
 msgid "Factory Reset"
-msgstr ""
+msgstr "Ursprungsinställningar"
 
 #: prefs.js:621
 msgid "About"
-msgstr ""
+msgstr "Om"
 
 #: prefs.js:626
 msgid "Support the Project"
-msgstr ""
+msgstr "Stöd projektet"
 
 #: prefs.js:629
 msgid "Support on Ko-fi"
-msgstr ""
+msgstr "Stöd på Ko-fi"
 
 #: prefs.js:630
 msgid "Buy me a coffee on Ko-fi"
-msgstr ""
+msgstr "Köp mig en kaffe på Ko-fi"
 
 #: prefs.js:638
 msgid "Buy Me a Coffee"
-msgstr ""
+msgstr "Köp mig en kaffe"
 
 #: prefs.js:639
 msgid "Support via BuyMeACoffee"
-msgstr ""
+msgstr "Stöd via BuyMeACoffee"
 
 #: prefs.js:647
 msgid "Source Code"
-msgstr ""
+msgstr "Källkod"
 
 #: prefs.js:648
 msgid "Report bugs or view source on GitHub"
-msgstr ""
+msgstr "Rapportera buggar eller visa källkod på GitHub"
