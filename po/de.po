@@ -30,9 +30,8 @@ msgid "Display the cover art of the currently playing song"
 msgstr "Cover des aktuell gespielten Titels anzeigen"
 
 #: prefs.js:52
-
 msgid "Fallback Album Art"
-msgstr "Albumcover anzeigen"
+msgstr ""
 
 #: prefs.js:53 prefs.js:93
 msgid "No image selected"
@@ -103,9 +102,8 @@ msgid "Compact Mode (Hide Text)"
 msgstr ""
 
 #: prefs.js:183
-
 msgid "Hide title and artist"
-msgstr "Lange Titel und Künstlernamen animieren"
+msgstr ""
 
 #: prefs.js:196
 msgid "Mouse Actions"
@@ -205,9 +203,8 @@ msgid "Show Visualizer in Pop-up"
 msgstr "Visualizer und Form"
 
 #: prefs.js:338
-
 msgid "Hide Pill Visualizer"
-msgstr "Auf Visualizer anwenden"
+msgstr ""
 
 #: prefs.js:339
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
