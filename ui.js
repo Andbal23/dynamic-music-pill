@@ -725,26 +725,19 @@ class ExpandedPlayer extends St.Widget {
 
         this.updateContent(title, artist, artUrl, status);
 
-        if (this._controller && this._controller._connection) {
-            this._controller._connection.call(
-                player._busName,
-                '/org/mpris/MediaPlayer2',
-                'org.freedesktop.DBus.Properties',
-                'Get',
-                new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
-                null, Gio.DBusCallFlags.NONE, -1, null,
-                (conn, res) => {
-                    try {
-                        let result = conn.call_finish(res);
-                        let val = smartUnpack(result.deep_unpack()[0]);
-                        if (typeof val === 'number') {
-                            player._lastPosition = val;
-                            player._lastPositionTime = Date.now();
-                        }
-                    } catch (e) { console.debug(e.message); }
+        this._controller._connection.call(
+            player._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Get',
+            new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
+            null, Gio.DBusCallFlags.NONE, -1, null,
+            (conn, res) => {
+                let result = conn.call_finish(res);
+                let val = smartUnpack(result.deep_unpack()[0]);
+                if (typeof val === 'number') {
+                    player._lastPosition = val;
+                    player._lastPositionTime = Date.now();
                 }
-            );
-        }
+            }
+        );
 
         this._startTimer();
         this._visualizer.setMode(this._settings.get_int('visualizer-style'));
@@ -1282,6 +1275,7 @@ class MusicPill extends St.Widget {
       if (this._colorAnimId) { GLib.source_remove(this._colorAnimId); this._colorAnimId = null; }
       if (this._artDebounceTimer) { GLib.source_remove(this._artDebounceTimer); this._artDebounceTimer = null; }
       if (this._hideGraceTimer) { GLib.source_remove(this._hideGraceTimer); this._hideGraceTimer = null; }
+      if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; } // <-- Added cleanup here
       if (this._titleScroll) { this._titleScroll.destroy(); this._titleScroll = null; }
       if (this._artistScroll) { this._artistScroll.destroy(); this._artistScroll = null; }
       if (this._visualizer) { this._visualizer.destroy(); this._visualizer = null; }
@@ -1706,24 +1700,20 @@ class MusicPill extends St.Widget {
   _loadColorFromArt(artUrl) {
     let file = Gio.File.new_for_uri(artUrl);
     file.load_contents_async(null, (f, res) => {
-        try {
-            if (!this || !this.get_parent) return;
-            if (this.get_parent() === null) return;
+        if (!this || !this.get_parent) return;
+        if (this.get_parent() === null) return;
 
-            let [ok, bytes] = f.load_contents_finish(res);
-            if (ok) {
-                if (!this._visualizer) return;
-                let stream = Gio.MemoryInputStream.new_from_bytes(bytes);
-                let pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, null);
-                this._targetColor = getAverageColor(pixbuf);
+        let [ok, bytes] = f.load_contents_finish(res);
+        if (ok) {
+            if (!this._visualizer) return;
+            let stream = Gio.MemoryInputStream.new_from_bytes(bytes);
+            let pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, null);
+            this._targetColor = getAverageColor(pixbuf);
 
-                if (this._visualizer && this._visualizer.setColor) {
-                    this._visualizer.setColor(this._targetColor);
-                    this._startColorTransition();
-                }
+            if (this._visualizer && this._visualizer.setColor) {
+                this._visualizer.setColor(this._targetColor);
+                this._startColorTransition();
             }
-        } catch (e) {
-            // Nem kell try-catch log, ha csak a kép betöltés hiusult meg.
         }
     });
   }
