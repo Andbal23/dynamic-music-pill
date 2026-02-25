@@ -16,6 +16,12 @@ const MPRIS_IFACE = `
     <property name="Volume" type="d" access="readwrite" />
     <property name="LoopStatus" type="s" access="readwrite" />
     <property name="Shuffle" type="b" access="readwrite" />
+    <property name="CanSeek" type="b" access="read" />
+    <property name="CanControl" type="b" access="read" />
+    <property name="CanPause" type="b" access="read" />
+    <property name="CanPlay" type="b" access="read" />
+    <property name="CanGoNext" type="b" access="read" />
+    <property name="CanGoPrevious" type="b" access="read" />
     <method name="PlayPause"/>
     <method name="Next"/>
     <method name="Previous"/>
@@ -368,10 +374,12 @@ export class MusicController {
                     p._lastPlayingTime = (status === 'Playing') ? Date.now() : 0;
                     p._lastPosition = 0;
                     p._lastPositionTime = Date.now();
+                    p._lastTrackId = null;
 
                     p.connectSignal('Seeked', (proxy, senderName, [position]) => {
                         p._lastPosition = position;
                         p._lastPositionTime = Date.now();
+                        this._triggerUpdate();
                         if (this._expandedPlayer && this._expandedPlayer.visible && this._lastWinnerName === p._busName) {
                             this._expandedPlayer._tick();
                         }
@@ -402,20 +410,72 @@ export class MusicController {
                             return;
                         }
 
-                        if (keys.Metadata || keys.PlaybackStatus || keys.Shuffle !== undefined || keys.LoopStatus !== undefined) {
-                            if (keys.Metadata) p._lastPosition = 0;
-                            p._lastPositionTime = now;
-                            this._triggerUpdate();
+                        if (keys.Metadata !== undefined || keys.PlaybackStatus !== undefined) {
+                            let trackId = null;
+                            if (keys.Metadata) {
+                                let mObj = (keys.Metadata instanceof GLib.Variant) ? keys.Metadata.deep_unpack() : keys.Metadata;
+                                trackId = smartUnpack(mObj['mpris:trackid']);
+                                
+                                if (trackId && trackId !== p._lastTrackId) {
+                                    p._lastPosition = 0;
+                                    p._lastTrackId = trackId;
+                                }
+                            }
+
+                            this._connection.call(
+                                p._busName,
+                                '/org/mpris/MediaPlayer2',
+                                'org.freedesktop.DBus.Properties',
+                                'Get',
+                                new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
+                                null, Gio.DBusCallFlags.NONE, -1, null,
+                                (conn, res) => {
+                                    try {
+                                        let result = conn.call_finish(res);
+                                        if (result) {
+                                            let posVariant = result.deep_unpack()[0];
+                                            if (posVariant) {
+                                                p._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                                                p._lastPositionTime = Date.now();
+                                                this._triggerUpdate();
+                                            }
+                                        }
+                                    } catch (e) {}
+                                }
+                            );
                         }
+
+                        this._triggerUpdate();
                     });
 
                     p.connect('notify::g-name-owner', () => { this._scan(); });
 
                     this._proxies.set(name, p);
-                    this._triggerUpdate();
+                    
+                    this._connection.call(
+                        p._busName,
+                        '/org/mpris/MediaPlayer2',
+                        'org.freedesktop.DBus.Properties',
+                        'Get',
+                        new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
+                        null, Gio.DBusCallFlags.NONE, -1, null,
+                        (conn, res) => {
+                            try {
+                                let result = conn.call_finish(res);
+                                if (result) {
+                                    let posVariant = result.deep_unpack()[0];
+                                    if (posVariant) {
+                                        p._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                                        p._lastPositionTime = Date.now();
+                                    }
+                                }
+                            } catch (e) {}
+                            this._triggerUpdate();
+                        }
+                    );
 
                 } catch (e) {
-                    console.error(`[DynamicMusicPill] Hiba a proxy létrehozásakor (${name}): ${e.message}`);
+                    console.error(`Proxy not available.`);
                 }
             }
         );
