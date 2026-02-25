@@ -14,26 +14,16 @@ class CrossfadeArt extends St.Widget {
         super._init({ layout_manager: new Clutter.BinLayout(), style_class: 'art-widget', clip_to_allocation: false, x_expand: false, y_expand: false });
         this._radius = 10;
         this._shadowCSS = 'box-shadow: none;';
-        const layerStyle = 'background-size: cover;';
-        
-        this._layerA = new St.Widget({ x_expand: true, y_expand: true, opacity: 255, style: layerStyle });
-        this._layerB = new St.Widget({ x_expand: true, y_expand: true, opacity: 0, style: layerStyle });
-        this.add_child(this._layerA);
-        this.add_child(this._layerB);
-        
-        this._topIsActive = false;
     }
 
     setRadius(r) {
         this._radius = (typeof r === 'number' && !isNaN(r)) ? r : 10;
-        this._refreshLayerStyle(this._layerA);
-        this._refreshLayerStyle(this._layerB);
+        this.get_children().forEach(c => this._refreshLayerStyle(c));
     }
 
     setShadowStyle(cssString) {
         this._shadowCSS = cssString || 'box-shadow: none;';
-        this._refreshLayerStyle(this._layerA);
-        this._refreshLayerStyle(this._layerB);
+        this.get_children().forEach(c => this._refreshLayerStyle(c));
     }
 
     _refreshLayerStyle(layer) {
@@ -49,36 +39,31 @@ class CrossfadeArt extends St.Widget {
     }
 
     setArt(newUrl, force = false) {
-        if (!force && this._currentUrl === newUrl) return;
+        if (!force && this._currentUrl === newUrl && this.get_children().length > 0) return;
         this._currentUrl = newUrl;
 
+        let oldLayers = this.get_children();
 
-        if (this._topIsActive) {
-            this._layerA._bgUrl = newUrl;
-            this._refreshLayerStyle(this._layerA);
-            this._layerA.opacity = 255;
+        let newLayer = new St.Widget({ x_expand: true, y_expand: true, opacity: 0 });
+        newLayer._bgUrl = newUrl;
+        this._refreshLayerStyle(newLayer);
+        
+        this.add_child(newLayer);
 
-            this._layerB.remove_all_transitions();
-            this._layerB.ease({
-                opacity: 0, 
-                duration: 600, 
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-            });
-            this._topIsActive = false;
-        } else {
-            this._layerB._bgUrl = newUrl;
-            this._refreshLayerStyle(this._layerB);
-            this._layerB.opacity = 0;
-            this._layerB.show();
-
-            this._layerB.remove_all_transitions();
-            this._layerB.ease({
-                opacity: 255, 
-                duration: 600, 
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-            });
-            this._topIsActive = true;
-        }
+        newLayer.ease({
+            opacity: 255,
+            duration: 1800, 
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onStopped: (isFinished) => {
+                if (isFinished) {
+                    oldLayers.forEach(c => {
+                        if (c && c.get_parent()) {
+                            c.destroy();
+                        }
+                    });
+                }
+            }
+        });
     }
 });
 
@@ -387,13 +372,6 @@ class ExpandedPlayer extends St.Widget {
         });
         this._vinyl.set_pivot_point(0.5, 0.5);
 
-        this._artBottom = new St.Widget({ style: 'background-size: cover; border-radius: 50px;', width: 100, height: 100, opacity: 255 });
-        this._artTop = new St.Widget({ style: 'background-size: cover; border-radius: 50px;', width: 100, height: 100, opacity: 0 });
-
-        this._vinyl.add_child(this._artBottom);
-        this._vinyl.add_child(this._artTop);
-        this._topIsActive = false;
-
         this._vinylBin = new St.Bin({
             child: this._vinyl,
             width: 100,
@@ -652,28 +630,37 @@ class ExpandedPlayer extends St.Widget {
                 let bg = `url("${artUrl}")`;
                 let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
 
-                if (this._topIsActive) {
-                    this._artBottom.set_style(style);
-                    this._artBottom.opacity = 255;
+                let oldLayers = this._vinyl.get_children();
 
-                    this._artTop.ease({
-                        opacity: 0,
-                        duration: 800,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                    });
-                    this._topIsActive = false;
-                } else {
-                    this._artTop.set_style(style);
-                    this._artTop.opacity = 0;
-                    this._artTop.show();
+                let newLayer = new St.Widget({ 
+                    style: style, 
+                    width: 100,      
+                    height: 100,
+                    x_expand: true, 
+                    y_expand: true, 
+                    opacity: oldLayers.length > 0 ? 0 : 255 
+                });
 
-                    this._artTop.ease({
+                this._vinyl.add_child(newLayer);
+
+                if (oldLayers.length > 0) {
+                    newLayer.ease({
                         opacity: 255,
-                        duration: 800,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                        duration: 1200, 
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        onStopped: (isFinished) => {
+                            if (isFinished) {
+                                oldLayers.forEach(c => {
+                                    if (c && c.get_parent()) c.destroy();
+                                });
+                            }
+                        }
                     });
-                    this._topIsActive = true;
                 }
+            } else {
+                let bg = `url("${artUrl}")`;
+                let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
+                this._vinyl.get_children().forEach(c => c.set_style(style));
             }
         }
 
