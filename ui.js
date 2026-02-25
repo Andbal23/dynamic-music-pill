@@ -355,6 +355,18 @@ class ExpandedPlayer extends St.Widget {
         });
         this._box.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
         this.add_child(this._box);
+        
+        this._playerSelectorBox = new St.BoxLayout({
+            vertical: false,
+            x_align: Clutter.ActorAlign.CENTER,
+            style: 'margin-bottom: 12px; spacing: 10px;'
+        });
+        this._box.add_child(this._playerSelectorBox);
+        
+        this._settings.connectObject('changed::popup-show-player-selector', () => {
+            this._updatePlayerSelector();
+            if (this.visible) this.animateResize();
+        }, this);
 
         let topRow = new St.BoxLayout({ style_class: 'expanded-top-row', vertical: false, y_align: Clutter.ActorAlign.CENTER });
 
@@ -453,6 +465,70 @@ class ExpandedPlayer extends St.Widget {
         controlsRow.add_child(this._repeatBtn);
 
         this._box.add_child(controlsRow);
+    }
+    
+    _updatePlayerSelector() {
+        if (!this._settings.get_boolean('popup-show-player-selector')) {
+            this._playerSelectorBox.hide();
+            return;
+        }
+        this._playerSelectorBox.show();
+        this._playerSelectorBox.destroy_all_children();
+
+        let currentSelected = this._settings.get_string('selected-player-bus');
+
+        let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 20 });
+        let autoBtn = new St.Button({
+            child: autoIcon,
+            reactive: true,
+            can_focus: true,
+            track_hover: true,
+            style: `border-radius: 12px; padding: 8px; background-color: ${currentSelected === '' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
+        });
+        autoBtn.connectObject('button-release-event', () => {
+            this._settings.set_string('selected-player-bus', '');
+            this._controller._updateUI();
+            this._updatePlayerSelector(); 
+            return Clutter.EVENT_STOP;
+        }, this);
+        autoBtn.connect('notify::hover', () => {
+            if (this._settings.get_string('selected-player-bus') === '') return;
+            autoBtn.set_style(`border-radius: 12px; padding: 8px; background-color: ${autoBtn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+        });
+        this._playerSelectorBox.add_child(autoBtn);
+
+        for (let [busName, proxy] of this._controller._proxies) {
+            let rawAppName = busName.replace('org.mpris.MediaPlayer2.', '').split('.')[0];
+            let isSelected = (currentSelected === busName);
+            
+            let icon = new St.Icon({ 
+                icon_name: rawAppName.toLowerCase(), 
+                fallback_icon_name: 'audio-x-generic-symbolic',
+                icon_size: 20 
+            });
+            
+            let btn = new St.Button({ 
+                child: icon, 
+                reactive: true, 
+                can_focus: true,
+                track_hover: true,
+                style: `border-radius: 12px; padding: 8px; background-color: ${isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;` 
+            });
+
+            btn.connectObject('button-release-event', () => {
+                this._settings.set_string('selected-player-bus', busName);
+                this._controller._updateUI();
+                this._updatePlayerSelector(); 
+                return Clutter.EVENT_STOP;
+            }, this);
+
+            btn.connect('notify::hover', () => {
+                if (this._settings.get_string('selected-player-bus') === busName) return;
+                btn.set_style(`border-radius: 12px; padding: 8px; background-color: ${btn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+            });
+
+            this._playerSelectorBox.add_child(btn);
+        }
     }
 
     setPosition(x, y) {
@@ -635,6 +711,8 @@ class ExpandedPlayer extends St.Widget {
         let showShufLoop = this._settings.get_boolean('show-shuffle-loop');
         if (this._shuffleBtn) this._shuffleBtn.visible = showShufLoop;
         if (this._repeatBtn) this._repeatBtn.visible = showShufLoop;
+        
+        this._updatePlayerSelector();
     }
 
     showFor(player, artUrl) {
@@ -1067,6 +1145,28 @@ class MusicPill extends St.Widget {
         }
 
         return Clutter.EVENT_STOP;
+    }, this);
+    
+    this.connectObject('enter-event', () => {
+        let delay = this._settings.get_int('hover-delay');
+        if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); }
+        this._hoverTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
+            this._hoverTimeout = null;
+            let action = this._settings.get_string('action-hover');
+            if (action && action !== 'none') {
+                this._controller.performAction(action);
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+        return Clutter.EVENT_PROPAGATE;
+    }, this);
+
+    this.connectObject('leave-event', () => {
+        if (this._hoverTimeout) {
+            GLib.source_remove(this._hoverTimeout);
+            this._hoverTimeout = null;
+        }
+        return Clutter.EVENT_PROPAGATE;
     }, this);
 
     this.connectObject('scroll-event', (actor, event) => {
@@ -1650,8 +1750,13 @@ class MusicPill extends St.Widget {
   }
 
   _applyStyle(r, g, b) {
-  let dynR = r, dynG = g, dynB = b;
-  if (this._settings.get_boolean('use-custom-colors')) {
+      let dynR = r, dynG = g, dynB = b;
+      
+      let safeDynR = (typeof dynR === 'number' && !isNaN(dynR)) ? Math.floor(dynR) : 40;
+      let safeDynG = (typeof dynG === 'number' && !isNaN(dynG)) ? Math.floor(dynG) : 40;
+      let safeDynB = (typeof dynB === 'number' && !isNaN(dynB)) ? Math.floor(dynB) : 40;
+
+      if (this._settings.get_boolean('use-custom-colors')) {
           let customBg = this._settings.get_string('custom-bg-color').split(',');
           r = parseInt(customBg[0]) || 40;
           g = parseInt(customBg[1]) || 40;
@@ -1699,12 +1804,158 @@ class MusicPill extends St.Widget {
           this._fadeRight.set_style(gradientRight);
       }
 
-      this._displayedColor = { r: safeR, g: safeG, b: safeB };
+      this._displayedColor = { r: safeDynR, g: safeDynG, b: safeDynB };
 
       if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
           if (this._controller._expandedPlayer.updateStyle) {
-              this._controller._expandedPlayer.updateStyle(dynR, dynG, dynB, alpha);
+              this._controller._expandedPlayer.updateStyle(safeDynR, safeDynG, safeDynB, alpha);
           }
       }
   }
+});
+
+export const PlayerSelectorMenu = GObject.registerClass(
+class PlayerSelectorMenu extends St.Widget {
+    _init(controller) {
+        let [bgW, bgH] = global.display.get_size();
+        super._init({ width: bgW, height: bgH, reactive: true, visible: false, x: 0, y: 0 });
+
+        this._controller = controller;
+        this._settings = controller._settings;
+
+        this._backgroundBtn = new St.Button({ style: 'background-color: transparent;', reactive: true, x_expand: true, y_expand: true, width: bgW, height: bgH });
+        this._backgroundBtn.connectObject('clicked', () => { this.hide(); }, this);
+        this.add_child(this._backgroundBtn);
+
+        this._box = new St.BoxLayout({ vertical: true, reactive: true });
+        this._box.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
+        this.add_child(this._box);
+    }
+
+    populate() {
+        this._box.destroy_all_children();
+
+        let titleLabel = new St.Label({ 
+            text: 'Select Media Player', 
+            style: 'font-weight: bold; margin-bottom: 15px; font-size: 12pt;', 
+            x_align: Clutter.ActorAlign.CENTER 
+        });
+        this._box.add_child(titleLabel);
+
+        let currentSelected = this._settings.get_string('selected-player-bus');
+
+        // ==== Auto (Smart Selection) Gomb ====
+        let autoContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
+        let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24 });
+        let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER });
+        autoContent.add_child(autoIcon);
+        autoContent.add_child(autoLabel);
+
+        let autoBtn = new St.Button({
+            child: autoContent,
+            reactive: true,
+            can_focus: true,
+            track_hover: true,
+            x_expand: true,
+            style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${currentSelected === '' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
+        });
+        
+        // JAVÍTÁS 1: 'clicked' helyett 'button-release-event'
+        autoBtn.connectObject('button-release-event', () => {
+            this._settings.set_string('selected-player-bus', '');
+            this._controller._updateUI();
+            this.hide();
+            return Clutter.EVENT_STOP;
+        }, this);
+
+        autoBtn.connect('notify::hover', () => {
+            if (this._settings.get_string('selected-player-bus') === '') return;
+            autoBtn.set_style(`margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${autoBtn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+        });
+        
+        this._box.add_child(autoBtn);
+
+        // ==== Aktív Lejátszók Gombjai ====
+        for (let [busName, proxy] of this._controller._proxies) {
+            
+            // JAVÍTÁS 2: App nevének és ikonjának kinyerése a busName-ből (pl. 'spotify', 'firefox')
+            let rawAppName = busName.replace('org.mpris.MediaPlayer2.', '').split('.')[0];
+            let identity = rawAppName.charAt(0).toUpperCase() + rawAppName.slice(1);
+            
+            let btnContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
+            
+            let icon = new St.Icon({ 
+                icon_name: rawAppName.toLowerCase(), 
+                fallback_icon_name: 'audio-x-generic-symbolic',
+                icon_size: 24 
+            });
+            let label = new St.Label({ text: identity, y_align: Clutter.ActorAlign.CENTER });
+            
+            btnContent.add_child(icon);
+            btnContent.add_child(label);
+
+            let isSelected = (currentSelected === busName);
+            let btn = new St.Button({ 
+                child: btnContent, 
+                reactive: true, 
+                can_focus: true,
+                track_hover: true,
+                x_expand: true, 
+                style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;` 
+            });
+
+            // JAVÍTÁS 1: 'clicked' helyett 'button-release-event'
+            btn.connectObject('button-release-event', () => {
+                this._settings.set_string('selected-player-bus', busName);
+                this._controller._updateUI();
+                this.hide();
+                return Clutter.EVENT_STOP;
+            }, this);
+
+            btn.connect('notify::hover', () => {
+                if (this._settings.get_string('selected-player-bus') === busName) return;
+                btn.set_style(`margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${btn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+            });
+
+            this._box.add_child(btn);
+        }
+    }
+
+    showMenu() {
+        this.populate();
+        this.visible = true;
+        this.opacity = 0;
+        this.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+
+        let pill = this._controller._pill;
+        let [px, py] = pill.get_transformed_position();
+        let [pw, ph] = pill.get_transformed_size();
+        let monitor = Main.layoutManager.findMonitorForActor(pill);
+
+        let c = pill._displayedColor;
+        let bgAlpha = pill._currentBgAlpha || 0.95;
+        this._box.set_style(`background-color: rgba(${c.r}, ${c.g}, ${c.b}, ${bgAlpha}); padding: 15px; border-radius: 20px; box-shadow: 0px 8px 30px rgba(0,0,0,0.5);`);
+
+        this._box.set_width(-1);
+        let [minW, natW] = this._box.get_preferred_width(-1);
+        let menuW = Math.max(natW, 200);
+        let [minH, natH] = this._box.get_preferred_height(menuW);
+
+        let startX = px + (pw / 2) - (menuW / 2);
+        if (monitor) {
+            if (startX < monitor.x + 10) startX = monitor.x + 10;
+            else if (startX + menuW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - menuW - 10;
+        }
+
+        let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - natH - 15 : py + ph + 15;
+        this._box.set_position(startX, startY);
+        this._box.set_width(menuW);
+    }
+
+    hide() {
+        this.ease({ opacity: 0, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD, onStopped: () => {
+            this.visible = false;
+            if (this._controller) this._controller.closePlayerMenu();
+        }});
+    }
 });
