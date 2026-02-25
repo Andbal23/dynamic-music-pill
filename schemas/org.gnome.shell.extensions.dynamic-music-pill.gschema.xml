@@ -10,6 +10,16 @@
 	<default>false</default>
 	<summary>Hide title and artist entirely</summary>
     </key>
+    <key name="popup-follow-custom-bg" type="b">
+      <default>false</default>
+      <summary>Popup Follows Custom Background Color</summary>
+      <description>If custom colors are enabled, the popup uses the custom background color.</description>
+    </key>
+    <key name="popup-follow-custom-text" type="b">
+      <default>false</default>
+      <summary>Popup Follows Custom Text Color</summary>
+      <description>If custom colors are enabled, the popup uses the custom text color.</description>
+    </key>
     <key name="compatibility-delay" type="b">
       <default>false</default>
       <summary>Compatibility Mode for slow players</summary>
