@@ -138,6 +138,7 @@ export class MusicController {
         else if (action === 'previous') this.previous();
         else if (action === 'open_app') this.openApp();
         else if (action === 'toggle_menu') this.toggleMenu();
+        else if (action === 'open_player_menu') this.togglePlayerMenu();
     }
 
     openApp() {
@@ -173,6 +174,26 @@ export class MusicController {
             }
         }
     }
+    
+    togglePlayerMenu() {
+        if (this._playerMenu) {
+            this._playerMenu.hide();
+            return;
+        }
+        import('./ui.js').then(ui => {
+            this._playerMenu = new ui.PlayerSelectorMenu(this);
+            Main.layoutManager.addChrome(this._playerMenu);
+            this._playerMenu.showMenu();
+        });
+    }
+
+    closePlayerMenu() {
+        if (this._playerMenu) {
+            Main.layoutManager.removeChrome(this._playerMenu);
+            this._playerMenu.destroy();
+            this._playerMenu = null;
+        }
+    }
 
     toggleMenu() {
         if (this._expandedPlayer) {
@@ -193,16 +214,24 @@ export class MusicController {
         let c = this._pill._displayedColor;
         this._expandedPlayer.updateStyle(c.r, c.g, c.b, this._pill._currentBgAlpha);
         
-        let startW = 320;
-        let startH = 260;
-        let startX = px + (pw / 2) - (startW / 2);
-        if (startX < monitor.x + 10) startX = monitor.x + 10;
-        else if (startX + startW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - startW - 10;
-        let startY = py > monitor.y + (monitor.height / 2) ? py - startH - 15 : py + ph + 15;
-        this._expandedPlayer.setPosition(startX, startY);
-
         let artUrl = this._pill._lastArtUrl;
         this._expandedPlayer.showFor(player, artUrl);
+
+        this._expandedPlayer._box.set_width(-1);
+        let [minW, natW] = this._expandedPlayer._box.get_preferred_width(-1);
+        let [minH, natH] = this._expandedPlayer._box.get_preferred_height(natW);
+
+        let startW = natW > 0 ? natW : 320;
+        let startH = natH > 0 ? natH : 260;
+
+        let startX = px + (pw / 2) - (startW / 2);
+        if (monitor) {
+            if (startX < monitor.x + 10) startX = monitor.x + 10;
+            else if (startX + startW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - startW - 10;
+        }
+        
+        let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - startH - 15 : py + ph + 15;
+        this._expandedPlayer.setPosition(startX, startY);
 
         this._expandedPlayer.animateResize();
     }
@@ -592,6 +621,10 @@ export class MusicController {
     _getActivePlayer() {
         let proxiesArr = Array.from(this._proxies.values());
         if (proxiesArr.length === 0) return null;
+        let manualBus = this._settings.get_string('selected-player-bus');
+        if (manualBus && manualBus !== '' && this._proxies.has(manualBus)) {
+            return this._proxies.get(manualBus);
+        }
         let now = Date.now();
 
         let filterMode = this._settings.get_int('player-filter-mode');
