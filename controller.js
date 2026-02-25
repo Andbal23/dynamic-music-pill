@@ -594,6 +594,10 @@ export class MusicController {
         if (proxiesArr.length === 0) return null;
         let now = Date.now();
 
+        let filterMode = this._settings.get_int('player-filter-mode');
+        let filterListStr = this._settings.get_string('player-filter-list').toLowerCase();
+        let filterList = filterListStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
         if (now - this._lastActionTime < 3000 && this._lastWinnerName) {
             let lockedPlayer = proxiesArr.find(p => p._busName === this._lastWinnerName);
             if (lockedPlayer) return lockedPlayer;
@@ -603,6 +607,19 @@ export class MusicController {
             let score = 0;
             let status = p.PlaybackStatus;
             let m = p.Metadata;
+
+            if (m) {
+                let metaObj = (m instanceof GLib.Variant) ? m.deep_unpack() : m;
+                let url = metaObj['xesam:url'] ? smartUnpack(metaObj['xesam:url']).toLowerCase() : "";
+                
+                let isWebContent = url.startsWith('http://') || url.startsWith('https://');
+
+                if (isWebContent && filterMode === 2) {
+                    let urlMatch = filterList.some(item => url.includes(item));
+                    if (!urlMatch) return { player: p, score: -1 };
+                }
+            }
+
             let hasTitle = m && smartUnpack(m['xesam:title']);
             if (status === 'Playing' && hasTitle) score = 500;
             else if (status === 'Paused' && hasTitle) score = 100;
@@ -614,9 +631,11 @@ export class MusicController {
             return b.player._lastPlayingTime - a.player._lastPlayingTime;
         });
 
+        if (scoredPlayers[0].score < 0) return null;
+
         let winner = scoredPlayers[0].player;
         if (winner.PlaybackStatus !== 'Playing') {
-            let anyPlaying = scoredPlayers.find(s => s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata['xesam:title']));
+            let anyPlaying = scoredPlayers.find(s => s.score > 0 && s.player.PlaybackStatus === 'Playing' && smartUnpack(s.player.Metadata['xesam:title']));
             if (anyPlaying) winner = anyPlaying.player;
         }
         return winner;
