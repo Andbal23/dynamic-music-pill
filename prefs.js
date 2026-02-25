@@ -22,7 +22,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-show-vinyl', 'show-shuffle-loop', 'use-custom-colors', 'custom-bg-color', 
             'custom-text-color', 'tablet-mode', 'inline-artist', 'pill-dynamic-width', 
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list','hide-text',
-            'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay'
+            'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay',
+            'popup-follow-custom-bg', 'popup-follow-custom-text'
         ];
 
         // =========================================
@@ -260,6 +261,26 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('popup-enable-shadow', popShadowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         popShadowRow.add_suffix(popShadowToggle);
         popupGroup.add(popShadowRow);
+        
+        const popCustomBgRow = new Adw.ActionRow({
+            title: _('Follow Custom Background Color'),
+            subtitle: _('Use the custom background color for the pop-up (if active)')
+        });
+        const popCustomBgToggle = new Gtk.Switch({ active: settings.get_boolean('popup-follow-custom-bg'), valign: Gtk.Align.CENTER });
+        settings.bind('popup-follow-custom-bg', popCustomBgToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('use-custom-colors', popCustomBgRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        popCustomBgRow.add_suffix(popCustomBgToggle);
+        popupGroup.add(popCustomBgRow);
+
+        const popCustomTextRow = new Adw.ActionRow({
+            title: _('Follow Custom Text Color'),
+            subtitle: _('Use the custom text color for the pop-up (if active)')
+        });
+        const popCustomTextToggle = new Gtk.Switch({ active: settings.get_boolean('popup-follow-custom-text'), valign: Gtk.Align.CENTER });
+        settings.bind('popup-follow-custom-text', popCustomTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('use-custom-colors', popCustomTextRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        popCustomTextRow.add_suffix(popCustomTextToggle);
+        popupGroup.add(popCustomTextRow);
 
         const popTransRow = new Adw.ActionRow({
             title: _('Follow Transparency'),
