@@ -10,6 +10,23 @@
 	<default>false</default>
 	<summary>Hide title and artist entirely</summary>
     </key>
+    <key name="action-hover" type="s">
+      <default>'none'</default>
+      <summary>Hover Action</summary>
+    </key>
+    <key name="hover-delay" type="i">
+      <default>500</default>
+      <range min="0" max="3000"/>
+      <summary>Hover Delay in ms</summary>
+    </key>
+    <key name="selected-player-bus" type="s">
+      <default>''</default>
+      <summary>Manually selected player bus name</summary>
+    </key>
+    <key name="popup-show-player-selector" type="b">
+      <default>false</default>
+      <summary>Show player selector in pop-up</summary>
+    </key>
     <key name="popup-follow-custom-bg" type="b">
       <default>false</default>
       <summary>Popup Follows Custom Background Color</summary>
