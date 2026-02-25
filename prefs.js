@@ -23,7 +23,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'custom-text-color', 'tablet-mode', 'inline-artist', 'pill-dynamic-width', 
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list','hide-text',
             'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay',
-            'popup-follow-custom-bg', 'popup-follow-custom-text'
+            'popup-follow-custom-bg', 'popup-follow-custom-text','action-hover', 'hover-delay', 'selected-player-bus','popup-show-player-selector'
         ];
 
         // =========================================
@@ -196,8 +196,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         // Mouse Actions Group
         const actionGroup = new Adw.PreferencesGroup({ title: _('Mouse Actions') });
         const actionModel = new Gtk.StringList();
-        const actionNames = ["Play / Pause", "Next Track", "Previous Track", "Open Player App", "Open Menu"];
-        const actionValues = ['play_pause', 'next', 'previous', 'open_app', 'toggle_menu'];
+        const actionNames = ["None", "Play / Pause", "Next Track", "Previous Track", "Open Player App", "Open Menu", "Select Player"];
+        const actionValues = ['none', 'play_pause', 'next', 'previous', 'open_app', 'toggle_menu', 'open_player_menu'];
         
         actionNames.forEach(name => actionModel.append(_(name)));
 
@@ -224,6 +224,24 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
         rightRow.connect('notify::selected', () => { settings.set_string('action-right-click', actionValues[rightRow.selected]); });
         actionGroup.add(rightRow);
+        
+        const hoverRow = new Adw.ComboRow({
+            title: _('Hover Action'),
+            model: actionModel,
+            selected: actionValues.indexOf(settings.get_string('action-hover'))
+        });
+        hoverRow.connect('notify::selected', () => { settings.set_string('action-hover', actionValues[hoverRow.selected]); });
+        settings.connect('changed::action-hover', () => {
+            hoverRow.selected = actionValues.indexOf(settings.get_string('action-hover'));
+        });
+        actionGroup.add(hoverRow);
+
+        const hoverDelayRow = new Adw.SpinRow({
+            title: _('Hover Delay (ms)'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 3000, step_increment: 100 })
+        });
+        settings.bind('hover-delay', hoverDelayRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        actionGroup.add(hoverDelayRow);
 
         mainPage.add(actionGroup);
         window.add(mainPage);
@@ -344,6 +362,15 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         };
         settings.connect('changed::show-shuffle-loop', updateWidthBound);
         updateWidthBound();
+        
+        const popSelectorRow = new Adw.ActionRow({ 
+            title: _('Show Player Selector'), 
+            subtitle: _('Display active player icons at the top of the pop-up') 
+        });
+        const popSelectorToggle = new Gtk.Switch({ active: settings.get_boolean('popup-show-player-selector'), valign: Gtk.Align.CENTER });
+        settings.bind('popup-show-player-selector', popSelectorToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popSelectorRow.add_suffix(popSelectorToggle);
+        popupGroup.add(popSelectorRow);
 
         settings.bind('popup-custom-width', popCustomWidthRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         settings.bind('popup-use-custom-width', popCustomWidthRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
