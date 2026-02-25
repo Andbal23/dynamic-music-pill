@@ -4,8 +4,8 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
 import { smartUnpack } from './utils.js';
-import { MusicPill, ExpandedPlayer } from './ui.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
+import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 
 const MPRIS_IFACE = `
 <node>
@@ -146,13 +146,10 @@ export class MusicController {
         if (!player) return;
 
         this._connection.call(
-            player._busName,
-            '/org/mpris/MediaPlayer2',
-            'org.mpris.MediaPlayer2', 
-            'Raise',
-            null, null, Gio.DBusCallFlags.NONE, -1, null,
-            (conn, res) => { try { conn.call_finish(res); } catch (e) {} }
-        );
+        player._busName, '/org/mpris/MediaPlayer2', 'org.mpris.MediaPlayer2', 'Raise',
+        null, null, Gio.DBusCallFlags.NONE, -1, null,
+        (conn, res) => { conn.call_finish(res); }
+    );
 
         let rawBus = player._busName.replace('org.mpris.MediaPlayer2.', '').split('.')[0].toLowerCase();
         let appSystem = Shell.AppSystem.get_default();
@@ -180,11 +177,10 @@ export class MusicController {
             this._playerMenu.hide();
             return;
         }
-        import('./ui.js').then(ui => {
-            this._playerMenu = new ui.PlayerSelectorMenu(this);
-            Main.layoutManager.addChrome(this._playerMenu);
-            this._playerMenu.showMenu();
-        });
+        
+        this._playerMenu = new PlayerSelectorMenu(this);
+        Main.layoutManager.addChrome(this._playerMenu);
+        this._playerMenu.showMenu();
     }
 
     closePlayerMenu() {
@@ -351,32 +347,30 @@ export class MusicController {
             'org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus', 'ListNames',
             null, null, Gio.DBusCallFlags.NONE, -1, null,
             (c, res) => {
-                try {
-                    let r = smartUnpack(c.call_finish(res));
-                    let names = Array.isArray(r[0]) ? r[0] : (Array.isArray(r) ? r : []);
-                    let mprisNames = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.') && this._isPlayerAllowed(n));
+                let r = smartUnpack(c.call_finish(res));
+                let names = Array.isArray(r[0]) ? r[0] : (Array.isArray(r) ? r : []);
+                let mprisNames = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.') && this._isPlayerAllowed(n));
 
-                    let changed = false;
+                let changed = false;
 
-                    mprisNames.forEach(n => {
-                        if (!this._proxies.has(n)) {
-                            this._add(n);
-                            changed = true;
-                        }
-                    });
-
-                    for (let [name, proxy] of this._proxies) {
-                        if (!mprisNames.includes(name)) {
-                            this._proxies.delete(name);
-                            this._artCache.delete(name);
-                            changed = true;
-                        }
+                mprisNames.forEach(n => {
+                    if (!this._proxies.has(n)) {
+                        this._add(n);
+                        changed = true;
                     }
+                });
 
-                    if (changed) {
-                        this._updateUI();
+                for (let [name, proxy] of this._proxies) {
+                    if (!mprisNames.includes(name)) {
+                        this._proxies.delete(name);
+                        this._artCache.delete(name);
+                        changed = true;
                     }
-                } catch (e) { console.debug(e.message); }
+                }
+
+                if (changed) {
+                    this._updateUI();
+                }
             }
         );
     }
@@ -714,11 +708,11 @@ export class MusicController {
         if (!p || p.Shuffle === undefined) return; 
         
         this._connection.call(
-            p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
-            new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'Shuffle', new GLib.Variant('b', !p.Shuffle)]),
-            null, Gio.DBusCallFlags.NONE, -1, null,
-            (conn, res) => { try { conn.call_finish(res); } catch(e) {} }
-        );
+        p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
+        new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'Shuffle', new GLib.Variant('b', !p.Shuffle)]),
+        null, Gio.DBusCallFlags.NONE, -1, null,
+        (conn, res) => { conn.call_finish(res); }
+    );
     }
 
     toggleLoop() {
@@ -729,11 +723,11 @@ export class MusicController {
         let next = current === 'None' ? 'Playlist' : (current === 'Playlist' ? 'Track' : 'None');
         
         this._connection.call(
-            p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
-            new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'LoopStatus', new GLib.Variant('s', next)]),
-            null, Gio.DBusCallFlags.NONE, -1, null,
-            (conn, res) => { try { conn.call_finish(res); } catch(e) {} }
-        );
+        p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
+        new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'LoopStatus', new GLib.Variant('s', next)]),
+        null, Gio.DBusCallFlags.NONE, -1, null,
+        (conn, res) => { conn.call_finish(res); }
+    );
     }    
 
     _updateDefaultPlayerVisibility(shouldReset = false) {
