@@ -15,12 +15,13 @@ class CrossfadeArt extends St.Widget {
         this._radius = 10;
         this._shadowCSS = 'box-shadow: none;';
         const layerStyle = 'background-size: cover;';
+        
         this._layerA = new St.Widget({ x_expand: true, y_expand: true, opacity: 255, style: layerStyle });
         this._layerB = new St.Widget({ x_expand: true, y_expand: true, opacity: 0, style: layerStyle });
         this.add_child(this._layerA);
         this.add_child(this._layerB);
-        this._activeLayer = this._layerA;
-        this._nextLayer = this._layerB;
+        
+        this._topIsActive = false;
     }
 
     setRadius(r) {
@@ -48,28 +49,36 @@ class CrossfadeArt extends St.Widget {
     }
 
     setArt(newUrl, force = false) {
-        let isVisible = (this._activeLayer.opacity > 250);
-        if (!force && this._currentUrl === newUrl && isVisible) return;
+        if (!force && this._currentUrl === newUrl) return;
         this._currentUrl = newUrl;
-        this._nextLayer._bgUrl = newUrl;
-        this._refreshLayerStyle(this._nextLayer);
-        this._nextLayer.opacity = 0;
-        this._nextLayer.show();
-        this.set_child_below_sibling(this._nextLayer, this._activeLayer);
-        this._activeLayer.remove_all_transitions();
-        
-        // 46-os scroll/anim fix: onStopped
-        this._activeLayer.ease({
-            opacity: 0, duration: 600, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onStopped: (isFinished) => {
-                if (!isFinished) return;
-                let temp = this._activeLayer;
-                this._activeLayer = this._nextLayer;
-                this._nextLayer = temp;
-                this._nextLayer.opacity = 0;
-            }
-        });
-        this._nextLayer.opacity = 255;
+
+
+        if (this._topIsActive) {
+            this._layerA._bgUrl = newUrl;
+            this._refreshLayerStyle(this._layerA);
+            this._layerA.opacity = 255;
+
+            this._layerB.remove_all_transitions();
+            this._layerB.ease({
+                opacity: 0, 
+                duration: 600, 
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+            this._topIsActive = false;
+        } else {
+            this._layerB._bgUrl = newUrl;
+            this._refreshLayerStyle(this._layerB);
+            this._layerB.opacity = 0;
+            this._layerB.show();
+
+            this._layerB.remove_all_transitions();
+            this._layerB.ease({
+                opacity: 255, 
+                duration: 600, 
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+            this._topIsActive = true;
+        }
     }
 });
 
