@@ -1195,6 +1195,12 @@ class MusicPill extends St.Widget {
                     return Clutter.EVENT_STOP;
                 }
             }
+            
+            if (this._settings.get_boolean('invert-scroll-direction')) {
+                let temp = shouldNext;
+                shouldNext = shouldPrev;
+                shouldPrev = temp;
+            }
 
             if (shouldNext || shouldPrev) {
                 let now = Date.now();
