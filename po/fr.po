@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 22:18+0100\n"
-"PO-Revision-Date: 2026-02-24 19:06+0000\n"
+"PO-Revision-Date: 2026-02-26 18:12+0000\n"
 "Last-Translator: elmagio <mistermagio@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/fr/>\n"
@@ -37,11 +37,11 @@ msgstr ""
 
 #: prefs.js:53 prefs.js:93
 msgid "No image selected"
-msgstr ""
+msgstr "Pas d'image sélectionnée"
 
 #: prefs.js:63
 msgid "Select Fallback Image"
-msgstr ""
+msgstr "Choisir la pochette par défaut"
 
 #: prefs.js:107
 msgid "Enable Scroll Controls"
@@ -98,19 +98,19 @@ msgstr ""
 
 #: prefs.js:175
 msgid "Show \"Title • Artist\" when the widget is squeezed"
-msgstr ""
+msgstr "Afficher \"Titre • Artiste\" quand le widget est comprimé"
 
 #: prefs.js:182
 msgid "Compact Mode (Hide Text)"
-msgstr ""
+msgstr "Mode compact (cacher le texte)"
 
 #: prefs.js:183
 msgid "Hide title and artist"
-msgstr ""
+msgstr "Cacher le titre et l'artiste"
 
 #: prefs.js:196
 msgid "Mouse Actions"
-msgstr ""
+msgstr "Actions de la souris"
 
 #: prefs.js:204
 msgid "Left Click"
@@ -134,11 +134,11 @@ msgstr "Apparence du pop-up"
 
 #: prefs.js:241
 msgid "Rotate Vinyl"
-msgstr ""
+msgstr "Faire tourner le vinyle"
 
 #: prefs.js:242
 msgid "Spin the album art when playing"
-msgstr ""
+msgstr "Faire tourner la pochette durant la lecture"
 
 #: prefs.js:253 prefs.js:437
 msgid "Enable Shadow"
@@ -150,11 +150,11 @@ msgstr "Afficher l'ombre derrière le menu pop-up"
 
 #: prefs.js:265
 msgid "Follow Transparency"
-msgstr ""
+msgstr "Suivre la transparence"
 
 #: prefs.js:266
 msgid "Inherit opacity settings from the main pill"
-msgstr ""
+msgstr "Suivre les paramètres d'opacité de la pastille principale"
 
 #: prefs.js:277
 msgid "Follow Border Radius"
@@ -166,11 +166,11 @@ msgstr ""
 
 #: prefs.js:287
 msgid "Show Vinyl"
-msgstr ""
+msgstr "Afficher le Vinyle"
 
 #: prefs.js:287
 msgid "Display the album art in the pop-up"
-msgstr ""
+msgstr "Afficher la pochette dans le pop-up"
 
 #: prefs.js:293
 msgid "Square Vinyl Image"
@@ -182,7 +182,7 @@ msgstr ""
 
 #: prefs.js:299
 msgid "Show Shuffle and Loop"
-msgstr ""
+msgstr "Afficher les boutons Shuffle et Loop"
 
 #: prefs.js:299
 msgid "Display extra controls in the pop-up"
@@ -201,7 +201,6 @@ msgid "Custom Width Value"
 msgstr "Largeur personnalisée"
 
 #: prefs.js:331
-
 msgid "Show Visualizer in Pop-up"
 msgstr "Visualiseur et Forme"
 
