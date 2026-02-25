@@ -490,6 +490,13 @@ class ExpandedPlayer extends St.Widget {
         let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : 40;
         let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : 40;
 
+        if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
+            let customBg = this._settings.get_string('custom-bg-color').split(',');
+            safeR = parseInt(customBg[0]) || 40;
+            safeG = parseInt(customBg[1]) || 40;
+            safeB = parseInt(customBg[2]) || 40;
+        }
+
         let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${finalAlpha});`;
 
         let shadowOp = Math.min(0.5, finalAlpha);
@@ -510,6 +517,21 @@ class ExpandedPlayer extends St.Widget {
         if (this._titleLabel) this._titleLabel.opacity = 255;
         if (this._artistLabel) this._artistLabel.opacity = 255;
         if (this._visualizer) { this._visualizer.setColor({ r: safeR, g: safeG, b: safeB }); }
+
+        let textColor = '';
+        let textAlpha = '';
+        if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
+            let customTextStr = this._settings.get_string('custom-text-color');
+            textColor = `rgb(${customTextStr})`;
+            textAlpha = `rgba(${customTextStr}, 0.7)`;
+        }
+
+        if (this._titleLabel) {
+            this._titleLabel.setLabelStyle(textColor ? `color: ${textColor};` : '');
+        }
+        if (this._artistLabel) {
+            this._artistLabel.setLabelStyle(textAlpha ? `color: ${textAlpha};` : '');
+        }
     }
 
     updateContent(title, artist, artUrl, status) {
@@ -964,6 +986,9 @@ class MusicPill extends St.Widget {
         this._controller.next(); 
         return Clutter.EVENT_STOP; 
     }, this);
+    
+    this._settings.connectObject('changed::popup-follow-custom-bg', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+    this._settings.connectObject('changed::popup-follow-custom-text', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
 
     this._tabletControls = new St.BoxLayout({ vertical: false, y_align: Clutter.ActorAlign.CENTER, style: 'margin-left: 6px;' });
     this._tabletControls.add_child(this._prevBtn);
@@ -1625,6 +1650,7 @@ class MusicPill extends St.Widget {
   }
 
   _applyStyle(r, g, b) {
+  let dynR = r, dynG = g, dynB = b;
   if (this._settings.get_boolean('use-custom-colors')) {
           let customBg = this._settings.get_string('custom-bg-color').split(',');
           r = parseInt(customBg[0]) || 40;
@@ -1677,7 +1703,7 @@ class MusicPill extends St.Widget {
 
       if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
           if (this._controller._expandedPlayer.updateStyle) {
-              this._controller._expandedPlayer.updateStyle(safeR, safeG, safeB, alpha);
+              this._controller._expandedPlayer.updateStyle(dynR, dynG, dynB, alpha);
           }
       }
   }
