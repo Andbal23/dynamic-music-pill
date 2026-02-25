@@ -4,18 +4,20 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 22:18+0100\n"
-"PO-Revision-Date: 2026-02-17 00:00+0100\n"
-"Last-Translator: \n"
-"Language-Team: Spanish\n"
+"PO-Revision-Date: 2026-02-26 18:12+0000\n"
+"Last-Translator: Elsie <hwengerstickel@protonmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/dynamic-music-"
+"pill/settings/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: prefs.js:32
 msgid "Main Pill"
-msgstr ""
+msgstr "Primera Pill"
 
 #: prefs.js:36
 msgid "General Settings"
@@ -51,11 +53,11 @@ msgstr ""
 
 #: prefs.js:119
 msgid "Change Track"
-msgstr ""
+msgstr "Cambiar Pista"
 
 #: prefs.js:120
 msgid "Change Volume"
-msgstr ""
+msgstr "Cambiar Volumen"
 
 #: prefs.js:125
 msgid "Scroll Action"
@@ -198,12 +200,10 @@ msgid "Custom Width Value"
 msgstr ""
 
 #: prefs.js:331
-
 msgid "Show Visualizer in Pop-up"
 msgstr "Visualizador y forma"
 
 #: prefs.js:338
-
 msgid "Hide Pill Visualizer"
 msgstr "Aplicar al visualizador"
 
