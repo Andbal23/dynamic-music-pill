@@ -153,6 +153,18 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('invert-scroll-animation', invertToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         invertRow.add_suffix(invertToggle);
         genGroup.add(invertRow);
+        
+        const invertDirRow = new Adw.ActionRow({
+            title: _('Invert Scroll Direction'),
+            subtitle: _('Swap up/down scrolling for track and volume actions')
+        });
+        const invertDirToggle = new Gtk.Switch({
+            active: settings.get_boolean('invert-scroll-direction'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('invert-scroll-direction', invertDirToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        invertDirRow.add_suffix(invertDirToggle);
+        genGroup.add(invertDirRow);
 
         // Text Scrolling
         const scrollTextRow = new Adw.ActionRow({
