@@ -57,12 +57,11 @@ export class MusicController {
         this._currentDock = null;
         this._isMovingItem = false;
         
-        this._isDisabled = false;
         this._createPill();
     }
 
     _createPill() {
-        if (this._isDisabled || this._pill) return;
+	if (this._pill) return;
         this._pill = new MusicPill(this);
         this._pill.connect('destroy', () => {
             this._pill = null;
@@ -70,7 +69,6 @@ export class MusicController {
     }
 
     enable() {
-        this._isDisabled = false;
         this._createPill();
         
         global.display.connectObject('notify::focus-window', () => this._monitorGameMode(), this);
@@ -109,7 +107,6 @@ export class MusicController {
     }
 
     disable() {
-        this._isDisabled = true;
         if (this._startupCompleteId) {
             Main.layoutManager.disconnect(this._startupCompleteId);
             this._startupCompleteId = null;
@@ -140,6 +137,9 @@ export class MusicController {
         if (this._pill) {
             this._pill.destroy();
             this._pill = null;
+        }
+        for (let name of this._proxies.keys()) {
+            this._removeProxy(name);
         }
         this._proxies.clear();
         
@@ -378,9 +378,9 @@ export class MusicController {
                     }
                 });
 
-                for (let [name, proxy] of this._proxies) {
+                for (let name of this._proxies.keys()) {
                     if (!mprisNames.includes(name)) {
-                        this._proxies.delete(name);
+                        this._removeProxy(name);
                         this._artCache.delete(name);
                         changed = true;
                     }
@@ -417,7 +417,7 @@ export class MusicController {
                     p._lastPositionTime = Date.now();
                     p._lastTrackId = null;
 
-                    p.connectSignal('Seeked', (proxy, senderName, [position]) => {
+                    p._seekedId = p.connectSignal('Seeked', (proxy, senderName, [position]) => {
                         p._lastPosition = position;
                         p._lastPositionTime = Date.now();
                         this._triggerUpdate();
@@ -426,7 +426,7 @@ export class MusicController {
                         }
                     });
 
-                    p.connect('g-properties-changed', (proxy, changed, invalidated) => {
+                    p._propId = p.connect('g-properties-changed', (proxy, changed, invalidated) => {
                         if (!this._proxies.has(p._busName)) return;
 
                         let keys = changed.deep_unpack();
@@ -489,7 +489,7 @@ export class MusicController {
                         this._triggerUpdate();
                     });
 
-                    p.connect('notify::g-name-owner', () => { this._scan(); });
+                    p._nameOwnerId = p.connect('notify::g-name-owner', () => { this._scan(); });
 
                     this._proxies.set(name, p);
                     
@@ -520,6 +520,16 @@ export class MusicController {
                 }
             }
         );
+    }
+    
+    _removeProxy(name) {
+        let p = this._proxies.get(name);
+        if (p) {
+            if (p._seekedId) p.disconnectSignal(p._seekedId);
+            if (p._propId) p.disconnect(p._propId);
+            if (p._nameOwnerId) p.disconnect(p._nameOwnerId);
+            this._proxies.delete(name);
+        }
     }
 
     _triggerUpdate() {
