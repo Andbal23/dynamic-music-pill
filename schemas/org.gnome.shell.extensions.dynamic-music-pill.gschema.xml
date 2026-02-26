@@ -15,9 +15,14 @@
       <summary>Hover Action</summary>
     </key>
     <key name="hover-delay" type="i">
-      <default>500</default>
+      <default>1500</default>
       <range min="0" max="3000"/>
       <summary>Hover Delay in ms</summary>
+    </key>
+    <key name="show-pill-border" type="b">
+      <default>true</default>
+      <summary>Show pill outline/border</summary>
+      <description>Display a subtle border around the main pill.</description>
     </key>
     <key name="selected-player-bus" type="s">
       <default>''</default>
