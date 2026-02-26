@@ -14,50 +14,69 @@ class CrossfadeArt extends St.Widget {
         super._init({ layout_manager: new Clutter.BinLayout(), style_class: 'art-widget', clip_to_allocation: false, x_expand: false, y_expand: false });
         this._radius = 10;
         this._shadowCSS = 'box-shadow: none;';
+        this._isDestroyed = false;
+        this.connect('destroy', () => { this._isDestroyed = true; });
     }
 
     setRadius(r) {
+        if (this._isDestroyed) return
         this._radius = (typeof r === 'number' && !isNaN(r)) ? r : 10;
+        this._updateContainerStyle();
         this.get_children().forEach(c => this._refreshLayerStyle(c));
     }
 
     setShadowStyle(cssString) {
+    	if (this._isDestroyed) return
         this._shadowCSS = cssString || 'box-shadow: none;';
+        this._updateContainerStyle();
         this.get_children().forEach(c => this._refreshLayerStyle(c));
+    }
+    
+    _updateContainerStyle() {
+        if (this._isDestroyed) return;
+        let safeR = (typeof this._radius === 'number' && !isNaN(this._radius)) ? this._radius : 10;
+        let hasArt = (this._currentUrl && this._currentUrl.length > 0);
+        let activeShadow = hasArt ? this._shadowCSS : 'box-shadow: none;';
+        let bgColor = hasArt ? 'background-color: #000000;' : 'background-color: transparent;';
+        this.set_style(`border-radius: ${safeR}px; ${bgColor} ${activeShadow}`);
     }
 
     _refreshLayerStyle(layer) {
-        if (!layer) return;
+        if (this._isDestroyed || !layer || !layer.get_parent()) return;
         let url = layer._bgUrl;
         let bgPart = url ? `background-image: url("${url}");` : '';
         let safeR = (typeof this._radius === 'number' && !isNaN(this._radius)) ? this._radius : 10;
-        let activeShadow = (url && url.length > 0) ? this._shadowCSS : 'box-shadow: none;';
-        let newCss = `border-radius: ${safeR}px; background-size: cover; ${activeShadow} ${bgPart}`;
+        let newCss = `border-radius: ${safeR}px; background-size: cover; box-shadow: none; ${bgPart}`;
         if (layer._lastCss === newCss) return;
         layer._lastCss = newCss;
-        layer.set_style(newCss);
+        
+        if (layer.get_parent()) {
+             layer.set_style(newCss);
+        }
     }
 
     setArt(newUrl, force = false) {
         if (!force && this._currentUrl === newUrl && this.get_children().length > 0) return;
         this._currentUrl = newUrl;
-
-        let oldLayers = this.get_children();
+        this._updateContainerStyle();
 
         let newLayer = new St.Widget({ x_expand: true, y_expand: true, opacity: 0 });
         newLayer._bgUrl = newUrl;
-        this._refreshLayerStyle(newLayer);
         
         this.add_child(newLayer);
+        this._refreshLayerStyle(newLayer);
+        
+        this._activeLayer = newLayer;
 
         newLayer.ease({
             opacity: 255,
             duration: 1800, 
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: (isFinished) => {
+                if (this._isDestroyed) return;
                 if (isFinished) {
-                    oldLayers.forEach(c => {
-                        if (c && c.get_parent()) {
+                    this.get_children().forEach(c => {
+                        if (c !== this._activeLayer) {
                             c.destroy();
                         }
                     });
@@ -71,6 +90,8 @@ export const ScrollLabel = GObject.registerClass(
 class ScrollLabel extends St.Widget {
     _init(styleClass, settings) {
         super._init({ layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: false, clip_to_allocation: true });
+        this._isDestroyed = false;
+        this.connect('destroy', () => { this._isDestroyed = true; });
         this._settings = settings;
         this._text = "";
         this._gameMode = false;
@@ -120,9 +141,10 @@ class ScrollLabel extends St.Widget {
     }
 
     _checkResize() {
-    if (!this._text || this._gameMode || !this.get_parent()) return;
-    
-    GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+    if (!this._text || this._gameMode || this._isDestroyed) return;
+        
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+        if (this._isDestroyed || !this.get_parent()) return GLib.SOURCE_REMOVE;
         if (!this.get_parent()) return GLib.SOURCE_REMOVE;
         
         let boxWidth = this.get_allocation_box().get_width();
@@ -321,6 +343,8 @@ class ExpandedPlayer extends St.Widget {
             x: 0,
             y: 0
         });
+        this._isDestroyed = false;
+        this.connect('destroy', () => { this._isDestroyed = true; });
 
         this._controller = controller;
         this._settings = controller._settings;
@@ -609,6 +633,10 @@ class ExpandedPlayer extends St.Widget {
 
         let trackChanged = (this._currentArtUrl !== artUrl || this._lastTrackTitle !== title);
         this._lastTrackTitle = title;
+        if (trackChanged && this._player) {
+            this._player._lastPosition = 0;
+            this._player._lastPositionTime = Date.now();
+        }
 
         let showVinyl = this._settings.get_boolean('popup-show-vinyl');
         if (!artUrl || !showVinyl) {
@@ -630,28 +658,31 @@ class ExpandedPlayer extends St.Widget {
                 let bg = `url("${artUrl}")`;
                 let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
 
-                let oldLayers = this._vinyl.get_children();
-
                 let newLayer = new St.Widget({ 
                     style: style, 
                     width: 100,      
                     height: 100,
                     x_expand: true, 
                     y_expand: true, 
-                    opacity: oldLayers.length > 0 ? 0 : 255 
+                    opacity: this._vinyl.get_children().length > 0 ? 0 : 255 
                 });
 
                 this._vinyl.add_child(newLayer);
+                
+                this._activeVinylLayer = newLayer;
 
-                if (oldLayers.length > 0) {
+                if (this._vinyl.get_children().length > 1) {
                     newLayer.ease({
                         opacity: 255,
                         duration: 1200, 
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                         onStopped: (isFinished) => {
+                            if (this._isDestroyed) return;
                             if (isFinished) {
-                                oldLayers.forEach(c => {
-                                    if (c && c.get_parent()) c.destroy();
+                                this._vinyl.get_children().forEach(c => {
+                                    if (c !== this._activeVinylLayer) {
+                                        c.destroy();
+                                    }
                                 });
                             }
                         }
@@ -795,6 +826,7 @@ class ExpandedPlayer extends St.Widget {
     }
 
     _tick() {
+    	if (this._isDestroyed) return GLib.SOURCE_REMOVE
         if (!this._player || !this.get_parent()) return GLib.SOURCE_REMOVE;
 
         let meta = this._player.Metadata;
@@ -933,7 +965,7 @@ class ExpandedPlayer extends St.Widget {
             let [minW, natW] = this._box.get_preferred_width(-1);
             let [minH, natH] = this._box.get_preferred_height(natW);
 
-	    let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
+            let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
             let menuW;
             if (this._settings.get_boolean('popup-use-custom-width')) {
                 menuW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
@@ -948,23 +980,42 @@ class ExpandedPlayer extends St.Widget {
             if (currentW > 0) this._box.set_width(currentW);
 
             let pill = this._controller._pill;
+            if (!pill || !pill.get_parent()) return GLib.SOURCE_REMOVE;
             let [px, py] = pill.get_transformed_position();
             let [pw, ph] = pill.get_transformed_size();
             let monitor = Main.layoutManager.findMonitorForActor(pill);
 
             if (!monitor) return GLib.SOURCE_REMOVE;
 
-            let targetX = Math.floor(px + (pw / 2) - (menuW / 2));
-            if (targetX < monitor.x + 10) targetX = monitor.x + 10;
-            else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
+            let targetX, targetY;
 
-            let targetY;
-            if (py > monitor.y + (monitor.height / 2)) {
-                targetY = Math.floor(py - menuH - 15);
+            if (pill._isSidePanel) {
+                let isLeftEdge = (px < monitor.x + (monitor.width / 2));
+                
+                targetY = Math.floor(py + (ph / 2) - (menuH / 2));
                 if (targetY < monitor.y + 10) targetY = monitor.y + 10;
-            } else {
-                targetY = Math.floor(py + ph + 15);
                 if (targetY + menuH > monitor.y + monitor.height - 10) targetY = monitor.y + monitor.height - menuH - 10;
+                
+                if (isLeftEdge) {
+                    targetX = Math.floor(px + pw + 15);
+                } else {
+                    targetX = Math.floor(px - menuW - 15);
+                }
+                
+                if (targetX < monitor.x + 10) targetX = monitor.x + 10;
+                if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
+                
+            } else {
+                targetX = Math.floor(px + (pw / 2) - (menuW / 2));
+                if (targetX < monitor.x + 10) targetX = monitor.x + 10;
+                else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
+
+                let isTopEdge = (py < monitor.y + (monitor.height / 2));
+                if (isTopEdge) {
+                    targetY = Math.floor(py + ph + 15);
+                } else {
+                    targetY = Math.floor(py - menuH - 15);
+                }
             }
 
             let isCurrentlySafe = (currentX >= monitor.x + 10 && (currentX + menuW) <= (monitor.x + monitor.width - 10));
@@ -996,12 +1047,16 @@ class MusicPill extends St.Widget {
     super._init({
         style_class: 'music-pill-container',
         reactive: false,
-        y_align: Clutter.ActorAlign.CENTER,
+        layout_manager: new Clutter.BinLayout(), 
+        y_expand: true,
+        y_align: Clutter.ActorAlign.FILL,
         x_align: Clutter.ActorAlign.CENTER,
         opacity: 0,
         width: 0,
         visible: false
     });
+    this._isDestroyed = false;
+    this.connect('destroy', () => { this._isDestroyed = true; });
     this._lastScrollTime = 0;
     this._controller = controller;
     this._settings = controller._settings;
@@ -1027,7 +1082,12 @@ class MusicPill extends St.Widget {
     this._lastRightCss = null;
 
     // UI Construction
-    this._body = new St.BoxLayout({ style_class: 'pill-body', x_expand: false });
+    this._body = new St.BoxLayout({ 
+        style_class: 'pill-body', 
+        x_expand: false, 
+        y_expand: false,                        
+        y_align: Clutter.ActorAlign.CENTER       
+    });
     this._body.set_pivot_point(0.5, 0.5);
 
     this._artWidget = new CrossfadeArt();
@@ -1045,11 +1105,13 @@ class MusicPill extends St.Widget {
     this._nextBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
 
     this._prevBtn.connectObject('button-release-event', () => { 
+    	if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
         this._controller.previous(); 
         return Clutter.EVENT_STOP; 
     }, this);
     
     this._nextBtn.connectObject('button-release-event', () => { 
+   	if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
         this._controller.next(); 
         return Clutter.EVENT_STOP; 
     }, this);
@@ -1119,6 +1181,7 @@ class MusicPill extends St.Widget {
     }, this);
 
     this.connectObject('button-release-event', (actor, event) => {
+    	if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
         if (!this._body) return Clutter.EVENT_STOP;
         this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
 
@@ -1161,7 +1224,7 @@ class MusicPill extends St.Widget {
     this.connectObject('scroll-event', (actor, event) => {
         try {
             if (!this._settings.get_boolean('enable-scroll-controls')) return Clutter.EVENT_STOP;
-
+	    if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
             let direction = event.get_scroll_direction();
             let shouldNext = false;
             let shouldPrev = false;
@@ -1265,13 +1328,30 @@ class MusicPill extends St.Widget {
     this._settings.connectObject('changed::shadow-opacity', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
     this._settings.connectObject('changed::shadow-blur', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
     this._settings.connectObject('changed::show-album-art', () => this._updateArtVisibility(), this);
+    this._settings.connectObject('changed::show-pill-border', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
     this._settings.connectObject('changed::visualizer-padding', () => this._updateDimensions(), this);
+    this.connect('notify::allocation', () => {
+        if (this._allocTimer) return;
+        this._allocTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+            this._allocTimer = null;
+            let parent = this.get_parent();
+            if (parent && !this._inPanel) {
+                let [pw, ph] = parent.get_size();
+                let side = (pw > 0 && ph > 0 && pw < ph);
+                if (this._isSidePanel !== side) {
+                    this._updateDimensions();
+                }
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+    });
 
     this._updateTransparencyConfig();
     this._updateDimensions();
   }
 
   destroy() {
+      if (this._allocTimer) { GLib.source_remove(this._allocTimer); this._allocTimer = null; }
       if (this._colorAnimId) { GLib.source_remove(this._colorAnimId); this._colorAnimId = null; }
       if (this._artDebounceTimer) { GLib.source_remove(this._artDebounceTimer); this._artDebounceTimer = null; }
       if (this._hideGraceTimer) { GLib.source_remove(this._hideGraceTimer); this._hideGraceTimer = null; }
@@ -1370,6 +1450,16 @@ class MusicPill extends St.Widget {
         let target = this._settings.get_int('target-container');
         this._inPanel = (target > 0);
         
+        let parent = this.get_parent();
+        let isSidePanel = false;
+        if (parent && !this._inPanel) {
+            let [pw, ph] = parent.get_size();
+            if (pw > 0 && ph > 0 && pw < ph) {
+                isSidePanel = true;
+            }
+        }
+        this._isSidePanel = isSidePanel;
+        
         this.set_width(-1);
 
         let width, height, prefArtSize;
@@ -1406,16 +1496,32 @@ class MusicPill extends St.Widget {
             this._padY = Math.max(2, Math.min(8, rawPadY));
         }
 
-        this._targetWidth = width;
-        if (this._settings.get_boolean('hide-text')) {
-	    this._textWrapper.hide();
-	} else {
-	    this._textWrapper.show();
-	}
-        this._body.set_height(height);
+        let rawPadX = Math.floor((width - 160) * (10 / 140) + 4);
+        this._padX = Math.max(4, Math.min(14, rawPadX));
 
-        this.translation_y = vOffset;
-        this.translation_x = hOffset;
+        if (isSidePanel) {
+            let temp = this._padX;
+            this._padX = this._padY;
+            this._padY = temp;
+        }
+
+        let hideText = this._settings.get_boolean('hide-text');
+        
+        if (isSidePanel) {
+            hideText = true;
+            this._body.vertical = true;
+        } else {
+            this._body.vertical = false;
+        }
+
+        if (hideText) {
+            this._textWrapper.hide();
+        } else {
+            this._textWrapper.show();
+        }
+
+        this._body.translation_y = vOffset;
+        this._body.translation_x = hOffset;
 
         if (shadowEnabled) {
             this._shadowCSS = `box-shadow: 0px 2px ${shadowBlur}px rgba(0, 0, 0, ${shadowOpacity});`;
@@ -1423,11 +1529,9 @@ class MusicPill extends St.Widget {
             this._shadowCSS = `box-shadow: none;`;
         }
 
-        let rawPadX = Math.floor((width - 160) * (10 / 140) + 4);
-        this._padX = Math.max(4, Math.min(14, rawPadX));
-
-        let artRadius = Math.max(4, this._radius - this._padY);
-        let maxArtHeight = height - (2 * this._padY);
+        let artRadius = Math.max(4, this._radius - (isSidePanel ? this._padX : this._padY));
+        let maxArtHeight = (isSidePanel ? width : height) - (2 * (isSidePanel ? this._padX : this._padY));
+        if (maxArtHeight < 10) maxArtHeight = 10;
         let finalArtSize = Math.min(prefArtSize, maxArtHeight);
 
         this._artWidget.set_width(finalArtSize);
@@ -1446,37 +1550,47 @@ class MusicPill extends St.Widget {
         } else {
             this._tabletControls.hide();
         }
-
-        let hideText = this._settings.get_boolean('hide-text');
+        if (isSidePanel) {
+            this._tabletControls.vertical = true;
+            this._tabletControls.set_style('margin-top: 6px; margin-left: 0px;');
+        } else {
+            this._tabletControls.vertical = false;
+            this._tabletControls.set_style('margin-left: 6px; margin-top: 0px;');
+        }
 
         let forceHideVis = this._isPopupOpen && this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
 
         if ((width < 220 && !hideText) || visStyle === 0 || forceHideVis) {
             this._visBin.hide();
             this._visBin.set_width(0);
+            this._visBin.set_height(0);
             this._visBin.set_style('margin: 0px;');
             this._fadeLeft.set_width(10);
             this._fadeRight.set_width(10);
             
             if (!tabletMode || this._gameModeActive) {
                 let artMargin = (width < 180 && !hideText) ? 4 : 8;
-                this._artBin.set_style(`margin-right: ${artMargin}px;`);
+                if (isSidePanel) this._artBin.set_style(`margin-bottom: ${artMargin}px; margin-right: 0px;`);
+                else this._artBin.set_style(`margin-right: ${artMargin}px; margin-bottom: 0px;`);
             } else {
-                this._artBin.set_style('margin-right: 2px;');
+                this._artBin.set_style(isSidePanel ? 'margin-bottom: 2px; margin-right: 0px;' : 'margin-right: 2px; margin-bottom: 0px;');
             }
         } else {
             this._visBin.show();
             let sideMargin = this._settings.get_int('visualizer-padding');
-            this._visBin.set_style(`margin-left: ${sideMargin}px;`);
-            this._visBin.set_width(-1);
+            if (isSidePanel) {
+                this._visBin.set_style(`margin-top: ${sideMargin}px; margin-left: 0px;`);
+                this._visBin.set_height(-1);
+                this._visBin.set_width(finalArtSize);
+                this._artBin.set_style(`margin-bottom: ${sideMargin}px; margin-right: 0px;`);
+            } else {
+                this._visBin.set_style(`margin-left: ${sideMargin}px; margin-top: 0px;`);
+                this._visBin.set_width(-1);
+                this._visBin.set_height(-1);
+                this._artBin.set_style(`margin-right: ${sideMargin}px; margin-bottom: 0px;`);
+            }
             this._fadeLeft.set_width(30);
             this._fadeRight.set_width(30);
-            
-            if (!tabletMode || this._gameModeActive) {
-                this._artBin.set_style(`margin-right: ${sideMargin}px;`);
-            } else {
-                this._artBin.set_style('margin-right: 2px;');
-            }
         }
 
         let customTextStr = this._settings.get_boolean('use-custom-colors') ? `rgb(${this._settings.get_string('custom-text-color')})` : 'white';
@@ -1496,46 +1610,66 @@ class MusicPill extends St.Widget {
         this._updateTextDisplay();
 
         let targetWidth = confWidth;
+        let targetHeight = height;
 
-        if (this._settings.get_boolean('pill-dynamic-width') || hideText) {
-            let currentWidth = this._body.width;
-            this._body.remove_transition('width');
-            
-            let elementsW = this._padX * 2;
+        if (isSidePanel) {
+            targetWidth = height; 
+            let elementsH = this._padY * 2;
             
             if (this._artBin.visible) {
-                let artM = (!tabletMode || this._gameModeActive) ? (((confWidth < 220 && !hideText) || visStyle === 0) ? ((confWidth < 180 && !hideText) ? 4 : 8) : this._settings.get_int('visualizer-padding')) : 2;
-                elementsW += finalArtSize + artM;
+                let artM = (!tabletMode || this._gameModeActive) ? (((width < 220 && !hideText) || visStyle === 0) ? ((width < 180 && !hideText) ? 4 : 8) : this._settings.get_int('visualizer-padding')) : 2;
+                elementsH += finalArtSize + artM;
             }
-            if (this._tabletControls.visible) elementsW += this._tabletControls.get_preferred_width(-1)[1];
-            if (this._visBin.visible) elementsW += this._visBin.get_preferred_width(-1)[1] + this._settings.get_int('visualizer-padding');
+            if (this._visBin.visible) elementsH += this._visBin.get_preferred_height(-1)[1] + this._settings.get_int('visualizer-padding');
+            if (this._tabletControls.visible) elementsH += this._tabletControls.get_preferred_height(-1)[1];
             
-            let titleW = hideText ? 0 : this._titleScroll._label1.get_preferred_width(-1)[1];
-            let artistW = (hideText || !this._artistScroll.visible) ? 0 : this._artistScroll._label1.get_preferred_width(-1)[1];
-            
-            elementsW += Math.max(titleW, artistW) + (hideText ? 0 : 12);
-            
-            targetWidth = hideText ? Math.max(elementsW, 60) : Math.min(Math.max(elementsW, 120), confWidth);
-            
-            if (currentWidth > 0 && Math.abs(targetWidth - currentWidth) < 10) {
-                targetWidth = currentWidth;
+            targetHeight = Math.max(elementsH, 60);
+            this._targetHeight = targetHeight;
+            this._targetWidth = targetWidth;
+
+            if (this._isActiveState && this._body.height > 0 && this._body.height !== targetHeight) {
+                this._body.ease({ height: targetHeight, width: targetWidth, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            } else { 
+                this._body.set_height(targetHeight);
+                this._body.set_width(targetWidth);
             }
-        }
+        } else {
+            if (this._settings.get_boolean('pill-dynamic-width') || hideText) {
+                let currentWidth = this._body.width;
+                this._body.remove_transition('width');
+                
+                let elementsW = this._padX * 2;
+                if (this._artBin.visible) {
+                    let artM = (!tabletMode || this._gameModeActive) ? (((confWidth < 220 && !hideText) || visStyle === 0) ? ((confWidth < 180 && !hideText) ? 4 : 8) : this._settings.get_int('visualizer-padding')) : 2;
+                    elementsW += finalArtSize + artM;
+                }
+                if (this._tabletControls.visible) elementsW += this._tabletControls.get_preferred_width(-1)[1];
+                if (this._visBin.visible) elementsW += this._visBin.get_preferred_width(-1)[1] + this._settings.get_int('visualizer-padding');
+                
+                let titleW = hideText ? 0 : this._titleScroll._label1.get_preferred_width(-1)[1];
+                let artistW = (hideText || !this._artistScroll.visible) ? 0 : this._artistScroll._label1.get_preferred_width(-1)[1];
+                
+                elementsW += Math.max(titleW, artistW) + (hideText ? 0 : 12);
+                targetWidth = hideText ? Math.max(elementsW, 60) : Math.min(Math.max(elementsW, 120), confWidth);
+                
+                if (currentWidth > 0 && Math.abs(targetWidth - currentWidth) < 10) {
+                    targetWidth = currentWidth;
+                }
+            }
 
-        this._targetWidth = targetWidth;
+            this._targetWidth = targetWidth;
+            this._targetHeight = targetHeight;
 
-
-        if (this._isActiveState && this._body.width > 0 && this._body.width !== targetWidth) {
-            this._body.ease({
-                width: targetWidth,
-                duration: 400,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-            });
-        } else if (!this._isActiveState) {
-            this._body.set_width(targetWidth);
+            if (this._isActiveState && this._body.width > 0 && this._body.width !== targetWidth) {
+                this._body.ease({ width: targetWidth, height: targetHeight, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            } else {
+                this._body.set_width(targetWidth);
+                this._body.set_height(targetHeight);
+            }
         }
         
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+	    if (this._isDestroyed) return GLib.SOURCE_REMOVE
             if (this._titleScroll) this._titleScroll._checkResize();
             if (this._artistScroll) this._artistScroll._checkResize();
             return GLib.SOURCE_REMOVE;
@@ -1547,7 +1681,6 @@ class MusicPill extends St.Widget {
             return;
         }
 
-        this._body.set_height(height);
         this.visible = true;
     }
 
@@ -1590,11 +1723,14 @@ class MusicPill extends St.Widget {
                 this._isActiveState = false;
                 this.reactive = false;
 
-                let targetW = 0;
+                let targetW = this._isSidePanel ? this._body.width : 0;
+                let targetH = this._isSidePanel ? 0 : this._body.height;
+
                 this.ease({ opacity: 0, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 
                 this._body.ease({
                     width: targetW,
+                    height: targetH,
                     duration: 500,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: (isFinished) => {
@@ -1603,7 +1739,7 @@ class MusicPill extends St.Widget {
                         this._lastArtist = null;
                         this._lastArtUrl = null;
                         this._currentBusName = null;
-                        this.set_width(targetW);
+                        this.set_width(0);
                         this.visible = false;
                     }
                 });
@@ -1634,13 +1770,21 @@ class MusicPill extends St.Widget {
 
         this._updateDimensions();
         let finalWidth = this._targetWidth;
+        let finalHeight = this._targetHeight;
 
         this.set_width(-1);
-        this._body.set_width(0);
+        
+        if (this._isSidePanel) {
+            this._body.set_height(0);
+            this._body.set_width(finalWidth);
+        } else {
+            this._body.set_width(0);
+            this._body.set_height(finalHeight);
+        }
+        
         this.opacity = 0;
-
         this.ease({ opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-        this._body.ease({ width: finalWidth, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
     } else {
         this._updateDimensions();
     }
@@ -1728,6 +1872,7 @@ class MusicPill extends St.Widget {
 
       let steps = 60; let count = 0;
       this._colorAnimId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 33, () => {
+	  if (this._isDestroyed || !this.get_parent()) return GLib.SOURCE_REMOVE;
           if (!this.get_parent()) return GLib.SOURCE_REMOVE;
           count++;
           let progress = count / steps;
@@ -1767,10 +1912,17 @@ class MusicPill extends St.Widget {
       let safeRadius = (typeof this._radius === 'number' && !isNaN(this._radius)) ? Math.floor(this._radius) : 28;
 
       let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${alpha});`;
-      let borderOp = (this._currentStatus === 'Playing') ? 0.2 : 0.1;
+      
+      let borderStyle = '';
+      if (this._settings.get_boolean('show-pill-border')) {
+          let borderOp = (this._currentStatus === 'Playing') ? 0.2 : 0.1;
+          borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255, 255, 255, ${borderOp});`;
+      } else {
+          borderStyle = `border-width: 0px; border-color: transparent;`;
+      }
 
-      let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255, 255, 255, ${borderOp});`;
       let paddingStyle = `padding: ${safePadY}px ${safePadX}px;`;
+      
       let radiusStyle = `border-radius: ${safeRadius}px;`;
       let shadow = this._shadowCSS ? this._shadowCSS : 'box-shadow: none;';
 
@@ -1933,18 +2085,40 @@ class PlayerSelectorMenu extends St.Widget {
         let menuW = Math.max(natW, 200);
         let [minH, natH] = this._box.get_preferred_height(menuW);
 
-        let startX = px + (pw / 2) - (menuW / 2);
-        if (monitor) {
-            if (startX < monitor.x + 10) startX = monitor.x + 10;
-            else if (startX + menuW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - menuW - 10;
+        let startX, startY;
+
+        if (pill._isSidePanel) {
+            let isLeftEdge = (px < monitor.x + (monitor.width / 2));
+            startY = Math.floor(py + (ph / 2) - (natH / 2));
+            if (startY < monitor.y + 10) startY = monitor.y + 10;
+            if (startY + natH > monitor.y + monitor.height - 10) startY = monitor.y + monitor.height - natH - 10;
+            
+            if (isLeftEdge) {
+                startX = Math.floor(px + pw + 15);
+            } else {
+                startX = Math.floor(px - menuW - 15);
+            }
+        } else {
+            startX = Math.floor(px + (pw / 2) - (menuW / 2));
+            if (monitor) {
+                if (startX < monitor.x + 10) startX = monitor.x + 10;
+                else if (startX + menuW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - menuW - 10;
+            }
+
+            let isTopEdge = (py < monitor.y + (monitor.height / 2));
+            if (isTopEdge) {
+                startY = Math.floor(py + ph + 15);
+            } else {
+                startY = Math.floor(py - natH - 15);
+            }
         }
 
-        let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - natH - 15 : py + ph + 15;
         this._box.set_position(startX, startY);
         this._box.set_width(menuW);
     }
-
     hide() {
+        if (this._isHiding) return;
+        this._isHiding = true;
         this.ease({ opacity: 0, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD, onStopped: () => {
             this.visible = false;
             if (this._controller) this._controller.closePlayerMenu();
