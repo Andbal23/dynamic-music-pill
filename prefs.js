@@ -23,7 +23,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'custom-text-color', 'tablet-mode', 'inline-artist', 'pill-dynamic-width', 
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list','hide-text',
             'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay',
-            'popup-follow-custom-bg', 'popup-follow-custom-text','action-hover', 'hover-delay', 'selected-player-bus','popup-show-player-selector'
+            'popup-follow-custom-bg', 'popup-follow-custom-text','action-hover', 'hover-delay', 'selected-player-bus',
+            'popup-show-player-selector','show-pill-border','invert-scroll-direction'
         ];
 
         // =========================================
@@ -447,7 +448,21 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
         settings.bind('border-radius', radiusRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         lookGroup.add(radiusRow);
+        
+        const borderRow = new Adw.ActionRow({
+            title: _('Show Pill Outline'),
+            subtitle: _('Display a subtle border around the main pill')
+        });
+        const borderSwitch = new Gtk.Switch({
+            active: settings.get_boolean('show-pill-border'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('show-pill-border', borderSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
+        borderRow.add_suffix(borderSwitch);
+        
+        lookGroup.add(borderRow);
         stylePage.add(lookGroup);
+        
 
         const transGroup = new Adw.PreferencesGroup({ title: _('Background and Transparency') });
         const transRow = new Adw.ActionRow({
@@ -876,6 +891,57 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             title: _('About'),
             icon_name: 'help-about-symbolic'
         });
+        
+        const whatsNewGroup = new Adw.PreferencesGroup({ 
+            title: _("What's New") 
+        });
+
+        const changelog = [
+            {
+                version: "V24 - Latest Update",
+                subtitle: "Ubuntu Dock Support, UI Fixes & Stability",
+                expanded: true,
+                notes: "• Added automatic vertical mode for side panels (e.g., Ubuntu Dock)\n" +
+                       "• Fixed an issue where the pill disappeared when moving the dock\n" +
+                       "• Improved seeker sync when changing tracks\n" +
+                       "• New toggle for Outline Border for the Main Pill, now you can disable it\n" +
+                       "• Fixed the pill hitbox"                   
+            },
+            {
+                version: "V21-V23",
+                subtitle: "Custom Colors & Player Selector",
+                expanded: false,
+                notes: "• Added custom text and background color options\n" +
+                       "• New Player Selector\n" +
+                       "• New Invert Scrolling Toggle\n" +
+                       "• New Mouse Action (Hover)\n" +
+                       "• Bugfixes and performance improvements"
+            }
+        ];
+
+        changelog.forEach(release => {
+            let row = new Adw.ExpanderRow({
+                title: release.version,
+                subtitle: release.subtitle,
+                expanded: release.expanded
+            });
+
+            let label = new Gtk.Label({
+                label: release.notes,
+                justify: Gtk.Justification.LEFT, // Balra zárt szöveg
+                xalign: 0,                       // Szövegdoboz balra igazítása
+                wrap: true,                      // Sortörés engedélyezése
+                margin_top: 10,
+                margin_bottom: 10,
+                margin_start: 15,
+                margin_end: 15
+            });
+
+            row.add_row(label);
+            whatsNewGroup.add(row);
+        });
+
+        aboutPage.add(whatsNewGroup);
 
         const supportGroup = new Adw.PreferencesGroup();
         supportGroup.set_title(_('Support the Project'));
