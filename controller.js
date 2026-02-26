@@ -51,16 +51,28 @@ export class MusicController {
         this._PlayerInterfaceInfo = this._NodeInfo.interfaces.find(i => i.name === 'org.mpris.MediaPlayer2.Player');
         this._connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
         
-        this._pill = new MusicPill(this);
         this._expandedPlayer = null;
-        
         this._lastWinnerName = null;
         this._lastActionTime = 0;
         this._currentDock = null;
         this._isMovingItem = false;
+        
+        this._isDisabled = false;
+        this._createPill();
+    }
+
+    _createPill() {
+        if (this._isDisabled || this._pill) return;
+        this._pill = new MusicPill(this);
+        this._pill.connect('destroy', () => {
+            this._pill = null;
+        });
     }
 
     enable() {
+        this._isDisabled = false;
+        this._createPill();
+        
         global.display.connectObject('notify::focus-window', () => this._monitorGameMode(), this);
         this._settings.connectObject('changed::hide-default-player', () => this._updateDefaultPlayerVisibility(), this);
 
@@ -97,6 +109,7 @@ export class MusicController {
     }
 
     disable() {
+        this._isDisabled = true;
         if (this._startupCompleteId) {
             Main.layoutManager.disconnect(this._startupCompleteId);
             this._startupCompleteId = null;
@@ -179,6 +192,7 @@ export class MusicController {
         }
         
         this._playerMenu = new PlayerSelectorMenu(this);
+        this._playerMenu.connect('destroy', () => { this._playerMenu = null; });
         Main.layoutManager.addChrome(this._playerMenu);
         this._playerMenu.showMenu();
     }
@@ -194,10 +208,12 @@ export class MusicController {
     toggleMenu() {
         if (this._expandedPlayer) {
             this._expandedPlayer.hide();
+            this._expandedPlayer.connect('destroy', () => { this._expandedPlayer = null; });
             return;
         }
 
         this._expandedPlayer = new ExpandedPlayer(this);
+        this._expandedPlayer.connect('destroy', () => { this._expandedPlayer = null; });
         Main.layoutManager.addChrome(this._expandedPlayer);
 
         let player = this._getActivePlayer();
@@ -300,7 +316,9 @@ export class MusicController {
     }
 
     _inject() {
-        if (this._isMovingItem || !this._pill) return;
+        if (this._isMovingItem) return;
+        if (!this._pill) this._createPill();
+        if (!this._pill) return;
 
         let target = this._settings ? this._settings.get_int('target-container') : 0;
         let container = null;
@@ -452,9 +470,9 @@ export class MusicController {
                                 'Get',
                                 new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
                                 null, Gio.DBusCallFlags.NONE, -1, null,
-                                (conn, res) => {
+                                (conn, asyncRes) => {
                                     try {
-                                        let result = conn.call_finish(res);
+                                        let result = conn.call_finish(asyncRes);
                                         if (result) {
                                             let posVariant = result.deep_unpack()[0];
                                             if (posVariant) {
@@ -482,9 +500,9 @@ export class MusicController {
                         'Get',
                         new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
                         null, Gio.DBusCallFlags.NONE, -1, null,
-                        (conn, res) => {
+                        (conn, asyncRes) => {
                             try {
-                                let result = conn.call_finish(res);
+                                let result = conn.call_finish(asyncRes);
                                 if (result) {
                                     let posVariant = result.deep_unpack()[0];
                                     if (posVariant) {
@@ -524,6 +542,9 @@ export class MusicController {
             GLib.source_remove(this._recheckTimer);
             this._recheckTimer = null;
         }
+
+        if (!this._pill) this._createPill();
+        if (!this._pill) return;
 
         let target = this._settings ? this._settings.get_int('target-container') : 0;
         let container = null;
