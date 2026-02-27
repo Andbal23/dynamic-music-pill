@@ -491,34 +491,6 @@ export class MusicController {
 
                     p._nameOwnerId = p.connect('notify::g-name-owner', () => { this._scan(); });
 
-                    p._identity = null;
-                    
-                    this._connection.call(
-                      p._busName,
-                      '/org/mpris/MediaPlayer2',
-                      'org.freedesktop.DBus.Properties',
-                      'GetAll',
-                      new GLib.Variant('(s)', ['org.mpris.MediaPlayer2']),
-                      null, Gio.DBusCallFlags.NONE, -1, null,
-                      (conn, asyncRes) => {
-                        try {
-                          let result = conn.call_finish(asyncRes);
-                          if (result) {
-                            let props = result.deep_unpack()[0];
-                            if (props['Identity']){
-                              let v = props['Identity'];
-                              p._identity = v instanceof GLib.Variant ? v.unpack() : v;
-                            }
-                            if (props['DesktopEntry']){
-                              let v = props['DesktopEntry'];
-                              p._desktopEntry = v instanceof GLib.Variant ? v.unpack() : v;
-                            }
-                          }
-                        } catch (e) {}
-                      }
-
-                    );
-
                     this._proxies.set(name, p);
                     
                     this._connection.call(
