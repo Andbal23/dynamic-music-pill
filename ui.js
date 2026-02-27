@@ -2017,12 +2017,12 @@ class PlayerSelectorMenu extends St.Widget {
             
             // JAVÍTÁS 2: App nevének és ikonjának kinyerése a busName-ből (pl. 'spotify', 'firefox')
             let rawAppName = busName.replace('org.mpris.MediaPlayer2.', '').split('.')[0];
-            let identity = rawAppName.charAt(0).toUpperCase() + rawAppName.slice(1);
-            
+            let iconName = proxy._desktopEntry || rawAppName.toLowerCase();
+            let identity = (proxy._identity || (rawAppName.charAt(0).toUpperCase() + rawAppName.slice(1))).replace(/\b\w/g, c => c.toUpperCase());
             let btnContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
             
             let icon = new St.Icon({ 
-                icon_name: rawAppName.toLowerCase(), 
+                icon_name: iconName, 
                 fallback_icon_name: 'audio-x-generic-symbolic',
                 icon_size: 24 
             });
