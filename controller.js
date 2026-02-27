@@ -233,7 +233,14 @@ export class MusicController {
         let [minW, natW] = this._expandedPlayer._box.get_preferred_width(-1);
         let [minH, natH] = this._expandedPlayer._box.get_preferred_height(natW);
 
-        let startW = natW > 0 ? natW : 320;
+        let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
+        let startW;
+        if (this._settings.get_boolean('popup-use-custom-width')) {
+            startW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
+        } else {
+            startW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
+        }
+        
         let startH = natH > 0 ? natH : 260;
 
         let startX = px + (pw / 2) - (startW / 2);
