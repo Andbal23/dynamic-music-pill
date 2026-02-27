@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.dynamic-music-pill" path="/org/gnome/shell/extensions/dynamic-music-pill/" gettext-domain="dynamic-music-pill">
+    <key name="always-show-pill" type="b">
+      <default>false</default>
+      <summary>Always Show Pill</summary>
+      <description>Retain last known track and keep pill visible after closing the player</description>
+    </key>
     <key name="scroll-action" type="s">
       <default>'track'</default>
       <summary>Scroll Action</summary>
