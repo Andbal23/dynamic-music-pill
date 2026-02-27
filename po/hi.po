@@ -8,86 +8,88 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 22:18+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-02-27 12:28+0000\n"
+"Last-Translator: Dhananjay Porwal <dporwal985@gmail.com>\n"
+"Language-Team: Hindi <https://hosted.weblate.org/projects/dynamic-music-pill/"
+"settings/hi/>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: prefs.js:32
 msgid "Main Pill"
-msgstr ""
+msgstr "मुख्य पिल"
 
 #: prefs.js:36
 msgid "General Settings"
-msgstr ""
+msgstr "सामान्य सेटिंग्स"
 
 #: prefs.js:40
 msgid "Show Album Art"
-msgstr ""
+msgstr "एल्बम आर्ट दिखाएँ"
 
 #: prefs.js:41
 msgid "Display the cover art of the currently playing song"
-msgstr ""
+msgstr "वर्तमान में चल रहे गाने का कवर आर्ट दिखाएँ"
 
 #: prefs.js:52
 msgid "Fallback Album Art"
-msgstr ""
+msgstr "फॉलबैक एल्बम आर्ट"
 
 #: prefs.js:53 prefs.js:93
 msgid "No image selected"
-msgstr ""
+msgstr "कोई इमेज चयनित नहीं"
 
 #: prefs.js:63
 msgid "Select Fallback Image"
-msgstr ""
+msgstr "फॉलबैक इमेज चुनें"
 
 #: prefs.js:107
 msgid "Enable Scroll Controls"
-msgstr ""
+msgstr "स्क्रॉल कंट्रोल चालू करें"
 
 #: prefs.js:108
 msgid "Change Tracks or Volume using scroll wheel or touchpad"
-msgstr ""
+msgstr "स्क्रॉल व्हील या टचपैड से ट्रैक या वॉल्यूम बदलें"
 
 #: prefs.js:119
 msgid "Change Track"
-msgstr ""
+msgstr "ट्रैक बदलें"
 
 #: prefs.js:120
 msgid "Change Volume"
-msgstr ""
+msgstr "वॉल्यूम बदलें"
 
 #: prefs.js:125
 msgid "Scroll Action"
-msgstr ""
+msgstr "स्क्रॉल एक्शन"
 
 #: prefs.js:126
 msgid "Choose what scrolling on the pill should do"
-msgstr ""
+msgstr "पिल पर स्क्रॉल करने पर क्या होना चाहिए चुनें"
 
 #: prefs.js:145
 msgid "Invert Scroll Animation"
-msgstr ""
+msgstr "स्क्रॉल एनीमेशन उल्टा करें"
 
 #: prefs.js:146
 msgid "Direction of the jump effect (Natural vs Traditional)"
-msgstr ""
+msgstr "जंप इफेक्ट की दिशा (नेचुरल बनाम ट्रेडिशनल)"
 
 #: prefs.js:158
 msgid "Scrolling Text"
-msgstr ""
+msgstr "स्क्रॉलिंग टेक्स्ट"
 
 #: prefs.js:159
 msgid "Animate long track titles and artist names"
-msgstr ""
+msgstr "लंबे समय तक ट्रैक शीर्षक और कलाकार के नाम"
 
 #: prefs.js:169
 msgid "Tablet Mode"
-msgstr ""
+msgstr "टैबलेट मोड"
 
 #: prefs.js:169
 msgid "Show skip buttons directly on the pill"
@@ -95,7 +97,7 @@ msgstr ""
 
 #: prefs.js:175
 msgid "Inline Artist"
-msgstr ""
+msgstr "इनलाइन कलाकार"
 
 #: prefs.js:175
 msgid "Show \"Title • Artist\" when the widget is squeezed"
