@@ -1974,7 +1974,7 @@ class PlayerSelectorMenu extends St.Widget {
 
         let titleLabel = new St.Label({ 
             text: 'Select Media Player', 
-            style: 'font-weight: bold; margin-bottom: 15px; font-size: 12pt;', 
+            style: 'font-weight: bold; margin-bottom: 15px; font-size: 12pt; color: white', 
             x_align: Clutter.ActorAlign.CENTER 
         });
         this._box.add_child(titleLabel);
@@ -1983,8 +1983,8 @@ class PlayerSelectorMenu extends St.Widget {
 
         // ==== Auto (Smart Selection) Gomb ====
         let autoContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
-        let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24 });
-        let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER });
+        let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24, style: 'color: white;' });
+        let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER, style: 'color: white;' });
         autoContent.add_child(autoIcon);
         autoContent.add_child(autoLabel);
 
@@ -2024,9 +2024,9 @@ class PlayerSelectorMenu extends St.Widget {
             let icon = new St.Icon({ 
                 icon_name: rawAppName.toLowerCase(), 
                 fallback_icon_name: 'audio-x-generic-symbolic',
-                icon_size: 24 
+                icon_size: 24, style: 'color: white', 
             });
-            let label = new St.Label({ text: identity, y_align: Clutter.ActorAlign.CENTER });
+            let label = new St.Label({ text: identity, y_align: Clutter.ActorAlign.CENTER, style: 'color: white' });
             
             btnContent.add_child(icon);
             btnContent.add_child(label);
