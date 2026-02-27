@@ -2023,7 +2023,7 @@ class PlayerSelectorMenu extends St.Widget {
             let btnContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
             
             let icon = new St.Icon({ 
-                icon_name: iconName(), 
+                icon_name: iconName, 
                 fallback_icon_name: 'audio-x-generic-symbolic',
                 icon_size: 24, style: 'color: white', 
             });
