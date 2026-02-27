@@ -859,9 +859,13 @@ class ExpandedPlayer extends St.Widget {
         this._totalTimeLabel.text = formatTime(length);
 
         let percent = Math.min(1, Math.max(0, currentPos / length));
-        let totalW = this._sliderBin.width;
+        let totalW = Math.round(this._sliderBin.get_width());
+        
         if (totalW > 0) {
-            this._sliderFill.width = Math.max(6, totalW * percent);
+            let targetWidth = Math.round(totalW * percent);
+            if (Math.abs(this._sliderFill.width - targetWidth) >= 1) {
+                this._sliderFill.width = Math.max(6, targetWidth);
+            }
         }
     }
 
@@ -884,9 +888,11 @@ class ExpandedPlayer extends St.Widget {
         this._player._lastPositionTime = Date.now();
 
         this._currentTimeLabel.text = formatTime(targetPos);
-        let totalW = this._sliderBin.width;
+        let totalW = Math.round(this._sliderBin.get_width());
+        
         if (totalW > 0) {
-            this._sliderFill.width = Math.max(6, totalW * percent);
+            let targetWidth = Math.round(totalW * percent);
+            this._sliderFill.width = Math.max(6, targetWidth);
         }
 
         let trackId = '/org/mpris/MediaPlayer2/TrackList/NoTrack';
@@ -1342,6 +1348,11 @@ class MusicPill extends St.Widget {
     this._settings.connectObject('changed::shadow-blur', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
     this._settings.connectObject('changed::show-album-art', () => this._updateArtVisibility(), this);
     this._settings.connectObject('changed::show-pill-border', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+    this._settings.connectObject('changed::always-show-pill', () => {
+        if (!this._settings.get_boolean('always-show-pill') && this._currentStatus === 'Stopped' && this._isActiveState) {
+            this.updateDisplay(null, null, null, 'Stopped', null, false);
+        }
+    }, this);
     this._settings.connectObject('changed::visualizer-padding', () => this._updateDimensions(), this);
     this.connect('notify::allocation', () => {
         if (this._allocTimer) return;
@@ -1733,6 +1744,21 @@ class MusicPill extends St.Widget {
 
     if (!title || status === 'Stopped') {
         if (isSkipActive) return;
+        
+        if (this._settings.get_boolean('always-show-pill') && this._isActiveState && this._origTitle) {
+            if (this._hideGraceTimer) {
+                GLib.source_remove(this._hideGraceTimer);
+                this._hideGraceTimer = null;
+            }
+            this._currentStatus = 'Stopped';
+            this._visualizer.setPlaying(false);
+            this._startColorTransition();
+            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
+                this._controller._expandedPlayer.updateContent(this._origTitle, this._origArtist, this._lastArtUrl, 'Stopped');
+            }
+            return;
+        }
+        
         if (!this._hideGraceTimer && this._isActiveState) {
             this._hideGraceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
                 if (!this.get_parent()) return GLib.SOURCE_REMOVE;
