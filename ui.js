@@ -1995,10 +1995,28 @@ class PlayerSelectorMenu extends St.Widget {
     populate() {
         this._box.destroy_all_children();
 
+        let pill = this._controller._pill;
+        let c = pill ? pill._displayedColor : { r: 40, g: 40, b: 40 };
+        let r = c.r, g = c.g, b = c.b;
+
+        if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
+            let customBg = this._settings.get_string('custom-bg-color').split(',');
+            r = parseInt(customBg[0]) || 40;
+            g = parseInt(customBg[1]) || 40;
+            b = parseInt(customBg[2]) || 40;
+        }
+
         let textColorStyle = '';
         if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
             let customTextStr = this._settings.get_string('custom-text-color');
             textColorStyle = `color: rgb(${customTextStr});`;
+        } else {
+            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            if (brightness > 160) {
+                textColorStyle = `color: rgb(30, 30, 30);`;
+            } else {
+                textColorStyle = `color: rgb(255, 255, 255);`;
+            }
         }
 
         let titleLabel = new St.Label({ 
