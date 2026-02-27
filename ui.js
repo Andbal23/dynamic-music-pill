@@ -449,24 +449,24 @@ class ExpandedPlayer extends St.Widget {
         this._shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: true });
         this._shuffleBtn.connectObject('button-release-event', () => { this._controller.toggleShuffle(); return Clutter.EVENT_STOP; }, this);
 
-        let prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
-        prevBtn.connectObject('button-release-event', () => { this._controller.previous(); return Clutter.EVENT_STOP; }, this);
+        this._prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
+        this._prevBtn.connectObject('button-release-event', () => { this._controller.previous(); return Clutter.EVENT_STOP; }, this);
 
         this._playPauseIcon = new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 24 });
-        let playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: true });
-        playPauseBtn.connectObject('button-release-event', () => { this._controller.togglePlayback(); return Clutter.EVENT_STOP; }, this);
+        this._playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: true });
+        this._playPauseBtn.connectObject('button-release-event', () => { this._controller.togglePlayback(); return Clutter.EVENT_STOP; }, this);
 
-        let nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
-        nextBtn.connectObject('button-release-event', () => { this._controller.next(); return Clutter.EVENT_STOP; }, this);
+        this._nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
+        this._nextBtn.connectObject('button-release-event', () => { this._controller.next(); return Clutter.EVENT_STOP; }, this);
 
         this._repeatIcon = new St.Icon({ icon_name: 'media-playlist-repeat-symbolic', icon_size: 16 });
         this._repeatBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._repeatIcon, reactive: true, can_focus: true });
         this._repeatBtn.connectObject('button-release-event', () => { this._controller.toggleLoop(); return Clutter.EVENT_STOP; }, this);
 
         controlsRow.add_child(this._shuffleBtn);
-        controlsRow.add_child(prevBtn);
-        controlsRow.add_child(playPauseBtn);
-        controlsRow.add_child(nextBtn);
+        controlsRow.add_child(this._prevBtn);      
+        controlsRow.add_child(this._playPauseBtn);   
+        controlsRow.add_child(this._nextBtn);       
         controlsRow.add_child(this._repeatBtn);
 
         this._box.add_child(controlsRow);
@@ -599,20 +599,38 @@ class ExpandedPlayer extends St.Widget {
         if (this._artistLabel) this._artistLabel.opacity = 255;
         if (this._visualizer) { this._visualizer.setColor({ r: safeR, g: safeG, b: safeB }); }
 
-        let textColor = '';
-        let textAlpha = '';
+        let fgR = 255, fgG = 255, fgB = 255;
+
         if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
-            let customTextStr = this._settings.get_string('custom-text-color');
-            textColor = `rgb(${customTextStr})`;
-            textAlpha = `rgba(${customTextStr}, 0.7)`;
+            let customTextStr = this._settings.get_string('custom-text-color').split(',');
+            fgR = parseInt(customTextStr[0]) || 255;
+            fgG = parseInt(customTextStr[1]) || 255;
+            fgB = parseInt(customTextStr[2]) || 255;
+        } else {
+            let brightness = (safeR * 299 + safeG * 587 + safeB * 114) / 1000;
+            if (brightness > 160) {
+                fgR = 30; fgG = 30; fgB = 30;
+            }
         }
 
-        if (this._titleLabel) {
-            this._titleLabel.setLabelStyle(textColor ? `color: ${textColor};` : '');
-        }
-        if (this._artistLabel) {
-            this._artistLabel.setLabelStyle(textAlpha ? `color: ${textAlpha};` : '');
-        }
+        let textColor = `rgb(${fgR}, ${fgG}, ${fgB})`;
+        let textAlpha = `rgba(${fgR}, ${fgG}, ${fgB}, 0.7)`;
+        let iconCss = `color: ${textColor};`;
+
+        if (this._titleLabel) this._titleLabel.setLabelStyle(`color: ${textColor};`);
+        if (this._artistLabel) this._artistLabel.setLabelStyle(`color: ${textAlpha};`);
+        if (this._currentTimeLabel) this._currentTimeLabel.set_style(`color: ${textColor}; font-weight: bold;`);
+        if (this._totalTimeLabel) this._totalTimeLabel.set_style(`color: ${textAlpha}; font-weight: bold;`);
+
+        if (this._prevBtn) this._prevBtn.set_style(iconCss);
+        if (this._playPauseBtn) this._playPauseBtn.set_style(iconCss);
+        if (this._nextBtn) this._nextBtn.set_style(iconCss);
+        if (this._shuffleBtn) this._shuffleBtn.set_style(iconCss);
+        if (this._repeatBtn) this._repeatBtn.set_style(iconCss);
+
+        if (this._sliderFill) this._sliderFill.set_style(`background-color: ${textColor};`);
+        if (this._sliderBin) this._sliderBin.set_style(`background-color: rgba(${fgR}, ${fgG}, ${fgB}, 0.2);`);
+
     }
 
     updateContent(title, artist, artUrl, status) {
@@ -1977,9 +1995,15 @@ class PlayerSelectorMenu extends St.Widget {
     populate() {
         this._box.destroy_all_children();
 
+        let textColorStyle = '';
+        if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
+            let customTextStr = this._settings.get_string('custom-text-color');
+            textColorStyle = `color: rgb(${customTextStr});`;
+        }
+
         let titleLabel = new St.Label({ 
             text: 'Select Media Player', 
-            style: 'font-weight: bold; margin-bottom: 15px; font-size: 12pt;', 
+            style: `font-weight: bold; margin-bottom: 15px; font-size: 12pt; ${textColorStyle}`, 
             x_align: Clutter.ActorAlign.CENTER 
         });
         this._box.add_child(titleLabel);
@@ -1988,8 +2012,8 @@ class PlayerSelectorMenu extends St.Widget {
 
         // ==== Auto (Smart Selection) Gomb ====
         let autoContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
-        let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24 });
-        let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER });
+        let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24, style: textColorStyle });
+	let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER, style: textColorStyle });
         autoContent.add_child(autoIcon);
         autoContent.add_child(autoLabel);
 
@@ -2029,9 +2053,10 @@ class PlayerSelectorMenu extends St.Widget {
             let icon = new St.Icon({ 
                 icon_name: iconName, 
                 fallback_icon_name: 'audio-x-generic-symbolic',
-                icon_size: 24 
+                icon_size: 24,
+                style: textColorStyle
             });
-            let label = new St.Label({ text: identity, y_align: Clutter.ActorAlign.CENTER });
+	    let label = new St.Label({ text: identity, y_align: Clutter.ActorAlign.CENTER, style: textColorStyle });
             
             btnContent.add_child(icon);
             btnContent.add_child(label);
@@ -2076,7 +2101,16 @@ class PlayerSelectorMenu extends St.Widget {
 
         let c = pill._displayedColor;
         let bgAlpha = pill._currentBgAlpha || 0.95;
-        this._box.set_style(`background-color: rgba(${c.r}, ${c.g}, ${c.b}, ${bgAlpha}); padding: 15px; border-radius: 20px; box-shadow: 0px 8px 30px rgba(0,0,0,0.5);`);
+        
+        let r = c.r, g = c.g, b = c.b;
+        if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
+            let customBg = this._settings.get_string('custom-bg-color').split(',');
+            r = parseInt(customBg[0]) || 40;
+            g = parseInt(customBg[1]) || 40;
+            b = parseInt(customBg[2]) || 40;
+        }
+
+        this._box.set_style(`background-color: rgba(${r}, ${g}, ${b}, ${bgAlpha}); padding: 15px; border-radius: 20px; box-shadow: 0px 8px 30px rgba(0,0,0,0.5);`);
 
         this._box.set_width(-1);
         let [minW, natW] = this._box.get_preferred_width(-1);
