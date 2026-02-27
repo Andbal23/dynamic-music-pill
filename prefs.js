@@ -24,7 +24,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list','hide-text',
             'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay',
             'popup-follow-custom-bg', 'popup-follow-custom-text','action-hover', 'hover-delay', 'selected-player-bus',
-            'popup-show-player-selector','show-pill-border','invert-scroll-direction'
+            'popup-show-player-selector','show-pill-border','invert-scroll-direction','always-show-pill'
         ];
 
         // =========================================
@@ -36,6 +36,18 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
 
         const genGroup = new Adw.PreferencesGroup({ title: _('General Settings') });
+        
+        const alwaysShowRow = new Adw.ActionRow({
+            title: _('Always ON'),
+            subtitle: _('Retain last known track and keep pill visible after closing the player')
+        });
+        const alwaysShowToggle = new Gtk.Switch({
+            active: settings.get_boolean('always-show-pill'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('always-show-pill', alwaysShowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        alwaysShowRow.add_suffix(alwaysShowToggle);
+        genGroup.add(alwaysShowRow);
         
         // Album Art
         const artRow = new Adw.ActionRow({
