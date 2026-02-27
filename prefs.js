@@ -896,11 +896,21 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             title: _("What's New") 
         });
 
-        const changelog = [
-            {
-                version: "V24 - Latest Update",
-                subtitle: "Ubuntu Dock Support, UI Fixes & Stability",
+        const changelog = [     
+        	{
+                version: "V26 - Latest Update",
+                subtitle: "Dynamic Contrast & Readability Improvements",
                 expanded: true,
+                notes: "• Added dynamic contrast: Popup text and buttons now automatically turn dark on light album arts for perfect readability\n" +
+                       "• The Player Selector menu now correctly follows your Custom Color settings\n" +
+                       "• Dynamic contrast is also applied to the Player Selector menu\n" +
+                       "• Improved Player Selector: Added smart DBus logic to accurately detect and display media player names and icons\n" +
+                       "• Fixed an issue where the popup menu would jump or resize incorrectly when Custom Width was enabled"
+            },
+            {
+                version: "V25 - Latest Update",
+                subtitle: "Ubuntu Dock Support, UI Fixes & Stability",
+                expanded: false,
                 notes: "• Added automatic vertical mode for side panels (e.g., Ubuntu Dock)\n" +
                        "• Fixed an issue where the pill disappeared when moving the dock\n" +
                        "• Improved seeker sync when changing tracks\n" +
@@ -928,9 +938,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
             let label = new Gtk.Label({
                 label: release.notes,
-                justify: Gtk.Justification.LEFT, // Balra zárt szöveg
-                xalign: 0,                       // Szövegdoboz balra igazítása
-                wrap: true,                      // Sortörés engedélyezése
+                justify: Gtk.Justification.LEFT, 
+                xalign: 0,                       
+                wrap: true,                      
                 margin_top: 10,
                 margin_bottom: 10,
                 margin_start: 15,
