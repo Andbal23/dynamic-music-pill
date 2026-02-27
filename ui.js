@@ -965,6 +965,11 @@ class ExpandedPlayer extends St.Widget {
                 menuW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
             }
             let menuH = natH > 0 ? natH : 260;
+            
+            if (!this._initialWidthSet) {
+                currentW = menuW;
+                this._initialWidthSet = true;
+            }
 
             if (currentW > 0 && Math.abs(menuW - currentW) < 20) {
                 menuW = currentW;
