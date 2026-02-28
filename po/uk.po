@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 22:18+0100\n"
-"PO-Revision-Date: 2026-02-28 19:33+0000\n"
+"PO-Revision-Date: 2026-02-28 22:40+0000\n"
 "Last-Translator: Олег Попов <postnozet@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/uk/>\n"
@@ -34,7 +34,7 @@ msgstr "Показувати обкладинку"
 
 #: prefs.js:41
 msgid "Display the cover art of the currently playing song"
-msgstr "Показувати обкладинку поточної пісні"
+msgstr "Показувати обкладинку поточного треку"
 
 #: prefs.js:52
 msgid "Fallback Album Art"
@@ -54,11 +54,11 @@ msgstr "Увімкнути керування прокруткою"
 
 #: prefs.js:108
 msgid "Change Tracks or Volume using scroll wheel or touchpad"
-msgstr "Перемикати пісні або змінювати гучність гортанням або сенсорною панеллю"
+msgstr "Перемикати треки або змінювати гучність гортанням або сенсорною панеллю"
 
 #: prefs.js:119
 msgid "Change Track"
-msgstr "Перемкнути пісню"
+msgstr "Перемкнути трек"
 
 #: prefs.js:120
 msgid "Change Volume"
@@ -86,7 +86,7 @@ msgstr "Гортання тексту"
 
 #: prefs.js:159
 msgid "Animate long track titles and artist names"
-msgstr "Анімувати довгі назви пісень та виконавців"
+msgstr "Анімувати довгі назви треків та виконавців"
 
 #: prefs.js:169
 msgid "Tablet Mode"
@@ -458,7 +458,7 @@ msgstr "Виправлення повільної роботи плеєра"
 
 #: prefs.js:642
 msgid "Adds a slight delay to track changes (fixes sync issues)"
-msgstr "Додає невелику затримку до змін пісні (вирішує проблеми синхронізації)"
+msgstr "Додає невелику затримку до змін треку (вирішує проблеми синхронізації)"
 
 #: prefs.js:650
 msgid "Off (Allow All)"
