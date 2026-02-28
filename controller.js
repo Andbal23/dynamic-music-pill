@@ -460,6 +460,7 @@ export class MusicController {
 
                         if (keys.Metadata !== undefined || keys.PlaybackStatus !== undefined) {
                             let trackId = null;
+                            let trackChanged = false;
                             if (keys.Metadata) {
                                 let mObj = (keys.Metadata instanceof GLib.Variant) ? keys.Metadata.deep_unpack() : keys.Metadata;
                                 trackId = smartUnpack(mObj['mpris:trackid']);
@@ -470,27 +471,29 @@ export class MusicController {
                                 }
                             }
 
-                            this._connection.call(
-                                p._busName,
-                                '/org/mpris/MediaPlayer2',
-                                'org.freedesktop.DBus.Properties',
-                                'Get',
-                                new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
-                                null, Gio.DBusCallFlags.NONE, -1, null,
-                                (conn, asyncRes) => {
-                                    try {
-                                        let result = conn.call_finish(asyncRes);
-                                        if (result) {
-                                            let posVariant = result.deep_unpack()[0];
-                                            if (posVariant) {
-                                                p._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
-                                                p._lastPositionTime = Date.now();
-                                                this._triggerUpdate();
+                            if (trackChanged || keys.PlaybackStatus !== undefined) {
+                                this._connection.call(
+                                    p._busName,
+                                    '/org/mpris/MediaPlayer2',
+                                    'org.freedesktop.DBus.Properties',
+                                    'Get',
+                                    new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
+                                    null, Gio.DBusCallFlags.NONE, -1, null,
+                                    (conn, asyncRes) => {
+                                        try {
+                                            let result = conn.call_finish(asyncRes);
+                                            if (result) {
+                                                let posVariant = result.deep_unpack()[0];
+                                                if (posVariant) {
+                                                    p._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                                                    p._lastPositionTime = Date.now();
+                                                    this._triggerUpdate();
+                                                }
                                             }
-                                        }
-                                    } catch (e) {}
-                                }
-                            );
+                                        } catch (e) {}
+                                    }
+                                );
+                            }
                         }
 
                         this._triggerUpdate();
@@ -569,15 +572,15 @@ export class MusicController {
 
     _triggerUpdate() {
         if (this._updateTimeoutId) {
-            GLib.source_remove(this._updateTimeoutId);
+            return; 
         }
 
         let useDelay = this._settings ? this._settings.get_boolean('compatibility-delay') : false;
-        let delay = useDelay ? 800 : 100;
+        let delay = useDelay ? 800 : 150;
 
         this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
-            this._updateUI();
             this._updateTimeoutId = null;
+            this._updateUI();
             return GLib.SOURCE_REMOVE;
         });
     }
