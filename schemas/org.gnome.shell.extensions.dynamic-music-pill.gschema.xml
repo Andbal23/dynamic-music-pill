@@ -272,8 +272,8 @@
       <summary>Right Click Action</summary>
     </key>
     <key name="action-double-click" type="s">
-      <default>'next'</default>
-      <summary>Double Click Action</summary>
+      <default>'open_player_menu'</default>
+      <summary>none</summary>
     </key>
   </schema>
 </schemalist>
