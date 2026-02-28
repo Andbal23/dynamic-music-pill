@@ -1,0 +1,567 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-24 22:18+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: prefs.js:32
+msgid "Main Pill"
+msgstr ""
+
+#: prefs.js:36
+msgid "General Settings"
+msgstr ""
+
+#: prefs.js:40
+msgid "Show Album Art"
+msgstr ""
+
+#: prefs.js:41
+msgid "Display the cover art of the currently playing song"
+msgstr ""
+
+#: prefs.js:52
+msgid "Fallback Album Art"
+msgstr ""
+
+#: prefs.js:53 prefs.js:93
+msgid "No image selected"
+msgstr ""
+
+#: prefs.js:63
+msgid "Select Fallback Image"
+msgstr ""
+
+#: prefs.js:107
+msgid "Enable Scroll Controls"
+msgstr ""
+
+#: prefs.js:108
+msgid "Change Tracks or Volume using scroll wheel or touchpad"
+msgstr ""
+
+#: prefs.js:119
+msgid "Change Track"
+msgstr ""
+
+#: prefs.js:120
+msgid "Change Volume"
+msgstr ""
+
+#: prefs.js:125
+msgid "Scroll Action"
+msgstr ""
+
+#: prefs.js:126
+msgid "Choose what scrolling on the pill should do"
+msgstr ""
+
+#: prefs.js:145
+msgid "Invert Scroll Animation"
+msgstr ""
+
+#: prefs.js:146
+msgid "Direction of the jump effect (Natural vs Traditional)"
+msgstr ""
+
+#: prefs.js:158
+msgid "Scrolling Text"
+msgstr ""
+
+#: prefs.js:159
+msgid "Animate long track titles and artist names"
+msgstr ""
+
+#: prefs.js:169
+msgid "Tablet Mode"
+msgstr ""
+
+#: prefs.js:169
+msgid "Show skip buttons directly on the pill"
+msgstr ""
+
+#: prefs.js:175
+msgid "Inline Artist"
+msgstr ""
+
+#: prefs.js:175
+msgid "Show \"Title • Artist\" when the widget is squeezed"
+msgstr ""
+
+#: prefs.js:182
+msgid "Compact Mode (Hide Text)"
+msgstr ""
+
+#: prefs.js:183
+msgid "Hide title and artist"
+msgstr ""
+
+#: prefs.js:196
+msgid "Mouse Actions"
+msgstr ""
+
+#: prefs.js:204
+msgid "Left Click"
+msgstr ""
+
+#: prefs.js:212
+msgid "Middle Click"
+msgstr ""
+
+#: prefs.js:220
+msgid "Right Click"
+msgstr ""
+
+#: prefs.js:235
+msgid "Pop-up Menu"
+msgstr ""
+
+#: prefs.js:239
+msgid "Pop-up Appearance"
+msgstr ""
+
+#: prefs.js:241
+msgid "Rotate Vinyl"
+msgstr ""
+
+#: prefs.js:242
+msgid "Spin the album art when playing"
+msgstr ""
+
+#: prefs.js:253 prefs.js:437
+msgid "Enable Shadow"
+msgstr ""
+
+#: prefs.js:254
+msgid "Show drop shadow behind the pop-up menu"
+msgstr ""
+
+#: prefs.js:265
+msgid "Follow Transparency"
+msgstr ""
+
+#: prefs.js:266
+msgid "Inherit opacity settings from the main pill"
+msgstr ""
+
+#: prefs.js:277
+msgid "Follow Border Radius"
+msgstr ""
+
+#: prefs.js:278
+msgid "Inherit corner roundness from the main pill"
+msgstr ""
+
+#: prefs.js:287
+msgid "Show Vinyl"
+msgstr ""
+
+#: prefs.js:287
+msgid "Display the album art in the pop-up"
+msgstr ""
+
+#: prefs.js:293
+msgid "Square Vinyl Image"
+msgstr ""
+
+#: prefs.js:293
+msgid "Use a square album art (disables rotation)"
+msgstr ""
+
+#: prefs.js:299
+msgid "Show Shuffle and Loop"
+msgstr ""
+
+#: prefs.js:299
+msgid "Display extra controls in the pop-up"
+msgstr ""
+
+#: prefs.js:305
+msgid "Use Custom Width"
+msgstr ""
+
+#: prefs.js:305
+msgid "Disable dynamic sizing for the pop-up"
+msgstr ""
+
+#: prefs.js:312
+msgid "Custom Width Value"
+msgstr ""
+
+#: prefs.js:331
+msgid "Show Visualizer in Pop-up"
+msgstr ""
+
+#: prefs.js:338
+msgid "Hide Pill Visualizer"
+msgstr ""
+
+#: prefs.js:339
+msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
+msgstr ""
+
+#: prefs.js:356
+msgid "Style & Layout"
+msgstr ""
+
+#: prefs.js:360
+msgid "Visualizer and Shape"
+msgstr ""
+
+#: prefs.js:363
+msgid "Off (Disabled)"
+msgstr ""
+
+#: prefs.js:364
+msgid "Wave (Smooth)"
+msgstr ""
+
+#: prefs.js:365
+msgid "Beat (Jumpy)"
+msgstr ""
+
+#: prefs.js:368
+msgid "Visualizer Animation"
+msgstr ""
+
+#: prefs.js:369
+msgid "Select the style of the audio reaction bars"
+msgstr ""
+
+#: prefs.js:376
+msgid "Visualizer Margin"
+msgstr ""
+
+#: prefs.js:377
+msgid "Distance between the text and the wave animation"
+msgstr ""
+
+#: prefs.js:384
+msgid "Corner Radius"
+msgstr ""
+
+#: prefs.js:385
+msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
+msgstr ""
+
+#: prefs.js:392
+msgid "Background and Transparency"
+msgstr ""
+
+#: prefs.js:394
+msgid "Enable Transparency"
+msgstr ""
+
+#: prefs.js:395
+msgid "Switch between a solid theme background and a custom transparent look"
+msgstr ""
+
+#: prefs.js:406
+msgid "Background Opacity"
+msgstr ""
+
+#: prefs.js:407
+msgid "Adjust transparency level"
+msgstr ""
+
+#: prefs.js:414
+msgid "Apply to Album Art"
+msgstr ""
+
+#: prefs.js:421
+msgid "Apply to Text"
+msgstr ""
+
+#: prefs.js:428
+msgid "Apply to Visualizer"
+msgstr ""
+
+#: prefs.js:436
+msgid "Main Pill Shadow"
+msgstr ""
+
+#: prefs.js:444
+msgid "Shadow Intensity"
+msgstr ""
+
+#: prefs.js:451
+msgid "Shadow Blur"
+msgstr ""
+
+#: prefs.js:458
+msgid "Positioning"
+msgstr ""
+
+#: prefs.js:460
+msgid "Dock"
+msgstr ""
+
+#: prefs.js:461
+msgid "Panel: Left Box"
+msgstr ""
+
+#: prefs.js:462
+msgid "Panel: Center Box"
+msgstr ""
+
+#: prefs.js:463
+msgid "Panel: Right Box"
+msgstr ""
+
+#: prefs.js:466
+msgid "Container Target"
+msgstr ""
+
+#: prefs.js:467
+msgid "Select which UI element should host the music pill"
+msgstr ""
+
+#: prefs.js:478
+msgid "Dynamic Width"
+msgstr ""
+
+#: prefs.js:478
+msgid "Auto-adjust pill width (slider acts as max width)"
+msgstr ""
+
+#: prefs.js:493
+msgid "Manual Index"
+msgstr ""
+
+#: prefs.js:494
+msgid "First (Start)"
+msgstr ""
+
+#: prefs.js:495
+msgid "Center"
+msgstr ""
+
+#: prefs.js:496
+msgid "Last (End)"
+msgstr ""
+
+#: prefs.js:499
+msgid "Alignment Preset"
+msgstr ""
+
+#: prefs.js:500
+msgid "How the widget aligns relative to other items"
+msgstr ""
+
+#: prefs.js:508
+msgid "Manual Index Position"
+msgstr ""
+
+#: prefs.js:509
+msgid "Order in the list (0 is first). Only for Manual mode."
+msgstr ""
+
+#: prefs.js:516
+msgid "Vertical Offset (Y)"
+msgstr ""
+
+#: prefs.js:517
+msgid "Shift Up (-) or Down (+)"
+msgstr ""
+
+#: prefs.js:524
+msgid "Horizontal Offset (X)"
+msgstr ""
+
+#: prefs.js:525
+msgid "Shift Left (-) or Right (+)"
+msgstr ""
+
+#: prefs.js:531
+msgid "Dimensions (Dock Mode)"
+msgstr ""
+
+#: prefs.js:533 prefs.js:555
+msgid "Album Art Size"
+msgstr ""
+
+#: prefs.js:539 prefs.js:561
+msgid "Widget Width"
+msgstr ""
+
+#: prefs.js:546 prefs.js:568
+msgid "Widget Height"
+msgstr ""
+
+#: prefs.js:553
+msgid "Dimensions (Panel Mode)"
+msgstr ""
+
+#: prefs.js:574
+msgid "Custom Colors"
+msgstr ""
+
+#: prefs.js:575
+msgid "Use Custom Colors"
+msgstr ""
+
+#: prefs.js:575
+msgid "Override dynamic colors"
+msgstr ""
+
+#: prefs.js:604
+msgid "Background Color"
+msgstr ""
+
+#: prefs.js:605
+msgid "Text Color"
+msgstr ""
+
+#: prefs.js:616
+msgid "System & Reset"
+msgstr ""
+
+#: prefs.js:620
+msgid "System"
+msgstr ""
+
+#: prefs.js:623
+msgid "Hide Default GNOME Player"
+msgstr ""
+
+#: prefs.js:624
+msgid "Remove the duplicate built-in media controls"
+msgstr ""
+
+#: prefs.js:634
+msgid "Game Mode"
+msgstr ""
+
+#: prefs.js:634
+msgid "Disable animations when a fullscreen app is active"
+msgstr ""
+
+#: prefs.js:641
+msgid "Slow Player Workaround"
+msgstr ""
+
+#: prefs.js:642
+msgid "Adds a slight delay to track changes (fixes sync issues)"
+msgstr ""
+
+#: prefs.js:650
+msgid "Off (Allow All)"
+msgstr ""
+
+#: prefs.js:651
+msgid "Blacklist (Exclude listed)"
+msgstr ""
+
+#: prefs.js:652
+msgid "Whitelist (Only allow listed)"
+msgstr ""
+
+#: prefs.js:655
+msgid "Player Filter Mode"
+msgstr ""
+
+#: prefs.js:656
+msgid "Choose how to filter media players (e.g. browsers)"
+msgstr ""
+
+#: prefs.js:667
+msgid "Filtered Players (comma separated)"
+msgstr ""
+
+#: prefs.js:681
+msgid "Detected Players"
+msgstr ""
+
+#: prefs.js:682
+msgid "Click an active player to add it to the filter list"
+msgstr ""
+
+#: prefs.js:717
+msgid "No players found"
+msgstr ""
+
+#: prefs.js:749
+msgid "Backup & Restore"
+msgstr ""
+
+#: prefs.js:752
+msgid "Export Settings"
+msgstr ""
+
+#: prefs.js:753
+msgid "Export"
+msgstr ""
+
+#: prefs.js:757
+msgid "Save Settings"
+msgstr ""
+
+#: prefs.js:772
+msgid "Import Settings"
+msgstr ""
+
+#: prefs.js:773
+msgid "Import"
+msgstr ""
+
+#: prefs.js:775
+msgid "Open Settings Backup"
+msgstr ""
+
+#: prefs.js:802
+msgid "Danger Zone"
+msgstr ""
+
+#: prefs.js:803
+msgid "Reset All"
+msgstr ""
+
+#: prefs.js:805
+msgid "Factory Reset"
+msgstr ""
+
+#: prefs.js:816
+msgid "About"
+msgstr ""
+
+#: prefs.js:821
+msgid "Support the Project"
+msgstr ""
+
+#: prefs.js:824
+msgid "Support on Ko-fi"
+msgstr ""
+
+#: prefs.js:825
+msgid "Buy me a coffee on Ko-fi"
+msgstr ""
+
+#: prefs.js:833
+msgid "Buy Me a Coffee"
+msgstr ""
+
+#: prefs.js:834
+msgid "Support via BuyMeACoffee"
+msgstr ""
+
+#: prefs.js:842
+msgid "Source Code"
+msgstr ""
+
+#: prefs.js:843
+msgid "Report bugs or view source on GitHub"
+msgstr ""
