@@ -1742,6 +1742,8 @@ class MusicPill extends St.Widget {
 
   updateDisplay(title, artist, artUrl, status, busName, isSkipActive, player = null) {
     if (!this.get_parent()) return;
+    
+    let statusChanged = this._currentStatus !== status;
 
     this._currentStatus = status;
     let forceUpdate = false;
@@ -1871,7 +1873,7 @@ class MusicPill extends St.Widget {
         } else {
             this._updateArtVisibility();
         }
-    } else {
+    } else if (statusChanged) {
         this._startColorTransition();
     }
 
