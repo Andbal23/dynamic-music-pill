@@ -1205,19 +1205,61 @@ class MusicPill extends St.Widget {
     }, this);
 
     this.connectObject('button-release-event', (actor, event) => {
-    	if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
+        if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
         if (!this._body) return Clutter.EVENT_STOP;
         this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
 
         let button = event.get_button();
-        let action = null;
 
-        if (button === 1) action = this._settings.get_string('action-left-click');
-        else if (button === 2) action = this._settings.get_string('action-middle-click');
-        else if (button === 3) action = this._settings.get_string('action-right-click');
+        if (button === 2) {
+            let action = this._settings.get_string('action-middle-click');
+            if (action && action !== 'none') this._controller.performAction(action);
+            return Clutter.EVENT_STOP;
+        } else if (button === 3) {
+            let action = this._settings.get_string('action-right-click');
+            if (action && action !== 'none') this._controller.performAction(action);
+            return Clutter.EVENT_STOP;
+        }
 
-        if (action) {
-            this._controller.performAction(action);
+        if (button === 1) {
+            let singleAction = this._settings.get_string('action-left-click');
+            let doubleAction = this._settings.get_string('action-double-click');
+
+            if (!doubleAction || doubleAction === 'none') {
+                if (singleAction && singleAction !== 'none') this._controller.performAction(singleAction);
+                return Clutter.EVENT_STOP;
+            }
+
+            let now = Date.now();
+            
+            let doubleClickTime = 200;
+
+            if (this._lastLeftClickTime && (now - this._lastLeftClickTime) <= doubleClickTime) {
+                this._lastLeftClickTime = 0;
+
+                if (this._singleClickTimerId) {
+                    GLib.source_remove(this._singleClickTimerId);
+                    this._singleClickTimerId = null;
+                }
+                
+                this._controller.performAction(doubleAction);
+            } else {
+                this._lastLeftClickTime = now;
+
+                if (this._singleClickTimerId) {
+                    GLib.source_remove(this._singleClickTimerId);
+                }
+
+                this._singleClickTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, doubleClickTime, () => {
+                    this._singleClickTimerId = null;
+                    this._lastLeftClickTime = 0; 
+                    
+                    if (singleAction && singleAction !== 'none') {
+                        this._controller.performAction(singleAction);
+                    }
+                    return GLib.SOURCE_REMOVE;
+                });
+            }
         }
 
         return Clutter.EVENT_STOP;
@@ -1399,6 +1441,7 @@ class MusicPill extends St.Widget {
       if (this._artDebounceTimer) { GLib.source_remove(this._artDebounceTimer); this._artDebounceTimer = null; }
       if (this._hideGraceTimer) { GLib.source_remove(this._hideGraceTimer); this._hideGraceTimer = null; }
       if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
+      if (this._singleClickTimerId) { GLib.source_remove(this._singleClickTimerId); this._singleClickTimerId = null; }
       if (this._titleScroll) { this._titleScroll.destroy(); this._titleScroll = null; }
       if (this._artistScroll) { this._artistScroll.destroy(); this._artistScroll = null; }
       if (this._visualizer) { this._visualizer.destroy(); this._visualizer = null; }
@@ -2087,7 +2130,7 @@ class PlayerSelectorMenu extends St.Widget {
 
         let currentSelected = this._settings.get_string('selected-player-bus');
 
-        // ==== Auto (Smart Selection) Gomb ====
+        // ==== Auto (Smart Selection) Button ====
         let autoContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
         let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24, style: textColorStyle });
 	let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER, style: textColorStyle });
@@ -2103,7 +2146,7 @@ class PlayerSelectorMenu extends St.Widget {
             style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${currentSelected === '' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
         });
         
-        // JAVÍTÁS 1: 'clicked' helyett 'button-release-event'
+        
         autoBtn.connectObject('button-release-event', () => {
             this._settings.set_string('selected-player-bus', '');
             this._controller._updateUI();
@@ -2118,10 +2161,9 @@ class PlayerSelectorMenu extends St.Widget {
         
         this._box.add_child(autoBtn);
 
-        // ==== Aktív Lejátszók Gombjai ====
+        // ==== Aktive Players Button ====
         for (let [busName, proxy] of this._controller._proxies) {
             
-            // JAVÍTÁS 2: App nevének és ikonjának kinyerése a busName-ből (pl. 'spotify', 'firefox')
             let rawAppName = busName.replace('org.mpris.MediaPlayer2.', '').split('.')[0];
             let iconName = proxy._desktopEntry || rawAppName.toLowerCase();
             let identity = (proxy._identity || (rawAppName.charAt(0).toUpperCase() + rawAppName.slice(1))).replace(/\b\w/g, c => c.toUpperCase());
