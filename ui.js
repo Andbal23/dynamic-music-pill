@@ -1418,24 +1418,23 @@ class MusicPill extends St.Widget {
     });
     
     this.connect('notify::mapped', () => {
-        let isVisibleAndActive = this.mapped && !this._gameModeActive;
-
-        if (this._visualizer) {
-            this._visualizer.setPlaying(this._currentStatus === 'Playing' && isVisibleAndActive);
-        }
-        if (this._titleScroll) {
-            this._titleScroll.setGameMode(!isVisibleAndActive);
-        }
-        if (this._artistScroll) {
-            this._artistScroll.setGameMode(!isVisibleAndActive);
-        }
+        this._checkRealVisibility();
     });
 
     this._updateTransparencyConfig();
     this._updateDimensions();
+
+    this._isActuallyVisible = true;
+    this._realVisibilityTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+        if (this.get_parent()) {
+            this._checkRealVisibility();
+        }
+        return GLib.SOURCE_CONTINUE;
+    });
   }
 
   destroy() {
+      if (this._realVisibilityTimerId) { GLib.source_remove(this._realVisibilityTimerId); this._realVisibilityTimerId = null; }
       if (this._allocTimer) { GLib.source_remove(this._allocTimer); this._allocTimer = null; }
       if (this._colorAnimId) { GLib.source_remove(this._colorAnimId); this._colorAnimId = null; }
       if (this._artDebounceTimer) { GLib.source_remove(this._artDebounceTimer); this._artDebounceTimer = null; }
@@ -1448,6 +1447,42 @@ class MusicPill extends St.Widget {
       if (this._idleDimId) { GLib.source_remove(this._idleDimId); this._idleDimId = null; }
       if (this._cancellable) { this._cancellable.cancel(); this._cancellable = null; }
       super.destroy();
+  }
+  
+  _checkRealVisibility() {
+      let isVisible = false;
+
+      if (this.mapped && this.get_paint_opacity() > 0) {
+          let [x, y] = this.get_transformed_position();
+          let [w, h] = this.get_transformed_size();
+          let monitor = Main.layoutManager.findMonitorForActor(this);
+          
+          if (monitor) {
+              if (x + w > monitor.x && x < monitor.x + monitor.width &&
+                  y + h > monitor.y && y < monitor.y + monitor.height) {
+                  isVisible = true;
+              }
+          }
+      }
+
+      if (this._isActuallyVisible !== isVisible) {
+          this._isActuallyVisible = isVisible;
+          this._updatePlayingStates();
+      }
+  }
+
+  _updatePlayingStates() {
+      let isVisibleAndActive = this._isActuallyVisible && !this._gameModeActive;
+
+      if (this._visualizer) {
+          this._visualizer.setPlaying(this._currentStatus === 'Playing' && isVisibleAndActive);
+      }
+      if (this._titleScroll) {
+          this._titleScroll.setGameMode(!isVisibleAndActive);
+      }
+      if (this._artistScroll) {
+          this._artistScroll.setGameMode(!isVisibleAndActive);
+      }
   }
 
   _updateTransparencyConfig() {
@@ -1482,14 +1517,10 @@ class MusicPill extends St.Widget {
   setGameMode(active) {
       if (this._gameModeActive === active) return;
       this._gameModeActive = active;
+      
+      this._updatePlayingStates();
 
-      let isVisibleAndActive = this.mapped && !active;
-
-      this._visualizer.setPlaying(this._currentStatus === 'Playing' && isVisibleAndActive);
-      this._titleScroll.setGameMode(!isVisibleAndActive);
-      this._artistScroll.setGameMode(!isVisibleAndActive);
-
-      if (!active && this._isActiveState && this.mapped) {
+      if (!active && this._isActiveState && this.mapped && this._isActuallyVisible) {
           this.opacity = 255;
       }
   }
@@ -1796,7 +1827,7 @@ class MusicPill extends St.Widget {
     let contentChanged = forceUpdate || statusChanged || titleChanged || artistChanged || artChanged;
 
     if (!contentChanged && this._isActiveState && this.opacity > 0) {
-        this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive && this.mapped);
+	this._updatePlayingStates();
         
         if (this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
             if (player) this._controller._expandedPlayer.setPlayer(player);
@@ -1908,7 +1939,7 @@ class MusicPill extends St.Widget {
         this._updateDimensions();
     }
 
-	this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive && this.mapped);
+	this._updatePlayingStates();
 
     if (forceUpdate || artUrl !== this._lastArtUrl) {
         this._lastArtUrl = artUrl;
