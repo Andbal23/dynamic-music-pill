@@ -1744,16 +1744,31 @@ class MusicPill extends St.Widget {
     if (!this.get_parent()) return;
     
     let statusChanged = this._currentStatus !== status;
+    let busChanged = this._currentBusName !== busName;
+    let titleChanged = this._origTitle !== title;
+    let artistChanged = this._origArtist !== artist;
+    let artChanged = this._lastArtUrl !== artUrl;
+
+    let forceUpdate = busChanged;
+    let contentChanged = forceUpdate || statusChanged || titleChanged || artistChanged || artChanged;
+
+    if (!contentChanged && this._isActiveState && this.opacity > 0) {
+        this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive && this.mapped);
+        
+        if (this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
+            if (player) this._controller._expandedPlayer.setPlayer(player);
+            this._controller._expandedPlayer.updateContent(title, artist, artUrl, status);
+        }
+        return;
+    }
 
     this._currentStatus = status;
-    let forceUpdate = false;
 
-    if (this._currentBusName !== busName) {
+    if (busChanged) {
         this._currentBusName = busName;
         this._lastTitle = null;
         this._lastArtist = null;
         this._lastArtUrl = null;
-        forceUpdate = true;
         if (this._hideGraceTimer) {
             GLib.source_remove(this._hideGraceTimer);
             this._hideGraceTimer = null;
