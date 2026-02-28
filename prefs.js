@@ -233,6 +233,14 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
         leftRow.connect('notify::selected', () => { settings.set_string('action-left-click', actionValues[leftRow.selected]); });
         actionGroup.add(leftRow);
+        
+        const doubleRow = new Adw.ComboRow({
+            title: _('Double Click'),
+            model: actionModel,
+            selected: actionValues.indexOf(settings.get_string('action-double-click'))
+        });
+        doubleRow.connect('notify::selected', () => { settings.set_string('action-double-click', actionValues[doubleRow.selected]); });
+        actionGroup.add(doubleRow);
 
         const midRow = new Adw.ComboRow({
             title: _('Middle Click'),
