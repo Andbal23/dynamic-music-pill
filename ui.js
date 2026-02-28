@@ -285,6 +285,7 @@ class WaveformVisualizer extends St.BoxLayout {
         if (playing && this._mode !== 0) {
             this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
                 if (!this.get_parent()) return GLib.SOURCE_REMOVE;
+                if (!this.mapped) return GLib.SOURCE_CONTINUE;
                 let t = Date.now() / 250;
                 this._updateVisuals(t);
                 return GLib.SOURCE_CONTINUE;
@@ -306,19 +307,23 @@ class WaveformVisualizer extends St.BoxLayout {
     _updateVisuals(t) {
         if (!this.get_parent()) return;
 
+        if (!this._isPlaying) {
+            this._bars.forEach(bar => bar.scale_y = 0.2);
+            return;
+        }
+
+        let speeds = [1.1, 1.6, 1.3, 1.8, 1.5, 1.2, 1.7, 1.4];
+
         this._bars.forEach((bar, idx) => {
             let scaleY = 0.2;
-
-            if (this._isPlaying) {
-                if (this._mode === 1) {
-                    let wave = (Math.sin(t - idx * 1.0) + 1) / 2;
-                    scaleY = 0.3 + (wave * 0.7);
-                }
-                else if (this._mode === 2) {
-                    let speeds = [1.1, 1.6, 1.3, 1.8, 1.5, 1.2, 1.7, 1.4];
-                    let pulse = (Math.sin(t * speeds[idx % speeds.length]) + 1) / 2;
-                    scaleY = 0.3 + (pulse * 0.7);
-                }
+            
+            if (this._mode === 1) {
+                let wave = (Math.sin(t - idx * 1.0) + 1) / 2;
+                scaleY = 0.3 + (wave * 0.7);
+            }
+            else if (this._mode === 2) {
+                let pulse = (Math.sin(t * speeds[idx % speeds.length]) + 1) / 2;
+                scaleY = 0.3 + (pulse * 0.7);
             }
 
             bar.scale_y = scaleY;
@@ -1369,6 +1374,20 @@ class MusicPill extends St.Widget {
             return GLib.SOURCE_REMOVE;
         });
     });
+    
+    this.connect('notify::mapped', () => {
+        let isVisibleAndActive = this.mapped && !this._gameModeActive;
+
+        if (this._visualizer) {
+            this._visualizer.setPlaying(this._currentStatus === 'Playing' && isVisibleAndActive);
+        }
+        if (this._titleScroll) {
+            this._titleScroll.setGameMode(!isVisibleAndActive);
+        }
+        if (this._artistScroll) {
+            this._artistScroll.setGameMode(!isVisibleAndActive);
+        }
+    });
 
     this._updateTransparencyConfig();
     this._updateDimensions();
@@ -1421,17 +1440,14 @@ class MusicPill extends St.Widget {
       if (this._gameModeActive === active) return;
       this._gameModeActive = active;
 
-      if (active) {
-          this._visualizer.setPlaying(false);
-          this._titleScroll.setGameMode(true);
-          this._artistScroll.setGameMode(true);
-      } else {
-          this._visualizer.setPlaying(this._currentStatus === 'Playing');
-          this._titleScroll.setGameMode(false);
-          this._artistScroll.setGameMode(false);
-          if (this._isActiveState) {
-              this.opacity = 255;
-          }
+      let isVisibleAndActive = this.mapped && !active;
+
+      this._visualizer.setPlaying(this._currentStatus === 'Playing' && isVisibleAndActive);
+      this._titleScroll.setGameMode(!isVisibleAndActive);
+      this._artistScroll.setGameMode(!isVisibleAndActive);
+
+      if (!active && this._isActiveState && this.mapped) {
+          this.opacity = 255;
       }
   }
   
@@ -1832,7 +1848,7 @@ class MusicPill extends St.Widget {
         this._updateDimensions();
     }
 
-    this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive);
+	this._visualizer.setPlaying(status === 'Playing' && !this._gameModeActive && this.mapped);
 
     if (forceUpdate || artUrl !== this._lastArtUrl) {
         this._lastArtUrl = artUrl;
