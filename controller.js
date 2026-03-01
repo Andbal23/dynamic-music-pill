@@ -7,6 +7,22 @@ import { smartUnpack } from './utils.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 
+const LYRIC_IFACE_NAME = "org.gnome.Shell.TrayLyric";
+const LYRIC_OBJECT_PATH = "/org/gnome/Shell/TrayLyric";
+
+const LYRIC_IFACE_XML = `
+<node>
+  <interface name="org.gnome.Shell.TrayLyric">
+    <method name="LikeThisTrack">
+      <arg type="b" name="liked"/>
+    </method>
+    <method name="UpdateLyric">
+      <arg type="s" name="current_lyric"/>
+    </method>
+    <signal name="UpdateLikedStatus"></signal>
+  </interface>
+</node>`;
+
 const MPRIS_IFACE = `
 <node>
   <interface name="org.mpris.MediaPlayer2.Player">
@@ -56,6 +72,9 @@ export class MusicController {
         this._lastActionTime = 0;
         this._currentDock = null;
         this._isMovingItem = false;
+
+        this._lyricOwnerId = null;
+        this._lyricIfaceInfo = null;
         
         this._createPill();
     }
@@ -104,6 +123,12 @@ export class MusicController {
         });
         
         this._updateDefaultPlayerVisibility();
+        this._createLyricProxy();
+        this._settings.connectObject('changed::enable-lyrics', () => {
+            if (!this._settings.get_boolean('enable-lyrics')) {
+                if (this._pill) this._pill.setLyric(null);
+            }
+        }, this);
     }
 
     disable() {
@@ -128,6 +153,11 @@ export class MusicController {
         if (this._ownerId) {
             this._connection.signal_unsubscribe(this._ownerId);
             this._ownerId = null;
+        }
+
+        if (this._lyricOwnerId) {
+            Gio.bus_unown_name(this._lyricOwnerId);
+            this._lyricOwnerId = null;
         }
         
         if (this._expandedPlayer) {
@@ -567,6 +597,56 @@ export class MusicController {
             if (p._propId) p.disconnect(p._propId);
             if (p._nameOwnerId) p.disconnect(p._nameOwnerId);
             this._proxies.delete(name);
+        }
+    }
+
+    _createLyricProxy() {
+        let lyricNodeInfo = Gio.DBusNodeInfo.new_for_xml(LYRIC_IFACE_XML);
+        this._lyricIfaceInfo = lyricNodeInfo.lookup_interface(LYRIC_IFACE_NAME);
+
+        this._lyricOwnerId = Gio.bus_own_name(
+            Gio.BusType.SESSION,
+            LYRIC_IFACE_NAME,
+            Gio.BusNameOwnerFlags.NONE,
+            (connection) => {
+                connection.register_object(
+                    LYRIC_OBJECT_PATH,
+                    this._lyricIfaceInfo,
+                    this._onLyricMethodCall.bind(this),
+                    null,
+                    null,
+                );
+            },
+            null,
+            null,
+        );
+    }
+
+    _onLyricMethodCall(connection, sender, objectPath, interfaceName, methodName, parameters, invocation) {
+        if (methodName === "UpdateLyric") {
+            try {
+                // When the lyrics switch is off, ignore lyrics updates
+                if (!this._settings || !this._settings.get_boolean('enable-lyrics')) {
+                    if (this._pill) this._pill.setLyric(null);
+                    invocation.return_value(null);
+                    return;
+                }
+
+                let raw = parameters.unpack()[0];
+                let lrc = JSON.parse(raw.get_string()[0]);
+
+                let active = this._getActivePlayer();
+                let activeBus = active ? (active._busName || "") : "";
+
+                if (!active || lrc.content === "" || !activeBus.includes(lrc.sender)) {
+                    if (this._pill) this._pill.setLyric(null);
+                } else {
+                    if (this._pill) this._pill.setLyric(lrc);
+                }
+            } catch (e) {
+                log(`[DynamicMusicPill] Lyric error: ${e}`);
+            }
+            invocation.return_value(null);
         }
     }
 
