@@ -627,7 +627,6 @@ export class MusicController {
             try {
                 // When the lyrics switch is off, ignore lyrics updates
                 if (!this._settings || !this._settings.get_boolean('enable-lyrics')) {
-                    if (this._pill) this._pill.setLyric(null);
                     invocation.return_value(null);
                     return;
                 }
