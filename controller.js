@@ -136,6 +136,12 @@ export class MusicController {
         this._settings.connectObject('changed::enable-lyrics', () => {
             if (!this._settings.get_boolean('enable-lyrics')) {
                 if (this._pill) this._pill.setLyric(null);
+                this._stopLyricsTimer();
+                this._fetchedLyricsData = null;
+                this._fetchedTrackKey = null;
+                this._dbusLyricActive = false;
+            } else {
+                this._triggerUpdate();
             }
         }, this);
     }
@@ -755,6 +761,11 @@ export class MusicController {
     }
 
     _onLyricsTick() {
+    
+    	if (!this._settings || !this._settings.get_boolean('enable-lyrics')) {
+            this._stopLyricsTimer();
+            return;
+        }
         if (!this._fetchedLyricsData || !this._pill) return;
         if (this._dbusLyricActive) return;
 
