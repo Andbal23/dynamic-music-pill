@@ -1977,7 +1977,7 @@ class MusicPill extends St.Widget {
                 this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
             }
 
-            if (forceUpdate || artUrl !== this._lastArtUrl) {
+            if (forceUpdate || artUrl !== this._lastArtUrl || titleChanged) {
                 this._lastArtUrl = artUrl;
                 if (artUrl) {
                     if (this._artDebounceTimer) {
@@ -2081,7 +2081,7 @@ class MusicPill extends St.Widget {
 
     this._updatePlayingStates();
 
-    if (forceUpdate || artUrl !== this._lastArtUrl) {
+    if (forceUpdate || artUrl !== this._lastArtUrl || titleChanged) {
         this._lastArtUrl = artUrl;
 
         if (artUrl) {
