@@ -191,6 +191,19 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('scroll-text', scrollTextToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         scrollTextRow.add_suffix(scrollTextToggle);
         genGroup.add(scrollTextRow);
+
+		// Lyrics Display
+        const lyricsRow = new Adw.ActionRow({
+            title: _('Lyrics Display'),
+            subtitle: _('Show real-time synchronized lyrics for current track.')
+        });
+        const lyricsToggle = new Gtk.Switch({
+            active: settings.get_boolean('enable-lyrics'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('enable-lyrics', lyricsToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        lyricsRow.add_suffix(lyricsToggle);
+        genGroup.add(lyricsRow);
         
         const tabletModeRow = new Adw.ActionRow({ title: _('Tablet Mode'), subtitle: _('Show skip buttons directly on the pill') });
 	const tabletModeToggle = new Gtk.Switch({ active: settings.get_boolean('tablet-mode'), valign: Gtk.Align.CENTER });

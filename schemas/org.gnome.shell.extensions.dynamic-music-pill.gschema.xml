@@ -235,6 +235,10 @@
       <default>true</default>
       <summary>Show Album Art</summary>
     </key>
+	<key name="enable-lyrics" type="b">
+      <default>true</default>
+      <summary>Enable Lyrics Display</summary>
+    </key>
     <key name="enable-gamemode" type="b">
       <default>true</default>
       <summary>Game Mode</summary>

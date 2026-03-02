@@ -6,6 +6,23 @@ import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
 import { smartUnpack } from './utils.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
+import { LyricsClient } from './LyricsClient.js';
+
+const LYRIC_IFACE_NAME = "org.gnome.Shell.TrayLyric";
+const LYRIC_OBJECT_PATH = "/org/gnome/Shell/TrayLyric";
+
+const LYRIC_IFACE_XML = `
+<node>
+  <interface name="org.gnome.Shell.TrayLyric">
+    <method name="LikeThisTrack">
+      <arg type="b" name="liked"/>
+    </method>
+    <method name="UpdateLyric">
+      <arg type="s" name="current_lyric"/>
+    </method>
+    <signal name="UpdateLikedStatus"></signal>
+  </interface>
+</node>`;
 
 const MPRIS_IFACE = `
 <node>
@@ -56,12 +73,23 @@ export class MusicController {
         this._lastActionTime = 0;
         this._currentDock = null;
         this._isMovingItem = false;
+
+        // Network lyrics acquisition related
+        this._lyricsClient = new LyricsClient();
+        this._fetchedLyricsData = null; 
+        this._fetchedTrackKey = null; 
+        this._lyricsTimerId = null; 
+        this._dbusLyricActive = false; 
+        this._lastLyricIndex = -1; 
+
+        this._lyricOwnerId = null;
+        this._lyricIfaceInfo = null;
         
         this._createPill();
     }
 
     _createPill() {
-	if (this._pill) return;
+    if (this._pill) return;
         this._pill = new MusicPill(this);
         this._pill.connect('destroy', () => {
             this._pill = null;
@@ -93,7 +121,7 @@ export class MusicController {
         );
         this._scan();
         this._settings.connectObject('changed::player-filter-mode', () => this._scan(), this);
-	this._settings.connectObject('changed::player-filter-list', () => this._scan(), this);
+    this._settings.connectObject('changed::player-filter-list', () => this._scan(), this);
 
         this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
             this._monitorGameMode();
@@ -104,6 +132,12 @@ export class MusicController {
         });
         
         this._updateDefaultPlayerVisibility();
+        this._createLyricProxy();
+        this._settings.connectObject('changed::enable-lyrics', () => {
+            if (!this._settings.get_boolean('enable-lyrics')) {
+                if (this._pill) this._pill.setLyric(null);
+            }
+        }, this);
     }
 
     disable() {
@@ -129,6 +163,20 @@ export class MusicController {
             this._connection.signal_unsubscribe(this._ownerId);
             this._ownerId = null;
         }
+
+        if (this._lyricOwnerId) {
+            Gio.bus_unown_name(this._lyricOwnerId);
+            this._lyricOwnerId = null;
+        }
+
+        // Clear the web lyrics
+        this._stopLyricsTimer();
+        if (this._lyricsClient) {
+            this._lyricsClient.destroy();
+            this._lyricsClient = null;
+        }
+        this._fetchedLyricsData = null;
+        this._fetchedTrackKey = null;
         
         if (this._expandedPlayer) {
             this._expandedPlayer.destroy();
@@ -145,6 +193,7 @@ export class MusicController {
         
         this._updateDefaultPlayerVisibility(true);
     }
+    
     performAction(action) {
         if (action === 'play_pause') this.togglePlayback();
         else if (action === 'next') this.next();
@@ -570,6 +619,195 @@ export class MusicController {
         }
     }
 
+    _createLyricProxy() {
+        let lyricNodeInfo = Gio.DBusNodeInfo.new_for_xml(LYRIC_IFACE_XML);
+        this._lyricIfaceInfo = lyricNodeInfo.lookup_interface(LYRIC_IFACE_NAME);
+
+        this._lyricOwnerId = Gio.bus_own_name(
+            Gio.BusType.SESSION,
+            LYRIC_IFACE_NAME,
+            Gio.BusNameOwnerFlags.NONE,
+            (connection) => {
+                connection.register_object(
+                    LYRIC_OBJECT_PATH,
+                    this._lyricIfaceInfo,
+                    this._onLyricMethodCall.bind(this),
+                    null,
+                    null,
+                );
+            },
+            null,
+            null,
+        );
+    }
+
+    _onLyricMethodCall(connection, sender, objectPath, interfaceName, methodName, parameters, invocation) {
+        if (methodName === "UpdateLyric") {
+            try {
+                // When the lyrics switch is off, ignore lyrics updates
+                if (!this._settings || !this._settings.get_boolean('enable-lyrics')) {
+                    invocation.return_value(null);
+                    return;
+                }
+
+                let raw = parameters.unpack()[0];
+                let lrc = JSON.parse(raw.get_string()[0]);
+
+                let active = this._getActivePlayer();
+                let activeBus = active ? (active._busName || "") : "";
+
+                if (!active || lrc.content === "" || !activeBus.includes(lrc.sender)) {
+                    if (this._pill) this._pill.setLyric(null);
+                    this._dbusLyricActive = false;
+                } else {
+                    this._dbusLyricActive = true;
+                    this._stopLyricsTimer();
+                    if (this._pill) this._pill.setLyric(lrc);
+                }
+            } catch (e) {
+                log(`[DynamicMusicPill] Lyric error: ${e}`);
+            }
+            invocation.return_value(null);
+        }
+    }
+
+    // Network lyrics retrieval
+    async _fetchNetworkLyrics(player) {
+        if (!player || !this._lyricsClient) return;
+        if (!this._settings || !this._settings.get_boolean('enable-lyrics')) return;
+
+        let m = player.Metadata;
+        if (!m) return;
+
+        let metaObj = m instanceof GLib.Variant ? m.deep_unpack() : m;
+        let title = smartUnpack(metaObj['xesam:title']);
+        let artist = smartUnpack(metaObj['xesam:artist']);
+        let album = smartUnpack(metaObj['xesam:album']) || '';
+        let length = smartUnpack(metaObj['mpris:length']) || 0;
+
+        if (Array.isArray(artist)) artist = artist.join(', ');
+        if (!title) return;
+
+        let trackKey = `${title}||${artist}`;
+
+        if (this._fetchedTrackKey === trackKey && this._fetchedLyricsData !== undefined) {
+            return;
+        }
+
+        this._fetchedTrackKey = trackKey;
+        this._fetchedLyricsData = null; 
+        this._lastLyricIndex = -1;
+
+        let durationSec = length > 0 ? length / 1000000 : 0;
+
+        try {
+            let lyrics = await this._lyricsClient.getLyrics(title, artist, album, durationSec);
+            if (this._fetchedTrackKey !== trackKey) return;
+
+            this._fetchedLyricsData = lyrics; 
+
+            if (lyrics && lyrics.length > 0) {
+                this._startLyricsTimer();
+            }
+        } catch (e) {
+            log(`[DynamicMusicPill] Network lyrics fetch error: ${e}`);
+            this._fetchedLyricsData = null;
+        }
+    }
+
+    _startLyricsTimer() {
+        if (this._lyricsTimerId) return;
+        this._lyricsTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
+            this._onLyricsTick();
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    _stopLyricsTimer() {
+        if (this._lyricsTimerId) {
+            GLib.source_remove(this._lyricsTimerId);
+            this._lyricsTimerId = null;
+        }
+    }
+
+    _syncPosition(player) {
+        if (!player || !this._connection) return;
+        this._connection.call(
+            player._busName,
+            '/org/mpris/MediaPlayer2',
+            'org.freedesktop.DBus.Properties',
+            'Get',
+            new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
+            null, Gio.DBusCallFlags.NONE, -1, null,
+            (conn, asyncRes) => {
+                try {
+                    let result = conn.call_finish(asyncRes);
+                    if (result) {
+                        let posVariant = result.deep_unpack()[0];
+                        if (posVariant) {
+                            player._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                            player._lastPositionTime = Date.now();
+                        }
+                    }
+                } catch (e) {}
+            }
+        );
+    }
+
+    _onLyricsTick() {
+        if (!this._fetchedLyricsData || !this._pill) {
+            if (!this._tickSkipLogTime || Date.now() - this._tickSkipLogTime > 30000) {
+                log(`[DMP-Lyrics] _onLyricsTick: SKIP — data=${!!this._fetchedLyricsData}, pill=${!!this._pill}`);
+                this._tickSkipLogTime = Date.now();
+            }
+            return;
+        }
+        if (this._dbusLyricActive) return;
+
+        let active = this._getActivePlayer();
+        if (!active || active.PlaybackStatus !== 'Playing') return;
+
+        let now = Date.now();
+        if (!this._lastPositionSync || now - this._lastPositionSync > 1000) {
+            this._lastPositionSync = now;
+            this._syncPosition(active);
+        }
+
+        let positionUs = active._lastPosition + (now - active._lastPositionTime) * 1000;
+        let positionMs = positionUs / 1000;
+
+        let currentIndex = -1;
+        for (let i = this._fetchedLyricsData.length - 1; i >= 0; i--) {
+            if (this._fetchedLyricsData[i].time <= positionMs) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        if (!this._lastTickLog || now - this._lastTickLog > 5000) {
+            let lineText = currentIndex >= 0 ? this._fetchedLyricsData[currentIndex].text : "null";
+            log(`[DMP-Lyrics] _onLyricsTick: positionMs=${positionMs.toFixed(0)}, index=${currentIndex}, lastIndex=${this._lastLyricIndex}, line="${lineText}"`);
+            this._lastTickLog = now;
+        }
+
+        if (currentIndex >= 0 && currentIndex !== this._lastLyricIndex) {
+            this._lastLyricIndex = currentIndex;
+
+            let currentLine = this._fetchedLyricsData[currentIndex];
+            let durationSec = 5;
+            if (currentIndex + 1 < this._fetchedLyricsData.length) {
+                durationSec = (this._fetchedLyricsData[currentIndex + 1].time - currentLine.time) / 1000;
+            }
+
+            let lrc = {
+                sender: "lrclib",
+                content: currentLine.text,
+                time: durationSec,
+            };
+            this._pill.setLyric(lrc);
+        }
+    }
+
     _triggerUpdate() {
         if (this._updateTimeoutId) {
             return; 
@@ -609,6 +847,13 @@ export class MusicController {
 
         let active = this._getActivePlayer();
         if (active) {
+            if (this._lastWinnerName !== active._busName) {
+                this._dbusLyricActive = false;
+                this._fetchedTrackKey = null;
+                this._fetchedLyricsData = null;
+                this._lastLyricIndex = -1;
+                this._stopLyricsTimer();
+            }
             this._lastWinnerName = active._busName;
 
             let m = active.Metadata;
@@ -658,28 +903,55 @@ export class MusicController {
             let now = Date.now();
             let isSkipActive = (now - this._lastActionTime < 3000);
 
+            if (this._settings && this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
+                let metaObj2 = null;
+                if (active.Metadata) {
+                    metaObj2 = active.Metadata instanceof GLib.Variant ? active.Metadata.deep_unpack() : active.Metadata;
+                }
+                let currentTitle = metaObj2 ? smartUnpack(metaObj2['xesam:title']) : null;
+                let currentArtist = metaObj2 ? smartUnpack(metaObj2['xesam:artist']) : null;
+                if (Array.isArray(currentArtist)) currentArtist = currentArtist.join(', ');
+
+                let currentTrackKey = `${currentTitle}||${currentArtist}`;
+
+                if (currentTitle && this._fetchedTrackKey !== currentTrackKey) {
+                    this._pill.setLyric(null);
+                    this._fetchNetworkLyrics(active);
+                } else if (this._fetchedLyricsData && active.PlaybackStatus === 'Playing') {
+                    this._startLyricsTimer();
+                } else if (active.PlaybackStatus !== 'Playing') {
+                    this._stopLyricsTimer();
+                }
+            }
+
             this._pill.updateDisplay(title, artist, artUrl, active.PlaybackStatus, active._busName, isSkipActive, active);
         } else {
+            this._stopLyricsTimer();
+            this._fetchedTrackKey = null;
+            this._fetchedLyricsData = null;
+            this._dbusLyricActive = false;
+            this._lastLyricIndex = -1;
+            this._lastPositionSync = 0;
             this._pill.updateDisplay(null, null, null, 'Stopped', null, false);
         }
     }
     
-	    _isPlayerAllowed(busName) {
-	    let mode = this._settings.get_int('player-filter-mode');
-	    if (mode === 0) return true;
+    _isPlayerAllowed(busName) {
+        let mode = this._settings.get_int('player-filter-mode');
+        if (mode === 0) return true;
 
-	    let listStr = this._settings.get_string('player-filter-list').toLowerCase();
-	    let list = listStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-	    
-	    if (list.length === 0) return mode === 1;
+        let listStr = this._settings.get_string('player-filter-list').toLowerCase();
+        let list = listStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        
+        if (list.length === 0) return mode === 1;
 
-	    let lowerName = busName.toLowerCase();
-	    let match = list.some(item => lowerName.includes(item));
+        let lowerName = busName.toLowerCase();
+        let match = list.some(item => lowerName.includes(item));
 
-	    if (mode === 1) return !match;
-	    if (mode === 2) return match;
-	    return true;
-	}
+        if (mode === 1) return !match;
+        if (mode === 2) return match;
+        return true;
+    }
 
     _getActivePlayer() {
         let proxiesArr = Array.from(this._proxies.values());

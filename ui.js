@@ -141,18 +141,23 @@ class ScrollLabel extends St.Widget {
     this._idleResizeId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
         this._idleResizeId = null;
         if (!this.get_parent()) return GLib.SOURCE_REMOVE;
-        
+
+		// The lyrics have finished scrolling, do not trigger the scroll again
+		if (this._lyricFinished) return GLib.SOURCE_REMOVE;
+		
         let boxWidth = this.get_allocation_box().get_width();
         if (boxWidth <= 1) return GLib.SOURCE_REMOVE;
         
         
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         let textWidth = this._label1.get_preferred_width(-1)[1];
-        let needsScroll = (textWidth > boxWidth) && this._settings.get_boolean('scroll-text');
+		let needsScroll = (textWidth > boxWidth) && (this._settings.get_boolean('scroll-text') || this._lyricTime > 0);
         let isScrolling = (this._scrollTimer != null) || this._isScrolling;
 
-        if (needsScroll && !isScrolling) this._startInfiniteScroll(textWidth);
-        else if (!needsScroll && isScrolling) {
+		if (needsScroll && !isScrolling) {
+            if (this._lyricTime > 0) this._startLyricScroll(textWidth);
+            else this._startInfiniteScroll(textWidth);
+        } else if (!needsScroll && isScrolling) {
             this._stopAnimation();
             this._label2.hide();
             this._separator.hide();
@@ -162,42 +167,53 @@ class ScrollLabel extends St.Widget {
     });
 }
 
-    setText(text, force = false) {
+    setText(text, force = false, lyricTime = 0) {
         if (!force && this._text === text) return;
         this._text = text || "";
+		this._lyricTime = lyricTime;  // Lyric duration (seconds)
+        this._lyricFinished = false;   // New lyrics, reset mark
         this._stopAnimation();
         this._label1.text = this._text;
         this._label2.text = this._text;
         this._label2.hide();
         this._separator.hide();
 
-        if (!this._settings.get_boolean('scroll-text')) {
+        if (!this._settings.get_boolean('scroll-text')&& !this._lyricTime) {
             this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             return;
         }
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         if (this._measureTimeout) { GLib.source_remove(this._measureTimeout); this._measureTimeout = null; }
-        this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 600, () => {
+        this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
             this._measureTimeout = null;
             if (this.has_allocation()) this._checkOverflow();
             return GLib.SOURCE_REMOVE;
         });
     }
 
-    _stopAnimation() {
+    _stopAnimation(resetPosition = true) {
         this._isScrolling = false;
         this._container.remove_all_transitions();
-        this._container.translation_x = 0;
+        if (resetPosition) this._container.translation_x = 0;
         if (this._scrollTimer) { GLib.source_remove(this._scrollTimer); this._scrollTimer = null; }
     }
 
     _checkOverflow() {
-        if (!this._settings.get_boolean('scroll-text') || this._gameMode || !this.get_parent()) return;
+        if (this._gameMode || !this.get_parent()) return;
         let boxWidth = this.get_allocation_box().get_width();
         if (boxWidth <= 1) return;
         let textWidth = this._label1.get_preferred_width(-1)[1];
-        if (textWidth > boxWidth) this._startInfiniteScroll(textWidth);
-        else this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+        let needsScroll = textWidth > boxWidth;
+
+        if (this._lyricTime > 0 && needsScroll) {
+            // Lyric mode: single scroll based on time
+            this._startLyricScroll(textWidth);
+        } else if (needsScroll && this._settings.get_boolean('scroll-text')) {
+            // Normal mode: Infinite loop scrolling
+            this._startInfiniteScroll(textWidth);
+        } else {
+            this._label1.clutter_text.ellipsize = needsScroll ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
+        }
     }
 
     _startInfiniteScroll(textWidth) {
@@ -226,6 +242,45 @@ class ScrollLabel extends St.Widget {
             });
         };
         loop();
+    }
+	    _startLyricScroll(textWidth) {
+        this._stopAnimation();
+        this._isScrolling = true;
+        // Lyric mode does not require label2 and separator, it only performs a single left-to-right scroll
+        this._label2.hide();
+        this._separator.hide();
+
+        let boxWidth = this.get_allocation_box().get_width();
+        const distance = textWidth - boxWidth;
+        if (distance <= 0) return;
+
+        const totalDurationMs = this._lyricTime * 1000;
+        // Pause time is calculated based on the visible proportion of the container
+        const pauseTime = (boxWidth / textWidth) * totalDurationMs * 0.5;
+        // Leave 10% for the end pause
+        const tailTime = totalDurationMs * 0.2;
+        // Time conservation: pause + scroll + end = total duration
+        const scrollDuration = totalDurationMs - pauseTime - tailTime;
+
+        if (scrollDuration <= 0) return;
+
+        // Stay still and wait for a while, then start rolling
+        if (this._scrollTimer) GLib.source_remove(this._scrollTimer);
+        this._scrollTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, pauseTime, () => {
+            this._scrollTimer = null;
+            if (this._gameMode || !this.get_parent()) return GLib.SOURCE_REMOVE;
+            this._container.ease({
+                translation_x: -distance,
+                duration: scrollDuration,
+                mode: Clutter.AnimationMode.LINEAR,
+                onStopped: () => {
+                    // The lyrics stop at the end and wait for the next setText update
+                    this._isScrolling = false;
+                    this._lyricFinished = true;
+                }
+            });
+            return GLib.SOURCE_REMOVE;
+        });
     }
 });
 
@@ -1096,6 +1151,7 @@ class MusicPill extends St.Widget {
     this._gameModeActive = false;
 
     this._currentBusName = null;
+	this._lyricObj = null;
     this._displayedColor = { r: 40, g: 40, b: 40 };
     this._targetColor = { r: 40, g: 40, b: 40 };
     this._colorAnimId = null;
@@ -1814,6 +1870,12 @@ class MusicPill extends St.Widget {
       });
   }
 
+	setLyric(lyricObj) {
+	  this._lyricObj = lyricObj;
+	  if (!this._isActiveState) return;
+	  this._updateTextDisplay(true);
+	}
+	
   updateDisplay(title, artist, artUrl, status, busName, isSkipActive, player = null) {
     if (!this.get_parent()) return;
     
@@ -1843,6 +1905,9 @@ class MusicPill extends St.Widget {
         this._lastTitle = null;
         this._lastArtist = null;
         this._lastArtUrl = null;
+		this._origTitle = null;
+        this._origArtist = null;
+        this._lyricObj = null;
         if (this._hideGraceTimer) {
             GLib.source_remove(this._hideGraceTimer);
             this._hideGraceTimer = null;
@@ -1851,6 +1916,11 @@ class MusicPill extends St.Widget {
 
     if (!title || status === 'Stopped') {
         if (isSkipActive) return;
+
+		// Clear the remaining lyrics
+        this._lyricObj = null;
+        if (this._titleScroll) this._titleScroll.setText(this._origTitle || '', true, 0);
+        if (this._artistScroll) this._artistScroll.setText(this._origArtist || '', true);
         
         if (this._settings.get_boolean('always-show-pill') && this._isActiveState && this._origTitle) {
             if (this._hideGraceTimer) {
@@ -1976,6 +2046,7 @@ class MusicPill extends St.Widget {
   _updateTextDisplay(forceUpdate = false) {
       let t = this._origTitle;
       let a = this._origArtist;
+	  let lyricTime = 0;
 
       let isSqueezed = (this._inPanel && this._settings.get_int('panel-pill-height') < 30) || (!this._inPanel && this._settings.get_int('pill-height') < 46);
       if (this._settings.get_boolean('inline-artist') && isSqueezed && a && t) {
@@ -1983,8 +2054,13 @@ class MusicPill extends St.Widget {
           a = null; 
       }
 
+	  if (this._lyricObj && this._lyricObj.content) {
+          t = this._lyricObj.content;
+          lyricTime = this._lyricObj.time || 0;
+      }
+
       if (this._lastTitle !== t || this._lastArtist !== a || forceUpdate) {
-          if (this._titleScroll) this._titleScroll.setText(t || 'Loading...', forceUpdate);
+          if (this._titleScroll) this._titleScroll.setText(t || 'Loading...', forceUpdate, lyricTime);
           if (this._artistScroll) this._artistScroll.setText(a || '', forceUpdate);
           this._lastTitle = t;
           this._lastArtist = a;
