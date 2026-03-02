@@ -550,6 +550,30 @@ class ExpandedPlayer extends St.Widget {
 
         this._box.add_child(controlsRow);
 
+        this._box.add_child(controlsRow);
+
+        this._box.connectObject('enter-event', () => {
+            if (this._leaveHideTimeoutId) {
+                GLib.source_remove(this._leaveHideTimeoutId);
+                this._leaveHideTimeoutId = null;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+
+        this._box.connectObject('leave-event', () => {
+            if (this._settings.get_boolean('popup-hide-on-leave')) {
+                if (this._leaveHideTimeoutId) {
+                    GLib.source_remove(this._leaveHideTimeoutId);
+                }
+                this._leaveHideTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                    this._leaveHideTimeoutId = null;
+                    this.hide();
+                    return GLib.SOURCE_REMOVE;
+                });
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+
         this.connect('destroy', this._cleanup.bind(this));
     }
     
@@ -576,7 +600,6 @@ class ExpandedPlayer extends St.Widget {
             this._settings.set_string('selected-player-bus', '');
             this._controller._updateUI();
             this._updatePlayerSelector(); 
-            this.hide();
             return Clutter.EVENT_STOP;
         }, this);
         autoBtn.connectObject('touch-event', (actor, event) => {
@@ -588,7 +611,6 @@ class ExpandedPlayer extends St.Widget {
                 this._settings.set_string('selected-player-bus', '');
                 this._controller._updateUI();
                 this._updatePlayerSelector(); 
-                this.hide();
                 return Clutter.EVENT_STOP;
             }
             return Clutter.EVENT_PROPAGATE;
@@ -622,7 +644,6 @@ class ExpandedPlayer extends St.Widget {
                 this._settings.set_string('selected-player-bus', busName);
                 this._controller._updateUI();
                 this._updatePlayerSelector(); 
-                this.hide();
                 return Clutter.EVENT_STOP;
             }, this);
             btn.connectObject('touch-event', (actor, event) => {
@@ -634,7 +655,6 @@ class ExpandedPlayer extends St.Widget {
                     this._settings.set_string('selected-player-bus', busName);
                     this._controller._updateUI();
                     this._updatePlayerSelector(); 
-                    this.hide();
                     return Clutter.EVENT_STOP;
                 }
                 return Clutter.EVENT_PROPAGATE;
@@ -925,6 +945,7 @@ class ExpandedPlayer extends St.Widget {
     _cleanup() {
         if (this._updateTimer) { GLib.source_remove(this._updateTimer); this._updateTimer = null; }
         if (this._resizeDebounceId) { GLib.source_remove(this._resizeDebounceId); this._resizeDebounceId = null; }
+        if (this._leaveHideTimeoutId) { GLib.source_remove(this._leaveHideTimeoutId); this._leaveHideTimeoutId = null; }
     }
 
     _startTimer() {
@@ -2046,7 +2067,7 @@ class MusicPill extends St.Widget {
         }
 
         let alwaysShow = this._settings.get_boolean('always-show-pill');
-        let shouldKeepOpen = (alwaysShow || anyPlaying) && tempTitle;
+	let shouldKeepOpen = alwaysShow || anyPlaying;
 
         if (shouldKeepOpen) {
             this._origTitle = tempTitle;
@@ -2380,6 +2401,35 @@ class PlayerSelectorMenu extends St.Widget {
         this._box = new St.BoxLayout({ reactive: true });
         this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
         this.add_child(this._box);
+        
+        this._box.connectObject('enter-event', () => {
+            if (this._leaveHideTimeoutId) {
+                GLib.source_remove(this._leaveHideTimeoutId);
+                this._leaveHideTimeoutId = null;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+
+        this._box.connectObject('leave-event', () => {
+            if (this._settings.get_boolean('popup-hide-on-leave')) {
+                if (this._leaveHideTimeoutId) {
+                    GLib.source_remove(this._leaveHideTimeoutId);
+                }
+                this._leaveHideTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                    this._leaveHideTimeoutId = null;
+                    this.hide();
+                    return GLib.SOURCE_REMOVE;
+                });
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+
+        this.connect('destroy', () => {
+            if (this._leaveHideTimeoutId) {
+                GLib.source_remove(this._leaveHideTimeoutId);
+                this._leaveHideTimeoutId = null;
+            }
+        });
     }
 
     populate() {
@@ -2583,9 +2633,16 @@ class PlayerSelectorMenu extends St.Widget {
     }
     hide() {
         if (this._isHiding) return;
+        
+        if (this._leaveHideTimeoutId) {
+            GLib.source_remove(this._leaveHideTimeoutId);
+            this._leaveHideTimeoutId = null;
+        }
+
         this._isHiding = true;
         this.ease({ opacity: 0, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD, onStopped: () => {
             this.visible = false;
+            this._isHiding = false; 
             if (this._controller) this._controller.closePlayerMenu();
         }});
     }
