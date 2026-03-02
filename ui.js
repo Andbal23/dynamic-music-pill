@@ -1034,12 +1034,14 @@ class ExpandedPlayer extends St.Widget {
             if (!this._box) return GLib.SOURCE_REMOVE;
 
             let currentW = this._box.width;
-            let currentX = Math.floor(this._box.x);
-            let currentY = Math.floor(this._box.y);
+            let currentX = Math.round(this._box.x);
+            let currentY = Math.round(this._box.y);
 
             this._box.set_width(-1);
             let [minW, natW] = this._box.get_preferred_width(-1);
+            natW = Math.ceil(natW);
             let [minH, natH] = this._box.get_preferred_height(natW);
+            natH = Math.ceil(natH);
 
             let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
             let menuW;
@@ -1048,7 +1050,12 @@ class ExpandedPlayer extends St.Widget {
             } else {
                 menuW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
             }
-            let menuH = natH > 0 ? natH : 260;
+            
+            menuW = Math.round(menuW);
+            if (menuW % 2 !== 0) menuW++;
+            
+            let menuH = Math.round(natH > 0 ? natH : 260);
+            if (menuH % 2 !== 0) menuH++;
             
             if (!this._initialWidthSet) {
                 currentW = menuW;
@@ -1068,34 +1075,37 @@ class ExpandedPlayer extends St.Widget {
 
             if (!monitor) return GLib.SOURCE_REMOVE;
 
+            px = Math.round(px); py = Math.round(py);
+            pw = Math.round(pw); ph = Math.round(ph);
+
             let targetX, targetY;
 
             if (pill._isSidePanel) {
                 let isLeftEdge = (px < monitor.x + (monitor.width / 2));
                 
-                targetY = Math.floor(py + (ph / 2) - (menuH / 2));
+                targetY = Math.round(py + (ph / 2) - (menuH / 2));
                 if (targetY < monitor.y + 10) targetY = monitor.y + 10;
                 if (targetY + menuH > monitor.y + monitor.height - 10) targetY = monitor.y + monitor.height - menuH - 10;
                 
                 if (isLeftEdge) {
-                    targetX = Math.floor(px + pw + 15);
+                    targetX = Math.round(px + pw + 15);
                 } else {
-                    targetX = Math.floor(px - menuW - 15);
+                    targetX = Math.round(px - menuW - 15);
                 }
                 
                 if (targetX < monitor.x + 10) targetX = monitor.x + 10;
                 if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
                 
             } else {
-                targetX = Math.floor(px + (pw / 2) - (menuW / 2));
+                targetX = Math.round(px + (pw / 2) - (menuW / 2));
                 if (targetX < monitor.x + 10) targetX = monitor.x + 10;
                 else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
 
                 let isTopEdge = (py < monitor.y + (monitor.height / 2));
                 if (isTopEdge) {
-                    targetY = Math.floor(py + ph + 15);
+                    targetY = Math.round(py + ph + 15);
                 } else {
-                    targetY = Math.floor(py - menuH - 15);
+                    targetY = Math.round(py - menuH - 15);
                 }
             }
 
@@ -2411,36 +2421,43 @@ class PlayerSelectorMenu extends St.Widget {
 
         this._box.set_width(-1);
         let [minW, natW] = this._box.get_preferred_width(-1);
-        let menuW = Math.max(natW, 200);
+        let menuW = Math.round(Math.max(natW, 200));
+        if (menuW % 2 !== 0) menuW++;
+        
         let [minH, natH] = this._box.get_preferred_height(menuW);
+        let menuH = Math.round(natH);
+        if (menuH % 2 !== 0) menuH++;
+
+        px = Math.round(px); py = Math.round(py);
+        pw = Math.round(pw); ph = Math.round(ph);
 
         let startX, startY;
 
         if (pill._isSidePanel) {
-            let isLeftEdge = (px < monitor.x + (monitor.width / 2));
-            startY = Math.floor(py + (ph / 2) - (natH / 2));
-            if (startY < monitor.y + 10) startY = monitor.y + 10;
-            if (startY + natH > monitor.y + monitor.height - 10) startY = monitor.y + monitor.height - natH - 10;
-            
-            if (isLeftEdge) {
-                startX = Math.floor(px + pw + 15);
-            } else {
-                startX = Math.floor(px - menuW - 15);
-            }
-        } else {
-            startX = Math.floor(px + (pw / 2) - (menuW / 2));
-            if (monitor) {
-                if (startX < monitor.x + 10) startX = monitor.x + 10;
-                else if (startX + menuW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - menuW - 10;
-            }
+            let isLeftEdge = (px < monitor.x + (monitor.width / 2));
+            startY = Math.round(py + (ph / 2) - (menuH / 2)); // <-- ITT
+            if (startY < monitor.y + 10) startY = monitor.y + 10;
+            if (startY + menuH > monitor.y + monitor.height - 10) startY = monitor.y + monitor.height - menuH - 10; // <-- ITT (2x)
+            
+            if (isLeftEdge) {
+                startX = Math.round(px + pw + 15);
+            } else {
+                startX = Math.round(px - menuW - 15);
+            }
+        } else {
+            startX = Math.round(px + (pw / 2) - (menuW / 2));
+            if (monitor) {
+                if (startX < monitor.x + 10) startX = monitor.x + 10;
+                else if (startX + menuW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - menuW - 10;
+            }
 
-            let isTopEdge = (py < monitor.y + (monitor.height / 2));
-            if (isTopEdge) {
-                startY = Math.floor(py + ph + 15);
-            } else {
-                startY = Math.floor(py - natH - 15);
-            }
-        }
+            let isTopEdge = (py < monitor.y + (monitor.height / 2));
+            if (isTopEdge) {
+                startY = Math.round(py + ph + 15);
+            } else {
+                startY = Math.round(py - menuH - 15);
+            }
+        }
 
         this._box.set_position(startX, startY);
         this._box.set_width(menuW);
