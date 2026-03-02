@@ -749,19 +749,13 @@ export class MusicController {
                             player._lastPositionTime = Date.now();
                         }
                     }
-                } catch (e) {}
+                } catch (e) {console.debug(`[Dynamic Music Pill] Position sync error: ${e.message}`);}
             }
         );
     }
 
     _onLyricsTick() {
-        if (!this._fetchedLyricsData || !this._pill) {
-            if (!this._tickSkipLogTime || Date.now() - this._tickSkipLogTime > 30000) {
-                log(`[DMP-Lyrics] _onLyricsTick: SKIP — data=${!!this._fetchedLyricsData}, pill=${!!this._pill}`);
-                this._tickSkipLogTime = Date.now();
-            }
-            return;
-        }
+        if (!this._fetchedLyricsData || !this._pill) return;
         if (this._dbusLyricActive) return;
 
         let active = this._getActivePlayer();
@@ -782,12 +776,6 @@ export class MusicController {
                 currentIndex = i;
                 break;
             }
-        }
-
-        if (!this._lastTickLog || now - this._lastTickLog > 5000) {
-            let lineText = currentIndex >= 0 ? this._fetchedLyricsData[currentIndex].text : "null";
-            log(`[DMP-Lyrics] _onLyricsTick: positionMs=${positionMs.toFixed(0)}, index=${currentIndex}, lastIndex=${this._lastLyricIndex}, line="${lineText}"`);
-            this._lastTickLog = now;
         }
 
         if (currentIndex >= 0 && currentIndex !== this._lastLyricIndex) {
