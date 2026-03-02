@@ -195,7 +195,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 		// Lyrics Display
         const lyricsRow = new Adw.ActionRow({
             title: _('Lyrics Display'),
-            subtitle: _('The synchronized lyrics feature is currently only supported when using compatible players, such as VutronMusic.')
+            subtitle: _('Show real-time synchronized lyrics for current track.')
         });
         const lyricsToggle = new Gtk.Switch({
             active: settings.get_boolean('enable-lyrics'),
