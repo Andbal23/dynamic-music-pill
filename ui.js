@@ -1923,19 +1923,83 @@ class MusicPill extends St.Widget {
     if (!title || status === 'Stopped') {
         if (isSkipActive) return;
 
-		// Clear the remaining lyrics
         this._lyricObj = null;
-        if (this._titleScroll) this._titleScroll.setText(this._origTitle || '', true, 0);
-        if (this._artistScroll) this._artistScroll.setText(this._origArtist || '', true);
+        let tempTitle = title || this._origTitle;
+        let tempArtist = artist || this._origArtist;
+        if (this._titleScroll) this._titleScroll.setText(tempTitle || '', true, 0);
+        if (this._artistScroll) this._artistScroll.setText(tempArtist || '', true);
         
-        if (this._settings.get_boolean('always-show-pill') && this._isActiveState && this._origTitle) {
+        let anyPlaying = false;
+        if (this._controller && this._controller._proxies) {
+            for (let p of this._controller._proxies.values()) {
+                if (p.PlaybackStatus === 'Playing') {
+                    anyPlaying = true;
+                    break;
+                }
+            }
+        }
+
+        let alwaysShow = this._settings.get_boolean('always-show-pill');
+        let shouldKeepOpen = (alwaysShow || anyPlaying) && tempTitle;
+
+        if (shouldKeepOpen) {
+            this._origTitle = tempTitle;
+            this._origArtist = tempArtist;
+            
             if (this._hideGraceTimer) {
                 GLib.source_remove(this._hideGraceTimer);
                 this._hideGraceTimer = null;
             }
+            
             this._currentStatus = 'Stopped';
-            this._visualizer.setPlaying(false);
-            this._startColorTransition();
+            this._updatePlayingStates();
+
+            if (!this._isActiveState || this.opacity === 0 || this.width <= 1) {
+                this._isActiveState = true;
+                this.reactive = true;
+                this.visible = true;
+
+                this._updateDimensions();
+                let finalWidth = this._targetWidth;
+                let finalHeight = this._targetHeight;
+
+                this.set_width(-1);
+                if (this._isSidePanel) {
+                    this._body.set_height(0);
+                    this._body.set_width(finalWidth);
+                } else {
+                    this._body.set_width(0);
+                    this._body.set_height(finalHeight);
+                }
+                
+                this.opacity = 0;
+                this.ease({ opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            }
+
+            if (forceUpdate || artUrl !== this._lastArtUrl) {
+                this._lastArtUrl = artUrl;
+                if (artUrl) {
+                    if (this._artDebounceTimer) {
+                        GLib.source_remove(this._artDebounceTimer);
+                        this._artDebounceTimer = null;
+                    }
+                    if (this._settings.get_boolean('show-album-art')) {
+                        this._artBin.show();
+                        this._artBin.opacity = 255;
+                    } else {
+                        this._artBin.hide();
+                    }
+                    this._artWidget.setArt(artUrl, true);
+                    this._loadColorFromArt(artUrl);
+                } else {
+                    this._updateArtVisibility();
+                    this._startColorTransition();
+                }
+            } else {
+                this._startColorTransition();
+            }
+
             if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
                 this._controller._expandedPlayer.updateContent(this._origTitle, this._origArtist, this._lastArtUrl, 'Stopped');
             }
@@ -2015,7 +2079,7 @@ class MusicPill extends St.Widget {
         this._updateDimensions();
     }
 
-	this._updatePlayingStates();
+    this._updatePlayingStates();
 
     if (forceUpdate || artUrl !== this._lastArtUrl) {
         this._lastArtUrl = artUrl;
@@ -2049,6 +2113,7 @@ class MusicPill extends St.Widget {
         this._controller._expandedPlayer.updateContent(origTitle, origArtist, this._lastArtUrl, this._currentStatus);
     }
   }
+
   _updateTextDisplay(forceUpdate = false) {
       let t = this._origTitle;
       let a = this._origArtist;
