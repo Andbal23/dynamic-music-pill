@@ -14,9 +14,8 @@ export class LyricsClient {
     this._session = new Soup.Session();
   }
 
-  // ========= FETCH ENGINE =========
   async getLyrics(title, artist, album, duration) {
-    if (!this._session) return null; // Safety check
+    if (!this._session) return null;
     try {
       const url = `https://lrclib.net/api/get?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}&album_name=${encodeURIComponent(album)}&duration=${duration}`;
       const msg = Soup.Message.new("GET", url);
@@ -32,11 +31,11 @@ export class LyricsClient {
       const data = JSON.parse(decode(bytes.get_data()));
       return data.syncedLyrics ? this._parseLRC(data.syncedLyrics) : null;
     } catch (e) {
+      console.debug(`[Dynamic Music Pill] Lyrics fetch error: ${e.message}`);
       return null;
     }
   }
 
-  // ========= SEARCH FALLBACK =========
   async _searchLyrics(title, artist, duration) {
     if (!this._session) return null;
     try {
@@ -51,11 +50,11 @@ export class LyricsClient {
       const match = data.find((item) => Math.abs(item.duration - duration) < 3);
       return match?.syncedLyrics ? this._parseLRC(match.syncedLyrics) : null;
     } catch (e) {
+      console.debug(`[Dynamic Music Pill] Lyrics search fallback error: ${e.message}`);
       return null;
     }
   }
 
-  // ========= LRC PARSER =========
   _parseLRC(lrcText) {
     const lines = [];
     const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
