@@ -1482,10 +1482,16 @@ class MusicPill extends St.Widget {
 
     this._isActuallyVisible = true;
     this._realVisibilityTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
-        if (this.get_parent()) {
-            this._checkRealVisibility();
+        try {
+            if (this.get_parent()) {
+                this._checkRealVisibility();
+            }
+            return GLib.SOURCE_CONTINUE;
+        } catch (e) {
+            console.debug(`[Dynamic Music Pill] Visibility timer stopped (actor disposed): ${e.message}`);
+            this._realVisibilityTimerId = null;
+            return GLib.SOURCE_REMOVE;
         }
-        return GLib.SOURCE_CONTINUE;
     });
   }
 
