@@ -89,7 +89,7 @@ class ScrollLabel extends St.Widget {
         this._gameMode = false;
         this._isScrolling = false;
 	this._container = new St.BoxLayout();
-	this._container.vertical = false;
+	this._container.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
         this.add_child(this._container);
 
         this._label1 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER });
@@ -114,19 +114,20 @@ class ScrollLabel extends St.Widget {
                 return GLib.SOURCE_REMOVE;
             });
         }, this);
+
+        this.connect('destroy', this._cleanup.bind(this));
     }
+    
     setLabelStyle(css) {
         if (this._label1) this._label1.set_style(css);
         if (this._label2) this._label2.set_style(css);
     }
 
-	destroy() {
-	    this._disposed = true;
+	_cleanup() {
 	    this._stopAnimation();
 	    if (this._resizeTimer) { GLib.source_remove(this._resizeTimer); this._resizeTimer = null; }
 	    if (this._measureTimeout) { GLib.source_remove(this._measureTimeout); this._measureTimeout = null; }
 	    if (this._idleResizeId) { GLib.source_remove(this._idleResizeId); this._idleResizeId = null; }
-	    super.destroy();
 	}
 
     setGameMode(active) {
@@ -142,7 +143,7 @@ class ScrollLabel extends St.Widget {
     
     this._idleResizeId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
         this._idleResizeId = null;
-        if (this.toString().includes('disposed') || !this.get_parent()) 
+        if (!this.get_parent()) 
             return GLib.SOURCE_REMOVE;
 
 	// The lyrics have finished scrolling, do not trigger the scroll again
@@ -306,14 +307,15 @@ class WaveformVisualizer extends St.BoxLayout {
             this._bars.push(bar);
         }
         this._updateBarsCss();
+
+        this.connect('destroy', this._cleanup.bind(this));
     }
 
-    destroy() {
+    _cleanup() {
         if (this._timerId) {
             GLib.source_remove(this._timerId);
             this._timerId = null;
         }
-        super.destroy();
     }
 
     setMode(m) {
@@ -424,10 +426,10 @@ class ExpandedPlayer extends St.Widget {
         this.add_child(this._backgroundBtn);
 
         this._box = new St.BoxLayout({
-            style_class: 'music-pill-expanded',
-            reactive: true
-        });
-        this._box.vertical = true;
+            style_class: 'music-pill-expanded',
+            reactive: true
+        });
+        this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
         this._box.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
         this._box.connectObject('touch-event', () => Clutter.EVENT_STOP, this);
         this.add_child(this._box);
@@ -465,12 +467,12 @@ class ExpandedPlayer extends St.Widget {
 
         let infoBox = new St.BoxLayout({
             style_class: 'track-info-box',
-            vertical: true,
             y_align: Clutter.ActorAlign.CENTER,
             x_expand: true,
             clip_to_allocation: true,
             style: 'min-width: 0px; margin-left: 10px; margin-right: 10px;'
         });
+        infoBox.layout_manager.orientation = Clutter.Orientation.VERTICAL;
         this._titleLabel = new ScrollLabel('expanded-title', this._settings);
         this._artistLabel = new ScrollLabel('expanded-artist', this._settings);
 
@@ -547,6 +549,8 @@ class ExpandedPlayer extends St.Widget {
         controlsRow.add_child(this._repeatBtn);
 
         this._box.add_child(controlsRow);
+
+        this.connect('destroy', this._cleanup.bind(this));
     }
     
     _updatePlayerSelector() {
@@ -918,18 +922,9 @@ class ExpandedPlayer extends St.Widget {
         });
     }
 
-    destroy() {
+    _cleanup() {
         if (this._updateTimer) { GLib.source_remove(this._updateTimer); this._updateTimer = null; }
         if (this._resizeDebounceId) { GLib.source_remove(this._resizeDebounceId); this._resizeDebounceId = null; }
-        
-        if (this._visualizer) {
-            this._visualizer.destroy();
-            this._visualizer = null;
-        }
-
-        if (this._titleLabel) { this._titleLabel.destroy(); this._titleLabel = null; }
-        if (this._artistLabel) { this._artistLabel.destroy(); this._artistLabel = null; }
-        super.destroy();
     }
 
     _startTimer() {
@@ -1295,12 +1290,12 @@ class MusicPill extends St.Widget {
     });
 
     this._textBox = new St.BoxLayout({
-        vertical: true,
-        x_expand: true,
-        y_align: Clutter.ActorAlign.CENTER,
-        x_align: Clutter.ActorAlign.FILL,
-	style: 'padding-left: 0px; padding-right: 0px; spacing: 0px;'
-    });
+            x_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.FILL,
+            style: 'padding-left: 0px; padding-right: 0px; spacing: 0px;'
+        });
+        this._textBox.layout_manager.orientation = Clutter.Orientation.VERTICAL;
     this._titleScroll = new ScrollLabel('music-label-title', this._settings);
     this._artistScroll = new ScrollLabel('music-label-artist', this._settings);
     this._textBox.add_child(this._titleScroll);
@@ -1543,19 +1538,18 @@ class MusicPill extends St.Widget {
     this._updateDimensions();
 
     this._isActuallyVisible = true;
-    this._realVisibilityTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
-        if (this._disposed || !this || String(this).includes('disposed') || !this.get_parent()) {
-            this._realVisibilityTimerId = null;
-            return GLib.SOURCE_REMOVE;
-        }
+    this._cancellable = new Gio.Cancellable();
 
-        this._checkRealVisibility();
-        return GLib.SOURCE_CONTINUE;
-    });
-  }
+    this._realVisibilityTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+        if (!this.get_parent()) return GLib.SOURCE_CONTINUE;
+        this._checkRealVisibility();
+        return GLib.SOURCE_CONTINUE;
+    });
 
-  destroy() {
-      this._disposed = true;
+    this.connect('destroy', this._cleanup.bind(this));
+  }
+
+  _cleanup() {
       if (this._realVisibilityTimerId) { GLib.source_remove(this._realVisibilityTimerId); this._realVisibilityTimerId = null; }
       if (this._allocTimer) { GLib.source_remove(this._allocTimer); this._allocTimer = null; }
       if (this._colorAnimId) { GLib.source_remove(this._colorAnimId); this._colorAnimId = null; }
@@ -1563,12 +1557,8 @@ class MusicPill extends St.Widget {
       if (this._hideGraceTimer) { GLib.source_remove(this._hideGraceTimer); this._hideGraceTimer = null; }
       if (this._hoverTimeout) { GLib.source_remove(this._hoverTimeout); this._hoverTimeout = null; }
       if (this._singleClickTimerId) { GLib.source_remove(this._singleClickTimerId); this._singleClickTimerId = null; }
-      if (this._titleScroll) { this._titleScroll.destroy(); this._titleScroll = null; }
-      if (this._artistScroll) { this._artistScroll.destroy(); this._artistScroll = null; }
-      if (this._visualizer) { this._visualizer.destroy(); this._visualizer = null; }
       if (this._idleDimId) { GLib.source_remove(this._idleDimId); this._idleDimId = null; }
       if (this._cancellable) { this._cancellable.cancel(); this._cancellable = null; }
-      super.destroy();
   }
   
   _handleLeftClick() {
@@ -1607,13 +1597,27 @@ class MusicPill extends St.Widget {
   }
   
   _checkRealVisibility() {
-      let isVisible = this.mapped;
+      let isVisible = false;
+
+      if (this.mapped && this.get_paint_opacity() > 0) {
+          let [x, y] = this.get_transformed_position();
+          let [w, h] = this.get_transformed_size();
+          let monitor = Main.layoutManager.findMonitorForActor(this);
+          
+          if (monitor) {
+              if (x + w > monitor.x && x < monitor.x + monitor.width &&
+                  y + h > monitor.y && y < monitor.y + monitor.height) {
+                  isVisible = true;
+              }
+          }
+      }
 
       if (this._isActuallyVisible !== isVisible) {
           this._isActuallyVisible = isVisible;
           this._updatePlayingStates();
       }
   }
+
 
   _updatePlayingStates() {
       let isVisibleAndActive = this._isActuallyVisible && !this._gameModeActive;
@@ -1707,7 +1711,7 @@ class MusicPill extends St.Widget {
   }
 
   _updateDimensions() {
-	if (this.toString().includes('disposed') || !this.get_parent()) return;
+	if (!this.get_parent()) return;
         let target = this._settings.get_int('target-container');
         this._inPanel = (target > 0);
         
@@ -1770,9 +1774,9 @@ class MusicPill extends St.Widget {
         
         if (isSidePanel) {
             hideText = true;
-            this._body.vertical = true;
+            this._body.layout_manager.orientation = Clutter.Orientation.VERTICAL;
         } else {
-            this._body.vertical = false;
+            this._body.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
         }
 
         if (hideText) {
@@ -1821,10 +1825,10 @@ class MusicPill extends St.Widget {
         }
         
         if (this._isSidePanel) {
-            this._tabletControls.vertical = true;
+            this._tabletControls.layout_manager.orientation = Clutter.Orientation.VERTICAL;
             this._tabletControls.set_style('margin: 0px;'); 
         } else {
-            this._tabletControls.vertical = false;
+            this._tabletControls.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
             this._tabletControls.set_style('margin-left: 6px; margin-top: 0px;');
         }
 
@@ -2241,24 +2245,28 @@ class MusicPill extends St.Widget {
   }
 
   _loadColorFromArt(artUrl) {
-    let file = Gio.File.new_for_uri(artUrl);
-    file.load_contents_async(null, (f, res) => {
-        if (!this || !this.get_parent) return;
-        if (this.get_parent() === null) return;
-
-        let [ok, bytes] = f.load_contents_finish(res);
-        if (ok) {
-            if (!this._visualizer) return;
-            let stream = Gio.MemoryInputStream.new_from_bytes(bytes);
-            let pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, null);
-            this._targetColor = getAverageColor(pixbuf);
-
-            if (this._visualizer && this._visualizer.setColor) {
-                this._visualizer.setColor(this._targetColor);
-                this._startColorTransition();
-            }
-        }
-    });
+      let file = Gio.File.new_for_uri(artUrl);
+      if (!this._cancellable) this._cancellable = new Gio.Cancellable();
+      
+      file.load_contents_async(this._cancellable, (f, res) => {
+          try {
+              let [ok, bytes] = f.load_contents_finish(res);
+              if (ok && this._visualizer) {
+                  let stream = Gio.MemoryInputStream.new_from_bytes(bytes);
+                  let pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, null);
+                  this._targetColor = getAverageColor(pixbuf);
+                  
+                  if (this._visualizer && this._visualizer.setColor) {
+                      this._visualizer.setColor(this._targetColor);
+                      this._startColorTransition();
+                  }
+              }
+          } catch (e) {
+              if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED)) {
+                  console.debug('Failed to load art color: ' + e.message);
+              }
+          }
+      });
   }
 
   _startColorTransition() {
@@ -2370,7 +2378,7 @@ class PlayerSelectorMenu extends St.Widget {
         this.add_child(this._backgroundBtn);
 
         this._box = new St.BoxLayout({ reactive: true });
-        this._box.vertical = true;
+        this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
         this.add_child(this._box);
     }
 
