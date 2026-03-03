@@ -24,7 +24,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list','hide-text',
             'fallback-art-path','popup-show-visualizer', 'popup-hide-pill-visualizer','compatibility-delay',
             'popup-follow-custom-bg', 'popup-follow-custom-text','action-hover', 'hover-delay', 'selected-player-bus',
-            'popup-show-player-selector','show-pill-border','invert-scroll-direction','always-show-pill','popup-hide-on-leave'
+            'popup-show-player-selector','show-pill-border','invert-scroll-direction','always-show-pill','popup-hide-on-leave',
+            'visualizer-bars','enable-lyrics'
         ];
 
         // =========================================
@@ -475,6 +476,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         visModel.append(_("Off (Disabled)"));
         visModel.append(_("Wave (Smooth)"));
         visModel.append(_("Beat (Jumpy)"));
+        visModel.append(_("Real-Time (Cava needed)"));
 
         const visRow = new Adw.ComboRow({
             title: _('Visualizer Animation'),
@@ -484,6 +486,24 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
         visRow.connect('notify::selected', () => { settings.set_int('visualizer-style', visRow.selected); });
         lookGroup.add(visRow);
+
+        const cavaNote = new Gtk.Label({
+            label: _("Note: 'Real-Time' mode requires the 'cava' package to be installed on your Linux system."),
+            wrap: true,
+            xalign: 0,
+            css_classes: ['dim-label'],
+            margin_top: 6, margin_bottom: 6, margin_start: 12, margin_end: 12
+        });
+        lookGroup.add(cavaNote);
+        
+        const visBarsRow = new Adw.SpinRow({
+            title: _('Visualizer Bar Count'),
+            subtitle: _('Number of bars displayed in the animation'),
+            adjustment: new Gtk.Adjustment({ lower: 2, upper: 32, step_increment: 1 })
+        });
+        settings.bind('visualizer-bars', visBarsRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        lookGroup.add(visBarsRow);
+
         const visPaddingRow = new Adw.SpinRow({
             title: _('Visualizer Margin'),
             subtitle: _('Distance between the text and the wave animation'),
@@ -491,7 +511,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
         settings.bind('visualizer-padding', visPaddingRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         lookGroup.add(visPaddingRow);
-
+        
         const radiusRow = new Adw.SpinRow({
             title: _('Corner Radius'),
             subtitle: _('Roundness of the widget edges (0 = Square, 25 = Pill)'),
