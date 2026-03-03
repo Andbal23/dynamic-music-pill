@@ -323,10 +323,11 @@ class ScrollLabel extends St.Widget {
 
 const CavaVisualizer = GObject.registerClass(
 class CavaVisualizer extends St.DrawingArea {
-    _init(settings) {
+    _init(settings, isPopup = false) {
         super._init({ y_expand: true, x_align: Clutter.ActorAlign.FILL, y_align: Clutter.ActorAlign.FILL });
         this._settings = settings;
-        this._barCount = this._settings.get_int('visualizer-bars') || 10;
+        this._isPopup = isPopup;
+        this._barCount = this._isPopup ? (this._settings.get_int('popup-visualizer-bars') || 10) : (this._settings.get_int('visualizer-bars') || 10);
         
         this._prevHeights = new Array(this._barCount).fill(1);
         this._peakValues = new Array(this._barCount).fill(0);
@@ -343,11 +344,12 @@ class CavaVisualizer extends St.DrawingArea {
     }
 
     _updateBarCount() {
-        this._barCount = this._settings.get_int('visualizer-bars') || 10;
+        this._barCount = this._isPopup ? (this._settings.get_int('popup-visualizer-bars') || 10) : (this._settings.get_int('visualizer-bars') || 10);
+        let bw = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
         this._prevHeights = new Array(this._barCount).fill(1);
         this._peakValues = new Array(this._barCount).fill(0);
         this._bins = new Array(this._barCount).fill(0);
-        this.set_width(this._barCount * 4);
+        this.set_width(this._barCount * (bw + 2) - 2);
         
         if (this._isPlaying) {
             this._stopCava();
@@ -518,12 +520,11 @@ class CavaVisualizer extends St.DrawingArea {
         cr.setOperator(Cairo.Operator.CLEAR);
         cr.paint();
         cr.setOperator(Cairo.Operator.OVER);
-
-        let barWidth = 2;
+        let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
         let gap = 2;
         let totalBarWidth = this._barCount * (barWidth + gap) - gap;
-        let offsetX = (width - totalBarWidth) / 2;
-        let centerY = height / 2;
+	let offsetX = 0;
+        let centerY = Math.floor(height / 2);
         let isSilent = this._silentFrames >= 30;
 
         for (let i = 0; i < this._barCount; i++) {
@@ -555,11 +556,11 @@ class CavaVisualizer extends St.DrawingArea {
 
 const SimulatedVisualizer = GObject.registerClass(
 class SimulatedVisualizer extends St.BoxLayout {
-    _init(height = 22, settings) {
-        super._init({ style: `spacing: 3px;`, y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
+    _init(settings, isPopup = false) {
+        super._init({ style: `spacing: 2px;`, y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END });
         this.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
         this._settings = settings;
-        this.set_height(height);
+        this._isPopup = isPopup;
         this._bars = [];
         this._color = '255,255,255';
         this._mode = 1;
@@ -573,13 +574,12 @@ class SimulatedVisualizer extends St.BoxLayout {
     _updateBarCount() {
         this.destroy_all_children();
         this._bars = [];
-        let count = this._settings.get_int('visualizer-bars') || 4;
-        let barWidth = 3;
-        let barHeight = this.height > 40 ? 60 : 20;
+        let count = this._isPopup ? (this._settings.get_int('popup-visualizer-bars') || 10) : (this._settings.get_int('visualizer-bars') || 4);
+        let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
 
         for (let i = 0; i < count; i++) {
             let bar = new St.Widget({ style_class: 'visualizer-bar' });
-            bar.set_size(barWidth, barHeight);
+            bar.set_width(barWidth);
             bar.set_pivot_point(0.5, this._mode === 2 ? 0.5 : 1.0);
             this.add_child(bar);
             this._bars.push(bar);
@@ -633,7 +633,9 @@ class SimulatedVisualizer extends St.BoxLayout {
 
     _updateBarsCss() {
         let opacity = this._isPlaying ? 1.0 : 0.4;
-        let css = `background-color: rgba(${this._color}, ${opacity}); border-radius: 2px;`;
+        let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
+        let bRad = barWidth >= 4 ? 2 : (barWidth > 1 ? 1 : 0);
+        let css = `background-color: rgba(${this._color}, ${opacity}); border-radius: ${bRad}px;`;
         this._bars.forEach(bar => { bar.set_style(css); });
     }
 
@@ -660,31 +662,48 @@ class SimulatedVisualizer extends St.BoxLayout {
 
 export const WaveformVisualizer = GObject.registerClass(
 class WaveformVisualizer extends St.Bin {
-    _init(height = 22, settings) {
+    _init(defaultHeight = 24, settings, isPopup = false) {
         super._init({ y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.END, y_expand: true });
         this._settings = settings;
-        this.set_height(height);
+        this._isPopup = isPopup;
+        this._baseHeight = defaultHeight;
         
-        this._simulated = new SimulatedVisualizer(height, this._settings);
+        this._simulated = new SimulatedVisualizer(this._settings, isPopup);
         this._cava = null;
         this._mode = 1;
         this._isPlaying = false;
         
         this.set_child(this._simulated);
 
-        this._settings.connectObject('changed::visualizer-bars', () => {
-            this._simulated._updateBarCount();
-            if (this._cava) this._cava._updateBarCount();
-            
-            let parent = this.get_parent();
-            while (parent) {
-                if (parent._updateDimensions) {
-                    parent._updateDimensions();
-                    break;
-                }
-                parent = parent.get_parent();
-            }
-        }, this);
+        if (this._isPopup) {
+            this._settings.connectObject('changed::popup-visualizer-bars', () => this._updateSize(), this);
+            this._settings.connectObject('changed::popup-visualizer-bar-width', () => this._updateSize(), this);
+            this._settings.connectObject('changed::popup-visualizer-height', () => this._updateSize(), this);
+        } else {
+            this._settings.connectObject('changed::visualizer-bars', () => this._updateSize(), this);
+            this._settings.connectObject('changed::visualizer-bar-width', () => this._updateSize(), this);
+            this._settings.connectObject('changed::visualizer-height', () => this._updateSize(), this);
+        }
+        
+        this._updateSize();
+    }
+
+    _updateSize() {
+        let h = this._isPopup ? (this._settings.get_int('popup-visualizer-height') || 80) : (this._settings.get_int('visualizer-height') || 24);
+        if (this._maxHeight && !this._isPopup) h = Math.min(h, this._maxHeight);
+        
+        this.set_height(h);
+        this._simulated.set_height(h);
+        this._simulated._updateBarCount();
+        if (this._cava) {
+            this._cava.set_height(h);
+            this._cava._updateBarCount();
+        }
+    }
+
+    setHeightClamped(maxH) {
+        this._maxHeight = maxH;
+        this._updateSize();
     }
 
     setMode(m) {
@@ -696,7 +715,7 @@ class WaveformVisualizer extends St.Bin {
         this._mode = m;
         if (m === 3) {
             if (!this._cava) {
-                this._cava = new CavaVisualizer(this._settings);
+		this._cava = new CavaVisualizer(this._settings, this._isPopup);
                 if (this._lastColor) this._cava.setColor(this._lastColor);
             }
             if (this.get_child() !== this._cava) this.set_child(this._cava);
@@ -791,7 +810,7 @@ class ExpandedPlayer extends St.Widget {
             if (this.visible) this.animateResize();
         }, this);
 
-        let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', vertical: false, y_align: Clutter.ActorAlign.CENTER });
+        let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', vertical: false, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
 
         this._vinyl = new St.Widget({
             style_class: 'vinyl-container',
@@ -806,43 +825,71 @@ class ExpandedPlayer extends St.Widget {
             width: 100,
             height: 100,
             x_expand: false,
-            y_expand: false
+            y_expand: false,
+            x_align: Clutter.ActorAlign.START,
+            y_align: Clutter.ActorAlign.CENTER
         });
         topRow.add_child(this._vinylBin);
 
         let infoBox = new PixelSnappedBox({
-            style_class: 'track-info-box',
-            y_align: Clutter.ActorAlign.CENTER,
-            x_expand: true,
-            clip_to_allocation: true,
-            style: 'min-width: 0px; margin-left: 10px; margin-right: 10px;'
-        });
+	    style_class: 'track-info-box',
+	    y_align: Clutter.ActorAlign.CENTER,
+	    x_align: Clutter.ActorAlign.CENTER,
+	    x_expand: true,
+	    clip_to_allocation: true,
+	    style: 'min-width: 0px; margin-left: 15px;'
+	});
         infoBox.layout_manager.orientation = Clutter.Orientation.VERTICAL;
+        
         this._titleLabel = new ScrollLabel('expanded-title', this._settings);
         this._artistLabel = new ScrollLabel('expanded-artist', this._settings);
 
+        this._visualizer = new WaveformVisualizer(80, this._settings, true);
 
-        this._visualizer = new WaveformVisualizer(80, this._settings);
-        this._visBin = new St.Bin({ 
-            child: this._visualizer, 
-            x_align: Clutter.ActorAlign.END, 
-            y_align: Clutter.ActorAlign.CENTER 
-        });
+	this._visBin = new St.Bin({ 
+	    child: this._visualizer,
+	    x_expand: false,
+	    x_align: Clutter.ActorAlign.END,
+	    y_align: Clutter.ActorAlign.CENTER
+	});
 
         infoBox.add_child(this._titleLabel);
         infoBox.add_child(this._artistLabel);
         
         topRow.add_child(infoBox);
-        topRow.add_child(this._visBin);
-        this._box.add_child(topRow);
+        topRow.add_child(this._visBin);
+        
+        this._box.add_child(topRow);
 
-        let progressBox = new PixelSnappedBox({ style_class: 'progress-container', vertical: false, y_align: Clutter.ActorAlign.CENTER });
-        this._currentTimeLabel = new St.Label({ style_class: 'progress-time', text: '0:00', x_align: Clutter.ActorAlign.END });
-        this._totalTimeLabel = new St.Label({ style_class: 'progress-time', text: '0:00', x_align: Clutter.ActorAlign.START });
+        let progressBox = new PixelSnappedBox({ style_class: 'progress-container', vertical: false, y_align: Clutter.ActorAlign.CENTER });
+        
+        this._currentTimeLabel = new St.Label({
+	    style_class: 'progress-time',
+	    text: '0:00',
+	    y_align: Clutter.ActorAlign.CENTER,
+	    x_align: Clutter.ActorAlign.START,
+	    style: 'text-align: left; margin-right: 0px;'
+	});
 
-        this._sliderBin = new St.Widget({ style_class: 'progress-slider-bg', x_expand: true, reactive: true, y_align: Clutter.ActorAlign.CENTER });
-        this._sliderFill = new St.Widget({ style_class: 'progress-slider-fill' });
-        this._sliderBin.add_child(this._sliderFill);
+	this._totalTimeLabel = new St.Label({
+	    style_class: 'progress-time',
+	    text: '0:00',
+	    y_align: Clutter.ActorAlign.CENTER,
+	    x_align: Clutter.ActorAlign.END,
+	    style:'text-align: right;'
+	});
+
+	this._sliderBin = new St.Widget({
+	    style_class: 'progress-slider-bg',
+	    x_expand: true,
+	    reactive: true,
+	    y_align: Clutter.ActorAlign.CENTER
+	});
+	this._sliderBin.set_style('margin: 0; padding: 0;');
+
+	this._sliderFill = new St.Widget({ style_class: 'progress-slider-fill' });
+	this._sliderFill.set_position(0, 0); 
+	this._sliderBin.add_child(this._sliderFill);
 
         this._sliderBin.connectObject('button-release-event', (actor, event) => {
             this._handleSeek(event);
@@ -1128,11 +1175,13 @@ class ExpandedPlayer extends St.Widget {
 
         let showVinyl = this._settings.get_boolean('popup-show-vinyl');
         if (!artUrl || !showVinyl) {
-            this._vinylBin.hide();
+            this._vinylBin.show();
+            this._vinyl.hide();
             this._stopVinyl();
             this._currentArtUrl = null;
         } else {
             this._vinylBin.show();
+            this._vinyl.show();
             let isSquare = this._settings.get_boolean('popup-vinyl-square');
             let radius = isSquare ? 12 : 50;
             let newClass = isSquare ? 'vinyl-container-square' : 'vinyl-container';
@@ -1261,6 +1310,7 @@ class ExpandedPlayer extends St.Widget {
         this._visualizer.setMode(this._settings.get_int('visualizer-style'));
         let showVis = this._settings.get_boolean('popup-show-visualizer') && this._settings.get_int('visualizer-style') !== 0;
         this._visBin.visible = showVis;
+        this._visualizer.visible = showVis;
         
         if (showVis && this._settings.get_boolean('popup-hide-pill-visualizer')) {
             if (this._controller._pill) this._controller._pill._setPopupOpen(true);
@@ -1451,8 +1501,28 @@ class ExpandedPlayer extends St.Widget {
             let [minH, natH] = this._box.get_preferred_height(natW);
             natH = Math.ceil(natH);
 
-            let minWLimit = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
+            let baseMinW = this._settings.get_boolean('show-shuffle-loop') ? 310 : 240;
+            
+            if (this._settings.get_boolean('popup-show-visualizer') && this._settings.get_int('visualizer-style') !== 0) {
+                let bCount = this._settings.get_int('popup-visualizer-bars') || 10;
+                let bWidth = this._settings.get_int('popup-visualizer-bar-width') || 2;
+                let actualVisW = bCount * (bWidth + 2) - 2; 
+                
+                if (this._visBin) {
+                    this._visBin.set_width(-1);
+                    this._visBin.show();
+                }
+                baseMinW += actualVisW; 
+            } else {
+                if (this._visBin) {
+                    this._visBin.hide();      
+                }
+            }
+            if (this._vinylBin) this._vinylBin.set_width(100);
+
+            let minWLimit = baseMinW;
             let menuW;
+            
             if (this._settings.get_boolean('popup-use-custom-width')) {
                 menuW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
             } else {
@@ -1685,7 +1755,7 @@ class MusicPill extends St.Widget {
 
     this._body.add_child(this._textWrapper);
 
-    this._visualizer = new WaveformVisualizer(22, this._settings);
+    this._visualizer = new WaveformVisualizer(24, this._settings, false);
     this._visBin = new St.Bin({
         child: this._visualizer,
         style: 'margin-left: 8px;',
@@ -1879,6 +1949,9 @@ class MusicPill extends St.Widget {
         }
     }, this);
     this._settings.connectObject('changed::visualizer-padding', () => this._updateDimensions(), this);
+    this._settings.connectObject('changed::visualizer-bars', () => this._updateDimensions(), this);
+    this._settings.connectObject('changed::visualizer-bar-width', () => this._updateDimensions(), this);
+    this._settings.connectObject('changed::visualizer-height', () => this._updateDimensions(), this);
     this.connect('notify::allocation', () => {
         if (this._allocTimer) return;
         this._allocTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
@@ -2172,6 +2245,7 @@ class MusicPill extends St.Widget {
         this._artWidget.setRadius(artRadius);
         this._artWidget.setShadowStyle(this._shadowCSS);
         this._visualizer.setMode(visStyle);
+        this._visualizer.setHeightClamped(maxArtHeight);
 
         let tabletSetting = 0;
         try {
