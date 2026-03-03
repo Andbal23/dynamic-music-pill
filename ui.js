@@ -88,7 +88,7 @@ class ScrollLabel extends St.Widget {
         this._text = "";
         this._gameMode = false;
         this._isScrolling = false;
-	this._container = new St.BoxLayout({ x_expand: true, y_expand: true, x_align: Clutter.ActorAlign.START, y_align: Clutter.ActorAlign.CENTER });
+	this._container = new PixelSnappedBox({ x_expand: true, y_expand: true, x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER });
 	this._container.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
         this.add_child(this._container);
 
@@ -163,7 +163,8 @@ class ScrollLabel extends St.Widget {
         
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         let textWidth = this._label1.get_preferred_width(-1)[1];
-		let needsScroll = (textWidth > boxWidth) && (this._settings.get_boolean('scroll-text') || this._lyricTime > 0);
+	let needsScroll = (textWidth > boxWidth) && (this._settings.get_boolean('scroll-text') || this._lyricTime > 0);
+	this._container.x_align = needsScroll ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
         let isScrolling = (this._scrollTimer != null) || this._isScrolling;
 
 		if (needsScroll && !isScrolling) {
@@ -216,6 +217,7 @@ class ScrollLabel extends St.Widget {
         if (boxWidth <= 1) return;
         let textWidth = this._label1.get_preferred_width(-1)[1];
         let needsScroll = textWidth > boxWidth;
+        this._container.x_align = needsScroll ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
 
         if (this._lyricTime > 0 && needsScroll) {
             // Lyric mode: single scroll based on time
