@@ -8,6 +8,8 @@ import Gio from 'gi://Gio';
 import Pango from 'gi://Pango';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { formatTime, getAverageColor, smartUnpack } from './utils.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+const _ = Extension.lookupByURL(import.meta.url).gettext;
 
 export const CrossfadeArt = GObject.registerClass(
 class CrossfadeArt extends St.Widget {
@@ -739,7 +741,7 @@ class WaveformVisualizer extends St.Bin {
 
     setMode(m) {
         if (m === 3 && !GLib.find_program_in_path('cava')) {
-            Main.notify('Dynamic Music Pill', 'Please install "cava" for real-time mode.');
+            Main.notify('Dynamic Music Pill', _('Please install "cava" for real-time mode.'));
             m = 2;
         }
 
@@ -1189,10 +1191,10 @@ class ExpandedPlayer extends St.Widget {
 
     updateContent(title, artist, artUrl, status) {
         if (this._titleLabel && this._titleLabel._text !== title) {
-            this._titleLabel.setText(title || 'Unknown Title', false);
+            this._titleLabel.setText(title || _('Unknown Title'), false);
         }
         if (this._artistLabel && this._artistLabel._text !== artist) {
-            this._artistLabel.setText(artist || 'Unknown Artist', false);
+            this._artistLabel.setText(artist || _('Unknown Artist'), false);
         }
 
         this._seekLockTime = 0;
@@ -2761,7 +2763,7 @@ class MusicPill extends St.Widget {
       }
 
       if (this._lastTitle !== t || this._lastArtist !== a || forceUpdate) {
-          if (this._titleScroll) this._titleScroll.setText(t || 'Loading...', forceUpdate, lyricTime);
+          if (this._titleScroll) this._titleScroll.setText(t || _('Loading...'), forceUpdate, lyricTime);
           if (this._artistScroll) this._artistScroll.setText(a || '', forceUpdate);
           this._lastTitle = t;
           this._lastArtist = a;
@@ -2963,7 +2965,7 @@ class PlayerSelectorMenu extends St.Widget {
         }
 
         let titleLabel = new St.Label({ 
-            text: 'Select Media Player', 
+            text: _('Select Media Player'),
             style: `font-weight: bold; margin-bottom: 15px; font-size: 12pt; ${textColorStyle}`, 
             x_align: Clutter.ActorAlign.CENTER 
         });
@@ -2974,7 +2976,7 @@ class PlayerSelectorMenu extends St.Widget {
         // ==== Auto (Smart Selection) Button ====
         let autoContent = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;' });
         let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 24, style: textColorStyle });
-	let autoLabel = new St.Label({ text: 'Auto (Smart Selection)', y_align: Clutter.ActorAlign.CENTER, style: textColorStyle });
+	let autoLabel = new St.Label({ text: _('Auto (Smart Selection)'), y_align: Clutter.ActorAlign.CENTER, style: textColorStyle });
         autoContent.add_child(autoIcon);
         autoContent.add_child(autoLabel);
 
