@@ -1,5 +1,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import St from 'gi://St';
+import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
@@ -159,6 +161,11 @@ export class MusicController {
         }
         global.display.disconnectObject(this);
         this._settings.disconnectObject(this);
+        
+        if (this._feedbackTimer) {
+            GLib.Source.remove(this._feedbackTimer);
+            this._feedbackTimer = null;
+        }
         
         if (this._injectTimeout) { GLib.Source.remove(this._injectTimeout); this._injectTimeout = null; }
         if (this._watchdog) { GLib.Source.remove(this._watchdog); this._watchdog = null; }
@@ -1134,66 +1141,161 @@ export class MusicController {
     next() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.NextRemote(); }
     previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
     
-    switchPlayer(isNext) {
-        let proxiesArr = Array.from(this._proxies.keys());
-        if (proxiesArr.length <= 1) return;
+    _showPillFeedback(iconName, text, percent = null) {
+        if (!this._pill || !this._pill._textWrapper) return;
 
-        let currentBus = this._settings.get_string('selected-player-bus');
-        if (!currentBus || !this._proxies.has(currentBus)) {
-            let active = this._getActivePlayer();
-            currentBus = active ? active._busName : proxiesArr[0];
+        if (this._feedbackTimer) {
+            GLib.Source.remove(this._feedbackTimer);
+            this._feedbackTimer = null;
         }
 
-        let currentIndex = proxiesArr.indexOf(currentBus);
+        if (!this._pill._feedbackBox) {
+            this._pill._feedbackBox = new St.BoxLayout({
+                vertical: false,
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.CENTER,
+                style: 'spacing: 8px;'
+            });
+
+            this._pill._feedbackIcon = new St.Icon({ icon_size: 16 });
+            this._pill._feedbackLabel = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
+            
+            this._pill._feedbackSliderBg = new St.Widget({
+                y_align: Clutter.ActorAlign.CENTER,
+                style: 'border-radius: 4px;',
+                height: 6,
+                width: 80 
+            });
+            this._pill._feedbackSliderFill = new St.Widget({
+                style: 'border-radius: 4px;',
+                height: 6,
+                width: 0
+            });
+            this._pill._feedbackSliderBg.add_child(this._pill._feedbackSliderFill);
+
+            this._pill._feedbackBox.add_child(this._pill._feedbackIcon);
+            this._pill._feedbackBox.add_child(this._pill._feedbackSliderBg);
+            this._pill._feedbackBox.add_child(this._pill._feedbackLabel);
+
+            this._pill._textWrapper.add_child(this._pill._feedbackBox);
+        }
+
+        let c = this._pill._displayedColor || { r: 40, g: 40, b: 40 };
+        let brightness = (c.r * 299 + c.g * 587 + c.b * 114) / 1000;
+        let isLight = brightness > 160;
+        let color = isLight ? 'rgb(30, 30, 30)' : 'rgb(255, 255, 255)';
+        let bgTrack = isLight ? 'rgba(30, 30, 30, 0.2)' : 'rgba(255, 255, 255, 0.2)';
+
+        this._pill._feedbackIcon.icon_name = iconName;
+        this._pill._feedbackIcon.fallback_icon_name = 'audio-x-generic-symbolic';
+        this._pill._feedbackIcon.set_style(`color: ${color};`);
+        
+        this._pill._feedbackLabel.text = text;
+        this._pill._feedbackLabel.set_style(`font-size: 10.5pt; font-weight: bold; color: ${color};`);
+
+        if (percent !== null) {
+            this._pill._feedbackSliderBg.show();
+            this._pill._feedbackSliderBg.set_style(`background-color: ${bgTrack}; border-radius: 4px;`);
+            this._pill._feedbackSliderFill.set_style(`background-color: ${color}; border-radius: 4px;`);
+            
+            this._pill._feedbackSliderFill.ease({
+                width: Math.max(0, percent * 80),
+                duration: 100,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+            
+            this._pill._feedbackLabel.text = `${Math.round(percent * 100)}%`;
+        } else {
+            this._pill._feedbackSliderBg.hide();
+        }
+
+        this._pill._textBox.ease({ opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        this._pill._feedbackBox.opacity = 0;
+        this._pill._feedbackBox.show();
+        this._pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+
+        this._feedbackTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
+            this._feedbackTimer = null;
+            if (this._pill && this._pill._feedbackBox) {
+                this._pill._feedbackBox.ease({ 
+                    opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD, 
+                    onStopped: () => { this._pill._feedbackBox.hide(); } 
+                });
+                this._pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    changeVolume(up) {
+        let mixer = getMixerControl();
+        if (!mixer) return;
+
+        let stream = mixer.get_default_sink();
+        if (!stream) return;
+
+        let maxVolume = mixer.get_vol_max_norm();
+        let step = Math.round(maxVolume * 0.05);
+
+        if (up && stream.is_muted) {
+            stream.change_is_muted(false);
+        }
+
+        let newVolume = up ? stream.volume + step : stream.volume - step;
+        newVolume = Math.max(0, Math.min(maxVolume, newVolume));
+
+        if (stream.volume !== newVolume) {
+            stream.volume = newVolume;
+            stream.push_volume();
+
+            let percent = newVolume / maxVolume;
+            let iconName = 'audio-volume-high-symbolic';
+            if (stream.is_muted || newVolume === 0) iconName = 'audio-volume-muted-symbolic';
+            else if (percent < 0.33) iconName = 'audio-volume-low-symbolic';
+            else if (percent < 0.66) iconName = 'audio-volume-medium-symbolic';
+
+            this._showPillFeedback(iconName, '', percent);
+        }
+    }
+
+    switchPlayer(isNext) {
+        let proxiesArr = Array.from(this._proxies.keys());
+        let options = ['', ...proxiesArr]; 
+
+        if (options.length <= 1) return;
+
+        let currentBus = this._settings.get_string('selected-player-bus');
+        let currentIndex = options.indexOf(currentBus);
         if (currentIndex === -1) currentIndex = 0;
 
         if (isNext) {
-            currentIndex = (currentIndex + 1) % proxiesArr.length;
+            currentIndex = (currentIndex + 1) % options.length;
         } else {
-            currentIndex = (currentIndex - 1 + proxiesArr.length) % proxiesArr.length;
+            currentIndex = (currentIndex - 1 + options.length) % options.length;
         }
 
-        let nextBus = proxiesArr[currentIndex];
-        
+        let nextBus = options[currentIndex];
         this._settings.set_string('selected-player-bus', nextBus);
         this._updateUI();
         
         if (this._playerMenu && this._playerMenu.visible) {
             this._playerMenu.populate();
         }
-    }
-    
-    changeVolume(up) {
-            let mixer = getMixerControl();
-            if (!mixer) return;
 
-            let stream = mixer.get_default_sink();
-            if (!stream) return;
+        let labelText = 'Auto (Smart)';
+        let iconName = 'emblem-system-symbolic';
 
-            let maxVolume = mixer.get_vol_max_norm();
-            let step = Math.round(maxVolume * 0.05);
-
-            if (up && stream.is_muted) {
-                stream.change_is_muted(false);
-            }
-
-            let newVolume = up ? stream.volume + step : stream.volume - step;
-            newVolume = Math.max(0, Math.min(maxVolume, newVolume));
-
-            if (stream.volume !== newVolume) {
-                stream.volume = newVolume;
-                stream.push_volume();
-
-                let iconName = 'audio-volume-high-symbolic';
-                if (stream.is_muted || newVolume === 0) iconName = 'audio-volume-muted-symbolic';
-                else if (newVolume < maxVolume / 3) iconName = 'audio-volume-low-symbolic';
-                else if (newVolume < maxVolume * 2 / 3) iconName = 'audio-volume-medium-symbolic';
-
-                let icon = Gio.Icon.new_for_string(iconName);
-
-                Main.osdWindowManager.show(-1, icon, null, newVolume / maxVolume, 1);
+        if (nextBus !== '') {
+            let proxy = this._proxies.get(nextBus);
+            if (proxy) {
+                let rawAppName = nextBus.replace('org.mpris.MediaPlayer2.', '').split('.')[0];
+                labelText = proxy._identity || (rawAppName.charAt(0).toUpperCase() + rawAppName.slice(1));
+                iconName = proxy._desktopEntry || rawAppName.toLowerCase();
             }
         }
+
+        this._showPillFeedback(iconName, labelText, null);
+    }
     
     toggleShuffle() {
         let p = this._getActivePlayer();
