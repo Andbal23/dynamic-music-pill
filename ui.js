@@ -180,17 +180,19 @@ class CrossfadeArt extends St.Widget {
 
         newLayer.ease({
             opacity: 255,
-            duration: 1800, 
+            duration: 1800,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onStopped: (isFinished) => {
-		    if (!isFinished) return;
-		    this.get_children().forEach(c => {
-			if (c !== this._activeLayer) {
-			    c.destroy();
-			}
-		    });
-		}
-            
+                if (!isFinished) return;
+                
+                newLayer.opacity = 255; 
+                
+                this.get_children().forEach(c => {
+                    if (c !== this._activeLayer) {
+                        c.destroy();
+                    }
+                });
+            }
         });
     }
 });
@@ -284,6 +286,8 @@ class ScrollLabel extends St.Widget {
     _checkResize() {
         if (!this._text || this._gameMode) return;
         
+        if (this._ignoreResizeUntil && Date.now() < this._ignoreResizeUntil) return;
+        
         if (this._idleResizeId) { GLib.Source.remove(this._idleResizeId); this._idleResizeId = null; }
         
         this._idleResizeId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
@@ -312,7 +316,7 @@ class ScrollLabel extends St.Widget {
                 this._label2.hide();
                 this._separator.hide();
             } else if (!needsScroll) {
-                this._stopAnimation(true); 
+                this._stopAnimation(true);
                 this._container.x_align = Clutter.ActorAlign.CENTER;
             }
             
@@ -329,39 +333,41 @@ class ScrollLabel extends St.Widget {
         this._stopAnimation(true);
         this._container.x_align = Clutter.ActorAlign.CENTER;
 
-        let fadeEnabled = false;
-        let fadeDuration = 250;
-        if (this._settings) {
-            fadeEnabled = this._settings.get_boolean('lyric-fade-enable');
-            fadeDuration = this._settings.get_int('lyric-fade-duration');
-        }
-
-        if (lyricTime > 0 && fadeEnabled) {
-            this._label1.remove_transition('opacity');
-            this._label1.opacity = 0;
-            this._label1.ease({
-                opacity: 255,
-                duration: fadeDuration,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-            });
-        } else {
-            this._label1.remove_transition('opacity');
-            this._label1.opacity = 255;
-        }
-
         this._label1.text = this._text;
         this._label2.text = this._text;
         this._label2.hide();
         this._separator.hide();
-
         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+
+        this._label1.remove_transition('opacity');
+        let isLyric = (lyricTime > 0);
+        let lyricFadeEnabled = this._settings ? this._settings.get_boolean('lyric-fade-enable') : false;
+        
+        if (!isLyric || (isLyric && lyricFadeEnabled)) {
+            let duration = (isLyric && this._settings) ? this._settings.get_int('lyric-fade-duration') : 300;
+            this._label1.opacity = 0;
+            this._label1.ease({
+                opacity: 255,
+                duration: duration,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+        } else {
+            this._label1.opacity = 255;
+        }
 
         if (!this._settings.get_boolean('scroll-text') && !this._lyricTime) {
             return;
         }
 
+        let isDynamic = this._settings && this._settings.get_boolean('pill-dynamic-width');
+        if (isDynamic) {
+            this._ignoreResizeUntil = Date.now() + 450;
+        }
+
+        let delay = isDynamic ? 450 : 100;
+
         if (this._measureTimeout) { GLib.Source.remove(this._measureTimeout); this._measureTimeout = null; }
-        this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+        this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
             this._measureTimeout = null;
             if (this.has_allocation()) this._checkOverflow();
             return GLib.SOURCE_REMOVE;
@@ -1297,10 +1303,12 @@ class ExpandedPlayer extends St.Widget {
                 if (this._vinyl.get_children().length > 1) {
                     newLayer.ease({
                         opacity: 255,
-                        duration: 1200, 
+                        duration: 1800,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                         onStopped: (isFinished) => {
                             if (isFinished) {
+                                newLayer.opacity = 255;
+                                
                                 this._vinyl.get_children().forEach(c => {
                                     if (c !== this._activeVinylLayer) {
                                         c.destroy();
