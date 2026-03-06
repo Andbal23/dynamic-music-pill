@@ -7,6 +7,11 @@
       <summary>Edge Margin (Outer Padding)</summary>
       <description>Distance before the album art and after the visualizer.</description>
     </key>
+    <key name="sync-accent-color" type="b">
+      <default>false</default>
+      <summary>Sync GNOME Shell Accent Color</summary>
+      <description>Dynamically change the GNOME Shell accent color to match the album art.</description>
+    </key>
     <key name="always-show-pill" type="b">
       <default>false</default>
       <summary>Always Show Pill</summary>
