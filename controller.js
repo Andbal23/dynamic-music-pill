@@ -181,6 +181,11 @@ export class MusicController {
             this._ownerId = null;
         }
 
+        if (this._lyricObjectId && this._connection) {
+            this._connection.unregister_object(this._lyricObjectId);
+            this._lyricObjectId = null;
+        }
+
         if (this._lyricOwnerId) {
             Gio.bus_unown_name(this._lyricOwnerId);
             this._lyricOwnerId = null;
@@ -762,7 +767,7 @@ export class MusicController {
             LYRIC_IFACE_NAME,
             Gio.BusNameOwnerFlags.NONE,
             (connection) => {
-                connection.register_object(
+                this._lyricObjectId = connection.register_object(
                     LYRIC_OBJECT_PATH,
                     this._lyricIfaceInfo,
                     this._onLyricMethodCall.bind(this),
