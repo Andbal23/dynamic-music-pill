@@ -26,7 +26,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-follow-custom-bg', 'popup-follow-custom-text','action-hover', 'hover-delay', 'selected-player-bus',
             'popup-show-player-selector','show-pill-border','invert-scroll-direction','always-show-pill','popup-hide-on-leave',
             'visualizer-bars','enable-lyrics','app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration','visualizer-bar-width', 'visualizer-height',
-            'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height','edge-margin'
+            'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height','edge-margin','popup-vinyl-speed'
         ];
 
         // =========================================
@@ -355,6 +355,15 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('popup-vinyl-rotate', popRotateToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         popRotateRow.add_suffix(popRotateToggle);
         popupGroup.add(popRotateRow);
+        
+        const popRotateSpeedRow = new Adw.SpinRow({
+            title: _('Rotation Speed'),
+            subtitle: _('Adjust the vinyl spin speed (Lower is slower, Default: 10)'),
+            adjustment: new Gtk.Adjustment({ lower: 1, upper: 50, step_increment: 1 })
+        });
+        settings.bind('popup-vinyl-speed', popRotateSpeedRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('popup-vinyl-rotate', popRotateSpeedRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        popupGroup.add(popRotateSpeedRow);
 
         const popShadowRow = new Adw.ActionRow({
             title: _('Enable Shadow'),
