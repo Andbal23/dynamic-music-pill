@@ -8,210 +8,216 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-04 11:52+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-03-09 08:48+0000\n"
+"Last-Translator: Joy <dequeyuri@gmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/dynamic-music-"
+"pill/settings/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: controller.js:997
 msgid "Unknown Player"
-msgstr ""
+msgstr "Pemutar tidak dikenal"
 
 #: controller.js:998
 msgid "No active media"
-msgstr ""
+msgstr "Tidak ada media aktif"
 
 #: controller.js:1287
 msgid "Auto (Smart)"
-msgstr ""
+msgstr "Otomatis (Cerdas)"
 
 #: prefs.js:36
 msgid "Main Pill"
-msgstr ""
+msgstr "Pill Utama"
 
 #: prefs.js:40
 msgid "General Settings"
-msgstr ""
+msgstr "Pengaturan Umum"
 
 #: prefs.js:43
 msgid "Always ON"
-msgstr ""
+msgstr "Selalu Aktif"
 
 #: prefs.js:44
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr ""
+"Pertahankan trek terakhir dan tetap tampilkan pill setelah menutup pemutar"
 
 #: prefs.js:56
 msgid "Show Album Art"
-msgstr ""
+msgstr "Tampilkan Sampul Album"
 
 #: prefs.js:57
 msgid "Display the cover art of the currently playing song"
-msgstr ""
+msgstr "Tampilkan sampul album dari lagu yang sedang diputar"
 
 #: prefs.js:68
 msgid "Fallback Album Art"
-msgstr ""
+msgstr "Sampul Album Cadangan"
 
 #: prefs.js:69 prefs.js:109
 msgid "No image selected"
-msgstr ""
+msgstr "Tidak ada gambar yang dipilih"
 
 #: prefs.js:79
 msgid "Select Fallback Image"
-msgstr ""
+msgstr "Pilih Gambar Cadangan"
 
 #: prefs.js:123
 msgid "Enable Scroll Controls"
-msgstr ""
+msgstr "Aktifkan Kontrol Scroll"
 
 #: prefs.js:124
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr ""
+"Ganti trek, volume, atau pemutar media menggunakan scroll wheel atau touchpad"
 
 #: prefs.js:135
 msgid "Change Track"
-msgstr ""
+msgstr "Ganti Lagu"
 
 #: prefs.js:136
 msgid "Change Volume"
-msgstr ""
+msgstr "Atur Volume"
 
 #: prefs.js:137
 msgid "Switch Player"
-msgstr ""
+msgstr "Ganti Pemutar"
 
 #: prefs.js:145
 msgid "Scroll Action"
-msgstr ""
+msgstr "Aksi Scroll"
 
 #: prefs.js:146
 msgid "Choose what scrolling on the pill should do"
-msgstr ""
+msgstr "Pilih aksi yang dilakukan saat scroll pada pill"
 
 #: prefs.js:170
 msgid "Invert Scroll Animation"
-msgstr ""
+msgstr "Balik Arah Animasi Scroll"
 
 #: prefs.js:171
 msgid "Direction of the jump effect (Natural vs Traditional)"
-msgstr ""
+msgstr "Arah efek lompatan (Alami vs Tradisional)"
 
 #: prefs.js:182
 msgid "Invert Scroll Direction"
-msgstr ""
+msgstr "Balik Arah Scroll"
 
 #: prefs.js:183
 msgid "Swap up/down scrolling for track and volume actions"
-msgstr ""
+msgstr "Tukar arah scroll atas/bawah untuk aksi lagu dan volume"
 
 #: prefs.js:195
 msgid "Scrolling Text"
-msgstr ""
+msgstr "Teks Bergerak"
 
 #: prefs.js:196
 msgid "Animate long track titles and artist names"
-msgstr ""
+msgstr "Animasikan judul lagu dan nama artis yang panjang"
 
 #: prefs.js:208
 msgid "Lyrics Display"
-msgstr ""
+msgstr "Tampilan Lirik"
 
 #: prefs.js:209
 msgid "Show real-time synchronized lyrics for current track."
 msgstr ""
+"Tampilkan lirik tersinkronisasi secara real-time untuk lagu yang sedang "
+"diputar."
 
 #: prefs.js:220
 msgid "Lyrics Fade-in Effect"
-msgstr ""
+msgstr "Efek Fade-in Lirik"
 
 #: prefs.js:221
 msgid "Smoothly fade in new lyric lines"
-msgstr ""
+msgstr "Munculkan baris lirik baru secara halus dengan fade-in"
 
 #: prefs.js:233
 msgid "Fade Duration (ms)"
-msgstr ""
+msgstr "Durasi Fade (ms)"
 
 #: prefs.js:242
 msgid "Tablet Mode Controls"
-msgstr ""
+msgstr "Kontrol Mode Tablet"
 
 #: prefs.js:243
 msgid "Show media buttons directly on the pill"
-msgstr ""
+msgstr "Tampilkan tombol media langsung pada pill"
 
 #: prefs.js:245
 msgid "Off"
-msgstr ""
+msgstr "Nonaktif"
 
 #: prefs.js:245
 msgid "Skip Only"
-msgstr ""
+msgstr "Hanya Skip"
 
 #: prefs.js:245
 msgid "Play/Pause Only"
-msgstr ""
+msgstr "Hanya Putar/Jeda"
 
 #: prefs.js:245
 msgid "All Controls"
-msgstr ""
+msgstr "Semua Kontrol"
 
 #: prefs.js:253
 msgid "Inline Artist"
-msgstr ""
+msgstr "Inline Artist"
 
 #: prefs.js:253
 msgid "Show \"Title • Artist\" when the widget is squeezed"
-msgstr ""
+msgstr "Tampilkan \"Judul • Artis\" saat widget dimampatkan"
 
 #: prefs.js:260
 msgid "Compact Mode (Hide Text)"
-msgstr ""
+msgstr "Mode Kompak (Sembunyikan Teks)"
 
 #: prefs.js:261
 msgid "Hide title and artist"
-msgstr ""
+msgstr "Sembunyikan judul dan artis"
 
 #: prefs.js:274
 msgid "Mouse Actions"
-msgstr ""
+msgstr "Aksi Mouse"
 
 #: prefs.js:277
 msgid "None"
-msgstr ""
+msgstr "Tidak Ada"
 
 #: prefs.js:277
 msgid "Play / Pause"
-msgstr ""
+msgstr "Putar / Jeda"
 
 #: prefs.js:277
 msgid "Next Track"
-msgstr ""
+msgstr "Lagu Berikutnya"
 
 #: prefs.js:277
 msgid "Previous Track"
-msgstr ""
+msgstr "Lagu Sebelumnya"
 
 #: prefs.js:278
 msgid "Open Player App"
-msgstr ""
+msgstr "Buka Aplikasi Pemutar"
 
 #: prefs.js:278
 msgid "Open Menu"
-msgstr ""
+msgstr "Buka Menu"
 
 #: prefs.js:278
 msgid "Select Player"
-msgstr ""
+msgstr "Pilih Pemutar"
 
 #: prefs.js:278
 msgid "Open Settings"
-msgstr ""
+msgstr "Buka Pengaturan"
 
 #: prefs.js:278
 msgid "Close Player App"
