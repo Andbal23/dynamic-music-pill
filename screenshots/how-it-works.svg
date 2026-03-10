@@ -1,0 +1,170 @@
+<svg width="900" height="340" viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0820"/>
+      <stop offset="100%" style="stop-color:#0c1428"/>
+    </linearGradient>
+    <radialGradient id="blob1" cx="15%" cy="50%" r="35%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="blob2" cx="85%" cy="50%" r="35%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.22"/>
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="blob3" cx="50%" cy="10%" r="30%">
+      <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0"/>
+    </radialGradient>
+
+    <linearGradient id="glass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.11"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.04"/>
+    </linearGradient>
+
+    <linearGradient id="arrowLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#38bdf8;stop-opacity:0.8"/>
+    </linearGradient>
+
+    <linearGradient id="stepBorder1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a78bfa;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.15"/>
+    </linearGradient>
+    <linearGradient id="stepBorder2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e879f9;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#be185d;stop-opacity:0.15"/>
+    </linearGradient>
+    <linearGradient id="stepBorder3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:0.15"/>
+    </linearGradient>
+    <linearGradient id="stepBorder4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34d399;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#065f46;stop-opacity:0.15"/>
+    </linearGradient>
+
+    <linearGradient id="num1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <linearGradient id="num2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#be185d"/>
+      <stop offset="100%" style="stop-color:#f472b6"/>
+    </linearGradient>
+    <linearGradient id="num3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2"/>
+      <stop offset="100%" style="stop-color:#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="num4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#065f46"/>
+      <stop offset="100%" style="stop-color:#34d399"/>
+    </linearGradient>
+
+    <filter id="glowLine" x="-10%" y="-200%" width="120%" height="500%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="numGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="340" fill="url(#bg)"/>
+  <rect width="900" height="340" fill="url(#blob1)"/>
+  <rect width="900" height="340" fill="url(#blob2)"/>
+  <rect width="900" height="340" fill="url(#blob3)"/>
+
+  <!-- Grid -->
+  <g opacity="0.04" stroke="#ffffff" stroke-width="0.5">
+    <line x1="0" y1="85" x2="900" y2="85"/>
+    <line x1="0" y1="170" x2="900" y2="170"/>
+    <line x1="0" y1="255" x2="900" y2="255"/>
+    <line x1="225" y1="0" x2="225" y2="340"/>
+    <line x1="450" y1="0" x2="450" y2="340"/>
+    <line x1="675" y1="0" x2="675" y2="340"/>
+  </g>
+
+  <!-- Section heading -->
+  <text x="450" y="38" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle" letter-spacing="3" font-weight="500">HOW IT WORKS</text>
+  <line x1="290" y1="44" x2="380" y2="44" stroke="#ffffff" stroke-width="0.5" opacity="0.15"/>
+  <line x1="520" y1="44" x2="610" y2="44" stroke="#ffffff" stroke-width="0.5" opacity="0.15"/>
+
+  <!-- Arrow line connecting all 4 steps -->
+  <line x1="120" y1="175" x2="778" y2="175" stroke="url(#arrowLine)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4" filter="url(#glowLine)"/>
+
+  <!-- Arrowhead -->
+  <polygon points="778,170 790,175 778,180" fill="#38bdf8" opacity="0.8"/>
+
+  <!-- ======================== -->
+  <!-- STEP 1                  -->
+  <!-- ======================== -->
+  <rect x="30" y="78" width="185" height="194" rx="18" fill="url(#glass)"/>
+  <rect x="30" y="78" width="185" height="194" rx="18" fill="none" stroke="url(#stepBorder1)" stroke-width="1.2"/>
+  <rect x="31" y="79" width="183" height="1.5" rx="1" fill="#ffffff" opacity="0.14"/>
+
+  <!-- Step number -->
+  <circle cx="122" cy="112" r="22" fill="url(#num1)" opacity="0.9" filter="url(#numGlow)"/>
+  <text x="122" y="118" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">1</text>
+
+  <text x="122" y="156" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="13" font-weight="700" fill="white" text-anchor="middle">MPRIS Signal</text>
+  <text x="122" y="176" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">Your media player emits</text>
+  <text x="122" y="192" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">metadata via D-Bus /</text>
+  <text x="122" y="208" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">MPRIS2 protocol.</text>
+  <!-- Icon -->
+  <text x="122" y="248" font-size="22" text-anchor="middle" font-family="sans-serif">📡</text>
+
+  <!-- ======================== -->
+  <!-- STEP 2                  -->
+  <!-- ======================== -->
+  <rect x="238" y="78" width="185" height="194" rx="18" fill="url(#glass)"/>
+  <rect x="238" y="78" width="185" height="194" rx="18" fill="none" stroke="url(#stepBorder2)" stroke-width="1.2"/>
+  <rect x="239" y="79" width="183" height="1.5" rx="1" fill="#ffffff" opacity="0.14"/>
+
+  <circle cx="330" cy="112" r="22" fill="url(#num2)" opacity="0.9" filter="url(#numGlow)"/>
+  <text x="330" y="118" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">2</text>
+
+  <text x="330" y="156" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="13" font-weight="700" fill="white" text-anchor="middle">Color Extraction</text>
+  <text x="330" y="176" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">Album art is analyzed.</text>
+  <text x="330" y="192" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">Dominant color drives</text>
+  <text x="330" y="208" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">background &amp; accent.</text>
+  <text x="330" y="248" font-size="22" text-anchor="middle" font-family="sans-serif">🎨</text>
+
+  <!-- ======================== -->
+  <!-- STEP 3                  -->
+  <!-- ======================== -->
+  <rect x="446" y="78" width="185" height="194" rx="18" fill="url(#glass)"/>
+  <rect x="446" y="78" width="185" height="194" rx="18" fill="none" stroke="url(#stepBorder3)" stroke-width="1.2"/>
+  <rect x="447" y="79" width="183" height="1.5" rx="1" fill="#ffffff" opacity="0.14"/>
+
+  <circle cx="538" cy="112" r="22" fill="url(#num3)" opacity="0.9" filter="url(#numGlow)"/>
+  <text x="538" y="118" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">3</text>
+
+  <text x="538" y="156" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="13" font-weight="700" fill="white" text-anchor="middle">Render &amp; Animate</text>
+  <text x="538" y="176" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">Pill updates with new</text>
+  <text x="538" y="192" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">art, title, and live</text>
+  <text x="538" y="208" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">visualizer at 60 FPS.</text>
+  <text x="538" y="248" font-size="22" text-anchor="middle" font-family="sans-serif">⚡</text>
+
+  <!-- ======================== -->
+  <!-- STEP 4                  -->
+  <!-- ======================== -->
+  <rect x="654" y="78" width="215" height="194" rx="18" fill="url(#glass)"/>
+  <rect x="654" y="78" width="215" height="194" rx="18" fill="none" stroke="url(#stepBorder4)" stroke-width="1.2"/>
+  <rect x="655" y="79" width="213" height="1.5" rx="1" fill="#ffffff" opacity="0.14"/>
+
+  <circle cx="761" cy="112" r="22" fill="url(#num4)" opacity="0.9" filter="url(#numGlow)"/>
+  <text x="761" y="118" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">4</text>
+
+  <text x="761" y="156" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="13" font-weight="700" fill="white" text-anchor="middle">You Interact</text>
+  <text x="761" y="176" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">Click, scroll, hover —</text>
+  <text x="761" y="192" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">commands go back via</text>
+  <text x="761" y="208" font-family="'SF Pro Display','Helvetica Neue',sans-serif" font-size="10.5" fill="#94a3b8" text-anchor="middle">D-Bus to the player.</text>
+  <text x="761" y="248" font-size="22" text-anchor="middle" font-family="sans-serif">🖱️</text>
+
+  <!-- Footer -->
+  <line x1="30" y1="322" x2="870" y2="322" stroke="#ffffff" stroke-width="0.4" opacity="0.07"/>
+  <text x="450" y="334" font-family="'SF Mono','Fira Mono',monospace" font-size="8.5" fill="#475569" text-anchor="middle" letter-spacing="1.5">DYNAMIC MUSIC PILL — GNOME SHELL EXTENSION</text>
+</svg>
