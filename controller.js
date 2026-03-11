@@ -100,6 +100,7 @@ export class MusicController {
         this._pill = new MusicPill(this);
         this._pill.connect('destroy', () => {
             this._pill = null;
+            this._queueInject();
         });
     }
 
@@ -133,8 +134,8 @@ export class MusicController {
 
         this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
             this._monitorGameMode();
-            if (this._pill && !this._pill.get_parent()) {
-                 this._inject();
+            if (!this._pill || !this._pill.get_parent()) {
+                this._inject();
             }
             return GLib.SOURCE_CONTINUE;
         });
@@ -570,7 +571,7 @@ export class MusicController {
                 if (actor !== this._pill && !this._isMovingItem) this._queueInject();
             }, this);
             container.connectObject('child-removed', (c, actor) => {
-                if (actor !== this._pill && !this._isMovingItem) this._queueInject();
+                if (!this._isMovingItem) this._queueInject();
             }, this);
         }
 
@@ -590,46 +591,61 @@ export class MusicController {
         if (!dash || typeof dash.handleDragOver !== 'function') return;
         if (dash._musicPillOrigHandleDragOver) return;
 
-        dash._musicPillOrigHandleDragOver = dash.handleDragOver;
-
-        dash.handleDragOver = (source, actor, x, y, time) => {
+        const _adjustX = (x) => {
             const pill = this._pill;
+            if (!pill || pill.get_parent() !== container) return x;
+            const pillWidth = pill.get_width();
+            const pillX = pill.x;
+            if (x > pillX + pillWidth) return x - pillWidth;
+            if (x >= pillX) return pillX;
+            return x;
+        };
 
-            let pillWidth = 0;
-            let adjustedX = x; 
-
-            if (pill && pill.get_parent() === container) {
-                pillWidth = pill.get_width();
-                let pillX = pill.x;
-                
-                if (x > pillX + pillWidth) {
-                    adjustedX -= pillWidth;
-                } 
-                else if (x >= pillX && x <= pillX + pillWidth) {
-                    adjustedX = pillX;
-                }
-            }
-
+        const _adjustWidth = (fn) => {
+            const pill = this._pill;
+            const pillWidth = (pill && pill.get_parent() === container) ? pill.get_width() : 0;
             if (pillWidth > 0) {
                 Object.defineProperty(container, 'width', {
                     get() { return container.get_width() - pillWidth; },
                     configurable: true,
-                    enumerable:   false,
+                    enumerable: false,
                 });
             }
-
-            let ret;
-            try {
-                ret = dash._musicPillOrigHandleDragOver.call(
-                    dash, source, actor, adjustedX, y, time);
-            } finally {
-                if (pillWidth > 0) {
-                    delete container.width;
-                }
-            }
-
-            return ret;
+            try { return fn(); }
+            finally { if (pillWidth > 0) delete container.width; }
         };
+
+        dash._musicPillOrigHandleDragOver = dash.handleDragOver;
+        dash.handleDragOver = (source, actor, x, y, time) =>
+            _adjustWidth(() =>
+                dash._musicPillOrigHandleDragOver.call(dash, source, actor, _adjustX(x), y, time));
+
+        if (typeof dash.acceptDrop === 'function') {
+            dash._musicPillOrigAcceptDrop = dash.acceptDrop;
+            dash.acceptDrop = (source, actor, x, y, time) => {
+                const pill = this._pill;
+                const parent = pill ? pill.get_parent() : null;
+
+                if (parent) {
+                    this._isMovingItem = true;
+                    parent.remove_child(pill);
+                    this._isMovingItem = false;
+                }
+
+                let result;
+                try {
+                    result = _adjustWidth(() =>
+                        dash._musicPillOrigAcceptDrop.call(dash, source, actor, _adjustX(x), y, time));
+                } finally {
+                    if (pill && parent) {
+                        this._isMovingItem = true;
+                        this._ensurePosition(container);
+                        this._isMovingItem = false;
+                    }
+                }
+                return result;
+            };
+        }
 
         this._dragFixDash = dash;
     }
@@ -641,6 +657,10 @@ export class MusicController {
         if (dash._musicPillOrigHandleDragOver) {
             dash.handleDragOver = dash._musicPillOrigHandleDragOver;
             delete dash._musicPillOrigHandleDragOver;
+        }
+        if (dash._musicPillOrigAcceptDrop) {
+            dash.acceptDrop = dash._musicPillOrigAcceptDrop;
+            delete dash._musicPillOrigAcceptDrop;
         }
 
         this._dragFixDash = null;
