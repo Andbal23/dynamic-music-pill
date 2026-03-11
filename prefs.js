@@ -1286,6 +1286,58 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         backupGroup.add(importRow);
         otherPage.add(backupGroup);
 
+        const cacheGroup = new Adw.PreferencesGroup({ title: _('Art Cache') });
+
+        const ownCacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'dynamic-music-pill', 'art']);
+
+        const getCacheInfo = () => {
+            try {
+                let dir = Gio.File.new_for_path(ownCacheDir);
+                if (!dir.query_exists(null)) return { count: 0, size: 0 };
+                let en = dir.enumerate_children('standard::size', Gio.FileQueryInfoFlags.NONE, null);
+                let count = 0, size = 0, fi;
+                while ((fi = en.next_file(null)) !== null) { count++; size += fi.get_size(); }
+                en.close(null);
+                return { count, size };
+            } catch (e) { return { count: 0, size: 0 }; }
+        };
+
+        const formatSize = (bytes) => {
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        };
+
+        const buildSubtitle = (info) => `${info.count} ${_('covers cached')}  —  ${formatSize(info.size)}`;
+
+        const cacheRow = new Adw.ActionRow({
+            title: _('Album Art Cache'),
+            subtitle: buildSubtitle(getCacheInfo())
+        });
+
+        const clearCacheBtn = new Gtk.Button({
+            label: _('Clear'),
+            valign: Gtk.Align.CENTER,
+            css_classes: ['destructive-action']
+        });
+
+        clearCacheBtn.connect('clicked', () => {
+            try {
+                let dir = Gio.File.new_for_path(ownCacheDir);
+                if (dir.query_exists(null)) {
+                    let en = dir.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
+                    let fi;
+                    while ((fi = en.next_file(null)) !== null) dir.get_child(fi.get_name()).delete(null);
+                    en.close(null);
+                }
+            } catch (e) {}
+            cacheRow.subtitle = buildSubtitle(getCacheInfo());
+        });
+
+        cacheRow.add_suffix(clearCacheBtn);
+        cacheGroup.add(cacheRow);
+        otherPage.add(cacheGroup);
+
         const resetGroup = new Adw.PreferencesGroup({ title: _('Danger Zone') });
         const resetBtn = new Gtk.Button({ label: _('Reset All'), valign: Gtk.Align.CENTER, css_classes: ['destructive-action'] });
         resetBtn.connect('clicked', () => { PREFS_KEYS.forEach(k => settings.reset(k)); });
