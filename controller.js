@@ -164,6 +164,9 @@ export class MusicController {
             this._currentDock.disconnectObject(this);
             this._currentDock = null;
         }
+
+        this._teardownDragFix();
+
         global.display.disconnectObject(this);
         this._settings.disconnectObject(this);
         
@@ -538,6 +541,7 @@ export class MusicController {
                 this._currentDock.disconnectObject(this);
                 this._currentDock = null;
             }
+            this._teardownDragFix();
         }
 
         if (target === 0 && this._currentDock !== container) {
@@ -555,6 +559,61 @@ export class MusicController {
         if (parentChanged || moved || !oldParent) {
             this._pill._updateDimensions();
         }
+
+        if (target === 0) {
+            this._setupDragFix(container);
+        }
+    }
+
+    _setupDragFix(container) {
+        const dash = container._delegate;
+        if (!dash || typeof dash.handleDragOver !== 'function') return;
+        if (dash._musicPillOrigHandleDragOver) return;
+
+        dash._musicPillOrigHandleDragOver = dash.handleDragOver;
+
+        dash.handleDragOver = (source, actor, x, y, time) => {
+            const pill = this._pill;
+
+            let pillWidth = 0;
+            if (pill && pill.get_parent() === container) {
+                pillWidth = pill.get_width();
+            }
+
+            if (pillWidth > 0) {
+                Object.defineProperty(container, 'width', {
+                    get() { return container.get_width() - pillWidth; },
+                    configurable: true,
+                    enumerable:   false,
+                });
+            }
+
+            let ret;
+            try {
+                ret = dash._musicPillOrigHandleDragOver.call(
+                    dash, source, actor, x, y, time);
+            } finally {
+                if (pillWidth > 0) {
+                    delete container.width;
+                }
+            }
+
+            return ret;
+        };
+
+        this._dragFixDash = dash;
+    }
+
+    _teardownDragFix() {
+        if (!this._dragFixDash) return;
+        const dash = this._dragFixDash;
+
+        if (dash._musicPillOrigHandleDragOver) {
+            dash.handleDragOver = dash._musicPillOrigHandleDragOver;
+            delete dash._musicPillOrigHandleDragOver;
+        }
+
+        this._dragFixDash = null;
     }
 
     _scan() {
