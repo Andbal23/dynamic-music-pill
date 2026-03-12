@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-04 11:52+0100\n"
-"PO-Revision-Date: 2026-02-27 12:28+0000\n"
+"PO-Revision-Date: 2026-03-12 18:09+0000\n"
 "Last-Translator: Dhananjay Porwal <dporwal985@gmail.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/dynamic-music-pill/"
 "settings/hi/>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: controller.js:997
 msgid "Unknown Player"
-msgstr ""
+msgstr "अज्ञात खिलाड़ी"
 
 #: controller.js:998
 msgid "No active media"
-msgstr ""
+msgstr "कोई सक्रिय मीडिया नहीं"
 
 #: controller.js:1287
 msgid "Auto (Smart)"
-msgstr ""
+msgstr "ऑटो (स्मार्ट)"
 
 #: prefs.js:36
 msgid "Main Pill"
@@ -41,7 +41,7 @@ msgstr "सामान्य सेटिंग्स"
 
 #: prefs.js:43
 msgid "Always ON"
-msgstr ""
+msgstr "हमेशा चालू"
 
 #: prefs.js:44
 msgid "Retain last known track and keep pill visible after closing the player"
