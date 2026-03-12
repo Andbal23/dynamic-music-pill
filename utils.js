@@ -134,3 +134,29 @@ export function restoreDashToDockAutohide() {
         console.debug('[Dynamic Music Pill] DTD restore error: ' + e.message);
     }
 }
+
+export function getPlayerIcon(proxy, busName) {
+    let names = [];
+    if (proxy && proxy._desktopEntry) {
+        let de = proxy._desktopEntry.replace('.desktop', '');
+        names.push(de);
+        names.push(de.toLowerCase());
+    }
+    
+    if (busName) {
+        let rawAppName = busName.replace('org.mpris.MediaPlayer2.', '').split('.')[0];
+        names.push(rawAppName.toLowerCase());
+        names.push(rawAppName);
+    }
+    
+    if (proxy && proxy._identity) {
+        let id = proxy._identity.replace(/ /g, '-');
+        names.push(id.toLowerCase());
+        names.push(id);
+    }
+    
+    names.push('audio-x-generic-symbolic');
+    names.push('audio-x-generic');
+    
+    return new Gio.ThemedIcon({ names: names });
+}
