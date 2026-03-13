@@ -923,14 +923,33 @@ class ExpandedPlayer extends St.Widget {
             style_class: 'music-pill-expanded',
             reactive: true
         });
-        this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
-        this._box.connectObject('button-press-event',  () => Clutter.EVENT_STOP, this);
+        this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
+        const _boxEventOverHint = (event) => {
+            if (!this._firstHintBox || !this._firstHintBox.visible) return false;
+            let [hx, hy] = this._firstHintBox.get_transformed_position();
+            let [hw, hh] = this._firstHintBox.get_transformed_size();
+            let [ex, ey] = event.get_coords();
+            return ex >= hx && ex <= hx + hw && ey >= hy && ey <= hy + hh;
+        };
+        this._box.connectObject('button-press-event', (actor, event) => {
+            if (_boxEventOverHint(event)) return Clutter.EVENT_PROPAGATE;
+            return Clutter.EVENT_STOP;
+        }, this);
         this._box.connectObject('button-release-event', (actor, event) => {
+            if (_boxEventOverHint(event)) return Clutter.EVENT_PROPAGATE;
             if (event.get_button() === 8) {
                 if (this._currentSubPage) this._popPage();
                 else this.hide();
                 return Clutter.EVENT_STOP;
             }
+            return Clutter.EVENT_STOP;
+        }, this);
+        this._box.connectObject('touch-event', (actor, event) => {
+            if (!this._firstHintBox || !this._firstHintBox.visible) return Clutter.EVENT_STOP;
+            let [hx, hy] = this._firstHintBox.get_transformed_position();
+            let [hw, hh] = this._firstHintBox.get_transformed_size();
+            let [ex, ey] = event.get_coords();
+            if (ex >= hx && ex <= hx + hw && ey >= hy && ey <= hy + hh) return Clutter.EVENT_PROPAGATE;
             return Clutter.EVENT_STOP;
         }, this);
         this._box.connectObject('scroll-event', (actor, event) => {
@@ -949,7 +968,6 @@ class ExpandedPlayer extends St.Widget {
             }
             return Clutter.EVENT_PROPAGATE;
         }, this);
-        this._box.connectObject('touch-event',          () => Clutter.EVENT_STOP, this);
         this._currentSubPage = null;
         this.add_child(this._box);
 
@@ -1170,6 +1188,85 @@ class ExpandedPlayer extends St.Widget {
 
         this._mainPage.add_child(controlsRow);
 
+        this._firstHintBox = new St.BoxLayout({
+            vertical: false,
+            x_expand: true,
+            reactive: true,
+            track_hover: true,
+            style: 'spacing: 8px; margin-top: 12px; padding: 8px 10px; border-radius: 10px; background-color: rgba(255,255,255,0.08);',
+            y_align: Clutter.ActorAlign.CENTER
+        });
+        this._firstHintLabelBtn = new St.Button({
+            child: new St.Label({
+                text: _('First time? Check settings for custom buttons, scroll actions & more'),
+                style: 'font-size: 9pt; color: rgba(255,255,255,0.85);'
+            }),
+            x_expand: true,
+            reactive: true,
+            style: 'border: none; background-color: transparent; padding: 0; min-width: 0;',
+            y_align: Clutter.ActorAlign.CENTER
+        });
+        this._firstHintSettingsBtn = new St.Button({
+            child: new St.Icon({ icon_name: 'preferences-system-symbolic', icon_size: 18 }),
+            style_class: 'control-btn-secondary',
+            reactive: true,
+            can_focus: true,
+            y_align: Clutter.ActorAlign.CENTER
+        });
+        this._firstHintCloseBtn = new St.Button({
+            child: new St.Icon({ icon_name: 'window-close-symbolic', icon_size: 16 }),
+            style_class: 'control-btn-secondary',
+            reactive: true,
+            can_focus: true,
+            y_align: Clutter.ActorAlign.CENTER
+        });
+        _addBtnPressAnim(this._firstHintSettingsBtn);
+        _addBtnPressAnim(this._firstHintCloseBtn);
+        const _dismissHint = (openSettings) => {
+            this._settings.set_boolean('has-seen-first-hint', true);
+            this._firstHintBox.hide();
+            if (openSettings) {
+                this.hide();
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                    this._controller.openSettings();
+                    return GLib.SOURCE_REMOVE;
+                });
+            }
+        };
+        this._firstHintBox.add_child(this._firstHintLabelBtn);
+        this._firstHintBox.add_child(this._firstHintSettingsBtn);
+        this._firstHintBox.add_child(this._firstHintCloseBtn);
+        this._firstHintLabelBtn.connectObject('clicked', () => _dismissHint(false), this);
+        this._firstHintLabelBtn.connectObject('button-release-event', (a, e) => {
+            if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+            _dismissHint(false);
+            return Clutter.EVENT_STOP;
+        }, this);
+        this._firstHintLabelBtn.connectObject('touch-event', (a, e) => {
+            if (e.type() === Clutter.EventType.TOUCH_END) { _dismissHint(false); return Clutter.EVENT_STOP; }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+        this._firstHintSettingsBtn.connectObject('clicked', () => _dismissHint(true), this);
+        this._firstHintSettingsBtn.connectObject('button-release-event', (a, e) => {
+            if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+            _dismissHint(true);
+            return Clutter.EVENT_STOP;
+        }, this);
+        this._firstHintSettingsBtn.connectObject('touch-event', (a, e) => {
+            if (e.type() === Clutter.EventType.TOUCH_END) { _dismissHint(true); return Clutter.EVENT_STOP; }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+        this._firstHintCloseBtn.connectObject('clicked', () => _dismissHint(false), this);
+        this._firstHintCloseBtn.connectObject('button-release-event', (a, e) => {
+            if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+            _dismissHint(false);
+            return Clutter.EVENT_STOP;
+        }, this);
+        this._firstHintCloseBtn.connectObject('touch-event', (a, e) => {
+            if (e.type() === Clutter.EventType.TOUCH_END) { _dismissHint(false); return Clutter.EVENT_STOP; }
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
+        this._mainPage.add_child(this._firstHintBox);
 
         this._box.connectObject('enter-event', () => {
             if (this._leaveHideTimeoutId) {
@@ -1629,7 +1726,6 @@ class ExpandedPlayer extends St.Widget {
         page.translation_x = 32;
         page.opacity = 0;
 
-        // Header wrapper: [headerRow] + gap + [1px line]
         let headerWrapper = new St.BoxLayout({
             vertical: true, x_expand: true, y_expand: false,
             y_align: Clutter.ActorAlign.START,
@@ -1675,7 +1771,7 @@ class ExpandedPlayer extends St.Widget {
         });
         header.add_child(titleBin);
 
-        // Mirror spacer: fixed width matching backBtn
+
         let mirrorSpacer = new St.Widget({ reactive: false, y_align: Clutter.ActorAlign.CENTER, width: SUBPAGE_BACK_BTN_WIDTH });
         header.add_child(mirrorSpacer);
 
@@ -1699,7 +1795,7 @@ class ExpandedPlayer extends St.Widget {
 
         buildFn(contentBox, tc, ta, page);
         this._box.add_child(page);
-        // Defer animation until after allocation – avoids "Can't update stage views actor... needs an allocation"
+
         GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             if (page.get_parent() && page === this._currentSubPage) {
                 page.ease({
@@ -2148,6 +2244,12 @@ class ExpandedPlayer extends St.Widget {
         }
 
         this._updateCustomButtons();
+
+        if (this._settings.get_boolean('has-seen-first-hint')) {
+            this._firstHintBox.hide();
+        } else {
+            this._firstHintBox.show();
+        }
     }
 
     hide() {
