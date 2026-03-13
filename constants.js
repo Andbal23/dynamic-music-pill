@@ -1,0 +1,8 @@
+export const COPY_ICON_RESET_DELAY = 1200;
+export const COPY_ICON_FADE_IN_DURATION = 180;
+export const COPY_ICON_FADE_OUT_DURATION = 200;
+export const SUBPAGE_ANIM_IN_DURATION = 220;
+export const SUBPAGE_ANIM_OUT_DURATION = 180;
+
+export const SUBPAGE_BACK_BTN_WIDTH = 32;
+export const SUBPAGE_HEADER_ICON_SIZE = 14;
