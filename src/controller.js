@@ -5,13 +5,13 @@ import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
-import { smartUnpack } from './utils.js';
+import { smartUnpack, initDTDModule, getPlayerIcon } from './utils.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 import { LyricsClient } from './LyricsClient.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { SharedVisualizerEngine } from './visualizerEngine.js';
-import { initDTDModule, getPlayerIcon } from './utils.js';
+
 
 
 const LYRIC_IFACE_NAME = "org.gnome.Shell.TrayLyric";
