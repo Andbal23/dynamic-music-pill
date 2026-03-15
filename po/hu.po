@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-13 16:36+0100\n"
-"PO-Revision-Date: 2026-03-04 12:30+0000\n"
+"PO-Revision-Date: 2026-03-14 17:09+0000\n"
 "Last-Translator: László András <laszlo2002andras@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/hu/>\n"
@@ -33,7 +33,7 @@ msgstr "Auto (Okos)"
 
 #: controller.js:1554 controller.js:1572 controller.js:1595 controller.js:1621
 msgid "Not supported"
-msgstr ""
+msgstr "Nem támogatott"
 
 #: prefs.js:37
 msgid "Main Pill"
@@ -268,7 +268,7 @@ msgstr "Az albumborító forgatása lejátszás közben"
 
 #: prefs.js:361
 msgid "Rotation Speed"
-msgstr ""
+msgstr "Forgás Sebessége"
 
 #: prefs.js:362
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
