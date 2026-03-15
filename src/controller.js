@@ -1246,31 +1246,30 @@ export class MusicController {
             let cacheKey = rawName.includes('.instance') ? rawName.split('.instance')[0] : rawName;
 
             if (currentArt && typeof currentArt === 'string' && currentArt.trim() !== "") {
-                let isFileUrl = currentArt.startsWith('file://');
-                if (isFileUrl) {
-                    let srcFile = Gio.File.new_for_uri(currentArt);
-                    if (srcFile.query_exists(null)) {
-                        let hash = GLib.compute_checksum_for_string(
-                            GLib.ChecksumType.MD5, currentArt, -1);
-                        let cachedPath = GLib.build_filenamev([
-                            this._ownArtCacheDir, hash + '.png']);
-                        let cachedFile = Gio.File.new_for_path(cachedPath);
-                        try {
-                            if (!cachedFile.query_exists(null)) {
-                                srcFile.copy(cachedFile,
-                                    Gio.FileCopyFlags.OVERWRITE, null, null);
-                            }
-                            artUrl = cachedFile.get_uri();
-                        } catch (e) {
-                            artUrl = currentArt;
-                        }
-                        this._artCacheSet(cacheKey, artUrl);
-                    }
-                } else {
-                    this._artCacheSet(cacheKey, currentArt);
-                    artUrl = currentArt;
-                }
-            }
+	    let isFileUrl = currentArt.startsWith('file://');
+	    if (isFileUrl) {
+		let srcFile = Gio.File.new_for_uri(currentArt);
+		if (srcFile.query_exists(null)) {
+		    let hashSource = currentArt + '|' + (title || '') + '|' + (artist || '');
+		    let hash = GLib.compute_checksum_for_string(
+		        GLib.ChecksumType.MD5, hashSource, -1);
+		    let cachedPath = GLib.build_filenamev([
+		        this._ownArtCacheDir, hash + '.png']);
+		    let cachedFile = Gio.File.new_for_path(cachedPath);
+		    try {
+		        srcFile.copy(cachedFile,
+		            Gio.FileCopyFlags.OVERWRITE, null, null);
+		        artUrl = cachedFile.get_uri();
+		    } catch (e) {
+		        artUrl = currentArt;
+		    }
+		    this._artCacheSet(cacheKey, artUrl);
+		}
+	    } else {
+		this._artCacheSet(cacheKey, currentArt);
+		artUrl = currentArt;
+	    }
+	}
 
             if (!artUrl && this._artCache.has(cacheKey)) {
                 let cached = this._artCache.get(cacheKey);
