@@ -200,13 +200,12 @@ export const MusicPill = GObject.registerClass(
             this.connectObject('enter-event', () => {
                 let delay = this._settings.get_int('hover-delay');
                 if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); }
-                this._hoverTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
+                this._hoverTimeout = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, delay, () => {
                     this._hoverTimeout = null;
                     let action = this._settings.get_string('action-hover');
                     if (action && action !== 'none') {
                         this._controller.performAction(action);
                     }
-                    return GLib.SOURCE_REMOVE;
                 });
                 return Clutter.EVENT_PROPAGATE;
             }, this);
@@ -344,7 +343,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::visualizer-height', () => this._updateDimensions(), this);
             this.connect('notify::allocation', () => {
                 if (this._allocTimer) return;
-                this._allocTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                this._allocTimer = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 100, () => {
                     this._allocTimer = null;
                     let parent = this.get_parent();
                     if (parent && !this._inPanel) {
@@ -354,7 +353,6 @@ export const MusicPill = GObject.registerClass(
                             this._updateDimensions();
                         }
                     }
-                    return GLib.SOURCE_REMOVE;
                 });
             });
 
@@ -431,13 +429,12 @@ export const MusicPill = GObject.registerClass(
                 if (this._singleClickTimerId) {
                     GLib.Source.remove(this._singleClickTimerId);
                 }
-                this._singleClickTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, doubleClickTime, () => {
+                this._singleClickTimerId = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, doubleClickTime, () => {
                     this._singleClickTimerId = null;
                     this._lastLeftClickTime = 0;
                     if (singleAction && singleAction !== 'none') {
                         this._controller.performAction(singleAction);
                     }
-                    return GLib.SOURCE_REMOVE;
                 });
             }
         }
@@ -550,11 +547,10 @@ export const MusicPill = GObject.registerClass(
                 this._artBin.opacity = 255;
             } else {
                 if (!this._artDebounceTimer) {
-                    this._artDebounceTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+                    this._artDebounceTimer = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 1000, () => {
                         this._artBin.visible = false;
                         this._artWidget.setArt(null);
                         this._artDebounceTimer = null;
-                        return GLib.SOURCE_REMOVE;
                     });
                 }
             }
@@ -816,7 +812,7 @@ export const MusicPill = GObject.registerClass(
 
             if (this._idleDimId) { GLib.Source.remove(this._idleDimId); this._idleDimId = null; }
 
-            this._idleDimId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._idleDimId = GLib.idle_add_once(GLib.PRIORITY_DEFAULT, () => {
                 this._idleDimId = null;
                 if (this._titleScroll) this._titleScroll._checkResize();
                 if (this._artistScroll) this._artistScroll._checkResize();
@@ -868,7 +864,6 @@ export const MusicPill = GObject.registerClass(
                     }
                 }
 
-                return GLib.SOURCE_REMOVE;
             });
 
             if (!this._isActiveState) {

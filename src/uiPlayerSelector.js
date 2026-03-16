@@ -56,10 +56,9 @@ export const PlayerSelectorMenu = GObject.registerClass(
                     if (this._leaveHideTimeoutId) {
                         GLib.Source.remove(this._leaveHideTimeoutId);
                     }
-                    this._leaveHideTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                    this._leaveHideTimeoutId = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 300, () => {
                         this._leaveHideTimeoutId = null;
                         this.hide();
-                        return GLib.SOURCE_REMOVE;
                     });
                 }
                 return Clutter.EVENT_PROPAGATE;

@@ -1164,9 +1164,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                         settings.set_string('app-name-mapping', newPairs.join(','));
                         
                         saveBtn.set_icon_name('object-select-symbolic');
-                        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
+                        GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 1500, () => {
                             if (saveBtn) saveBtn.set_icon_name('document-save-symbolic');
-                            return GLib.SOURCE_REMOVE;
                         });
                     };
 
@@ -1187,10 +1186,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                         let newPairs = currentPairs.filter(p => !p.startsWith(mprisName + ':'));
                         settings.set_string('app-name-mapping', newPairs.join(','));
                         
-                        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+                        GLib.idle_add_once(GLib.PRIORITY_DEFAULT, () => {
                             refreshAppMappings(); 
                             if (typeof updateDetectedPlayers === 'function') updateDetectedPlayers();
-                            return GLib.SOURCE_REMOVE;
                         });
                     });
 
@@ -1265,10 +1263,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                                     let newVal = currentVal ? `${currentVal},${shortName}:ENTER_APP_ID_HERE` : `${shortName}:ENTER_APP_ID_HERE`;
                                     settings.set_string('app-name-mapping', newVal);
                                     
-                                    GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+                                    GLib.idle_add_once(GLib.PRIORITY_DEFAULT, () => {
                                         refreshAppMappings();
                                         updateDetectedPlayers();
-                                        return GLib.SOURCE_REMOVE;
                                     });
                                 });
 

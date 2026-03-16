@@ -348,8 +348,8 @@ export class MusicController {
         if (killTarget) {
             killTarget = killTarget.toLowerCase();
             
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 800, () => {
-                if (!this._proxies.has(busName)) return GLib.SOURCE_REMOVE;
+            GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 800, () => {
+                if (!this._proxies.has(busName)) return;
                 
                 try {
                     if (killTarget.includes('.')) {
@@ -359,7 +359,6 @@ export class MusicController {
                 } catch (e) {
                     console.debug("[Dynamic Music Pill] Failed to hard kill: " + killTarget);
                 }
-                return GLib.SOURCE_REMOVE;
             });
         }
     }
@@ -531,10 +530,9 @@ export class MusicController {
 
     _queueInject() {
         if (this._injectTimeout) GLib.Source.remove(this._injectTimeout);
-        this._injectTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
-            this._inject();
+        this._injectTimeout = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 100, () => {
             this._injectTimeout = null;
-            return GLib.SOURCE_REMOVE;
+            this._inject();
         });
     }
 
@@ -1172,10 +1170,9 @@ export class MusicController {
         let useDelay = this._settings ? this._settings.get_boolean('compatibility-delay') : false;
         let delay = useDelay ? 800 : 150;
 
-        this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
+        this._updateTimeoutId = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, delay, () => {
             this._updateTimeoutId = null;
             this._updateUI();
-            return GLib.SOURCE_REMOVE;
         });
     }
 
@@ -1316,12 +1313,11 @@ export class MusicController {
             }
 
             if (!artUrl && active.PlaybackStatus === 'Playing' && !this._retryArtTimer) {
-                this._retryArtTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                this._retryArtTimer = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 500, () => {
                     this._retryArtTimer = null;
                     if (this._proxies.has(active._busName)) {
                         this._updateUI();
                     }
-                    return GLib.SOURCE_REMOVE;
                 });
             }
 
@@ -1518,7 +1514,7 @@ export class MusicController {
         this._pill._feedbackBox.show();
         this._pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
 
-        this._feedbackTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
+        this._feedbackTimer = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 1500, () => {
             this._feedbackTimer = null;
             if (this._pill && this._pill._feedbackBox) {
                 this._pill._feedbackBox.ease({ 
@@ -1527,7 +1523,6 @@ export class MusicController {
                 });
                 this._pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
             }
-            return GLib.SOURCE_REMOVE;
         });
     }
 
@@ -1759,7 +1754,7 @@ export class MusicController {
         this._sleepTimerEndTime = Date.now() + totalSeconds * 1000;
         this._sleepTimerActive = true;
 
-        this._sleepTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, totalSeconds, () => {
+        this._sleepTimerId = GLib.timeout_add_seconds_once(GLib.PRIORITY_DEFAULT, totalSeconds, () => {
             this._sleepTimerId = null;
             this._sleepTimerActive = false;
             this._sleepTimerEndTime = null;
@@ -1767,7 +1762,6 @@ export class MusicController {
             if (p && p.PlaybackStatus === 'Playing') {
                 p.PlayPauseRemote();
             }
-            return GLib.SOURCE_REMOVE;
         });
     }
 

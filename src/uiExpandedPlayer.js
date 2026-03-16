@@ -373,9 +373,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._firstHintBox.hide();
                 if (openSettings) {
                     this.hide();
-                    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                    GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 100, () => {
                         this._controller.openSettings();
-                        return GLib.SOURCE_REMOVE;
                     });
                 }
             };
@@ -425,10 +424,9 @@ export const ExpandedPlayer = GObject.registerClass(
             this._box.connectObject('leave-event', () => {
                 if (this._settings.get_boolean('popup-hide-on-leave')) {
                     if (this._leaveHideTimeoutId) GLib.Source.remove(this._leaveHideTimeoutId);
-                    this._leaveHideTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                    this._leaveHideTimeoutId = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 300, () => {
                         this._leaveHideTimeoutId = null;
                         this.hide();
-                        return GLib.SOURCE_REMOVE;
                     });
                 }
                 return Clutter.EVENT_PROPAGATE;
@@ -942,14 +940,13 @@ export const ExpandedPlayer = GObject.registerClass(
             buildFn(contentBox, tc, ta, page);
             this._box.add_child(page);
 
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            GLib.idle_add_once(GLib.PRIORITY_DEFAULT_IDLE, () => {
                 if (page.get_parent() && page === this._currentSubPage) {
                     page.ease({
                         translation_x: 0, opacity: 255,
                         duration: SUBPAGE_ANIM_IN_DURATION, mode: Clutter.AnimationMode.EASE_OUT_QUAD
                     });
                 }
-                return false;
             });
         }
 
@@ -1087,7 +1084,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 muteBtn.connectObject('touch-event', (a, e) => { if (e.type() === Clutter.EventType.TOUCH_END) { doMute(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, subpage);
                 contentBox.add_child(muteBtn);
 
-                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => { if (!sliderBg.get_parent()) return GLib.SOURCE_REMOVE; upd(frac0); return GLib.SOURCE_REMOVE; });
+                GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 80, () => { if (!sliderBg.get_parent()) return; upd(frac0); });
             });
         }
 
@@ -1172,11 +1169,10 @@ export const ExpandedPlayer = GObject.registerClass(
                         const doTimer = (m, b, lbl) => {
                             lbl.text = '\u2713';
                             b.set_style('border-radius:12px;padding:8px 12px;min-width:42px;background-color:rgba(255,255,255,0.38);');
-                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                            GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 300, () => {
                                 ctrl.startSleepTimer(m);
                                 this._updateCustomButtons();
                                 this._popPage();
-                                return GLib.SOURCE_REMOVE;
                             });
                         };
                         btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
@@ -1224,10 +1220,9 @@ export const ExpandedPlayer = GObject.registerClass(
                         const doRate = (r, b, lbl) => {
                             lbl.text = '\u2713';
                             b.set_style('border-radius:12px;padding:8px 14px;min-width:42px;background-color:rgba(255,255,255,0.38);');
-                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                            GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 300, () => {
                                 this._controller.setPlaybackRate(r);
                                 this._popPage();
-                                return GLib.SOURCE_REMOVE;
                             });
                         };
                         btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
@@ -1304,16 +1299,15 @@ export const ExpandedPlayer = GObject.registerClass(
                         copyIcon.icon_name = 'object-select-symbolic';
                         copyIcon.opacity = 0;
                         copyIcon.ease({ opacity: 255, duration: COPY_ICON_FADE_IN_DURATION, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                        let tid = GLib.timeout_add(GLib.PRIORITY_DEFAULT, COPY_ICON_RESET_DELAY, () => {
+                        let tid = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, COPY_ICON_RESET_DELAY, () => {
                             const idx = copyTimeouts.indexOf(tid);
                             if (idx >= 0) copyTimeouts.splice(idx, 1);
-                            if (!copyIcon.get_parent()) return GLib.SOURCE_REMOVE;
+                            if (!copyIcon.get_parent()) return;
                             copyIcon.ease({
                                 opacity: 0, duration: COPY_ICON_FADE_OUT_DURATION, mode: Clutter.AnimationMode.EASE_IN_QUAD, onStopped: () => {
                                     if (copyIcon.get_parent()) { copyIcon.icon_name = 'edit-copy-symbolic'; copyIcon.opacity = Math.round(255 * 0.6); }
                                 }
                             });
-                            return GLib.SOURCE_REMOVE;
                         });
                         copyTimeouts.push(tid);
                     };
@@ -1422,18 +1416,16 @@ export const ExpandedPlayer = GObject.registerClass(
             this._stopTimer();
             this._stopVinyl();
             if (this._controller._pill) this._controller._pill._setPopupOpen(false);
-            this.ease({
+            this.easeAsync({
                 opacity: 0,
                 duration: 200,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: (isFinished) => {
-                    if (!isFinished) return;
-                    this.visible = false;
-                    if (this._controller) {
-                        this._controller.closeMenu();
-                    }
+            }).then(() => {
+                this.visible = false;
+                if (this._controller) {
+                    this._controller.closeMenu();
                 }
-            });
+            }).catch(() => { /* transition cancelled */ });
         }
 
         _cleanup() {
@@ -1564,20 +1556,19 @@ export const ExpandedPlayer = GObject.registerClass(
             this._vinyl.remove_all_transitions();
             let currentAngle = this._vinyl.rotation_angle_z || 0;
 
-            this._vinyl.ease({
+            this._vinyl.easeAsync({
                 rotation_angle_z: currentAngle + 90,
                 duration: initialDuration,
                 mode: Clutter.AnimationMode.EASE_IN_QUAD,
-                onStopped: (isFinished) => {
-                    if (!isFinished || !this._isSpinning || !this._vinyl) return;
-                    let nextAngle = this._vinyl.rotation_angle_z || 0;
-                    this._vinyl.ease({
-                        rotation_angle_z: nextAngle + 36000,
-                        duration: loopDuration,
-                        mode: Clutter.AnimationMode.LINEAR
-                    });
-                }
-            });
+            }).then(() => {
+                if (!this._isSpinning || !this._vinyl) return;
+                let nextAngle = this._vinyl.rotation_angle_z || 0;
+                this._vinyl.ease({
+                    rotation_angle_z: nextAngle + 36000,
+                    duration: loopDuration,
+                    mode: Clutter.AnimationMode.LINEAR
+                });
+            }).catch(() => { /* cancelled */ });
         }
 
         _stopVinyl() {
@@ -1591,16 +1582,15 @@ export const ExpandedPlayer = GObject.registerClass(
             let currentAngle = this._vinyl.rotation_angle_z || 0;
             this._vinyl.remove_all_transitions();
 
-            this._vinyl.ease({
+            this._vinyl.easeAsync({
                 rotation_angle_z: currentAngle + 90,
                 duration: stopDuration,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: (isFinished) => {
-                    if (isFinished && this._vinyl) {
-                        this._vinyl.rotation_angle_z = this._vinyl.rotation_angle_z % 360;
-                    }
+            }).then(() => {
+                if (this._vinyl) {
+                    this._vinyl.rotation_angle_z = this._vinyl.rotation_angle_z % 360;
                 }
-            });
+            }).catch(() => { /* cancelled */ });
         }
 
 
@@ -1639,9 +1629,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._resizeDebounceId = null;
             }
 
-            this._resizeDebounceId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._resizeDebounceId = GLib.idle_add_once(GLib.PRIORITY_DEFAULT, () => {
                 this._resizeDebounceId = null;
-                if (!this._box) return GLib.SOURCE_REMOVE;
+                if (!this._box) return;
 
                 let currentW = this._box.width;
                 let currentX = Math.round(this._box.x);
@@ -1697,12 +1687,12 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (currentW > 0) this._box.set_width(currentW);
 
                 let pill = this._controller._pill;
-                if (!pill || !pill.get_parent()) return GLib.SOURCE_REMOVE;
+                if (!pill || !pill.get_parent()) return;
                 let [px, py] = pill.get_transformed_position();
                 let [pw, ph] = pill.get_transformed_size();
                 let monitor = Main.layoutManager.findMonitorForActor(pill);
 
-                if (!monitor) return GLib.SOURCE_REMOVE;
+                if (!monitor) return;
 
                 px = Math.round(px); py = Math.round(py);
                 pw = Math.round(pw); ph = Math.round(ph);
@@ -1745,14 +1735,14 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 if (currentW === menuW && currentX === targetX && currentY === targetY) {
                     this._isOpening = false;
-                    return GLib.SOURCE_REMOVE;
+                    return;
                 }
 
                 if (this._isOpening) {
                     this._box.set_position(targetX, targetY);
                     this._box.set_width(menuW);
                     this._isOpening = false;
-                    return GLib.SOURCE_REMOVE;
+                    return;
                 }
 
                 this._box.remove_all_transitions();
@@ -1764,7 +1754,6 @@ export const ExpandedPlayer = GObject.registerClass(
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD
                 });
 
-                return GLib.SOURCE_REMOVE;
             });
         }
     });

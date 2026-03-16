@@ -131,10 +131,9 @@ export const ScrollLabel = GObject.registerClass(
 
             this.connectObject('notify::allocation', () => {
                 if (this._resizeTimer) { GLib.Source.remove(this._resizeTimer); this._resizeTimer = null; }
-                this._resizeTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                this._resizeTimer = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 100, () => {
                     this._resizeTimer = null;
                     if (this.has_allocation()) this._checkResize();
-                    return GLib.SOURCE_REMOVE;
                 });
             }, this);
 
@@ -205,15 +204,15 @@ export const ScrollLabel = GObject.registerClass(
 
             if (this._idleResizeId) { GLib.Source.remove(this._idleResizeId); this._idleResizeId = null; }
 
-            this._idleResizeId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._idleResizeId = GLib.idle_add_once(GLib.PRIORITY_DEFAULT, () => {
                 this._idleResizeId = null;
                 if (!this || (this.is_finalized && this.is_finalized()) || !this.get_parent())
-                    return GLib.SOURCE_REMOVE;
+                    return;
 
-                if (this._lyricFinished) return GLib.SOURCE_REMOVE;
+                if (this._lyricFinished) return;
 
                 let boxWidth = this.get_allocation_box().get_width();
-                if (boxWidth <= 1) return GLib.SOURCE_REMOVE;
+                if (boxWidth <= 1) return;
 
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
                 let textWidth = this._label1.get_preferred_width(-1)[1];
@@ -234,8 +233,6 @@ export const ScrollLabel = GObject.registerClass(
                     this._stopAnimation(true);
                     this._container.x_align = Clutter.ActorAlign.CENTER;
                 }
-
-                return GLib.SOURCE_REMOVE;
             });
         }
 
@@ -282,10 +279,9 @@ export const ScrollLabel = GObject.registerClass(
             let delay = isDynamic ? 450 : 100;
 
             if (this._measureTimeout) { GLib.Source.remove(this._measureTimeout); this._measureTimeout = null; }
-            this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
+            this._measureTimeout = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, delay, () => {
                 this._measureTimeout = null;
                 if (this.has_allocation()) this._checkOverflow();
-                return GLib.SOURCE_REMOVE;
             });
         }
 
