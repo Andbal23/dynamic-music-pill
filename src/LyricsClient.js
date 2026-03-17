@@ -4,6 +4,8 @@ import Gio from "gi://Gio";
 
 const decode = (data) => new TextDecoder().decode(data);
 
+const CJK_RE = /[\u3040-\u9FFF\uAC00-\uD7AF]/;
+
 export class LyricsClient {
   constructor() {
     Gio._promisify(
@@ -14,44 +16,92 @@ export class LyricsClient {
     this._session = new Soup.Session();
   }
 
-  async getLyrics(title, artist, album, duration) {
+
+  _detectScript(lines) {
+    if (!lines || lines.length === 0) return 'unknown';
+    const sample = lines.slice(0, Math.min(15, lines.length)).map(l => l.text).join(' ');
+    const cjkCount = (sample.match(new RegExp(CJK_RE.source, 'g')) || []).length;
+    const latinCount = (sample.match(/[a-zA-Z]/g) || []).length;
+    const totalChars = sample.replace(/\s/g, '').length;
+
+    if (totalChars === 0) return 'unknown';
+
+    const cjkRatio = cjkCount / totalChars;
+    const latinRatio = latinCount / totalChars;
+
+    if (cjkRatio > 0.15) return 'original';
+    if (latinRatio > 0.4) return 'latin';
+    return 'unknown';
+}
+
+  _scoreItem(item, pref) {
+    if (!item.syncedLyrics) return -1;
+    if (pref === 0) return 0;
+    const parsed = this._parseLRC(item.syncedLyrics);
+    const script = this._detectScript(parsed);
+    if (pref === 1) return script === 'original' ? 2 : (script === 'unknown' ? 0 : 1);
+    if (pref === 2) return script === 'latin'    ? 2 : (script === 'unknown' ? 0 : 1);
+    return 0;
+  }
+
+  async getLyrics(title, artist, album, duration, settings) {
     if (!this._session) return null;
+    const pref = settings ? settings.get_int('lyrics-language-preference') : 0;
+
     try {
       const url = `https://lrclib.net/api/get?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}&album_name=${encodeURIComponent(album)}&duration=${duration}`;
       const msg = Soup.Message.new("GET", url);
-      const bytes = await this._session.send_and_read_async(
-        msg,
-        GLib.PRIORITY_DEFAULT,
-        null,
-      );
+      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
 
-      if (msg.status_code !== Soup.Status.OK)
-        return await this._searchLyrics(title, artist, duration);
+      let exactItem = null;
+      if (msg.status_code === Soup.Status.OK) {
+        try { exactItem = JSON.parse(decode(bytes.get_data())); } catch (_) {}
+      }
 
-      const data = JSON.parse(decode(bytes.get_data()));
-      return data.syncedLyrics ? this._parseLRC(data.syncedLyrics) : null;
+      const candidates = await this._fetchCandidates(title, artist, duration);
+
+      if (exactItem && exactItem.syncedLyrics) {
+        const alreadyIn = candidates.some(c => c.id === exactItem.id);
+        if (!alreadyIn) candidates.unshift(exactItem);
+      }
+
+      if (candidates.length === 0) return null;
+
+      let best = null;
+      let bestScore = -Infinity;
+
+      for (const item of candidates) {
+        if (!item.syncedLyrics) continue;
+        const durationScore = -Math.abs((item.duration || 0) - duration);
+        const prefScore = this._scoreItem(item, pref) * 1000; // preference dominates
+        const total = prefScore + durationScore;
+        if (total > bestScore) {
+          bestScore = total;
+          best = item;
+        }
+      }
+
+      return best ? this._parseLRC(best.syncedLyrics) : null;
+
     } catch (e) {
       console.debug(`[Dynamic Music Pill] Lyrics fetch error: ${e.message}`);
       return null;
     }
   }
 
-  async _searchLyrics(title, artist, duration) {
-    if (!this._session) return null;
+  async _fetchCandidates(title, artist, duration) {
+    if (!this._session) return [];
     try {
       const url = `https://lrclib.net/api/search?q=${encodeURIComponent(title + " " + artist)}`;
       const msg = Soup.Message.new("GET", url);
-      const bytes = await this._session.send_and_read_async(
-        msg,
-        GLib.PRIORITY_DEFAULT,
-        null,
-      );
+      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
       const data = JSON.parse(decode(bytes.get_data()));
-      const match = data.find((item) => Math.abs(item.duration - duration) < 3);
-      return match?.syncedLyrics ? this._parseLRC(match.syncedLyrics) : null;
+      return Array.isArray(data)
+        ? data.filter(item => Math.abs((item.duration || 0) - duration) < 5)
+        : [];
     } catch (e) {
-      console.debug(`[Dynamic Music Pill] Lyrics search fallback error: ${e.message}`);
-      return null;
+      console.debug(`[Dynamic Music Pill] Lyrics search error: ${e.message}`);
+      return [];
     }
   }
 

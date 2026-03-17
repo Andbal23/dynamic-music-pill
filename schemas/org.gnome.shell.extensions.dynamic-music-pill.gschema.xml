@@ -297,6 +297,11 @@
       <default>true</default>
       <summary>Enable Lyrics Display</summary>
     </key>
+    <key name="lyrics-language-preference" type="i">
+      <default>0</default>
+      <summary>Preferred lyrics script</summary>
+      <description>0=auto, 1=prefer original script (CJK/Hangul), 2=prefer Latin (romanized or translated)</description>
+    </key>
     <key name="enable-gamemode" type="b">
       <default>true</default>
       <summary>Game Mode</summary>

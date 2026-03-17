@@ -1051,9 +1051,16 @@ export class MusicController {
 
         let trackKey = `${title}||${artist}`;
 
-        if (this._fetchedTrackKey === trackKey && this._fetchedLyricsData !== undefined) {
-            return;
-        }
+        this._settings.connectObject('changed::lyrics-language-preference', () => {
+	    this._fetchedTrackKey = null;
+	    this._fetchedLyricsData = null;
+	    this._lastLyricIndex = -1;
+
+	    if (this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
+		let player = this._getActivePlayer();
+		if (player) this._fetchNetworkLyrics(player);
+	    }
+	}, this);
 
         this._fetchedTrackKey = trackKey;
         this._fetchedLyricsData = null; 
@@ -1062,7 +1069,7 @@ export class MusicController {
         let durationSec = length > 0 ? length / 1000000 : 0;
 
         try {
-            let lyrics = await this._lyricsClient.getLyrics(title, artist, album, durationSec);
+            let lyrics = await this._lyricsClient.getLyrics(title, artist, album, durationSec,this._settings);
             if (this._fetchedTrackKey !== trackKey) return;
 
             this._fetchedLyricsData = lyrics; 
