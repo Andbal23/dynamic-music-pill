@@ -217,6 +217,20 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         lyricsRow.add_suffix(lyricsToggle);
         genGroup.add(lyricsRow);
         
+        const langPrefRow = new Adw.ComboRow({
+	    title: _('Lyrics language preference'),
+	    subtitle: _('When multiple versions exist'),
+	    model: Gtk.StringList.new([
+		_('Auto'),
+		_('Prefer original script'),
+		_('Prefer Latin'),
+	    ]),
+	});
+	langPrefRow.set_selected(settings.get_int('lyrics-language-preference'));
+	langPrefRow.connect('notify::selected', () =>
+	    settings.set_int('lyrics-language-preference', langPrefRow.get_selected()));
+	genGroup.add(langPrefRow);
+        
         const lyricFadeRow = new Adw.ActionRow({
             title: _('Lyrics Fade-in Effect'),
             subtitle: _('Smoothly fade in new lyric lines')
