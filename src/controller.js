@@ -1109,14 +1109,19 @@ export class MusicController {
             null, Gio.DBusCallFlags.NONE, -1, null,
             (conn, asyncRes) => {
                 try {
-                    let result = conn.call_finish(asyncRes);
-                    if (result) {
-                        let posVariant = result.deep_unpack()[0];
-                        if (posVariant) {
-                            player._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
-                            player._lastPositionTime = Date.now();
-                        }
-                    }
+		let result = conn.call_finish(asyncRes);
+		if (result) {
+		    let posVariant = result.deep_unpack()[0];
+		    if (posVariant) {
+		        let val = posVariant instanceof GLib.Variant 
+		            ? posVariant.unpack() 
+		            : posVariant;
+		        if (typeof val === 'number' && val >= 0) {
+		            player._lastPosition = val;
+		            player._lastPositionTime = Date.now();
+		        }
+		    }
+		}
                 } catch (e) {console.debug(`[Dynamic Music Pill] Position sync error: ${e.message}`);}
             }
         );
