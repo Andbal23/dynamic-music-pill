@@ -195,7 +195,16 @@ export class MusicController {
                 this._triggerUpdate();
             }
         }, this);
-    }
+        this._settings.connectObject('changed::lyrics-language-preference', () => {
+        this._fetchedTrackKey = null;
+        this._fetchedLyricsData = null;
+        this._lastLyricIndex = -1;
+        if (this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
+            let player = this._getActivePlayer();
+            if (player) this._fetchNetworkLyrics(player);
+        }
+    }, this);
+        }
 
     disable() {
         this._isShuttingDown = true;
@@ -203,7 +212,7 @@ export class MusicController {
             Main.layoutManager.disconnect(this._startupCompleteId);
             this._startupCompleteId = null;
         }
-        
+
         if (this._itemDragBeginId) {
             Main.overview.disconnect(this._itemDragBeginId);
             this._itemDragBeginId = null;
@@ -222,19 +231,19 @@ export class MusicController {
 
         global.display.disconnectObject(this);
         this._settings.disconnectObject(this);
-        
+
         if (this._feedbackTimer) {
             GLib.Source.remove(this._feedbackTimer);
             this._feedbackTimer = null;
         }
-        
+
         if (this._injectTimeout) { GLib.Source.remove(this._injectTimeout); this._injectTimeout = null; }
         if (this._watchdog) { GLib.Source.remove(this._watchdog); this._watchdog = null; }
         if (this._recheckTimer) { GLib.Source.remove(this._recheckTimer); this._recheckTimer = null; }
         if (this._updateTimeoutId) { GLib.Source.remove(this._updateTimeoutId); this._updateTimeoutId = null; }
         if (this._retryArtTimer) { GLib.Source.remove(this._retryArtTimer); this._retryArtTimer = null; }
         this.cancelSleepTimer();
-        
+
         if (this._ownerId) {
             this._connection.signal_unsubscribe(this._ownerId);
             this._ownerId = null;
@@ -258,7 +267,7 @@ export class MusicController {
         }
         this._fetchedLyricsData = null;
         this._fetchedTrackKey = null;
-        
+
         if (this._expandedPlayer) {
             this._expandedPlayer.destroy();
             this._expandedPlayer = null;
@@ -271,11 +280,11 @@ export class MusicController {
             this._removeProxy(name);
         }
         this._proxies.clear();
-        
+
         this._updateDefaultPlayerVisibility(true);
         SharedVisualizerEngine.destroy();
     }
-    
+
     performAction(action) {
         if (action === 'play_pause') this.togglePlayback();
         else if (action === 'next') this.next();
@@ -286,7 +295,7 @@ export class MusicController {
         else if (action === 'open_settings') this.openSettings();
         else if (action === 'close_app') this.closeApp();
     }
-    
+
     openSettings() {
         if (this._extension) {
             this._extension.openPreferences();
@@ -315,27 +324,27 @@ export class MusicController {
         if (!player) return;
 
         let busName = player._busName;
-        
+
         this._connection.call(
-            busName, 
-            '/org/mpris/MediaPlayer2', 
-            'org.mpris.MediaPlayer2', 
+            busName,
+            '/org/mpris/MediaPlayer2',
+            'org.mpris.MediaPlayer2',
             'Quit',
             null, null, Gio.DBusCallFlags.NONE, -1, null,
-            (conn, res) => { 
-                try { conn.call_finish(res); } catch (e) {} 
+            (conn, res) => {
+                try { conn.call_finish(res); } catch (e) {}
             }
         );
 
         let parts = busName.replace('org.mpris.MediaPlayer2.', '').split('.');
-        
+
         let rawBus = parts[0].toLowerCase();
         let fullBusId = parts.join('.').toLowerCase();
         let identity = (player._identity || '').toLowerCase();
-        
+
         let customMapping = this._getCustomAppMapping();
         let killTarget = customMapping[fullBusId] || customMapping[rawBus] || customMapping[identity] || player._desktopEntry;
-        if (killTarget === 'enter_app_id_here') killTarget = player._desktopEntry; 
+        if (killTarget === 'enter_app_id_here') killTarget = player._desktopEntry;
 
         if (!killTarget) {
             if (['org', 'com', 'net', 'io'].includes(parts[0]) && parts.length >= 3) {
@@ -347,14 +356,14 @@ export class MusicController {
 
         if (killTarget) {
             killTarget = killTarget.toLowerCase();
-            
+
             GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 800, () => {
                 if (!this._proxies.has(busName)) return;
-                
+
                 try {
                     if (killTarget.includes('.')) {
                         Gio.Subprocess.new(['flatpak', 'kill', killTarget], Gio.SubprocessFlags.NONE);
-                    } 
+                    }
                     Gio.Subprocess.new(['pkill', '-f', killTarget], Gio.SubprocessFlags.NONE);
                 } catch (e) {
                     console.debug("[Dynamic Music Pill] Failed to hard kill: " + killTarget);
@@ -379,7 +388,7 @@ export class MusicController {
         let busNameParts = player._busName.replace('org.mpris.MediaPlayer2.', '').split('.');
         let rawBus = busNameParts[0].toLowerCase();
         let fullBusId = busNameParts.join('.').toLowerCase();
-        
+
         let desktopEntry = (player._desktopEntry || '').toLowerCase();
         let identity = (player._identity || '').toLowerCase();
 
@@ -393,9 +402,9 @@ export class MusicController {
             let isMatch = false;
 
             if (customTarget && (appId.includes(customTarget) || appName.includes(customTarget))) {
-                isMatch = true; 
+                isMatch = true;
             } else if (!customTarget && desktopEntry && appId.includes(desktopEntry)) {
-                isMatch = true; 
+                isMatch = true;
             } else if (!customTarget && identity && appName === identity) {
                 isMatch = true;
             } else if (!customTarget && appId.includes(fullBusId)) {
@@ -430,13 +439,13 @@ export class MusicController {
             }
         }
     }
-    
+
     togglePlayerMenu() {
         if (this._playerMenu) {
             this._playerMenu.hide();
             return;
         }
-        
+
         this._playerMenu = new PlayerSelectorMenu(this);
         this._playerMenu.connect('destroy', () => { this._playerMenu = null; });
         Main.layoutManager.addChrome(this._playerMenu);
@@ -471,7 +480,7 @@ export class MusicController {
 
         let c = this._pill._displayedColor;
         this._expandedPlayer.updateStyle(c.r, c.g, c.b, this._pill._currentBgAlpha);
-        
+
         let artUrl = this._pill._lastArtUrl;
         this._expandedPlayer.showFor(player, artUrl);
 
@@ -486,7 +495,7 @@ export class MusicController {
         } else {
             startW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
         }
-        
+
         let startH = natH > 0 ? natH : 260;
 
         let startX = px + (pw / 2) - (startW / 2);
@@ -494,7 +503,7 @@ export class MusicController {
             if (startX < monitor.x + 10) startX = monitor.x + 10;
             else if (startX + startW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - startW - 10;
         }
-        
+
         let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - startH - 15 : py + ph + 15;
         this._expandedPlayer.setPosition(startX, startY);
 
@@ -782,8 +791,10 @@ export class MusicController {
                     p._lastTrackId = null;
 
                     p._seekedId = p.connectSignal('Seeked', (proxy, senderName, [position]) => {
-                        p._lastPosition = position;
-                        p._lastPositionTime = Date.now();
+                        if (typeof position === 'number' && position >= 0) {
+                            p._lastPosition = position;
+                            p._lastPositionTime = Date.now();
+                        }
                         this._triggerUpdate();
                         if (this._expandedPlayer && this._expandedPlayer.visible && this._lastWinnerName === p._busName) {
                             this._expandedPlayer._tick();
@@ -809,11 +820,14 @@ export class MusicController {
                         }
 
                         if (keys.Position !== undefined) {
-                            p._lastPosition = keys.Position;
+                        let posVal = keys.Position instanceof GLib.Variant ? keys.Position.unpack() : keys.Position;
+                        if (typeof posVal === 'number' && posVal >= 0) {
+                            p._lastPosition = posVal;
                             p._lastPositionTime = now;
-                            this._triggerUpdate();
-                            return;
                         }
+                        this._triggerUpdate();
+                        return;
+                    }
 
                         if (keys.Metadata !== undefined || keys.PlaybackStatus !== undefined) {
                             let trackId = null;
@@ -821,10 +835,12 @@ export class MusicController {
                             if (keys.Metadata) {
                                 let mObj = (keys.Metadata instanceof GLib.Variant) ? keys.Metadata.deep_unpack() : keys.Metadata;
                                 trackId = smartUnpack(mObj['mpris:trackid']);
-                                
+
                                 if (trackId && trackId !== p._lastTrackId) {
                                     p._lastPosition = 0;
+                                    p._lastPositionTime = Date.now();
                                     p._lastTrackId = trackId;
+                                    trackChanged = true;
                                 }
                             }
 
@@ -842,9 +858,16 @@ export class MusicController {
                                             if (result) {
                                                 let posVariant = result.deep_unpack()[0];
                                                 if (posVariant) {
-                                                    p._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                                                    let val = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                                                    if (typeof val === 'number' && val >= 0) {
+                                                    p._lastPosition = val;
                                                     p._lastPositionTime = Date.now();
-                                                    this._triggerUpdate();
+                                                } else {
+                                                    GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 500, () => {
+                                                        if (this._proxies.has(p._busName)) this._syncPosition(p);
+                                                    });
+                                                }
+                                                this._triggerUpdate();
                                                 }
                                             }
                                         } catch (e) { console.debug(e.message); }
@@ -859,7 +882,7 @@ export class MusicController {
                     p._nameOwnerId = p.connect('notify::g-name-owner', () => { this._scan(); });
 
                     p._identity = null;
-                    
+
                     this._connection.call(
                       p._busName,
                       '/org/mpris/MediaPlayer2',
@@ -890,7 +913,7 @@ export class MusicController {
                     );
 
                     this._proxies.set(name, p);
-                    
+
                     this._connection.call(
                         p._busName,
                         '/org/mpris/MediaPlayer2',
@@ -904,8 +927,11 @@ export class MusicController {
                                 if (result) {
                                     let posVariant = result.deep_unpack()[0];
                                     if (posVariant) {
-                                        p._lastPosition = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
-                                        p._lastPositionTime = Date.now();
+                                        let val = posVariant instanceof GLib.Variant ? posVariant.unpack() : posVariant;
+                                        if (typeof val === 'number' && val >= 0) {
+                                            p._lastPosition = val;
+                                            p._lastPositionTime = Date.now();
+                                        }
                                     }
                                 }
                             } catch (e) { console.debug(e.message); }
@@ -919,7 +945,7 @@ export class MusicController {
             }
         );
     }
-    
+
     _artCacheSet(key, value) {
         if (this._artCache.has(key)) this._artCache.delete(key);
         this._artCache.set(key, value);
@@ -933,7 +959,7 @@ export class MusicController {
             let appSystem = Shell.AppSystem.get_default();
             let busName = p._busName || '';
             let rawParts = busName.replace('org.mpris.MediaPlayer2.', '').split('.');
-            let rawBus = rawParts[0].toLowerCase();           
+            let rawBus = rawParts[0].toLowerCase();
             let fullBusId = rawParts.join('.').toLowerCase();
 
             let identity = (p._identity || '').toLowerCase().replace(/ /g, '-');
@@ -1051,19 +1077,8 @@ export class MusicController {
 
         let trackKey = `${title}||${artist}`;
 
-        this._settings.connectObject('changed::lyrics-language-preference', () => {
-	    this._fetchedTrackKey = null;
-	    this._fetchedLyricsData = null;
-	    this._lastLyricIndex = -1;
-
-	    if (this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
-		let player = this._getActivePlayer();
-		if (player) this._fetchNetworkLyrics(player);
-	    }
-	}, this);
-
         this._fetchedTrackKey = trackKey;
-        this._fetchedLyricsData = null; 
+        this._fetchedLyricsData = null;
         this._lastLyricIndex = -1;
 
         let durationSec = length > 0 ? length / 1000000 : 0;
@@ -1072,7 +1087,7 @@ export class MusicController {
             let lyrics = await this._lyricsClient.getLyrics(title, artist, album, durationSec,this._settings);
             if (this._fetchedTrackKey !== trackKey) return;
 
-            this._fetchedLyricsData = lyrics; 
+            this._fetchedLyricsData = lyrics;
 
             if (lyrics && lyrics.length > 0) {
                 this._startLyricsTimer();
@@ -1113,8 +1128,8 @@ export class MusicController {
 		if (result) {
 		    let posVariant = result.deep_unpack()[0];
 		    if (posVariant) {
-		        let val = posVariant instanceof GLib.Variant 
-		            ? posVariant.unpack() 
+		        let val = posVariant instanceof GLib.Variant
+		            ? posVariant.unpack()
 		            : posVariant;
 		        if (typeof val === 'number' && val >= 0) {
 		            player._lastPosition = val;
@@ -1128,7 +1143,7 @@ export class MusicController {
     }
 
     _onLyricsTick() {
-    
+
     	if (!this._settings || !this._settings.get_boolean('enable-lyrics')) {
             this._stopLyricsTimer();
             return;
@@ -1176,7 +1191,7 @@ export class MusicController {
 
     _triggerUpdate() {
         if (this._updateTimeoutId) {
-            return; 
+            return;
         }
 
         let useDelay = this._settings ? this._settings.get_boolean('compatibility-delay') : false;
@@ -1245,7 +1260,7 @@ export class MusicController {
                 if (Array.isArray(artist)) artist = artist.map(a => smartUnpack(a)).join(', ');
                 currentArt = smartUnpack(metaObj['mpris:artUrl']);
                 trackFileUrl = smartUnpack(metaObj['xesam:url']);
-            }            
+            }
             if (!title && active._busName) {
                 title = active._identity || _("Unknown Player");
 		artist = _("No active media");
@@ -1309,7 +1324,7 @@ export class MusicController {
                     }
                 } catch (e) {}
             }
-            
+
             if (!artUrl) {
                 let fallbackPath = this._settings ? this._settings.get_string('fallback-art-path') : '';
                 if (fallbackPath && fallbackPath.trim() !== '') {
@@ -1368,14 +1383,14 @@ export class MusicController {
             this._pill.updateDisplay(null, null, null, 'Stopped', null, false);
         }
     }
-    
+
     _isPlayerAllowed(busName) {
         let mode = this._settings.get_int('player-filter-mode');
         if (mode === 0) return true;
 
         let listStr = this._settings.get_string('player-filter-list').toLowerCase();
         let list = listStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-        
+
         if (list.length === 0) return mode === 1;
 
         let lowerName = busName.toLowerCase();
@@ -1412,7 +1427,7 @@ export class MusicController {
             if (m) {
                 let metaObj = (m instanceof GLib.Variant) ? m.deep_unpack() : m;
                 let url = metaObj['xesam:url'] ? smartUnpack(metaObj['xesam:url']).toLowerCase() : "";
-                
+
                 let isWebContent = url.startsWith('http://') || url.startsWith('https://');
 
                 if (isWebContent && filterMode === 2) {
@@ -1445,7 +1460,7 @@ export class MusicController {
     togglePlayback() { let p = this._getActivePlayer(); if (p) p.PlayPauseRemote(); }
     next() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.NextRemote(); }
     previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
-    
+
     _showPillFeedback(iconNameOrGicon, text, percent = null) {
         if (!this._pill || !this._pill._textWrapper) return;
 
@@ -1464,12 +1479,12 @@ export class MusicController {
 
             this._pill._feedbackIcon = new St.Icon({ icon_size: 16 });
             this._pill._feedbackLabel = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
-            
+
             this._pill._feedbackSliderBg = new St.Widget({
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'border-radius: 4px;',
                 height: 6,
-                width: 80 
+                width: 80
             });
             this._pill._feedbackSliderFill = new St.Widget({
                 style: 'border-radius: 4px;',
@@ -1501,7 +1516,7 @@ export class MusicController {
             this._pill._feedbackIcon.gicon = iconNameOrGicon;
         }
         this._pill._feedbackIcon.set_style(`color: ${color};`);
-        
+
         this._pill._feedbackLabel.text = text;
         this._pill._feedbackLabel.set_style(`font-size: 10.5pt; font-weight: bold; color: ${color};`);
 
@@ -1509,13 +1524,13 @@ export class MusicController {
             this._pill._feedbackSliderBg.show();
             this._pill._feedbackSliderBg.set_style(`background-color: ${bgTrack}; border-radius: 4px;`);
             this._pill._feedbackSliderFill.set_style(`background-color: ${color}; border-radius: 4px;`);
-            
+
             this._pill._feedbackSliderFill.ease({
                 width: Math.max(0, percent * 80),
                 duration: 100,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD
             });
-            
+
             this._pill._feedbackLabel.text = `${Math.round(percent * 100)}%`;
         } else {
             this._pill._feedbackSliderBg.hide();
@@ -1529,9 +1544,9 @@ export class MusicController {
         this._feedbackTimer = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 1500, () => {
             this._feedbackTimer = null;
             if (this._pill && this._pill._feedbackBox) {
-                this._pill._feedbackBox.ease({ 
-                    opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD, 
-                    onStopped: () => { this._pill._feedbackBox.hide(); } 
+                this._pill._feedbackBox.ease({
+                    opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => { this._pill._feedbackBox.hide(); }
                 });
                 this._pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
             }
@@ -1571,7 +1586,7 @@ export class MusicController {
 
     switchPlayer(isNext) {
         let proxiesArr = Array.from(this._proxies.keys());
-        let options = ['', ...proxiesArr]; 
+        let options = ['', ...proxiesArr];
 
         if (options.length <= 1) return;
 
@@ -1588,7 +1603,7 @@ export class MusicController {
         let nextBus = options[currentIndex];
         this._settings.set_string('selected-player-bus', nextBus);
         this._updateUI();
-        
+
         if (this._playerMenu && this._playerMenu.visible) {
             this._playerMenu.populate();
         }
@@ -1607,7 +1622,7 @@ export class MusicController {
 
         this._showPillFeedback(iconNameOrGicon, labelText, null);
     }
-    
+
     toggleShuffle() {
         let p = this._getActivePlayer();
         if (!p) return false;
@@ -1616,7 +1631,7 @@ export class MusicController {
             this._showPillFeedback('dialog-warning-symbolic', _('Not supported'));
             return false;
         }
-        
+
         this._connection.call(
         p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
         new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'Shuffle', new GLib.Variant('b', !p.Shuffle)]),
@@ -1634,10 +1649,10 @@ export class MusicController {
             this._showPillFeedback('dialog-warning-symbolic', _('Not supported'));
             return false;
         }
-        
+
         let current = p.LoopStatus || 'None';
         let next = current === 'None' ? 'Playlist' : (current === 'Playlist' ? 'Track' : 'None');
-        
+
         this._connection.call(
         p._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Set',
         new GLib.Variant('(ssv)', ['org.mpris.MediaPlayer2.Player', 'LoopStatus', new GLib.Variant('s', next)]),
@@ -1858,9 +1873,9 @@ export class MusicController {
         const hide = this._settings.get_boolean('hide-default-player');
 
         const MprisSource = Mpris.MprisSource ?? Mpris.MediaSection;
-        const mediaSection = Main.panel.statusArea.dateMenu?._messageList?._messageView?._mediaSource ?? 
+        const mediaSection = Main.panel.statusArea.dateMenu?._messageList?._messageView?._mediaSource ??
                              Main.panel.statusArea.dateMenu?._messageList?._mediaSection;
-        const qsMedia = Main.panel.statusArea.quickSettings?._media || 
+        const qsMedia = Main.panel.statusArea.quickSettings?._media ||
                         Main.panel.statusArea.quickSettings?._mediaSection;
 
         if (this._origMediaAddPlayer && (shouldReset || hide === false)) {

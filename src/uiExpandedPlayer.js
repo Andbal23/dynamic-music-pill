@@ -1757,4 +1757,3 @@ export const ExpandedPlayer = GObject.registerClass(
             });
         }
     });
-
