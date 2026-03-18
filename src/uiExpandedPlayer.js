@@ -10,6 +10,8 @@ import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.j
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { PixelSnappedBox, ScrollLabel, _addBtnPressAnim } from './uiWidgets.js';
 import { WaveformVisualizer } from './uiVisualizers.js';
+import { LyricsClient } from './LyricsClient.js';
+import { LyricsWidget } from './uiLyricsWidget.js';
 
 export const ExpandedPlayer = GObject.registerClass(
     class ExpandedPlayer extends St.Widget {
@@ -152,6 +154,33 @@ export const ExpandedPlayer = GObject.registerClass(
                 y_align: Clutter.ActorAlign.CENTER
             });
             topRow.add_child(this._vinylBin);
+            
+            this._vinylBin.reactive    = true;
+            this._vinylBin.track_hover = true;
+            this._vinyl.reactive       = true;
+
+            this._vinylBin.connectObject('enter-event', () => {
+                this._vinyl.ease({ opacity: 175, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
+            this._vinylBin.connectObject('leave-event', () => {
+                this._vinyl.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
+            this._vinylBin.connectObject('button-release-event', (actor, event) => {
+                if (event.get_button() !== 1) return Clutter.EVENT_PROPAGATE;
+                if (this._currentSubPage) { this._popPage(); return Clutter.EVENT_STOP; }
+                this._showLyricsPage();
+                return Clutter.EVENT_STOP;
+            }, this);
+            this._vinylBin.connectObject('touch-event', (actor, event) => {
+                if (event.type() === Clutter.EventType.TOUCH_END) {
+                    if (this._currentSubPage) { this._popPage(); return Clutter.EVENT_STOP; }
+                    this._showLyricsPage();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
 
             let infoBox = new PixelSnappedBox({
                 style_class: 'track-info-box',
@@ -967,6 +996,197 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             });
         }
+        
+       _showLyricsPage() {
+            if (this._currentSubPage) return;
+
+            this._savedBoxHeight = this._box.height;
+            this._box.set_height(this._savedBoxHeight);
+            if (this._mainPage) this._mainPage.hide();
+
+            let pillCol = (this._controller._pill && this._controller._pill._displayedColor)
+                ? this._controller._pill._displayedColor : { r: 40, g: 40, b: 40 };
+
+            let brightness = (pillCol.r * 299 + pillCol.g * 587 + pillCol.b * 114) / 1000;
+            let isDark     = brightness <= 160;
+            let btnRgb     = isDark ? '255,255,255' : '0,0,0';
+            let iconClr    = isDark ? 'rgba(255,255,255,0.92)' : 'rgba(30,30,30,0.92)';
+
+            let followRadius = this._settings.get_boolean('popup-follow-radius');
+            let rawRadius    = followRadius ? this._settings.get_int('border-radius') : 24;
+            let dynRadius    = (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
+
+            let page = new St.Widget({
+                layout_manager: new Clutter.BinLayout(),
+                x_expand: true,
+                y_expand: true,
+                clip_to_allocation: true,
+                style: `border-radius: 20px;
+                        background-color: rgba(${pillCol.r},${pillCol.g},${pillCol.b},0.07);`
+            });
+            this._currentSubPage = page;
+            page.translation_x = 28;
+            page.opacity = 0;
+
+            const seekCb = (timeMs) => {
+                if (!this._player) return;
+                let m = this._player.Metadata;
+                if (!m) return;
+                let trackId = '/org/mpris/MediaPlayer2/TrackList/NoTrack';
+                let tid = smartUnpack(m['mpris:trackid']);
+                if (tid) trackId = tid;
+                let positionMicro = Math.round(timeMs * 1000);
+                this._player._lastPosition     = positionMicro;
+                this._player._lastPositionTime = Date.now();
+                if (this._controller && this._controller._connection) {
+                    this._controller._connection.call(
+                        this._player._busName,
+                        '/org/mpris/MediaPlayer2',
+                        'org.mpris.MediaPlayer2.Player',
+                        'SetPosition',
+                        new GLib.Variant('(ox)', [trackId, positionMicro]),
+                        null, Gio.DBusCallFlags.NONE, -1, null,
+                        (conn, res) => { try { conn.call_finish(res); } catch (e) {} }
+                    );
+                }
+            };
+
+            let lyricsWidget = new LyricsWidget(seekCb);
+            lyricsWidget.showLoading();
+
+            lyricsWidget.x_expand = true;
+            lyricsWidget.y_expand = true;
+
+            let fgR = isDark ? 255 : 30;
+            let fgG = isDark ? 255 : 30;
+            let fgB = isDark ? 255 : 30;
+            lyricsWidget.setTextColor(fgR, fgG, fgB);
+            page.add_child(lyricsWidget);
+
+            const _backBtnStyle = (hover, disableAnim = false) =>
+                `width: 32px; height: 32px;` + 
+                `margin: 8px;` +               
+                `padding: 0px;` +
+                `border-radius: 8px;` +       
+                `background-color: rgba(${btnRgb}, ${hover ? 0.30 : 0.15});` +
+                `border: 1px solid rgba(${btnRgb}, ${hover ? 0.20 : 0.10});` +
+                (disableAnim ? `transition-duration: 0ms;` : `transition-duration: 140ms;`);
+
+            let backIcon = new St.Icon({ icon_name: 'go-previous-symbolic', icon_size: 16, style: `color: ${iconClr};` });
+            backIcon.set_x_align(Clutter.ActorAlign.CENTER);
+            backIcon.set_y_align(Clutter.ActorAlign.CENTER);
+
+            let backBtn = new St.Button({
+                reactive: true,
+                can_focus: true,
+                child: backIcon,
+                style: _backBtnStyle(false)
+            });
+
+
+            let backBtnWrapper = new St.Bin({
+                x_expand: true,
+                y_expand: true,
+                x_align: Clutter.ActorAlign.START,
+                y_align: Clutter.ActorAlign.START,
+                child: backBtn
+            });
+
+            backBtn.connect('notify::hover', () => {
+                if (!backBtn.get_parent() || page !== this._currentSubPage) return;
+                backBtn.set_style(_backBtnStyle(backBtn.hover));
+            });
+            
+            _addBtnPressAnim(backBtn);
+            backBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, page);
+            
+            const _doBack = () => {
+                backBtn.set_style(_backBtnStyle(false, true));
+                this._popPage();
+            };
+
+            backBtn.connectObject('button-release-event', () => { _doBack(); return Clutter.EVENT_STOP; }, page);
+            backBtn.connectObject('touch-event', (a, e) => {
+                if (e.type() === Clutter.EventType.TOUCH_END) { _doBack(); return Clutter.EVENT_STOP; }
+                return Clutter.EVENT_PROPAGATE;
+            }, page);
+            
+            page.add_child(backBtnWrapper);
+
+            this._lyricsWidget = lyricsWidget;
+            this._box.add_child(page);
+
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                if (page.get_parent() && page === this._currentSubPage) {
+                    page.ease({
+                        translation_x: 0, opacity: 255,
+                        duration: SUBPAGE_ANIM_IN_DURATION,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                    });
+                }
+                return false;
+            });
+
+            if (!this._lyricsClient) this._lyricsClient = new LyricsClient();
+
+            if (this._player) {
+                let m = this._player.Metadata;
+                if (m) {
+                    let fetchTitle  = smartUnpack(m['xesam:title'])  || '';
+                    let fetchArtist = smartUnpack(m['xesam:artist']) || '';
+                    if (Array.isArray(fetchArtist)) fetchArtist = fetchArtist.join(', ');
+                    let fetchAlbum  = smartUnpack(m['xesam:album'])  || '';
+                    let lengthMicro = smartUnpack(m['mpris:length']) || 0;
+                    let durationSec = Math.round(lengthMicro / 1_000_000);
+
+                    this._lyricsClient.getLyrics(
+                        fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings
+                    ).then(lyrics => {
+                        if (page !== this._currentSubPage || !page.get_parent()) return;
+                        if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
+                        if (lyrics && lyrics.length > 0) {
+                            lyricsWidget.setLyrics(lyrics);
+                            lyricsWidget.updatePosition(this._getCurrentPositionMs());
+                        } else {
+                            lyricsWidget.showEmpty();
+                        }
+                    }).catch(() => {
+                        if (page === this._currentSubPage && page.get_parent())
+                            if (!lyricsWidget.is_finalized || !lyricsWidget.is_finalized())
+                                lyricsWidget.showEmpty();
+                    });
+                }
+            }
+
+            this._lyricsTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
+                if (page !== this._currentSubPage || !page.get_parent()) {
+                    this._lyricsTimerId = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+                if (this._lyricsWidget)
+                    this._lyricsWidget.updatePosition(this._getCurrentPositionMs());
+                return GLib.SOURCE_CONTINUE;
+            });
+
+            page.connect('destroy', () => {
+                if (this._lyricsTimerId) {
+                    GLib.Source.remove(this._lyricsTimerId);
+                    this._lyricsTimerId = null;
+                }
+                this._lyricsWidget = null;
+            });
+        }
+
+        _getCurrentPositionMs() {
+            if (!this._player) return 0;
+            let now        = Date.now();
+            let cachedPos  = this._player._lastPosition  || 0;
+            let lastUpdate = this._player._lastPositionTime || now;
+            let posUs = cachedPos;
+            if (this._player.PlaybackStatus === 'Playing')
+                posUs += (now - lastUpdate) * 1000;
+            return posUs / 1000;
+        }
 
         _applyCustomButton(btn, enabled, action, isBtn1) {
             if (!btn) return;
@@ -1433,6 +1653,9 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._resizeDebounceId) { GLib.Source.remove(this._resizeDebounceId); this._resizeDebounceId = null; }
             if (this._leaveHideTimeoutId) { GLib.Source.remove(this._leaveHideTimeoutId); this._leaveHideTimeoutId = null; }
             if (this._currentSubPage) { this._currentSubPage.destroy(); this._currentSubPage = null; }
+            if (this._lyricsTimerId) { GLib.Source.remove(this._lyricsTimerId); this._lyricsTimerId = null; }
+            if (this._lyricsClient)  { this._lyricsClient.destroy(); this._lyricsClient = null; }
+            this._lyricsWidget = null;
         }
 
         _startTimer() {

@@ -28,7 +28,6 @@
 .vinyl-container {
     width: 100px;
     height: 100px;
-    /* A bakelit kerek */
     border-radius: 50px; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.6);
 }

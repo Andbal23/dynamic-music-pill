@@ -595,13 +595,16 @@ export const MusicPill = GObject.registerClass(
             let shadowBlur = this._settings.get_int('shadow-blur');
             let shadowOpacity = this._settings.get_int('shadow-opacity') / 100.0;
 
-            let fontSizeTitle = '11pt';
-            let fontSizeArtist = '9pt';
+            let titlePx = Math.max(10, Math.floor(height * 0.33)); 
+            let artistPx = Math.max(9, Math.floor(height * 0.26)); 
+
+            let fontSizeTitle = '15px';
+            let fontSizeArtist = '12px';
 
             if (this._inPanel) {
                 this._padY = 0;
-                fontSizeTitle = '9.5pt';
-                fontSizeArtist = '8pt';
+                fontSizeTitle = '13px';
+                fontSizeArtist = '11px';
             } else {
                 let rawPadY = Math.floor(height / 10);
                 this._padY = Math.max(2, Math.min(8, rawPadY));
