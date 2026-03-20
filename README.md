@@ -459,6 +459,10 @@ Common App ID examples:
 </div>
 
 ---
+## Check out this one too:)
+https://github.com/Andbal23/extension-profiles <br>
+https://github.com/Andbal23/timed-do-not-disturb
+---
 
 ## Star History
 
