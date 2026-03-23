@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-17 18:41+0100\n"
-"PO-Revision-Date: 2026-03-11 17:24+0000\n"
-"Last-Translator: lebao3105 <bao12345yocoo@gmail.com>\n"
+"PO-Revision-Date: 2026-03-23 11:09+0000\n"
+"Last-Translator: Alex Buleon <alex.buleon@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/fr/>\n"
 "Language: fr\n"
@@ -17,144 +17,146 @@ msgstr ""
 
 #: src/controller.js:1265
 msgid "Unknown Player"
-msgstr ""
+msgstr "Lecteur Inconnu"
 
 #: src/controller.js:1266
 msgid "No active media"
-msgstr ""
+msgstr "Aucun média actif"
 
 #: src/controller.js:1613
 msgid "Auto (Smart)"
-msgstr ""
+msgstr "Auto (Intelligent)"
 
 #: src/controller.js:1633 src/controller.js:1651 src/controller.js:1674
 #: src/controller.js:1700
 msgid "Not supported"
-msgstr ""
+msgstr "Non pris en charge"
 
 #: src/uiExpandedPlayer.js:347
 msgid "First time? Check settings for custom buttons, scroll actions & more"
 msgstr ""
+"C'est votre première fois ? Vérifiez les paramètres des boutons "
+"personnalisés, des actions de défilement et bien plus encore"
 
 #: src/uiExpandedPlayer.js:634
 msgid "Unknown Title"
-msgstr ""
+msgstr "Titre Inconnu"
 
 #: src/uiExpandedPlayer.js:637
 msgid "Unknown Artist"
-msgstr ""
+msgstr "Artiste Inconnu"
 
 #: src/uiExpandedPlayer.js:1020
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: src/uiExpandedPlayer.js:1024
 msgid "No audio stream available"
-msgstr ""
+msgstr "Aucun flux audio disponible"
 
 #: src/uiExpandedPlayer.js:1049 src/uiExpandedPlayer.js:1059
 msgid "Unmute"
-msgstr ""
+msgstr "Réactiver le son"
 
 #: src/uiExpandedPlayer.js:1049 src/uiExpandedPlayer.js:1059
 msgid "Mute"
-msgstr ""
+msgstr "Couper le son"
 
 #: src/uiExpandedPlayer.js:1095
 msgid "Seek"
-msgstr ""
+msgstr "Défilement"
 
 #: src/uiExpandedPlayer.js:1099
 msgid "This player does not support seeking"
-msgstr ""
+msgstr "Ce lecteur ne prend pas en charge le défilement"
 
 #: src/uiExpandedPlayer.js:1125
 msgid "Audio Output"
-msgstr ""
+msgstr "Sortie Audio"
 
 #: src/uiExpandedPlayer.js:1127
 msgid "Audio control unavailable"
-msgstr ""
+msgstr "Contrôles audio non disponibles"
 
 #: src/uiExpandedPlayer.js:1130
 msgid "No output devices found"
-msgstr ""
+msgstr "Aucun périphérique de sortie trouvé"
 
 #: src/uiExpandedPlayer.js:1133
 msgid "Unknown Device"
-msgstr ""
+msgstr "Appareil Inconnu"
 
 #: src/uiExpandedPlayer.js:1154 prefs.js:567
 msgid "Sleep Timer"
-msgstr ""
+msgstr "Minuterie de mise en veille"
 
 #: src/uiExpandedPlayer.js:1154
 msgid "min left"
-msgstr ""
+msgstr "min restante(s)"
 
 #: src/uiExpandedPlayer.js:1157
 msgid "Cancel Timer"
-msgstr ""
+msgstr "Annuler la minuterie"
 
 #: src/uiExpandedPlayer.js:1189
 msgid "Runs inside the shell — works on lock screen"
-msgstr ""
+msgstr "Tourne à l’intérieur du shell — fonctionne sur l’écran de verrouillage"
 
 #: src/uiExpandedPlayer.js:1194 prefs.js:568
 msgid "Playback Speed"
-msgstr ""
+msgstr "Vitesse de lecture"
 
 #: src/uiExpandedPlayer.js:1201
 msgid "This player does not support playback speed"
-msgstr ""
+msgstr "Ce lecteur de prend pas en charge la vitesse de lecture"
 
 #: src/uiExpandedPlayer.js:1240
 msgid "Player must support MPRIS Rate"
-msgstr ""
+msgstr "Le lecteur doit prendre en charge le taux MPRIS"
 
 #: src/uiExpandedPlayer.js:1240
 msgid "Not supported by this player"
-msgstr ""
+msgstr "Non pris en charge par ce lecteur"
 
 #: src/uiExpandedPlayer.js:1246
 msgid "Recently Played"
-msgstr ""
+msgstr "Écouté récemment"
 
 #: src/uiExpandedPlayer.js:1248
 msgid "No history yet"
-msgstr ""
+msgstr "Aucun historique pour le moment"
 
 #: src/uiExpandedPlayer.js:1281
 msgid "Unknown"
-msgstr ""
+msgstr "Inconnu"
 
 #: src/uiExpandedPlayer.js:1336
 msgid "Clear History"
-msgstr ""
+msgstr "Supprimer l’historique"
 
 #: src/uiMusicPill.js:687 src/uiMusicPill.js:981
 msgid "No Media"
-msgstr ""
+msgstr "Aucun Média"
 
 #: src/uiMusicPill.js:982
 msgid "Waiting for playback..."
-msgstr ""
+msgstr "En attente de lecture…"
 
 #: src/uiMusicPill.js:1186
 msgid "Loading..."
-msgstr ""
+msgstr "Chargement…"
 
 #: src/uiPlayerSelector.js:122
 msgid "Select Media Player"
-msgstr ""
+msgstr "Sélectionnez un Lecteur Multimédia"
 
 #: src/uiPlayerSelector.js:133
 msgid "Auto (Smart Selection)"
-msgstr ""
+msgstr "Auto (Sélection Intelligente)"
 
 #: src/uiVisualizers.js:303
 msgid "Please install \"cava\" for real-time mode."
-msgstr ""
+msgstr "Installez \"cava\" pour utiliser le mode en temps-réel."
 
 #: prefs.js:37
 msgid "Main Pill"
@@ -166,11 +168,13 @@ msgstr "Paramètres généraux"
 
 #: prefs.js:44
 msgid "Always ON"
-msgstr ""
+msgstr "Toujours Activé"
 
 #: prefs.js:45
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr ""
+"Conserver la dernière piste écoutée et laisser la pastille visible après la "
+"fermeture du lecteur"
 
 #: prefs.js:57
 msgid "Show Album Art"
@@ -182,7 +186,7 @@ msgstr "Afficher la pochette de la chanson en cours"
 
 #: prefs.js:69
 msgid "Fallback Album Art"
-msgstr ""
+msgstr "Image d’Album par Défaut"
 
 #: prefs.js:70 prefs.js:110
 msgid "No image selected"
@@ -199,6 +203,8 @@ msgstr "Activer le contrôle par défilement"
 #: prefs.js:125
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr ""
+"Changez de piste, réglez le volume ou sélectionnez le lecteur multimédia à "
+"l'aide de la molette de défilement ou du pavé tactile"
 
 #: prefs.js:136
 msgid "Change Track"
@@ -210,7 +216,7 @@ msgstr "Ajuster le volume"
 
 #: prefs.js:138
 msgid "Switch Player"
-msgstr ""
+msgstr "Changer de Lecteur"
 
 #: prefs.js:146
 msgid "Scroll Action"
@@ -230,7 +236,7 @@ msgstr "Direction de l'effet de saut (Naturel vs Traditionnel)"
 
 #: prefs.js:183
 msgid "Invert Scroll Direction"
-msgstr ""
+msgstr "Inverser la Direction de Défilement"
 
 #: prefs.js:184
 msgid "Swap up/down scrolling for track and volume actions"
