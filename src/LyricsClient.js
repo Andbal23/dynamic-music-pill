@@ -133,7 +133,7 @@ export class LyricsClient {
       if (!entry.text) continue;
       const nextTime = i + 1 < all.length ? all[i + 1].time : entry.time + 5000;
       const raw = (nextTime - entry.time) / 1000;
-      entry.duration = Math.min(raw, entry.text.length / 5);
+      entry.duration = Math.min(raw, entry.text.length / 4);
       lines.push(entry);
     }
     return lines;
