@@ -113,18 +113,29 @@ export class LyricsClient {
   }
 
   _parseLRC(lrcText) {
-    const lines = [];
     const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-    lrcText.split("\n").forEach((line) => {
+
+    const all = [];
+    for (const line of lrcText.split("\n")) {
       const match = line.match(regex);
       if (match) {
         const time =
           parseInt(match[1]) * 60 * 1000 +
           parseInt(match[2]) * 1000 +
           parseFloat("0." + match[3]) * 1000;
-        if (match[4].trim()) lines.push({ time, text: match[4].trim() });
+        all.push({ time, text: match[4].trim() });
       }
-    });
+    }
+
+    const lines = [];
+    for (let i = 0; i < all.length; i++) {
+      const entry = all[i];
+      if (!entry.text) continue;
+      const nextTime = i + 1 < all.length ? all[i + 1].time : entry.time + 5000;
+      const raw = (nextTime - entry.time) / 1000;
+      entry.duration = Math.min(raw, entry.text.length / 5);
+      lines.push(entry);
+    }
     return lines;
   }
 

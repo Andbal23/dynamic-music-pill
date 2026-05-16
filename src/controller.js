@@ -1261,21 +1261,17 @@ export class MusicController {
             }
         }
 
-        if (currentIndex >= 0 && currentIndex !== this._lastLyricIndex) {
+        if (currentIndex >= 0) {
+            const currentLine = this._fetchedLyricsData[currentIndex];
+            if (positionMs > currentLine.time + currentLine.duration * 1000)
+                currentIndex = -1;
+        }
+
+        if (currentIndex !== this._lastLyricIndex) {
             this._lastLyricIndex = currentIndex;
-
-            let currentLine = this._fetchedLyricsData[currentIndex];
-            let durationSec = 5;
-            if (currentIndex + 1 < this._fetchedLyricsData.length) {
-                durationSec = (this._fetchedLyricsData[currentIndex + 1].time - currentLine.time) / 1000;
-            }
-
-            let lrc = {
-                sender: "lrclib",
-                content: currentLine.text,
-                time: durationSec,
-            };
-            this._pill.setLyric(lrc);
+            this._pill.setLyric(currentIndex >= 0
+                ? { sender: "lrclib", content: this._fetchedLyricsData[currentIndex].text, time: this._fetchedLyricsData[currentIndex].duration }
+                : null);
         }
     }
 
