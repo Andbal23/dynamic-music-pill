@@ -207,6 +207,10 @@
       <default>22</default>
       <summary>Album Art size in Panel mode</summary>
     </key>
+    <key name="overlay-art-size" type="i">
+      <default>44</default>
+      <summary>Album Art size in Overlay mode</summary>
+    </key>
     
     <key name="hide-default-player" type="b">
       <default>true</default>
@@ -265,22 +269,30 @@
       <default>250</default>
       <range min="100" max="600"/>
     </key>
+    <key name="overlay-pill-width" type="i">
+      <default>250</default>
+      <range min="100" max="600"/>
+    </key>
     <key name="pill-height" type="i">
       <default>56</default>
-      <range min="20" max="100"/>
+      <range min="20" max="200"/>
     </key>
     <key name="panel-pill-height" type="i">
       <default>28</default>
-      <range min="20" max="60"/>
+      <range min="20" max="200"/>
+    </key>
+    <key name="overlay-pill-height" type="i">
+      <default>56</default>
+      <range min="20" max="200"/>
     </key>
 
     <key name="vertical-offset" type="i">
       <default>-1</default>
-      <range min="-30" max="30"/>
+      <range min="-1000" max="1000"/>
     </key>
     <key name="horizontal-offset" type="i">
       <default>0</default>
-      <range min="-50" max="50"/>
+      <range min="-1000" max="1000"/>
     </key>
     <key name="position-mode" type="i">
       <default>3</default>
@@ -292,7 +304,7 @@
     </key>
     <key name="target-container" type="i">
       <default>0</default>
-      <range min="0" max="3"/>
+      <range min="0" max="4"/>
     </key>
     <key name="show-album-art" type="b">
       <default>true</default>
@@ -382,6 +394,21 @@
       <default>false</default>
       <summary>Show Album Title in Pop-up</summary>
       <description>Display album name next to the artist in the popup (Artist • Album).</description>
+    </key>
+    <key name="popup-animation-style" type="i">
+      <default>1</default>
+      <summary>Popup Animation Style</summary>
+      <description>0: Classic (fade), 1: Expansion (Dynamic Island style)</description>
+    </key>
+    <key name="autohide-mode" type="i">
+      <default>2</default>
+      <summary>Pill Autohide Mode</summary>
+      <description>0: Never, 1: Only when current app is fullscreen, 2: When any app is fullscreen/maximized</description>
+    </key>
+    <key name="autohide-delay" type="i">
+      <default>1500</default>
+      <range min="0" max="5000"/>
+      <summary>Autohide Delay (ms)</summary>
     </key>
   </schema>
 </schemalist>

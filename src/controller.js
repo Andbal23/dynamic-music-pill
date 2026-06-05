@@ -494,40 +494,47 @@ export class MusicController {
         let player = this._getActivePlayer();
         if (!player) return;
 
-        let [px, py] = this._pill.get_transformed_position();
-        let [pw, ph] = this._pill.get_transformed_size();
-        let monitor = Main.layoutManager.findMonitorForActor(this._pill);
+        let [px, py] = this._pill._body.get_transformed_position();
+        let [pw, ph] = this._pill._body.get_transformed_size();
+        let pillRect = { x: px, y: py, width: pw, height: ph };
 
         let c = this._pill._displayedColor;
         this._expandedPlayer.updateStyle(c.r, c.g, c.b, this._pill._currentBgAlpha);
 
         let artUrl = this._pill._lastArtUrl;
-        this._expandedPlayer.showFor(player, artUrl);
-
-        this._expandedPlayer._box.set_width(-1);
-        let [minW, natW] = this._expandedPlayer._box.get_preferred_width(-1);
-        let [minH, natH] = this._expandedPlayer._box.get_preferred_height(natW);
-
-        let minWLimit = this._expandedPlayer._computeMinControlsWidth();
-        let startW;
-        if (this._settings.get_boolean('popup-use-custom-width')) {
-            startW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
+        let animStyle = this._settings.get_int('popup-animation-style');
+        if (animStyle === 1) {
+            // Expansion Mode (Dynamic Island style)
+            this._pill.opacity = 0;
+            this._pill.reactive = false;
+            this._pill.visible = false;
+            this._expandedPlayer.showFor(player, artUrl, pillRect);
+            this._expandedPlayer.animateResize();
         } else {
-            startW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
+            // Classic Mode (Pill stays visible)
+            this._expandedPlayer.showFor(player, artUrl, null);
+            
+            let [minW, natW] = this._expandedPlayer._box.get_preferred_width(-1);
+            let [minH, natH] = this._expandedPlayer._box.get_preferred_height(natW);
+            let menuW = Math.min(Math.max(natW, 260), 600);
+            let menuH = natH;
+
+            let monitor = Main.layoutManager.findMonitorForActor(this._pill);
+            let startX = px + (pw / 2) - (menuW / 2);
+            if (monitor) {
+                if (startX < monitor.x + 10) startX = monitor.x + 10;
+                else if (startX + menuW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - menuW - 10;
+            }
+
+            let startY;
+            if (monitor && py + ph + menuH + 10 < monitor.y + monitor.height) {
+                startY = py + ph + 10;
+            } else {
+                startY = py - menuH - 10;
+            }
+            this._expandedPlayer._box.set_size(menuW, menuH);
+            this._expandedPlayer.setPosition(startX, startY);
         }
-
-        let startH = natH > 0 ? natH : 260;
-
-        let startX = px + (pw / 2) - (startW / 2);
-        if (monitor) {
-            if (startX < monitor.x + 10) startX = monitor.x + 10;
-            else if (startX + startW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - startW - 10;
-        }
-
-        let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - startH - 15 : py + ph + 15;
-        this._expandedPlayer.setPosition(startX, startY);
-
-        this._expandedPlayer.animateResize();
     }
 
     closeMenu() {
@@ -544,7 +551,7 @@ export class MusicController {
 
         let win = global.display.get_focus_window();
         if (win && win.get_monitor() === Main.layoutManager.primaryIndex) {
-            if (win.is_fullscreen()) {
+            if (win.is_fullscreen() && !win.minimized) {
                 return true;
             }
         }
@@ -611,6 +618,68 @@ export class MusicController {
         return false;
     }
 
+    _updatePositionMode() {
+        if (!this._pill) return;
+
+        let target = this._settings ? this._settings.get_int('target-container') : 0;
+
+        if (target === 4) {
+            let currentParent = this._pill.get_parent();
+            if (currentParent !== Main.uiGroup) {
+                if (currentParent) {
+                    try {
+                        if (currentParent === Main.uiGroup) Main.layoutManager.removeChrome(this._pill);
+                        else currentParent.remove_child(this._pill);
+                    } catch (e) { }
+                }
+                Main.layoutManager.addChrome(this._pill, {
+                    affectsStruts: false,
+                    trackFullscreen: false
+                });
+            }
+            if (this._currentDock) {
+                this._currentDock.disconnectObject(this);
+                this._currentDock = null;
+            }
+            this._teardownDragFix();
+            this._pill._updateDimensions();
+            return;
+        }
+
+        let container = null;
+        if (target === 0) {
+            container = this._currentDock;
+        } else if (target === 1) {
+            container = Main.panel._leftBox;
+        } else if (target === 2) {
+            container = Main.panel._centerBox;
+        } else if (target === 3) {
+            container = Main.panel._rightBox;
+        }
+
+        if (!container) {
+            if (target === 0) this._setupDockSearch();
+            return;
+        }
+
+        let oldParent = this._pill.get_parent();
+        if (oldParent !== container) {
+            if (oldParent === Main.uiGroup) Main.layoutManager.removeChrome(this._pill);
+            else if (oldParent) oldParent.remove_child(this._pill);
+            
+            if (this._currentDock) {
+                this._currentDock.disconnectObject(this);
+                this._currentDock = null;
+            }
+
+            container.add_child(this._pill);
+            this._pill.set_position(0, 0);
+        }
+
+        this._pill._updateDimensions();
+        this._setupDragFix();
+    }
+
     _inject() {
         if (this._isMovingItem) return;
         if (this._injectTimeout) {
@@ -618,11 +687,12 @@ export class MusicController {
             this._injectTimeout = null;
         }
         if (!this._pill) this._createPill();
+        this._updatePositionMode();
         if (!this._pill) return;
 
         let target = this._settings ? this._settings.get_int('target-container') : 0;
+        
         let container = null;
-
         if (target === 0) {
             let dtd = Main.panel.statusArea['dash-to-dock'] || Main.panel.statusArea['ubuntu-dock'];
             container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
@@ -631,18 +701,6 @@ export class MusicController {
         else if (target === 3) container = Main.panel._rightBox;
 
         if (!container) return;
-
-        let oldParent = this._pill.get_parent();
-        let parentChanged = (oldParent && oldParent !== container);
-
-        if (parentChanged) {
-            oldParent.remove_child(this._pill);
-            if (this._currentDock) {
-                this._currentDock.disconnectObject(this);
-                this._currentDock = null;
-            }
-            this._teardownDragFix();
-        }
 
         if (target === 0 && this._currentDock !== container) {
             this._currentDock = container;
@@ -675,6 +733,7 @@ export class MusicController {
     }
 
     _setupDragFix(container) {
+        if (!container) return;
         const dash = container._delegate;
         if (!dash || typeof dash.handleDragOver !== 'function') return;
         if (dash._musicPillOrigHandleDragOver) return;

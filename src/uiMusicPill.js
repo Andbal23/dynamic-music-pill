@@ -27,6 +27,10 @@ export const MusicPill = GObject.registerClass(
             this._delegate = { app: null };
             this.child = { _delegate: this._delegate };
 
+            this._fullscreenActive = false;
+            this._fullscreenHideTimerId = null;
+            this._lastFocusWindow = null;
+
             this._lastScrollTime = 0;
             this._controller = controller;
             this._settings = controller._settings;
@@ -40,6 +44,18 @@ export const MusicPill = GObject.registerClass(
             this._shadowCSS = 'box-shadow: none;';
             this._inPanel = false;
             this._gameModeActive = false;
+
+            this._revealSensor = new St.Widget({
+                name: 'pill-reveal-sensor',
+                reactive: false,
+                height: 2,
+                opacity: 0,
+                visible: true
+            });
+            this._revealSensor.connectObject('enter-event', () => {
+                if (this._fullscreenActive) this._revealPill();
+            }, this);
+            Main.layoutManager.addChrome(this._revealSensor);
 
             this._currentBusName = null;
             this._lyricObj = null;
@@ -150,22 +166,19 @@ export const MusicPill = GObject.registerClass(
             this._body.add_child(this._visBin);
             this.add_child(this._body);
 
-            // --- Clicks ---
-            this.connectObject('button-press-event', () => {
-                if (!this._body) return Clutter.EVENT_STOP;
+            this._body.reactive = true;
+            this._body.connectObject('button-press-event', () => {
                 this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_STOP;
             }, this);
 
-            this.connectObject('touch-event', (actor, event) => {
+            this._body.connectObject('touch-event', (actor, event) => {
                 let type = event.type();
                 if (type === Clutter.EventType.TOUCH_BEGIN) {
-                    if (!this._body) return Clutter.EVENT_STOP;
                     this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     return Clutter.EVENT_STOP;
                 } else if (type === Clutter.EventType.TOUCH_END) {
                     if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
-                    if (!this._body) return Clutter.EVENT_STOP;
                     this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
                     this._handleLeftClick();
                     return Clutter.EVENT_STOP;
@@ -173,9 +186,8 @@ export const MusicPill = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this.connectObject('button-release-event', (actor, event) => {
+            this._body.connectObject('button-release-event', (actor, event) => {
                 if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
-                if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
 
                 let button = event.get_button();
@@ -197,7 +209,7 @@ export const MusicPill = GObject.registerClass(
                 return Clutter.EVENT_STOP;
             }, this);
 
-            this.connectObject('enter-event', () => {
+            this._body.connectObject('enter-event', () => {
                 this._isHovered = true;
                 if (this._titleScroll) this._titleScroll.setHoverMode(true);
                 if (this._artistScroll) this._artistScroll.setHoverMode(true);
@@ -214,8 +226,9 @@ export const MusicPill = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this.connectObject('leave-event', () => {
+            this._body.connectObject('leave-event', () => {
                 this._isHovered = false;
+                if (this._fullscreenActive) this._startFullscreenHideTimer(2000);
                 if (this._titleScroll) this._titleScroll.setHoverMode(false);
                 if (this._artistScroll) this._artistScroll.setHoverMode(false);
                 if (this._hoverTimeout) {
@@ -225,7 +238,17 @@ export const MusicPill = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this.connectObject('scroll-event', (actor, event) => {
+            Main.layoutManager.connectObject('monitors-changed', () => this._onFullscreenChanged(), this);
+            global.display.connectObject('notify::focus-window', () => this._onFullscreenChanged(), this);
+            global.display.connectObject('restacked', () => this._onFullscreenChanged(), this);
+            global.display.connectObject('window-entered-monitor', () => this._onFullscreenChanged(), this);
+
+            this._pollTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
+                this._onFullscreenChanged();
+                return GLib.SOURCE_CONTINUE;
+            });
+
+            this._body.connectObject('scroll-event', (actor, event) => {
                 try {
                     if (!this._settings.get_boolean('enable-scroll-controls')) return Clutter.EVENT_STOP;
                     if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
@@ -329,6 +352,9 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::panel-art-size', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::dock-art-size', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::panel-pill-width', () => this._updateDimensions(), this);
+            this._settings.connectObject('changed::overlay-pill-width', () => this._updateDimensions(), this);
+            this._settings.connectObject('changed::overlay-pill-height', () => this._updateDimensions(), this);
+            this._settings.connectObject('changed::overlay-art-size', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::vertical-offset', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::horizontal-offset', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::dock-position', () => this._controller._queueInject(), this);
@@ -372,6 +398,7 @@ export const MusicPill = GObject.registerClass(
 
             this._updateTransparencyConfig();
             this._updateDimensions();
+            this.connect('destroy', this._cleanup.bind(this));
 
             this._isActuallyVisible = true;
             this._cancellable = new Gio.Cancellable();
@@ -410,6 +437,9 @@ export const MusicPill = GObject.registerClass(
             if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
             if (this._singleClickTimerId) { GLib.Source.remove(this._singleClickTimerId); this._singleClickTimerId = null; }
             if (this._idleDimId) { GLib.Source.remove(this._idleDimId); this._idleDimId = null; }
+            if (this._pollTimerId) { GLib.Source.remove(this._pollTimerId); this._pollTimerId = null; }
+            if (this._fullscreenHideTimerId) { GLib.Source.remove(this._fullscreenHideTimerId); this._fullscreenHideTimerId = null; }
+            if (this._revealSensor) { this._revealSensor.destroy(); this._revealSensor = null; }
             if (this._cancellable) { this._cancellable.cancel(); this._cancellable = null; }
         }
         animateOutAndDestroy() {
@@ -520,6 +550,124 @@ export const MusicPill = GObject.registerClass(
             this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
         }
 
+        _onFullscreenChanged() {
+            let mode = this._settings.get_int('autohide-mode');
+            if (mode === 0) { // Never hide
+                if (this._fullscreenActive) this._revealPill();
+                this._fullscreenActive = false;
+                this._lastFocusWindow = null;
+                return;
+            }
+
+            let monitor = Main.layoutManager.findMonitorForActor(this);
+            if (!monitor) return;
+
+            let fw = global.display.get_focus_window();
+            let focusChanged = (fw !== this._lastFocusWindow);
+            this._lastFocusWindow = fw;
+
+            let inFullscreen = false;
+            if (mode === 1) { // Current app
+                if (fw && fw.get_monitor() === monitor.index) {
+                    inFullscreen = (fw.is_fullscreen() || fw.get_maximized() === 3) && !fw.minimized;
+                }
+            } else { // Any app
+                let windows = global.get_window_actors().map(a => a.meta_window);
+                inFullscreen = windows.some(w => {
+                    if (!w) return false;
+                    if (!w.is_on_all_workspaces() && w.get_workspace() !== global.workspace_manager.get_active_workspace()) {
+                        if (w.get_workspace() !== global.workspace_manager.get_active_workspace()) return false;
+                    }
+                    if (w.get_monitor() !== monitor.index) return false;
+                    return (w.is_fullscreen() || w.get_maximized() === 3) && !w.minimized;
+                });
+            }
+
+            if (inFullscreen) {
+
+                if (!this._fullscreenActive || focusChanged) {
+                    this._fullscreenActive = true;
+                    this._showAndScheduleHide();
+                }
+            } else {
+                if (this._fullscreenActive) {
+                    this._fullscreenActive = false;
+                    this._revealPill();
+                }
+            }
+        }
+
+        _showAndScheduleHide(customDelay = null) {
+            if (!this._isActiveState) return;
+            this._revealPill();
+            let delay = customDelay || Math.max(2000, this._settings.get_int('autohide-delay'));
+            this._startFullscreenHideTimer(delay);
+        }
+
+        _startFullscreenHideTimer(delay) {
+            if (this._fullscreenHideTimerId) {
+                GLib.Source.remove(this._fullscreenHideTimerId);
+                this._fullscreenHideTimerId = null;
+            }
+
+            if (!this._fullscreenActive) return;
+
+            this._fullscreenHideTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
+                this._fullscreenHideTimerId = null;
+
+                if (this._fullscreenActive && !this._isHovered && !this._isPopupOpen) {
+                    this._hidePillAnimated();
+                }
+                return GLib.SOURCE_REMOVE;
+            });
+        }
+
+        _hidePillAnimated() {
+            this._body.reactive = false;
+            this.remove_transition('opacity');
+            this.ease({
+                opacity: 0,
+                duration: 800,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onStopped: (isFinished) => {
+                    if (!isFinished) return;
+
+                    if (this._fullscreenActive && !this._isHovered && !this._isPopupOpen) {
+                        this.visible = false;
+                        if (this._revealSensor) {
+                            this._revealSensor.reactive = true;
+                            this._updatePosition();
+                        }
+                    }
+                }
+            });
+        }
+
+        _revealPill() {
+            if (this._fullscreenHideTimerId) {
+                GLib.Source.remove(this._fullscreenHideTimerId);
+                this._fullscreenHideTimerId = null;
+            }
+            if (this._revealSensor) this._revealSensor.reactive = false;
+            
+            if (!this._isActiveState) return;
+
+            this.visible = true;
+            this._body.reactive = true;
+            this.remove_transition('opacity');
+            this.ease({
+                opacity: 255,
+                duration: 400,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+            });
+
+
+            if (this._fullscreenActive) {
+                let delay = Math.max(3000, this._settings.get_int('autohide-delay'));
+                this._startFullscreenHideTimer(delay);
+            }
+        }
+
         setGameMode(active) {
             if (this._gameModeActive === active) return;
             this._gameModeActive = active;
@@ -576,7 +724,8 @@ export const MusicPill = GObject.registerClass(
         _updateDimensions() {
             if (!this.get_parent()) return;
             let target = this._settings.get_int('target-container');
-            this._inPanel = (target > 0);
+            this._inPanel = (target >= 1 && target <= 3);
+            this._isDetached = (target === 4);
 
             let parent = this.get_parent();
             let isSidePanel = false;
@@ -592,12 +741,22 @@ export const MusicPill = GObject.registerClass(
 
             let width, height, prefArtSize;
 
-            let confWidth = this._inPanel ? this._settings.get_int('panel-pill-width') : this._settings.get_int('pill-width');
+            let confWidth;
+            if (this._inPanel) {
+                confWidth = this._settings.get_int('panel-pill-width');
+            } else if (this._isDetached) {
+                confWidth = this._settings.get_int('overlay-pill-width');
+            } else {
+                confWidth = this._settings.get_int('pill-width');
+            }
             width = confWidth;
 
             if (this._inPanel) {
                 height = this._settings.get_int('panel-pill-height');
                 prefArtSize = this._settings.get_int('panel-art-size');
+            } else if (this._isDetached) {
+                height = this._settings.get_int('overlay-pill-height');
+                prefArtSize = this._settings.get_int('overlay-art-size');
             } else {
                 height = this._settings.get_int('pill-height');
                 prefArtSize = this._settings.get_int('dock-art-size');
@@ -650,8 +809,8 @@ export const MusicPill = GObject.registerClass(
                 this._textWrapper.show();
             }
 
-            this._body.translation_y = vOffset;
-            this._body.translation_x = hOffset;
+            this._body.translation_y = this._isDetached ? 0 : vOffset;
+            this._body.translation_x = this._isDetached ? 0 : hOffset;
 
             if (shadowEnabled) {
                 this._shadowCSS = `box-shadow: 0px 2px ${shadowBlur}px rgba(0, 0, 0, ${shadowOpacity});`;
@@ -830,6 +989,8 @@ export const MusicPill = GObject.registerClass(
                 }
             }
 
+            this._updatePosition(true);
+
             if (this._idleDimId) { GLib.Source.remove(this._idleDimId); this._idleDimId = null; }
 
             this._idleDimId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
@@ -881,6 +1042,7 @@ export const MusicPill = GObject.registerClass(
                             duration: 300,
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD
                         });
+                        this._updatePosition(true);
                     }
                 }
 
@@ -894,6 +1056,42 @@ export const MusicPill = GObject.registerClass(
             }
 
             this.visible = true;
+        }
+
+        _updatePosition(animate = false) {
+            let target = this._settings.get_int('target-container');
+            let isDetached = (target === 4);
+
+            if (!isDetached) {
+                this.set_position(0, 0);
+                return;
+            }
+
+            let monitor = Main.layoutManager.primaryMonitor;
+            if (!monitor) return;
+
+            let vOffset = this._settings.get_int('vertical-offset');
+            let hOffset = this._settings.get_int('horizontal-offset');
+            let finalW = this._targetWidth;
+
+            let targetX = Math.round(monitor.x + (monitor.width / 2) - (finalW / 2) + hOffset);
+            let targetY = Math.round(monitor.y + vOffset);
+
+            if (animate && this._isActiveState) {
+                this.ease({
+                    x: targetX,
+                    y: targetY,
+                    duration: 400,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                });
+            } else {
+                this.set_position(targetX, targetY);
+            }
+
+            if (this._revealSensor) {
+                this._revealSensor.set_position(targetX, monitor.y);
+                this._revealSensor.set_size(finalW, 2);
+            }
         }
 
         _animateSlide(offset) {
@@ -1031,8 +1229,9 @@ export const MusicPill = GObject.registerClass(
 
                     if (!this._isActiveState || this.opacity === 0 || this.width <= 1) {
                         this._isActiveState = true;
-                        this.reactive = true;
+                        this._body.reactive = true;
                         this.visible = true;
+                        if (this._revealSensor) this._revealSensor.reactive = false;
 
                         this._updateDimensions();
                         let finalWidth = this._targetWidth;
@@ -1050,6 +1249,10 @@ export const MusicPill = GObject.registerClass(
                         this.opacity = 0;
                         this.ease({ opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                         this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    }
+
+                    if (this._fullscreenActive) {
+                        this._showAndScheduleHide();
                     }
 
                     if (forceUpdate || artUrl !== this._lastArtUrl || titleChanged) {
@@ -1090,7 +1293,7 @@ export const MusicPill = GObject.registerClass(
                         if (!this.get_parent()) return GLib.SOURCE_REMOVE;
 
                         this._isActiveState = false;
-                        this.reactive = false;
+                        this._body.reactive = false;
 
                         if (this._interfaceSettings && this._settings.get_boolean('sync-accent-color')) {
                             try { this._interfaceSettings.set_string('accent-color', this._originalAccent || 'blue'); } catch (e) { }
@@ -1142,8 +1345,9 @@ export const MusicPill = GObject.registerClass(
                 }
 
                 this._isActiveState = true;
-                this.reactive = true;
+                this._body.reactive = true;
                 this.visible = true;
+                if (this._revealSensor) this._revealSensor.reactive = false;
 
                 this._updateDimensions();
                 let finalWidth = this._targetWidth;
@@ -1164,6 +1368,10 @@ export const MusicPill = GObject.registerClass(
                 this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
             } else {
                 this._updateDimensions();
+            }
+
+            if (this._fullscreenActive) {
+                this._showAndScheduleHide();
             }
 
             this._updatePlayingStates();
@@ -1332,9 +1540,12 @@ export const MusicPill = GObject.registerClass(
 
             if (this._settings.get_boolean('use-custom-colors')) {
                 let customBg = this._settings.get_string('custom-bg-color').split(',');
-                r = parseInt(customBg[0]) || 40;
-                g = parseInt(customBg[1]) || 40;
-                b = parseInt(customBg[2]) || 40;
+                let rVal = parseInt(customBg[0]);
+                r = (!isNaN(rVal)) ? rVal : 40;
+                let gVal = parseInt(customBg[1]);
+                g = (!isNaN(gVal)) ? gVal : 40;
+                let bVal = parseInt(customBg[2]);
+                b = (!isNaN(bVal)) ? bVal : 40;
             }
             if (!this._body || !this._body.get_parent()) return;
 
@@ -1377,4 +1588,7 @@ export const MusicPill = GObject.registerClass(
                 }
             }
         }
-    });
+
+
+    }
+);

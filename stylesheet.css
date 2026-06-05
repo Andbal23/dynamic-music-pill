@@ -1,6 +1,5 @@
 .music-pill-container {
     background: transparent !important;
-    margin: 0 10px;
 }
 
 .pill-body {
@@ -12,12 +11,11 @@
 }
 
 .music-pill-expanded {
-    background-color: rgba(30, 30, 30, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 24px;
-    padding: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    min-width: 320px;
+    padding: 0px;
+    min-width: 0px;
+    min-height: 0px;
 }
 
 .expanded-top-row {

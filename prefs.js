@@ -28,7 +28,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'visualizer-bars','enable-lyrics','app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration','visualizer-bar-width', 'visualizer-height',
             'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height','edge-margin','popup-vinyl-speed','sync-accent-color',
             'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history',
-            'show-hours-format', 'popup-show-album-title'
+            'show-hours-format', 'popup-show-album-title',
+            'overlay-pill-width', 'overlay-pill-height', 'overlay-art-size'
         ];
 
         // =========================================
@@ -398,6 +399,19 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         popRotateRow.add_suffix(popRotateToggle);
         popupGroup.add(popRotateRow);
         
+        const popAnimModel = new Gtk.StringList();
+        popAnimModel.append(_("Popup"));
+        popAnimModel.append(_("Expansion"));
+
+        const popAnimRow = new Adw.ComboRow({
+            title: _('Popup Mode'),
+            subtitle: _('Choose between a separate popup or a smooth expansion'),
+            model: popAnimModel,
+            selected: settings.get_int('popup-animation-style')
+        });
+        popAnimRow.connect('notify::selected', () => { settings.set_int('popup-animation-style', popAnimRow.selected); });
+        popupGroup.add(popAnimRow);
+
         const popRotateSpeedRow = new Adw.SpinRow({
             title: _('Rotation Speed'),
             subtitle: _('Adjust the vinyl spin speed (Lower is slower, Default: 10)'),
@@ -824,6 +838,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         targetModel.append(_("Panel: Left Box"));
         targetModel.append(_("Panel: Center Box"));
         targetModel.append(_("Panel: Right Box"));
+        targetModel.append(_("Detached (Overlay)"));
 
         const targetRow = new Adw.ComboRow({
             title: _('Container Target'),
@@ -878,7 +893,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         const vOffsetRow = new Adw.SpinRow({
             title: _('Vertical Offset (Y)'),
             subtitle: _('Shift Up (-) or Down (+)'),
-            adjustment: new Gtk.Adjustment({ lower: -30, upper: 30, step_increment: 1 })
+            adjustment: new Gtk.Adjustment({ lower: -1000, upper: 1000, step_increment: 1 })
         });
         settings.bind('vertical-offset', vOffsetRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         posGroup.add(vOffsetRow);
@@ -886,7 +901,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         const hOffsetRow = new Adw.SpinRow({
             title: _('Horizontal Offset (X)'),
             subtitle: _('Shift Left (-) or Right (+)'),
-            adjustment: new Gtk.Adjustment({ lower: -50, upper: 50, step_increment: 1 })
+            adjustment: new Gtk.Adjustment({ lower: -1000, upper: 1000, step_increment: 1 })
         });
         settings.bind('horizontal-offset', hOffsetRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         posGroup.add(hOffsetRow);
@@ -907,7 +922,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const dockHeightRow = new Adw.SpinRow({
             title: _('Widget Height'),
-            adjustment: new Gtk.Adjustment({ lower: 32, upper: 100, step_increment: 4 })
+            adjustment: new Gtk.Adjustment({ lower: 32, upper: 200, step_increment: 4 })
         });
         settings.bind('pill-height', dockHeightRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         dockDimGroup.add(dockHeightRow);
@@ -929,11 +944,34 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const panelHeightRow = new Adw.SpinRow({
             title: _('Widget Height'),
-            adjustment: new Gtk.Adjustment({ lower: 20, upper: 60, step_increment: 2 })
+            adjustment: new Gtk.Adjustment({ lower: 20, upper: 200, step_increment: 2 })
         });
         settings.bind('panel-pill-height', panelHeightRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         panelDimGroup.add(panelHeightRow);
         posGroup.add(panelDimGroup);
+
+        const overlayDimGroup = new Adw.PreferencesGroup({ title: _('Dimensions (Overlay Mode)') });
+        const overlayArtSizeRow = new Adw.SpinRow({
+            title: _('Album Art Size'),
+            adjustment: new Gtk.Adjustment({ lower: 16, upper: 100, step_increment: 1 })
+        });
+        settings.bind('overlay-art-size', overlayArtSizeRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        overlayDimGroup.add(overlayArtSizeRow);
+
+        const overlayWidthRow = new Adw.SpinRow({
+            title: _('Widget Width'),
+            adjustment: new Gtk.Adjustment({ lower: 100, upper: 800, step_increment: 10 })
+        });
+        settings.bind('overlay-pill-width', overlayWidthRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        overlayDimGroup.add(overlayWidthRow);
+
+        const overlayHeightRow = new Adw.SpinRow({
+            title: _('Widget Height'),
+            adjustment: new Gtk.Adjustment({ lower: 20, upper: 300, step_increment: 4 })
+        });
+        settings.bind('overlay-pill-height', overlayHeightRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        overlayDimGroup.add(overlayHeightRow);
+        posGroup.add(overlayDimGroup);
         const colorGroup = new Adw.PreferencesGroup({ title: _('Custom Colors') });
         
         const syncAccentRow = new Adw.ActionRow({
@@ -1021,6 +1059,37 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('compatibility-delay', compatDelayToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         compatDelayRow.add_suffix(compatDelayToggle);
         compatGroup.add(compatDelayRow);
+
+        const fullscreenGroup = new Adw.PreferencesGroup({ title: _('Fullscreen Behavior') });
+        const autoHideModel = new Gtk.StringList();
+        autoHideModel.append(_("Never (Always Visible)"));
+        autoHideModel.append(_("Only when current app is fullscreen"));
+        autoHideModel.append(_("When any app is fullscreen or maximized"));
+
+        const autoHideRow = new Adw.ComboRow({
+            title: _('Autohide Pill'),
+            subtitle: _('Automatically hide the pill when an app takes the screen'),
+            model: autoHideModel,
+            selected: settings.get_int('autohide-mode')
+        });
+        autoHideRow.connect('notify::selected', () => { settings.set_int('autohide-mode', autoHideRow.selected); });
+        fullscreenGroup.add(autoHideRow);
+
+        const autoHideDelayRow = new Adw.SpinRow({
+            title: _('Autohide Delay (ms)'),
+            subtitle: _('Time before the pill disappears'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 5000, step_increment: 100 })
+        });
+        settings.bind('autohide-delay', autoHideDelayRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        
+        const updateDelayState = () => {
+            autoHideDelayRow.set_sensitive(settings.get_int('autohide-mode') !== 0);
+        };
+        settings.connect('changed::autohide-mode', updateDelayState);
+        updateDelayState();
+        
+        fullscreenGroup.add(autoHideDelayRow);
+        otherPage.add(fullscreenGroup);
         
         const filterModel = new Gtk.StringList();
         filterModel.append(_("Off (Allow All)"));
@@ -1643,13 +1712,12 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         window.add(aboutPage);
 
         function updateGroupVisibility(targetVal) {
-            if (targetVal === 0) {
-                dockDimGroup.set_visible(true);
-                panelDimGroup.set_visible(false);
-            } else {
-                dockDimGroup.set_visible(false);
-                panelDimGroup.set_visible(true);
-            }
+            dockDimGroup.set_visible(targetVal === 0);
+            panelDimGroup.set_visible(targetVal >= 1 && targetVal <= 3);
+            overlayDimGroup.set_visible(targetVal === 4);
+            
+            modeRow.set_visible(targetVal !== 4);
+            indexRow.set_visible(targetVal === 0);
         }
         updateGroupVisibility(settings.get_int('target-container'));
     }

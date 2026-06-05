@@ -37,7 +37,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._isSpinning = false;
 
             this._backgroundBtn = new St.Button({
-                style: 'background-color: transparent;',
+                style: 'background-color: transparent; border: none; box-shadow: none;',
                 reactive: true,
                 x_expand: true,
                 y_expand: true,
@@ -67,11 +67,27 @@ export const ExpandedPlayer = GObject.registerClass(
             }, this);
             this.add_child(this._backgroundBtn);
 
-            this._box = new PixelSnappedBox({
+            this._box = new St.Widget({
                 style_class: 'music-pill-expanded',
-                reactive: true
+                style: 'background-color: transparent; border: none; box-shadow: none;',
+                reactive: true,
+                x_expand: false,
+                y_expand: false,
+                x_align: Clutter.ActorAlign.START,
+                y_align: Clutter.ActorAlign.START
             });
-            this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
+
+            this._box.connect('notify::allocation', () => {
+                let box = this._box.get_allocation_box();
+                let w = box.get_width();
+                let h = box.get_height();
+                if (this._mainPage) {
+                    this._mainPage.set_size(w, h);
+                }
+                if (this._currentSubPage) {
+                    this._currentSubPage.set_size(w, h);
+                }
+            });
             const _boxEventOverHint = (event) => {
                 if (!this._firstHintBox || !this._firstHintBox.visible) return false;
                 let [hx, hy] = this._firstHintBox.get_transformed_position();
@@ -92,6 +108,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 return Clutter.EVENT_STOP;
             }, this);
+            this._leaveHideTimeoutId = null;
+
             this._box.connectObject('touch-event', (actor, event) => {
                 if (!this._firstHintBox || !this._firstHintBox.visible) return Clutter.EVENT_STOP;
                 let [hx, hy] = this._firstHintBox.get_transformed_position();
@@ -119,7 +137,10 @@ export const ExpandedPlayer = GObject.registerClass(
             this._currentSubPage = null;
             this.add_child(this._box);
 
-            this._mainPage = new St.BoxLayout({ vertical: true, x_expand: true });
+            this._mainPage = new St.BoxLayout({ 
+                vertical: true, 
+                style: 'padding: 20px;'
+            });
             this._box.add_child(this._mainPage);
 
             this._playerSelectorBox = new PixelSnappedBox({
@@ -608,21 +629,24 @@ export const ExpandedPlayer = GObject.registerClass(
 
             if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
                 let customBg = this._settings.get_string('custom-bg-color').split(',');
-                safeR = parseInt(customBg[0]) || 40;
-                safeG = parseInt(customBg[1]) || 40;
-                safeB = parseInt(customBg[2]) || 40;
+                let rVal = parseInt(customBg[0]);
+                safeR = (!isNaN(rVal)) ? rVal : 40;
+                let gVal = parseInt(customBg[1]);
+                safeG = (!isNaN(gVal)) ? gVal : 40;
+                let bVal = parseInt(customBg[2]);
+                safeB = (!isNaN(bVal)) ? bVal : 40;
             }
 
             let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${finalAlpha});`;
 
-            let shadowOp = Math.min(0.5, finalAlpha);
-            let shadowStyle = useShadow ? `box-shadow: 0px 8px 30px rgba(0,0,0,${shadowOp});` : 'box-shadow: none;';
+            let shadowOp = 0;
+            let shadowStyle = 'box-shadow: none;';
 
             let borderOp = Math.min(0.1, finalAlpha * 0.2);
             let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255,255,255,${borderOp});`;
 
             let minWLimit = this._computeMinControlsWidth();
-            let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; padding: 20px; ${shadowStyle} min-width: ${minWLimit}px; max-width: 600px;`;
+            let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; ${shadowStyle} max-width: 600px;`;
 
             if (this._lastPopupCss !== css) {
                 this._lastPopupCss = css;
@@ -638,9 +662,12 @@ export const ExpandedPlayer = GObject.registerClass(
 
             if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
                 let customTextStr = this._settings.get_string('custom-text-color').split(',');
-                fgR = parseInt(customTextStr[0]) || 255;
-                fgG = parseInt(customTextStr[1]) || 255;
-                fgB = parseInt(customTextStr[2]) || 255;
+                let rVal = parseInt(customTextStr[0]);
+                fgR = (!isNaN(rVal)) ? rVal : 255;
+                let gVal = parseInt(customTextStr[1]);
+                fgG = (!isNaN(gVal)) ? gVal : 255;
+                let bVal = parseInt(customTextStr[2]);
+                fgB = (!isNaN(bVal)) ? bVal : 255;
             } else {
                 let brightness = (safeR * 299 + safeG * 587 + safeB * 114) / 1000;
                 if (brightness > 160) {
@@ -1069,9 +1096,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 layout_manager: new Clutter.BinLayout(),
                 x_expand: true,
                 y_expand: true,
+                x_align: Clutter.ActorAlign.FILL,
+                y_align: Clutter.ActorAlign.FILL,
                 clip_to_allocation: true,
-                style: `border-radius: 20px;
-                        background-color: rgba(${pillCol.r},${pillCol.g},${pillCol.b},0.07);`
+                style: `background-color: transparent;`
             });
             this._currentSubPage = page;
             page.translation_x = 28;
@@ -1105,6 +1133,8 @@ export const ExpandedPlayer = GObject.registerClass(
 
             lyricsWidget.x_expand = true;
             lyricsWidget.y_expand = true;
+            lyricsWidget.x_align = Clutter.ActorAlign.FILL;
+            lyricsWidget.y_align = Clutter.ActorAlign.FILL;
 
             let fgR = isDark ? 255 : 30;
             let fgG = isDark ? 255 : 30;
@@ -1164,6 +1194,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
             this._lyricsWidget = lyricsWidget;
             this._box.add_child(page);
+            this.animateResize();
 
             GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
                 if (page.get_parent() && page === this._currentSubPage) {
@@ -1680,15 +1711,29 @@ export const ExpandedPlayer = GObject.registerClass(
             });
         }
 
-        showFor(player, artUrl) {
+        showFor(player, artUrl, initialRect = null) {
             disableDashToDockAutohide();
             this.setPlayer(player);
             this._isOpening = true;
             this._isHiding = false;
             this.visible = true;
-            this.opacity = 0;
             this.grab_key_focus();
-            this.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+
+            if (initialRect) {
+                this._lastPillRect = initialRect;
+                this.opacity = 255;
+                this._box.set_position(initialRect.x, initialRect.y);
+                this._box.set_size(initialRect.width, initialRect.height);
+                this._mainPage.opacity = 0;
+                this._mainPage.ease({
+                    opacity: 255,
+                    duration: 400,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                });
+            } else {
+                this.opacity = 0;
+                this.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            }
 
             let status = player.PlaybackStatus;
             let m = player.Metadata;
@@ -1734,7 +1779,6 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         hide() {
-
             if (this._isHiding) return;
             this._isHiding = true;
 
@@ -1749,22 +1793,59 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (this._mainPage) this._mainPage.show();
             }
 
-            restoreDashToDockAutohide()
+            restoreDashToDockAutohide();
             this._stopTimer();
             this._stopVinyl();
             if (this._controller._pill) this._controller._pill._setPopupOpen(false);
-            this.ease({
-                opacity: 0,
-                duration: 200,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: (isFinished) => {
-                    if (!isFinished) return;
-                    this.visible = false;
-                    if (this._controller) {
-                        this._controller.closeMenu();
+
+            let animStyle = this._settings.get_int('popup-animation-style');
+            if (animStyle === 0) {
+                this.visible = false;
+                if (this._controller) this._controller.closeMenu();
+                return;
+            }
+
+            let pill = this._controller._pill;
+            if (pill) {
+                let [px, py] = pill.get_transformed_position();
+                let [pw, ph] = pill.get_transformed_size();
+
+                this._mainPage.ease({
+                    opacity: 0,
+                    duration: 200,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                });
+
+                this._box.ease({
+                    width: pw,
+                    height: ph,
+                    x: px,
+                    y: py,
+                    duration: 350,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => {
+                        this.visible = false;
+                        if (this._controller) this._controller.closeMenu();
+                        pill.visible = true;
+                        pill.reactive = true;
+                        pill.opacity = 0;
+                        pill.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     }
-                }
-            });
+                });
+            } else {
+                this.ease({
+                    opacity: 0,
+                    duration: 200,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: (isFinished) => {
+                        if (!isFinished) return;
+                        this.visible = false;
+                        if (this._controller) {
+                            this._controller.closeMenu();
+                        }
+                    }
+                });
+            }
         }
 
         _cleanup() {
@@ -2014,7 +2095,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
         animateResize() {
             if (!this._box || !this._controller || !this._controller._pill) return;
-            if (this._currentSubPage) return;
+            if (this._currentSubPage || this._isHiding) return;
+            
+            let animStyle = this._settings.get_int('popup-animation-style');
 
             if (this._resizeDebounceId) {
                 GLib.Source.remove(this._resizeDebounceId);
@@ -2026,14 +2109,26 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (!this._box) return GLib.SOURCE_REMOVE;
 
                 let currentW = this._box.width;
+                let currentH = this._box.height;
                 let currentX = Math.round(this._box.x);
                 let currentY = Math.round(this._box.y);
 
-                this._box.set_width(-1);
+                this._box.set_size(-1, -1);
                 let [minW, natW] = this._box.get_preferred_width(-1);
                 natW = Math.ceil(natW);
                 let [minH, natH] = this._box.get_preferred_height(natW);
                 natH = Math.ceil(natH);
+                this._box.set_size(currentW, currentH);
+
+                let animStyle = this._settings.get_int('popup-animation-style');
+                if (animStyle === 0) {
+                    this._box.set_size(-1, -1);
+                    let [, nW] = this._box.get_preferred_width(-1);
+                    nW = Math.max(Math.ceil(nW), 260);
+                    let [, nH] = this._box.get_preferred_height(nW);
+                    this._box.set_size(nW, Math.ceil(nH));
+                    return GLib.SOURCE_REMOVE;
+                }
 
                 let baseMinW = this._computeMinControlsWidth();
 
@@ -2076,14 +2171,22 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (currentW > 0 && Math.abs(menuW - currentW) < 20) {
                     menuW = currentW;
                 }
-                if (currentW > 0) this._box.set_width(currentW);
 
                 let pill = this._controller._pill;
                 if (!pill || !pill.get_parent()) return GLib.SOURCE_REMOVE;
-                let [px, py] = pill.get_transformed_position();
-                let [pw, ph] = pill.get_transformed_size();
-                let monitor = Main.layoutManager.findMonitorForActor(pill);
 
+                let px, py, pw, ph;
+                if (this._lastPillRect) {
+                    px = this._lastPillRect.x;
+                    py = this._lastPillRect.y;
+                    pw = this._lastPillRect.width;
+                    ph = this._lastPillRect.height;
+                } else {
+                    [px, py] = pill._body.get_transformed_position();
+                    [pw, ph] = pill._body.get_transformed_size();
+                }
+
+                let monitor = Main.layoutManager.findMonitorForActor(pill);
                 if (!monitor) return GLib.SOURCE_REMOVE;
 
                 px = Math.round(px); py = Math.round(py);
@@ -2112,12 +2215,8 @@ export const ExpandedPlayer = GObject.registerClass(
                     if (targetX < monitor.x + 10) targetX = monitor.x + 10;
                     else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
 
-                    let isTopEdge = (py < monitor.y + (monitor.height / 2));
-                    if (isTopEdge) {
-                        targetY = Math.round(py + ph + 15);
-                    } else {
-                        targetY = Math.round(py - menuH - 15);
-                    }
+                    targetY = Math.round(py);
+                    if (targetY + menuH > monitor.y + monitor.height - 10) targetY = monitor.y + monitor.height - menuH - 10;
                 }
 
                 let isCurrentlySafe = (currentX >= monitor.x + 10 && (currentX + menuW) <= (monitor.x + monitor.width - 10));
@@ -2131,19 +2230,33 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
 
                 if (this._isOpening) {
-                    this._box.set_position(targetX, targetY);
-                    this._box.set_width(menuW);
                     this._isOpening = false;
+                    this._box.remove_all_transitions();
+                    this._box.ease({
+                        width: menuW,
+                        height: menuH,
+                        x: targetX,
+                        y: targetY,
+                        duration: 400,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        onStopped: () => {
+                            if (this._box) this._box.set_size(menuW, menuH);
+                        }
+                    });
                     return GLib.SOURCE_REMOVE;
                 }
 
                 this._box.remove_all_transitions();
                 this._box.ease({
                     width: menuW,
+                    height: menuH,
                     x: targetX,
                     y: targetY,
                     duration: 300,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => {
+                        if (this._box) this._box.set_size(menuW, menuH);
+                    }
                 });
 
                 return GLib.SOURCE_REMOVE;
