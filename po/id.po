@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-05-22 03:11+0000\n"
+"PO-Revision-Date: 2026-06-11 13:01+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/id/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.6.dev0\n"
+"X-Generator: Weblate 2026.6\n"
 
 #: prefs.js:38
 msgid "Main Pill"
@@ -80,7 +80,7 @@ msgstr "Ganti Pemutar"
 
 #: prefs.js:142
 msgid "Seek ±10s"
-msgstr ""
+msgstr "Lewati ±10 dtk"
 
 #: prefs.js:151
 msgid "Scroll Action"
@@ -124,11 +124,11 @@ msgstr "Teks tetap diam sampai Anda menyorot pil"
 
 #: prefs.js:228
 msgid "Freeze Scroll on Pause"
-msgstr ""
+msgstr "Bekukan gulir saat jeda"
 
 #: prefs.js:229
 msgid "Stop the text scrolling animation when the media player is paused"
-msgstr ""
+msgstr "Hentikan animasi gulir teks saat pemutar media dijeda"
 
 #: prefs.js:242
 msgid "Lyrics Display"
@@ -196,23 +196,23 @@ msgstr "Semua Kontrol"
 
 #: prefs.js:302
 msgid "Controls Position"
-msgstr ""
+msgstr "Posisi kontrol"
 
 #: prefs.js:303
 msgid "Where to place the tablet controls on the pill"
-msgstr ""
+msgstr "Tempat menaruh kontrol tablet pada pill"
 
 #: prefs.js:305
 msgid "Before Text"
-msgstr ""
+msgstr "Sebelum teks"
 
 #: prefs.js:305
 msgid "After Text"
-msgstr ""
+msgstr "Setelah teks"
 
 #: prefs.js:305
 msgid "After Visualizer"
-msgstr ""
+msgstr "Setelah visualizer"
 
 #: prefs.js:319
 msgid "Inline Artist"
@@ -224,11 +224,11 @@ msgstr "Tampilkan \"Judul -  Artis\" saat widget dipersempit"
 
 #: prefs.js:325
 msgid "Show Artist"
-msgstr ""
+msgstr "Tampilkan artis"
 
 #: prefs.js:325
 msgid "Show the artist name in the main music pill"
-msgstr ""
+msgstr "Tampilkan nama artis di pill musik utama"
 
 #: prefs.js:337
 msgid "Compact Mode (Hide Text)"
@@ -418,40 +418,40 @@ msgstr "Tampilkan Pemilih Pemutar"
 
 #: prefs.js:554
 msgid "Display active player icons in the pop-up"
-msgstr ""
+msgstr "Tampilkan ikon pemutar yang aktif di pop-up"
 
 #: prefs.js:562
 msgid "Hide Auto (Smart Selection)"
-msgstr ""
+msgstr "Sembunyikan Otomatis (Seleksi Cerdas)"
 
 #: prefs.js:563
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
-msgstr ""
+msgstr "Hapus entri pemilihan pemutar otomatis dari menu pemilih pemutar"
 
 #: prefs.js:574
 msgid "Player Selector Position"
-msgstr ""
+msgstr "Posisi pemilih pemutar"
 
 #: prefs.js:575
 msgid "Where to place the player icons inside the pop-up"
-msgstr ""
+msgstr "Tempat menaruh ikon pemutar di dalam pop-up"
 
 #: prefs.js:576
 msgid "Top"
-msgstr ""
+msgstr "Atas"
 
 #: prefs.js:576
 msgid "Bottom"
-msgstr ""
+msgstr "Bawah"
 
 #: prefs.js:576
 msgid "Left"
-msgstr ""
+msgstr "Kiri"
 
 #: prefs.js:576
 msgid "Right"
-msgstr ""
+msgstr "Kanan"
 
 #: prefs.js:587
 msgid "Show Album Title"
@@ -1138,11 +1138,11 @@ msgstr "Volume"
 
 #: src/uiExpandedPlayer.js:1344
 msgid "System Volume"
-msgstr ""
+msgstr "Volume sistem"
 
 #: src/uiExpandedPlayer.js:1356
 msgid "Player"
-msgstr ""
+msgstr "Pemutar"
 
 #: src/uiExpandedPlayer.js:1362
 msgid "No audio stream available"
@@ -1150,7 +1150,7 @@ msgstr "Tidak ada aliran audio yang tersedia"
 
 #: src/uiExpandedPlayer.js:1454
 msgid "Toggle Mute All"
-msgstr ""
+msgstr "Alihkan bisu semua"
 
 #: src/uiExpandedPlayer.js:1474
 msgid "Seek"

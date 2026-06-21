@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-06-09 20:01+0000\n"
+"PO-Revision-Date: 2026-06-11 13:01+0000\n"
 "Last-Translator: Ocin4ever <85343782+Ocin4ever@users.noreply.github.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/fr/>\n"
@@ -73,7 +73,7 @@ msgstr "Ajuster le volume"
 
 #: prefs.js:141
 msgid "Switch Player"
-msgstr "Changer de Lecteur"
+msgstr "Changer de lecteur"
 
 #: prefs.js:142
 msgid "Seek ±10s"
@@ -101,7 +101,7 @@ msgstr "Inverser la direction de défilement"
 
 #: prefs.js:191
 msgid "Swap up/down scrolling for track and volume actions"
-msgstr "Défilez vers le haut/bas pour changer de morceau et ajuster le volume"
+msgstr "Défiler vers le haut/bas pour les actions sur les pistes et le volume"
 
 #: prefs.js:203
 msgid "Scrolling Text"
@@ -227,7 +227,7 @@ msgstr "Afficher l'artiste"
 
 #: prefs.js:325
 msgid "Show the artist name in the main music pill"
-msgstr "Afficher le nom de l'artiste sur la pastille"
+msgstr "Affiche le nom de l'artiste sur la pastille"
 
 #: prefs.js:337
 msgid "Compact Mode (Hide Text)"
@@ -358,7 +358,7 @@ msgstr "Suivre la couleur de texte personnalisée"
 
 #: prefs.js:481
 msgid "Use the custom text color for the pop-up (if active)"
-msgstr "Utiliser la couleur de texte personnalisée pour le menu (si activée)"
+msgstr "Utilise la couleur de texte personnalisée pour le menu (si activée)"
 
 #: prefs.js:490
 msgid "Follow Transparency"
@@ -366,7 +366,7 @@ msgstr "Faire correspondre la transparence"
 
 #: prefs.js:491
 msgid "Inherit opacity settings from the main pill"
-msgstr "Hériter de l'opacité de la pastille principale"
+msgstr "Hérite de l'opacité de la pastille principale"
 
 #: prefs.js:502
 msgid "Follow Border Radius"
@@ -374,7 +374,7 @@ msgstr "Suivre l'arrondi des bordures"
 
 #: prefs.js:503
 msgid "Inherit corner roundness from the main pill"
-msgstr "Hériter l'arrondi de la pastille principale"
+msgstr "Hérite l'arrondi de la pastille principale"
 
 #: prefs.js:512
 msgid "Show Vinyl"
@@ -382,7 +382,7 @@ msgstr "Afficher la pochette"
 
 #: prefs.js:512
 msgid "Display the album art in the pop-up"
-msgstr "Afficher la pochette dans le pop-up"
+msgstr "Affiche la pochette dans le pop-up"
 
 #: prefs.js:518
 msgid "Square Vinyl Image"
@@ -390,7 +390,7 @@ msgstr "Vinyle au format carré"
 
 #: prefs.js:518
 msgid "Use a square album art (disables rotation)"
-msgstr "Utiliser une pochette carrée (désactive la rotation)"
+msgstr "Utilise une pochette carrée (désactive la rotation)"
 
 #: prefs.js:524
 msgid "Show Shuffle and Loop"
@@ -406,7 +406,7 @@ msgstr "Définir une largeur personnalisée"
 
 #: prefs.js:530
 msgid "Disable dynamic sizing for the pop-up"
-msgstr "Désactiver la taille dynamique du pop-up"
+msgstr "Désactive la taille dynamique du pop-up"
 
 #: prefs.js:537
 msgid "Custom Width Value"
@@ -418,7 +418,7 @@ msgstr "Afficher le sélecteur de lecteur"
 
 #: prefs.js:554
 msgid "Display active player icons in the pop-up"
-msgstr "Afficher les icônes des lecteurs actifs dans le pop-up"
+msgstr "Affiche les icônes des lecteurs actifs dans le pop-up"
 
 #: prefs.js:562
 msgid "Hide Auto (Smart Selection)"
@@ -460,7 +460,7 @@ msgstr "Afficher le titre de l'album"
 
 #: prefs.js:588
 msgid "Display album name next to the artist (Artist • Album)"
-msgstr "Afficher le nom de l'album à côté de l'artiste (Artiste • Album)"
+msgstr "Affiche le nom de l'album à côté de l'artiste (Artiste • Album)"
 
 #: prefs.js:596
 msgid "Show HH:MM:SS"
@@ -468,7 +468,7 @@ msgstr "Afficher HH:MM:SS"
 
 #: prefs.js:597
 msgid "Display hours in the time labels when media is longer than 60 minutes"
-msgstr "Afficher les heures si le média dure plus de 60 minutes"
+msgstr "Affiche les heures si le média dure plus de 60 minutes"
 
 #: prefs.js:608
 msgid "Show Visualizer in Pop-up"
@@ -494,7 +494,7 @@ msgstr "Largeur des barres (visualiseur du pop-up)"
 
 #: prefs.js:641
 msgid "Popup Visualizer Height"
-msgstr "Hauteur du visualiseur du menu"
+msgstr "Hauteur des barres (visualiseur du pop-up)"
 
 #: prefs.js:651
 msgid "Custom Control Buttons"
@@ -504,7 +504,7 @@ msgstr "Boutons de commande personnalisés"
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr ""
 "Ajouter jusqu'à deux boutons supplémentaires dans la barre de contrôle "
-"étendue."
+"étendue"
 
 #: prefs.js:656
 msgid "Enable Custom Buttons"
@@ -513,8 +513,8 @@ msgstr "Activer les boutons personnalisés"
 #: prefs.js:657
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr ""
-"Afficher des boutons d'action supplémentaires à côté de l'Aléatoire et de la "
-"Répétition"
+"Afficher des boutons d'action supplémentaires à côté de \"aléatoire\" et de "
+"\"répétition\""
 
 #: prefs.js:669
 msgid "Volume Control"
@@ -555,7 +555,7 @@ msgstr "Bouton personnalisé 1"
 
 #: prefs.js:708
 msgid "Placed left of Shuffle."
-msgstr "Placé à gauche de l'Aléatoire"
+msgstr "Placé à gauche de \"aléatoire\""
 
 #: prefs.js:711
 msgid "Custom Button 2"
@@ -563,11 +563,11 @@ msgstr "Bouton personnalisé 2"
 
 #: prefs.js:711
 msgid "Placed right of Loop."
-msgstr "Placé à droite de la répétition"
+msgstr "Placé à droite de \"répétition\""
 
 #: prefs.js:722
 msgid "Style & Layout"
-msgstr "Style & Disposition"
+msgstr "Style & disposition"
 
 #: prefs.js:726
 msgid "Visualizer and Shape"
@@ -595,7 +595,7 @@ msgstr "Animation du visualiseur"
 
 #: prefs.js:736
 msgid "Select the style of the audio reaction bars"
-msgstr "Sélectionner le style des barres de réaction audio"
+msgstr "Sélectionne le style des barres de réaction audio"
 
 #: prefs.js:744
 msgid ""
@@ -611,7 +611,7 @@ msgstr "Nombre de barres du visualiseur"
 
 #: prefs.js:754
 msgid "Number of bars displayed in the animation"
-msgstr "Nombre de barres affichées dans l'animation"
+msgstr "Définit le nombre de barres affichées dans l'animation"
 
 #: prefs.js:761
 msgid "Visualizer Bar Width"
@@ -619,7 +619,7 @@ msgstr "Largeur des barres du visualiseur"
 
 #: prefs.js:762
 msgid "Thickness of individual bars (pixels)"
-msgstr "Épaisseur de chaque barre (pixels)"
+msgstr "Ajuste l'épaisseur de chaque barre (pixels)"
 
 #: prefs.js:769
 msgid "Visualizer Height"
@@ -628,7 +628,8 @@ msgstr "Hauteur du visualiseur"
 #: prefs.js:770
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
-"Hauteur maximale du visualiseur (limitée par la hauteur de la pastille)"
+"Ajuste la hauteur maximale du visualiseur (limitée par la hauteur de la "
+"pastille)"
 
 #: prefs.js:777
 msgid "Visualizer Margin"
@@ -636,7 +637,7 @@ msgstr "Marge du visualiseur"
 
 #: prefs.js:778
 msgid "Distance between the text and the wave animation"
-msgstr "Distance entre le texte et l'animation de la vague"
+msgstr "Ajuste la distance entre le texte et l'animation de la vague"
 
 #: prefs.js:785
 msgid "Outer Edge Margin"
@@ -644,7 +645,7 @@ msgstr "Marge des bords extérieurs"
 
 #: prefs.js:786
 msgid "Spacing before the album art and after the visualizer"
-msgstr "Espacement avant la pochette d'album et après le visualiseur"
+msgstr "Ajuste l'espacement avant la pochette d'album et après le visualiseur"
 
 #: prefs.js:793
 msgid "Corner Radius"
@@ -652,7 +653,7 @@ msgstr "Rayon des coins"
 
 #: prefs.js:794
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
-msgstr "Arrondi des bords (0 = Carré, 25 = Pastille)"
+msgstr "Modifie l'arrondi des bords (0 = carré, 25 = pastille)"
 
 #: prefs.js:801
 msgid "Show Pill Outline"
@@ -660,7 +661,7 @@ msgstr "Afficher le contour de la pastille"
 
 #: prefs.js:802
 msgid "Display a subtle border around the main pill"
-msgstr "Afficher une bordure discrète autour de la pastille principale"
+msgstr "Affiche une bordure discrète autour de la pastille principale"
 
 #: prefs.js:815
 msgid "Background and Transparency"
@@ -672,7 +673,7 @@ msgstr "Activer la transparence"
 
 #: prefs.js:818
 msgid "Switch between a solid theme background and a custom transparent look"
-msgstr "Basculer entre un fond uni et une apparence transparente"
+msgstr "Bascule entre un fond uni et fond transparent"
 
 #: prefs.js:829
 msgid "Background Opacity"
@@ -680,7 +681,7 @@ msgstr "Opacité de l'arrière-plan"
 
 #: prefs.js:830
 msgid "Adjust transparency level"
-msgstr "Ajuster le niveau de transparence"
+msgstr "Ajuste le niveau de transparence"
 
 #: prefs.js:837
 msgid "Apply to Album Art"
@@ -732,7 +733,7 @@ msgstr "Placement de la pastille"
 
 #: prefs.js:890
 msgid "Select which UI element should host the music pill"
-msgstr "Choisir quel élément de l'interface doit accueillir la pastille"
+msgstr "Définit quel élément de l'interface doit accueillir la pastille"
 
 #: prefs.js:901
 msgid "Dynamic Width"
@@ -741,7 +742,7 @@ msgstr "Largeur dynamique"
 #: prefs.js:901
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
-"Ajuster automatiquement la largeur de la pastille (le curseur définit le max)"
+"Ajuste automatiquement la largeur de la pastille (le curseur définit le max)"
 
 #: prefs.js:916
 msgid "Manual Index"
@@ -761,19 +762,20 @@ msgstr "Dernier (Fin)"
 
 #: prefs.js:922
 msgid "Alignment Preset"
-msgstr "Préréglage d'alignement"
+msgstr "Alignement de la pastille"
 
 #: prefs.js:923
 msgid "How the widget aligns relative to other items"
-msgstr "Comment le widget s'aligne par rapport aux autres éléments"
+msgstr ""
+"Définit comment le widget doit s'aligner par rapport aux autres éléments"
 
 #: prefs.js:931
 msgid "Manual Index Position"
-msgstr "Position d'index manuel"
+msgstr "Index de la pastille"
 
 #: prefs.js:932
 msgid "Order in the list (0 is first). Only for Manual mode."
-msgstr "Ordre dans la liste (0 est le premier). Mode manuel uniquement."
+msgstr "Ordre dans la liste (premier : 0)"
 
 #: prefs.js:939
 msgid "Vertical Offset (Y)"
@@ -781,7 +783,7 @@ msgstr "Décalage vertical (Y)"
 
 #: prefs.js:940
 msgid "Shift Up (-) or Down (+)"
-msgstr "Déplacer vers le haut (-) ou le bas (+)"
+msgstr "Déplace vers le haut (-) ou le bas (+)"
 
 #: prefs.js:947
 msgid "Horizontal Offset (X)"
@@ -789,7 +791,7 @@ msgstr "Décalage horizontal (X)"
 
 #: prefs.js:948
 msgid "Shift Left (-) or Right (+)"
-msgstr "Déplacer vers la gauche (-) ou la droite (+)"
+msgstr "Déplace vers la gauche (-) ou la droite (+)"
 
 #: prefs.js:954
 msgid "Dimensions (Dock Mode)"
@@ -817,12 +819,12 @@ msgstr "Couleurs personnalisées"
 
 #: prefs.js:1000
 msgid "Sync GNOME Accent Color"
-msgstr "Synchroniser la couleur d'accentuation de GNOME"
+msgstr "Synchroniser avec la couleur d'accentuation de GNOME"
 
 #: prefs.js:1001
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr ""
-"Changer dynamiquement la couleur d'accentuation de GNOME Shell selon la "
+"Change dynamiquement la couleur d'accentuation de GNOME Shell selon la "
 "pochette"
 
 #: prefs.js:1011
@@ -831,7 +833,7 @@ msgstr "Utiliser des couleurs personnalisées"
 
 #: prefs.js:1011
 msgid "Override dynamic colors"
-msgstr "Remplacer les couleurs dynamiques"
+msgstr "Remplace les couleurs dynamiques"
 
 #: prefs.js:1040
 msgid "Background Color"
@@ -843,7 +845,7 @@ msgstr "Couleur du texte"
 
 #: prefs.js:1052
 msgid "System & Reset"
-msgstr "Système et réinitialisation"
+msgstr "Système & Réinitialisation"
 
 #: prefs.js:1056
 msgid "System"
@@ -855,7 +857,7 @@ msgstr "Masquer le lecteur GNOME par défaut"
 
 #: prefs.js:1060
 msgid "Remove the duplicate built-in media controls"
-msgstr "Supprimer les commandes média intégrées en double"
+msgstr "Supprime les commandes média intégrées en double"
 
 #: prefs.js:1070
 msgid "Game Mode"
@@ -863,7 +865,7 @@ msgstr "Mode Jeu"
 
 #: prefs.js:1070
 msgid "Disable animations when a fullscreen app is active"
-msgstr "Désactiver les animations en plein écran"
+msgstr "Désactive les animations en plein écran"
 
 #: prefs.js:1077
 msgid "Slow Player Workaround"
@@ -893,7 +895,7 @@ msgstr "Mode de filtrage des lecteurs"
 
 #: prefs.js:1092
 msgid "Choose how to filter media players (e.g. browsers)"
-msgstr "Choisir comment filtrer les lecteurs média (ex : navigateurs)"
+msgstr "Choisit le type de filtre pour les lecteurs (ex : navigateurs)"
 
 #: prefs.js:1103
 msgid "Filtered Players (comma separated)"
@@ -1112,7 +1114,7 @@ msgstr "Signaler des bugs ou voir le code sur GitHub"
 
 #: src/controller.js:1398
 msgid "Unknown Player"
-msgstr "Lecteur Inconnu"
+msgstr "Lecteur inconnu"
 
 #: src/controller.js:1399
 msgid "No active media"
@@ -1135,11 +1137,11 @@ msgstr ""
 
 #: src/uiExpandedPlayer.js:725
 msgid "Unknown Title"
-msgstr "Titre Inconnu"
+msgstr "Titre inconnu"
 
 #: src/uiExpandedPlayer.js:728
 msgid "Unknown Artist"
-msgstr "Artiste Inconnu"
+msgstr "Artiste inconnu"
 
 #: src/uiExpandedPlayer.js:1336
 msgid "Volume"
@@ -1167,11 +1169,11 @@ msgstr "Défilement"
 
 #: src/uiExpandedPlayer.js:1478
 msgid "This player does not support seeking"
-msgstr "Ce lecteur ne prend pas en charge le défilement"
+msgstr "Ce lecteur ne prend pas en charge l'avance rapide"
 
 #: src/uiExpandedPlayer.js:1504
 msgid "Audio Output"
-msgstr "Sortie Audio"
+msgstr "Sortie audio"
 
 #: src/uiExpandedPlayer.js:1506
 msgid "Audio control unavailable"
@@ -1183,7 +1185,7 @@ msgstr "Aucun périphérique de sortie trouvé"
 
 #: src/uiExpandedPlayer.js:1512
 msgid "Unknown Device"
-msgstr "Appareil Inconnu"
+msgstr "Appareil inconnu"
 
 #: src/uiExpandedPlayer.js:1533
 msgid "min left"
@@ -1227,7 +1229,7 @@ msgstr "Supprimer l’historique"
 
 #: src/uiMusicPill.js:734 src/uiMusicPill.js:1042
 msgid "No Media"
-msgstr "Aucun Média"
+msgstr "Aucun média"
 
 #: src/uiMusicPill.js:1043
 msgid "Waiting for playback..."
