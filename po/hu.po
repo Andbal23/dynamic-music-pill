@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-04-09 14:23+0000\n"
+"PO-Revision-Date: 2026-06-29 09:02+0000\n"
 "Last-Translator: László András <laszlo2002andras@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/hu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: prefs.js:38
 msgid "Main Pill"
@@ -80,7 +80,7 @@ msgstr "Lejátszó váltása"
 
 #: prefs.js:142
 msgid "Seek ±10s"
-msgstr ""
+msgstr "Tekerés ±10s"
 
 #: prefs.js:151
 msgid "Scroll Action"
@@ -125,11 +125,11 @@ msgstr ""
 
 #: prefs.js:228
 msgid "Freeze Scroll on Pause"
-msgstr ""
+msgstr "Görgetés leállítása szünetnél"
 
 #: prefs.js:229
 msgid "Stop the text scrolling animation when the media player is paused"
-msgstr ""
+msgstr "A futó szöveg animációjának leállítása, ha a lejátszás szünetel"
 
 #: prefs.js:242
 msgid "Lyrics Display"
@@ -197,23 +197,23 @@ msgstr "Minden vezérlő"
 
 #: prefs.js:302
 msgid "Controls Position"
-msgstr ""
+msgstr "Vezérlők pozíciója"
 
 #: prefs.js:303
 msgid "Where to place the tablet controls on the pill"
-msgstr ""
+msgstr "A vezérlők helye a kapszulán tablet módban"
 
 #: prefs.js:305
 msgid "Before Text"
-msgstr ""
+msgstr "Szöveg előtt"
 
 #: prefs.js:305
 msgid "After Text"
-msgstr ""
+msgstr "Szöveg után"
 
 #: prefs.js:305
 msgid "After Visualizer"
-msgstr ""
+msgstr "A vizualizáció után"
 
 #: prefs.js:319
 msgid "Inline Artist"
@@ -225,11 +225,11 @@ msgstr "A \"Cím • Előadó\" megjelenítése, ha a widget össze van nyomva"
 
 #: prefs.js:325
 msgid "Show Artist"
-msgstr ""
+msgstr "Előadó mutatása"
 
 #: prefs.js:325
 msgid "Show the artist name in the main music pill"
-msgstr ""
+msgstr "Az előadó nevének megjelenítése a fő kapszulán"
 
 #: prefs.js:337
 msgid "Compact Mode (Hide Text)"
@@ -417,40 +417,42 @@ msgstr "Lejátszóválasztó megjelenítése"
 
 #: prefs.js:554
 msgid "Display active player icons in the pop-up"
-msgstr ""
+msgstr "Az aktív lejátszók ikonjainak megjelenítése a felugró ablakban"
 
 #: prefs.js:562
 msgid "Hide Auto (Smart Selection)"
-msgstr ""
+msgstr "„Auto (Okos kiválasztás)” elrejtése"
 
 #: prefs.js:563
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr ""
+"Az automatikus lejátszó-választási opció eltávolítása a lejátszóválasztó "
+"menüből"
 
 #: prefs.js:574
 msgid "Player Selector Position"
-msgstr ""
+msgstr "Lejátszóválasztó pozíciója"
 
 #: prefs.js:575
 msgid "Where to place the player icons inside the pop-up"
-msgstr ""
+msgstr "A lejátszóikonok elhelyezkedése a felugró ablakon belül"
 
 #: prefs.js:576
 msgid "Top"
-msgstr ""
+msgstr "Fent"
 
 #: prefs.js:576
 msgid "Bottom"
-msgstr ""
+msgstr "Alul"
 
 #: prefs.js:576
 msgid "Left"
-msgstr ""
+msgstr "Baloldalt"
 
 #: prefs.js:576
 msgid "Right"
-msgstr ""
+msgstr "Jobboldalt"
 
 #: prefs.js:587
 msgid "Show Album Title"
@@ -1135,11 +1137,11 @@ msgstr "Hangerő"
 
 #: src/uiExpandedPlayer.js:1344
 msgid "System Volume"
-msgstr ""
+msgstr "Rendszer hangereje"
 
 #: src/uiExpandedPlayer.js:1356
 msgid "Player"
-msgstr ""
+msgstr "Lejátszó"
 
 #: src/uiExpandedPlayer.js:1362
 msgid "No audio stream available"
@@ -1147,7 +1149,7 @@ msgstr "Nincs elérhető hangfolyam"
 
 #: src/uiExpandedPlayer.js:1454
 msgid "Toggle Mute All"
-msgstr ""
+msgstr "Összes elnémítása"
 
 #: src/uiExpandedPlayer.js:1474
 msgid "Seek"
