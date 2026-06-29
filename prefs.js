@@ -1546,9 +1546,16 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const changelog = [
             {
-                version: "1.2.0 - Latest Update",
-                subtitle: "New features & Bug Fixes",
+                version: "1.2.1",
+                subtitle: "Translation Updates",
                 expanded: true,
+                notes: "🌍 Translations:\n" +
+                    "• Updated translations for all supported languages via Weblate."              
+            },
+            {
+                version: "1.2.0",
+                subtitle: "New features & Bug Fixes",
+                expanded: false,
                 notes: "✨ New Features:\n" +
                     "• Added a new toggle 'Show artist'.\n" +
                     "• Tablet mode buttons, new positions.\n" +
