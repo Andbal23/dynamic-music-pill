@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-04-28 11:09+0000\n"
+"PO-Revision-Date: 2026-07-03 22:01+0000\n"
 "Last-Translator: Yiğithan Karabel <yigithankarabel@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/tr/>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: prefs.js:38
 msgid "Main Pill"
-msgstr ""
+msgstr "Ana Simge"
 
 #: prefs.js:44
 msgid "General Settings"
@@ -81,7 +81,7 @@ msgstr "Oynatıcıyı Değiştir"
 
 #: prefs.js:142
 msgid "Seek ±10s"
-msgstr ""
+msgstr "±10s Atla"
 
 #: prefs.js:151
 msgid "Scroll Action"
@@ -97,7 +97,7 @@ msgstr "Kaydırma Animasyonunu Tersine Çevir"
 
 #: prefs.js:179
 msgid "Direction of the jump effect (Natural vs Traditional)"
-msgstr ""
+msgstr "Atlama efektinin yönü (doğal vs geleneksel)"
 
 #: prefs.js:190
 msgid "Invert Scroll Direction"
@@ -105,7 +105,7 @@ msgstr "Kaydırma Yönünü Tersine Çevir"
 
 #: prefs.js:191
 msgid "Swap up/down scrolling for track and volume actions"
-msgstr ""
+msgstr "Parça ve ses eylemleri için kaydırma yönünü ters çevirin"
 
 #: prefs.js:203
 msgid "Scrolling Text"
@@ -125,11 +125,11 @@ msgstr "Fare imlecini simgenin üzerine getirene kadar metin sabit kalır"
 
 #: prefs.js:228
 msgid "Freeze Scroll on Pause"
-msgstr ""
+msgstr "Duraklatıldığında Kaydırmayı Dondur"
 
 #: prefs.js:229
 msgid "Stop the text scrolling animation when the media player is paused"
-msgstr ""
+msgstr "Medya oynatıcı duraklatıldığında metin kaydırma animasyonunu durdurun"
 
 #: prefs.js:242
 msgid "Lyrics Display"
@@ -155,7 +155,7 @@ msgstr "Otomatik"
 
 #: prefs.js:258
 msgid "Prefer original script"
-msgstr "Orijinal metni tercih edin"
+msgstr "Orijinal yazımı tercih edin"
 
 #: prefs.js:259
 msgid "Prefer Latin"
@@ -199,23 +199,23 @@ msgstr "Tüm Kontroller"
 
 #: prefs.js:302
 msgid "Controls Position"
-msgstr ""
+msgstr "Kontrollerin Konumu"
 
 #: prefs.js:303
 msgid "Where to place the tablet controls on the pill"
-msgstr ""
+msgstr "Simge üzerindeki tablet kontrollerinin yerleştirileceği yer"
 
 #: prefs.js:305
 msgid "Before Text"
-msgstr ""
+msgstr "Metinden Önce"
 
 #: prefs.js:305
 msgid "After Text"
-msgstr ""
+msgstr "Metinden Sonra"
 
 #: prefs.js:305
 msgid "After Visualizer"
-msgstr ""
+msgstr "Görselleştiriciden Sonra"
 
 #: prefs.js:319
 msgid "Inline Artist"
@@ -227,11 +227,11 @@ msgstr "Simge küçültüldüğünde \"Başlık • Sanatçı\" şeklinde göste
 
 #: prefs.js:325
 msgid "Show Artist"
-msgstr ""
+msgstr "Sanatçıyı Göster"
 
 #: prefs.js:325
 msgid "Show the artist name in the main music pill"
-msgstr ""
+msgstr "Ana müzik simgesinde sanatçının ismini gösterin"
 
 #: prefs.js:337
 msgid "Compact Mode (Hide Text)"
@@ -279,7 +279,7 @@ msgstr "Ayarları Aç"
 
 #: prefs.js:355
 msgid "Close Player App"
-msgstr "Oynatıcı Uygulamasını Kapat"
+msgstr "Oynatıcı Uyg. Kapat"
 
 #: prefs.js:362
 msgid "Left Click"
@@ -347,35 +347,35 @@ msgstr "Fare imleci uzaklaştığında açılır menüyü otomatik olarak gizley
 
 #: prefs.js:470
 msgid "Follow Custom Background Color"
-msgstr ""
+msgstr "Özel Arka Plan Rengini Eşitle"
 
 #: prefs.js:471
 msgid "Use the custom background color for the pop-up (if active)"
-msgstr "Açılır pencere için özel arka plan rengi kullanın (etkin ise)"
+msgstr "Açılır menü için özel arka plan rengi kullanın (etkin ise)"
 
 #: prefs.js:480
 msgid "Follow Custom Text Color"
-msgstr ""
+msgstr "Özel Metin Rengini Eşitle"
 
 #: prefs.js:481
 msgid "Use the custom text color for the pop-up (if active)"
-msgstr "Açılır pencere için özel metin rengi kullanın (etkin ise)"
+msgstr "Açılır menü için özel metin rengi kullanın (etkin ise)"
 
 #: prefs.js:490
 msgid "Follow Transparency"
-msgstr ""
+msgstr "Saydamlığı Eşitle"
 
 #: prefs.js:491
 msgid "Inherit opacity settings from the main pill"
-msgstr ""
+msgstr "Ana simgedeki opaklık ayarını kullanın"
 
 #: prefs.js:502
 msgid "Follow Border Radius"
-msgstr ""
+msgstr "Köşe Yuvarlaklığını Eşitle"
 
 #: prefs.js:503
 msgid "Inherit corner roundness from the main pill"
-msgstr ""
+msgstr "Ana simgedeki köşe yuvarlaklığını kullanın"
 
 #: prefs.js:512
 msgid "Show Vinyl"
@@ -419,7 +419,7 @@ msgstr "Oynatıcı Seçiciyi Göster"
 
 #: prefs.js:554
 msgid "Display active player icons in the pop-up"
-msgstr ""
+msgstr "Açılır menüde etkin oynatıcıların ikonlarını gösterin"
 
 #: prefs.js:562
 msgid "Hide Auto (Smart Selection)"
@@ -432,27 +432,27 @@ msgstr ""
 
 #: prefs.js:574
 msgid "Player Selector Position"
-msgstr ""
+msgstr "Oynatıcı Seçici Konumu"
 
 #: prefs.js:575
 msgid "Where to place the player icons inside the pop-up"
-msgstr ""
+msgstr "Açılır menüde oynatıcı ikonlarının görüneceği yer"
 
 #: prefs.js:576
 msgid "Top"
-msgstr ""
+msgstr "Üst"
 
 #: prefs.js:576
 msgid "Bottom"
-msgstr ""
+msgstr "Alt"
 
 #: prefs.js:576
 msgid "Left"
-msgstr ""
+msgstr "Sol"
 
 #: prefs.js:576
 msgid "Right"
-msgstr ""
+msgstr "Sağ"
 
 #: prefs.js:587
 msgid "Show Album Title"
@@ -473,27 +473,29 @@ msgstr ""
 
 #: prefs.js:608
 msgid "Show Visualizer in Pop-up"
-msgstr ""
+msgstr "Açılır Menüde Görselleştiriciyi Göster"
 
 #: prefs.js:615
 msgid "Hide Pill Visualizer"
-msgstr ""
+msgstr "Simgedeki Görselleştiriciyi Gizle"
 
 #: prefs.js:616
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr ""
+"Ana simgedeki görselleştiriciyi gizleyerek \"hareket ediyor\" efekti "
+"oluşturur"
 
 #: prefs.js:625
 msgid "Popup Visualizer Bar Count"
-msgstr ""
+msgstr "Açılır Menü Görselleştiricisi Çubuk Sayısı"
 
 #: prefs.js:633
 msgid "Popup Visualizer Bar Width"
-msgstr ""
+msgstr "Açılır Menü Görselleştiricisi Çubuk Genişliği"
 
 #: prefs.js:641
 msgid "Popup Visualizer Height"
-msgstr ""
+msgstr "Açılır Menü Görselleştiricisi Yüksekliği"
 
 #: prefs.js:651
 msgid "Custom Control Buttons"
@@ -541,6 +543,8 @@ msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
 msgstr ""
+"Her iki düğme de Atla'ya ayarlanmışsa doğrudan eylemi yaparlar (düğme 1 = -"
+"10s, düğme 2 = +10s). Aksi takdirde Atla, bir alt sayfa açar."
 
 #: prefs.js:708
 msgid "Custom Button 1"
@@ -729,7 +733,7 @@ msgstr "Müzik simgesinin hangi kullanıcı arayüz ögesinde bulunacağını se
 
 #: prefs.js:901
 msgid "Dynamic Width"
-msgstr ""
+msgstr "Dinamik Genişlik"
 
 #: prefs.js:901
 msgid "Auto-adjust pill width (slider acts as max width)"
@@ -737,51 +741,51 @@ msgstr ""
 
 #: prefs.js:916
 msgid "Manual Index"
-msgstr ""
+msgstr "Manuel İndeks"
 
 #: prefs.js:917
 msgid "First (Start)"
-msgstr ""
+msgstr "Baş"
 
 #: prefs.js:918
 msgid "Center"
-msgstr ""
+msgstr "Orta"
 
 #: prefs.js:919
 msgid "Last (End)"
-msgstr ""
+msgstr "Son"
 
 #: prefs.js:922
 msgid "Alignment Preset"
-msgstr ""
+msgstr "Hizalama Ön Ayarı"
 
 #: prefs.js:923
 msgid "How the widget aligns relative to other items"
-msgstr ""
+msgstr "Simgenin diğer ögelere göre nasıl hızalandığıdır"
 
 #: prefs.js:931
 msgid "Manual Index Position"
-msgstr ""
+msgstr "Manuel İndeks Konumu"
 
 #: prefs.js:932
 msgid "Order in the list (0 is first). Only for Manual mode."
-msgstr ""
+msgstr "Listedeki konumudur (0 ilktir). Sadece manuel modda."
 
 #: prefs.js:939
 msgid "Vertical Offset (Y)"
-msgstr ""
+msgstr "Dikey Öteleme (Y)"
 
 #: prefs.js:940
 msgid "Shift Up (-) or Down (+)"
-msgstr ""
+msgstr "Yukarı (-) veya aşağı (+) kaydırın"
 
 #: prefs.js:947
 msgid "Horizontal Offset (X)"
-msgstr ""
+msgstr "Yatay Öteleme (X)"
 
 #: prefs.js:948
 msgid "Shift Left (-) or Right (+)"
-msgstr ""
+msgstr "Sola (-) veya sağa (+) kaydırın"
 
 #: prefs.js:954
 msgid "Dimensions (Dock Mode)"
@@ -847,7 +851,7 @@ msgstr "Varsayılan GNOME Oynatıcısını Gizle"
 
 #: prefs.js:1060
 msgid "Remove the duplicate built-in media controls"
-msgstr ""
+msgstr "Yinelenen yerleşik medya kontrollerini kaldırın"
 
 #: prefs.js:1070
 msgid "Game Mode"
@@ -860,11 +864,12 @@ msgstr ""
 
 #: prefs.js:1077
 msgid "Slow Player Workaround"
-msgstr ""
+msgstr "Yavaş Oynatıcı Düzeltmesi"
 
 #: prefs.js:1078
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
+"Parça geçişlerine kısa bir gecikme ekler (senkronizasyon sorunlarını çözer)"
 
 #: prefs.js:1086
 msgid "Off (Allow All)"
@@ -892,7 +897,7 @@ msgstr "Filtrelenmiş Oynatıcılar (virgülle ayrılmış)"
 
 #: prefs.js:1117
 msgid "Detected Players"
-msgstr "Tespit Edilen Oynatıcılar"
+msgstr "Algılanan Oynatıcılar"
 
 #: prefs.js:1118
 msgid "Click an active player to add it to the filter list"
@@ -950,55 +955,59 @@ msgstr ""
 
 #: prefs.js:1220
 msgid "Saved App Mappings"
-msgstr ""
+msgstr "Kaydedilen Uygulama Eşleştirmeleri"
 
 #: prefs.js:1221
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
+"El ile eşleştirilmiş oynatıcılar için hedef uygulama kimliğini düzenleyin "
+"veya kaldırın."
 
 #: prefs.js:1242
 msgid "No manual mappings saved."
-msgstr ""
+msgstr "Hiçbir el ile eşleştirme kaydedilmedi."
 
 #: prefs.js:1247
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr ""
+"Doğru uygulama kimliğini girin, sonra Enter tuşuna veya Kaydet düğmesine "
+"basın!"
 
 #: prefs.js:1266
 msgid "Save App ID"
-msgstr ""
+msgstr "Uyg. Kimliğini Kaydet"
 
 #: prefs.js:1298
 msgid "Delete Mapping"
-msgstr ""
+msgstr "Eşleştirmeyi Sil"
 
 #: prefs.js:1327
 msgid "Running Players Detection"
-msgstr ""
+msgstr "Çalışan Oynatıcı Tespiti"
 
 #: prefs.js:1328
 msgid "Click on a detected player to automatically fill the mapping."
-msgstr ""
+msgstr "Eşleştirmeyi otomatik doldurmak için algılanan bir oynatıcıya tıklayın."
 
 #: prefs.js:1351
 msgid "No active players detected. Open a music app first!"
-msgstr ""
+msgstr "Etkin oynatıcı tespit edilemedi. Önce bir müzik uygulaması açın!"
 
 #: prefs.js:1353
 msgid "Select a player to help the extension identify it:"
-msgstr ""
+msgstr "Eklentinin tanımasına yardımcı olmak için bir oynatıcı seçin:"
 
 #: prefs.js:1373
 msgid "Use This"
-msgstr ""
+msgstr "Kullan"
 
 #: prefs.js:1403
 msgid "Refresh List"
-msgstr ""
+msgstr "Listeyi Yenile"
 
 #: prefs.js:1404
 msgid "Click to scan for active players again"
-msgstr ""
+msgstr "Etkin oynatıcıları tekrar taramak için tıklayın"
 
 #: prefs.js:1419
 msgid "Backup & Restore"
@@ -1133,11 +1142,11 @@ msgstr "Ses"
 
 #: src/uiExpandedPlayer.js:1344
 msgid "System Volume"
-msgstr ""
+msgstr "Sistem Sesi"
 
 #: src/uiExpandedPlayer.js:1356
 msgid "Player"
-msgstr ""
+msgstr "Oynatıcı"
 
 #: src/uiExpandedPlayer.js:1362
 msgid "No audio stream available"
@@ -1149,11 +1158,11 @@ msgstr ""
 
 #: src/uiExpandedPlayer.js:1474
 msgid "Seek"
-msgstr ""
+msgstr "Atla"
 
 #: src/uiExpandedPlayer.js:1478
 msgid "This player does not support seeking"
-msgstr ""
+msgstr "Bu oynatıcı atlamayı desteklemiyor"
 
 #: src/uiExpandedPlayer.js:1504
 msgid "Audio Output"
