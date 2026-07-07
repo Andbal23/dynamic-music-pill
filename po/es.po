@@ -4,8 +4,9 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-06-09 20:01+0000\n"
-"Last-Translator: yael <yael@tuta.com>\n"
+"PO-Revision-Date: 2026-07-08 10:01+0000\n"
+"Last-Translator: Champiñon Traductor <300458929+champinondev-"
+"lab@users.noreply.github.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/es/>\n"
 "Language: es\n"
@@ -13,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: prefs.js:38
 msgid "Main Pill"
@@ -30,6 +31,8 @@ msgstr "Siempre encendido"
 #: prefs.js:48
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr ""
+"Retener la última pista conocida y mantener la píldora visible después de "
+"cerrar el reproductor"
 
 #: prefs.js:60
 msgid "Show Album Art"
@@ -75,7 +78,7 @@ msgstr "Cambiar reproductor"
 
 #: prefs.js:142
 msgid "Seek ±10s"
-msgstr ""
+msgstr "Buscar ±10s"
 
 #: prefs.js:151
 msgid "Scroll Action"
@@ -101,6 +104,7 @@ msgstr "Invertir dirección de desplazamiento"
 #: prefs.js:191
 msgid "Swap up/down scrolling for track and volume actions"
 msgstr ""
+"Desplazamiento hacia arriba/abajo para acciones de seguimiento y volumen"
 
 #: prefs.js:203
 msgid "Scrolling Text"
@@ -112,11 +116,11 @@ msgstr "Animar títulos largos y nombres de artistas"
 
 #: prefs.js:215
 msgid "Scroll Only on Hover"
-msgstr ""
+msgstr "Desplazamiento Sólo en Hover"
 
 #: prefs.js:216
 msgid "Text stays still until you hover the pill"
-msgstr ""
+msgstr "El texto se queda quieto hasta que salta la píldora"
 
 #: prefs.js:228
 msgid "Freeze Scroll on Pause"
