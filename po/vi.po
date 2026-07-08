@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-07-07 09:01+0000\n"
+"PO-Revision-Date: 2026-07-08 10:01+0000\n"
 "Last-Translator: Huynh Tuan Dung <tuandung5a@outlook.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/vi/>\n"
@@ -210,7 +210,7 @@ msgstr "Sau văn bản"
 
 #: prefs.js:305
 msgid "After Visualizer"
-msgstr ""
+msgstr "Sau sóng nhạc"
 
 #: prefs.js:319
 msgid "Inline Artist"
@@ -468,27 +468,27 @@ msgstr "Hiện giờ ở phần thời lượng khi phương tiện dài quá 60
 
 #: prefs.js:608
 msgid "Show Visualizer in Pop-up"
-msgstr ""
+msgstr "Hiện sóng nhạc trong pop-up"
 
 #: prefs.js:615
 msgid "Hide Pill Visualizer"
-msgstr ""
+msgstr "Ẩn sóng nhạc trên pill"
 
 #: prefs.js:616
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
-msgstr ""
+msgstr "Tạo hiệu ứng \"chuyển động\" bằng cách ẩn sóng nhạc trên pill chính"
 
 #: prefs.js:625
 msgid "Popup Visualizer Bar Count"
-msgstr ""
+msgstr "Số thanh sóng nhạc trên popup"
 
 #: prefs.js:633
 msgid "Popup Visualizer Bar Width"
-msgstr ""
+msgstr "Chiều rộng thanh sóng nhạc trên popup"
 
 #: prefs.js:641
 msgid "Popup Visualizer Height"
-msgstr ""
+msgstr "Chiều cao sóng nhạc trên popup"
 
 #: prefs.js:651
 msgid "Custom Control Buttons"
@@ -496,7 +496,7 @@ msgstr "Nút điều khiển tùy chỉnh"
 
 #: prefs.js:652
 msgid "Add up to two extra buttons in the expanded player's controls row."
-msgstr ""
+msgstr "Thêm tối đa hai nút vào hàng nút điều khiển của trình phát mở rộng."
 
 #: prefs.js:656
 msgid "Enable Custom Buttons"
@@ -560,15 +560,15 @@ msgstr "Giao diện & Bố cục"
 
 #: prefs.js:726
 msgid "Visualizer and Shape"
-msgstr ""
+msgstr "Sóng nhạc và hình dạng"
 
 #: prefs.js:729
 msgid "Off (Disabled)"
-msgstr ""
+msgstr "Tắt (vô hiệu hoá)"
 
 #: prefs.js:730
 msgid "Wave (Smooth)"
-msgstr ""
+msgstr "Sóng (mượt mà)"
 
 #: prefs.js:731
 msgid "Beat (Jumpy)"
@@ -576,45 +576,49 @@ msgstr ""
 
 #: prefs.js:732
 msgid "Real-Time (Cava needed)"
-msgstr ""
+msgstr "Thời gian thực (cần có Cava)"
 
 #: prefs.js:735
 msgid "Visualizer Animation"
-msgstr ""
+msgstr "Hoạt ảnh sóng nhạc"
 
 #: prefs.js:736
 msgid "Select the style of the audio reaction bars"
-msgstr ""
+msgstr "Chọn kiểu thanh sóng âm"
 
 #: prefs.js:744
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
 msgstr ""
+"Lưu ý: Chế độ 'Thời gian thực' yêu cầu gói 'cava' phải được cài đặt trên hệ "
+"thống Linux của bạn."
 
 #: prefs.js:753
 msgid "Visualizer Bar Count"
-msgstr ""
+msgstr "Số thanh sóng nhạc"
 
 #: prefs.js:754
 msgid "Number of bars displayed in the animation"
-msgstr ""
+msgstr "Số thanh được hiển thị trong hoạt ảnh"
 
 #: prefs.js:761
 msgid "Visualizer Bar Width"
-msgstr ""
+msgstr "Chiều rộng thanh sóng nhạc"
 
 #: prefs.js:762
 msgid "Thickness of individual bars (pixels)"
-msgstr ""
+msgstr "Độ dày của từng thanh (tính theo pixel)"
 
 #: prefs.js:769
 msgid "Visualizer Height"
-msgstr ""
+msgstr "Chiều cao sóng nhạc"
 
 #: prefs.js:770
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
+"Chiều cao tối đa của biểu đồ sóng nhạc (tự động bị giới hạn bởi chiều cao "
+"của pill)"
 
 #: prefs.js:777
 msgid "Visualizer Margin"
