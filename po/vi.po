@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-07-08 10:01+0000\n"
+"PO-Revision-Date: 2026-07-09 08:02+0000\n"
 "Last-Translator: Huynh Tuan Dung <tuandung5a@outlook.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/vi/>\n"
@@ -622,19 +622,19 @@ msgstr ""
 
 #: prefs.js:777
 msgid "Visualizer Margin"
-msgstr ""
+msgstr "Khoảng cách lề sóng nhạc"
 
 #: prefs.js:778
 msgid "Distance between the text and the wave animation"
-msgstr ""
+msgstr "Khoảng cách giữa phần văn bản và sóng nhạc"
 
 #: prefs.js:785
 msgid "Outer Edge Margin"
-msgstr ""
+msgstr "Khoảng cách lề cạnh ngoài"
 
 #: prefs.js:786
 msgid "Spacing before the album art and after the visualizer"
-msgstr ""
+msgstr "Khoảng không gian trước ảnh bìa album và sau sóng nhạc"
 
 #: prefs.js:793
 msgid "Corner Radius"
@@ -682,7 +682,7 @@ msgstr "Áp dụng cho văn bản"
 
 #: prefs.js:851
 msgid "Apply to Visualizer"
-msgstr ""
+msgstr "Áp dụng cho sóng nhạc"
 
 #: prefs.js:859
 msgid "Main Pill Shadow"
@@ -736,31 +736,31 @@ msgstr ""
 
 #: prefs.js:916
 msgid "Manual Index"
-msgstr ""
+msgstr "Đặt chỉ số thủ công"
 
 #: prefs.js:917
 msgid "First (Start)"
-msgstr ""
+msgstr "Đầu"
 
 #: prefs.js:918
 msgid "Center"
-msgstr ""
+msgstr "Giữa"
 
 #: prefs.js:919
 msgid "Last (End)"
-msgstr ""
+msgstr "Cuối"
 
 #: prefs.js:922
 msgid "Alignment Preset"
-msgstr ""
+msgstr "Chế độ căn chỉnh"
 
 #: prefs.js:923
 msgid "How the widget aligns relative to other items"
-msgstr ""
+msgstr "Căn chỉnh vị trí widget so với các đối tượng khác"
 
 #: prefs.js:931
 msgid "Manual Index Position"
-msgstr ""
+msgstr "Chỉ số vị trí thủ công"
 
 #: prefs.js:932
 msgid "Order in the list (0 is first). Only for Manual mode."
@@ -768,19 +768,19 @@ msgstr "Thứ tự trong danh sách (0 là đầu tiên). Chỉ dành cho chế 
 
 #: prefs.js:939
 msgid "Vertical Offset (Y)"
-msgstr ""
+msgstr "Độ lệch theo trục dọc (Y)"
 
 #: prefs.js:940
 msgid "Shift Up (-) or Down (+)"
-msgstr ""
+msgstr "Chỉnh lệch lên phía trên (-) hoặc xuống dưới (+)"
 
 #: prefs.js:947
 msgid "Horizontal Offset (X)"
-msgstr ""
+msgstr "Độ lệch theo chiều ngang (X)"
 
 #: prefs.js:948
 msgid "Shift Left (-) or Right (+)"
-msgstr ""
+msgstr "Chỉnh lệch sang bên trái (-) hoặc bên phải (+)"
 
 #: prefs.js:954
 msgid "Dimensions (Dock Mode)"
@@ -963,11 +963,11 @@ msgstr ""
 
 #: prefs.js:1247
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
-msgstr ""
+msgstr "Gõ ID ứng dụng đúng, sau đó nhấn Enter hoặc nhấp vào biểu tượng Lưu!"
 
 #: prefs.js:1266
 msgid "Save App ID"
-msgstr ""
+msgstr "Lưu ID ứng dụng"
 
 #: prefs.js:1298
 msgid "Delete Mapping"
@@ -975,7 +975,7 @@ msgstr ""
 
 #: prefs.js:1327
 msgid "Running Players Detection"
-msgstr ""
+msgstr "Phát hiện trình phát đang chạy"
 
 #: prefs.js:1328
 msgid "Click on a detected player to automatically fill the mapping."
@@ -984,14 +984,15 @@ msgstr ""
 #: prefs.js:1351
 msgid "No active players detected. Open a music app first!"
 msgstr ""
+"Không tìm thấy trình phát nào đang hoạt động. Hãy mở một ứng dụng nghe nhạc!"
 
 #: prefs.js:1353
 msgid "Select a player to help the extension identify it:"
-msgstr ""
+msgstr "Chọn một trình phát để giúp phần mở rộng nhận dạng nó:"
 
 #: prefs.js:1373
 msgid "Use This"
-msgstr ""
+msgstr "Dùng cái này"
 
 #: prefs.js:1403
 msgid "Refresh List"
@@ -1082,8 +1083,9 @@ msgid "Open"
 msgstr "Mở"
 
 #: prefs.js:1682
+#, fuzzy
 msgid "Buy Me a Coffee"
-msgstr ""
+msgstr "Buy Me a Coffee"
 
 #: prefs.js:1683
 msgid "Support via BuyMeACoffee"
@@ -1146,7 +1148,7 @@ msgstr "Không có stream âm thanh nào"
 
 #: src/uiExpandedPlayer.js:1454
 msgid "Toggle Mute All"
-msgstr ""
+msgstr "Bật/tắt tiếng tất cả"
 
 #: src/uiExpandedPlayer.js:1474
 msgid "Seek"
@@ -1182,7 +1184,7 @@ msgstr "Hủy hẹn giờ"
 
 #: src/uiExpandedPlayer.js:1569
 msgid "Runs inside the shell — works on lock screen"
-msgstr ""
+msgstr "Chạy bên trong shell — hoạt động được trên màn hình khóa"
 
 #: src/uiExpandedPlayer.js:1581
 msgid "This player does not support playback speed"
