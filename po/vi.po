@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
-"PO-Revision-Date: 2026-07-09 08:02+0000\n"
+"PO-Revision-Date: 2026-07-10 09:01+0000\n"
 "Last-Translator: Huynh Tuan Dung <tuandung5a@outlook.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/vi/>\n"
@@ -162,7 +162,7 @@ msgstr "Hiệu ứng fade-in lời bài hát"
 
 #: prefs.js:269
 msgid "Smoothly fade in new lyric lines"
-msgstr ""
+msgstr "Hiện lời bài hát mới với hiệu ứng fade-in mượt mà"
 
 #: prefs.js:281
 msgid "Fade Duration (ms)"
@@ -571,8 +571,9 @@ msgid "Wave (Smooth)"
 msgstr "Sóng (mượt mà)"
 
 #: prefs.js:731
+#, fuzzy
 msgid "Beat (Jumpy)"
-msgstr ""
+msgstr "Beat (Jumpy)"
 
 #: prefs.js:732
 msgid "Real-Time (Cava needed)"
