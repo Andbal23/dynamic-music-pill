@@ -5,7 +5,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
 "PO-Revision-Date: 2026-07-30 17:01+0000\n"
-"Last-Translator: Guilherme Odai <guilherme.odai@outlook.com>\n"
+"Last-Translator: silveirajhess-cyber <257454391+silveirajhess-"
+"cyber@users.noreply.github.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "dynamic-music-pill/settings/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -1205,12 +1206,13 @@ msgid "Recently Played"
 msgstr "Tocado recentemente"
 
 #: src/uiExpandedPlayer.js:1629
+#, fuzzy
 msgid "No history yet"
-msgstr "Sem histórico ainda"
+msgstr "Yes history yet"
 
 #: src/uiExpandedPlayer.js:1662
 msgid "Unknown"
-msgstr "Desconhecido"
+msgstr "Nome"
 
 #: src/uiExpandedPlayer.js:1717
 msgid "Clear History"
