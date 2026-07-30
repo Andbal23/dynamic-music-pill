@@ -5,8 +5,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-03 16:59+0200\n"
 "PO-Revision-Date: 2026-07-30 17:01+0000\n"
-"Last-Translator: silveirajhess-cyber <257454391+silveirajhess-"
-"cyber@users.noreply.github.com>\n"
+"Last-Translator: Guilherme Odai <guilherme.odai@outlook.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "dynamic-music-pill/settings/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -78,7 +77,7 @@ msgstr "Alterar Reprodutor"
 
 #: prefs.js:142
 msgid "Seek ±10s"
-msgstr "Pular ±10s"
+msgstr "Saltar ±10s"
 
 #: prefs.js:151
 msgid "Scroll Action"
@@ -183,7 +182,7 @@ msgstr "Desligado"
 
 #: prefs.js:293
 msgid "Skip Only"
-msgstr "Apenas Avançar"
+msgstr "Apenas Pular Faixas"
 
 #: prefs.js:293
 msgid "Play/Pause Only"
@@ -368,11 +367,11 @@ msgstr "Herda as configurações de opacidade da pílula principal"
 
 #: prefs.js:502
 msgid "Follow Border Radius"
-msgstr "Seguir Arredondamento de Borda"
+msgstr "Seguir Raio de Canto"
 
 #: prefs.js:503
 msgid "Inherit corner roundness from the main pill"
-msgstr "Herda o arredondamento de borda da pílula principal"
+msgstr "Herda o arredondamento dos cantos da pílula principal"
 
 #: prefs.js:512
 msgid "Show Vinyl"
@@ -416,7 +415,7 @@ msgstr "Mostrar Seletor de Reprodutor"
 
 #: prefs.js:554
 msgid "Display active player icons in the pop-up"
-msgstr "Exibe ícones dos reprodutores ativos no pop-up"
+msgstr "Exibe ícones dos reprodutores ativos dentro do pop-up"
 
 #: prefs.js:562
 msgid "Hide Auto (Smart Selection)"
@@ -518,7 +517,7 @@ msgstr "Controle de Volume"
 
 #: prefs.js:670
 msgid "Seek ±10 Seconds"
-msgstr "Pular ±10 Segundos"
+msgstr "Saltar ±10 Segundos"
 
 #: prefs.js:671
 msgid "Audio Output Switcher"
@@ -526,7 +525,7 @@ msgstr "Seletor de Saída de Áudio"
 
 #: prefs.js:672 src/uiExpandedPlayer.js:1533
 msgid "Sleep Timer"
-msgstr "Temporizador de Sono"
+msgstr "Temporizador de Desligamento"
 
 #: prefs.js:673 src/uiExpandedPlayer.js:1574
 msgid "Playback Speed"
@@ -541,8 +540,9 @@ msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
 msgstr ""
-"Se os dois botões estiverem definidos para Pular, eles funcionam diretamente "
-"(Botão 1 = -10s, Botão 2 = +10s). Caso contrário, Pular abre uma sub-página."
+"Se os dois botões estiverem definidos para Saltar, eles funcionam "
+"diretamente (Botão 1 = -10s, Botão 2 = +10s). Caso contrário, Saltar abre "
+"uma sub-página."
 
 #: prefs.js:708
 msgid "Custom Button 1"
@@ -642,11 +642,11 @@ msgstr "Espaço antes da capa do álbum e após o visualizador"
 
 #: prefs.js:793
 msgid "Corner Radius"
-msgstr "Raio da Borda"
+msgstr "Raio de Canto"
 
 #: prefs.js:794
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
-msgstr "Arredondamento das bordas da pílula (0 = Quadrado, 25 = Pílula)"
+msgstr "Arredondamento dos cantos da pílula (0 = Quadrado, 25 = Pílula)"
 
 #: prefs.js:801
 msgid "Show Pill Outline"
@@ -735,7 +735,8 @@ msgstr "Largura Dinâmica"
 
 #: prefs.js:901
 msgid "Auto-adjust pill width (slider acts as max width)"
-msgstr "Auto-ajusta a largura da pílula (o slider define a largura máxima)"
+msgstr ""
+"Ajusta automaticamente a largura da pílula (o slider define a largura máxima)"
 
 #: prefs.js:916
 msgid "Manual Index"
@@ -775,7 +776,7 @@ msgstr "Deslocamento Vertical (Y)"
 
 #: prefs.js:940
 msgid "Shift Up (-) or Down (+)"
-msgstr "Mover para Cima (-) ou Baixo (+)"
+msgstr "Mover Acima (-) ou Abaixo (+)"
 
 #: prefs.js:947
 msgid "Horizontal Offset (X)"
@@ -861,7 +862,7 @@ msgstr "Desativa animações quando um app em tela cheia estiver ativo"
 
 #: prefs.js:1077
 msgid "Slow Player Workaround"
-msgstr "Alternativa para Lentidão do Reprodutor"
+msgstr "Correção para Reprodutores Lentos"
 
 #: prefs.js:1078
 msgid "Adds a slight delay to track changes (fixes sync issues)"
@@ -1004,7 +1005,7 @@ msgstr "Atualizar Lista"
 
 #: prefs.js:1404
 msgid "Click to scan for active players again"
-msgstr "Clique para uma nova varredura por reprodutores ativos"
+msgstr "Clique para buscar novamente por reprodutores ativos"
 
 #: prefs.js:1419
 msgid "Backup & Restore"
@@ -1155,11 +1156,11 @@ msgstr "Ativar/Desativar Silenciar Tudo"
 
 #: src/uiExpandedPlayer.js:1474
 msgid "Seek"
-msgstr "Pular"
+msgstr "Saltar"
 
 #: src/uiExpandedPlayer.js:1478
 msgid "This player does not support seeking"
-msgstr "Este reprodutor não suporta pular para frente/trás"
+msgstr "Este reprodutor não suporta saltos temporais"
 
 #: src/uiExpandedPlayer.js:1504
 msgid "Audio Output"
@@ -1203,28 +1204,27 @@ msgstr "Não suportado por este reprodutor"
 
 #: src/uiExpandedPlayer.js:1627
 msgid "Recently Played"
-msgstr "Tocado recentemente"
+msgstr "Reproduzidas Recentemente"
 
 #: src/uiExpandedPlayer.js:1629
-#, fuzzy
 msgid "No history yet"
-msgstr "Yes history yet"
+msgstr "Sem histórico ainda"
 
 #: src/uiExpandedPlayer.js:1662
 msgid "Unknown"
-msgstr "Nome"
+msgstr "Desconhecido"
 
 #: src/uiExpandedPlayer.js:1717
 msgid "Clear History"
-msgstr "Limpar histórico"
+msgstr "Limpar Histórico"
 
 #: src/uiMusicPill.js:734 src/uiMusicPill.js:1042
 msgid "No Media"
-msgstr "Sem mídia"
+msgstr "Nenhuma Mídia"
 
 #: src/uiMusicPill.js:1043
 msgid "Waiting for playback..."
-msgstr "Esperando reprodução..."
+msgstr "Aguardando reprodução..."
 
 #: src/uiMusicPill.js:1281
 msgid "Loading..."
@@ -1232,7 +1232,7 @@ msgstr "Carregando..."
 
 #: src/uiPlayerSelector.js:122
 msgid "Select Media Player"
-msgstr "Selecione player de mídia"
+msgstr "Selecione Reprodutor de Mídia"
 
 #: src/uiPlayerSelector.js:134
 msgid "Auto (Smart Selection)"
