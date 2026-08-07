@@ -145,6 +145,18 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._updatePlayerSelector();
                 if (this.visible) this.animateResize();
             }, this);
+            this._settings.connectObject('changed::popup-vinyl-shadow', () => {
+                if (this.visible && this._player) {
+                    let artUrl = this._lastArtUrl || this._currentArtUrl;
+                    this.updateContent(this._lastTrackTitle, '', artUrl, this._lastStatus);
+                }
+            }, this);
+            this._settings.connectObject('changed::popup-vinyl-square', () => {
+                if (this.visible && this._player) {
+                    let artUrl = this._lastArtUrl || this._currentArtUrl;
+                    this.updateContent(this._lastTrackTitle, '', artUrl, this._lastStatus);
+                }
+            }, this);
 
             let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', vertical: false, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
 
@@ -825,11 +837,18 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
 
                 let isSquare = this._settings.get_boolean('popup-vinyl-square');
+                let hasShadow = this._settings.get_boolean('popup-vinyl-shadow');
                 let radius = isSquare ? 12 : 50;
                 let newClass = isSquare ? 'vinyl-container-square' : 'vinyl-container';
 
                 if (this._vinyl.get_style_class_name() !== newClass) {
                     this._vinyl.set_style_class_name(newClass);
+                }
+
+                let shadowCss = hasShadow ? 'box-shadow: 0 4px 15px rgba(0,0,0,0.6);' : 'box-shadow: none;';
+                if (this._vinyl._lastShadowCss !== shadowCss) {
+                    this._vinyl._lastShadowCss = shadowCss;
+                    this._vinyl.set_style(shadowCss);
                 }
 
                 let children = this._vinyl.get_children();

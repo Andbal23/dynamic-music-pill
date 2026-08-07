@@ -144,6 +144,11 @@
       <default>true</default>
       <summary>Show Vinyl in Pop-up</summary>
     </key>
+    <key name="popup-vinyl-shadow" type="b">
+      <default>true</default>
+      <summary>Show Album Art Drop Shadow in Pop-up</summary>
+      <description>Display a drop shadow behind the album art in the pop-up menu.</description>
+    </key>
 
     <key name="show-shuffle-loop" type="b">
       <default>true</default>

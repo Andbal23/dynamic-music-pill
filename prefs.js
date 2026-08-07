@@ -19,7 +19,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'enable-scroll-controls', 'action-left-click', 'action-middle-click',
             'action-right-click', 'action-double-click', 'dock-art-size', 'panel-art-size',
             'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius',
-            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action', 'popup-vinyl-square',
+            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action', 'popup-vinyl-square', 'popup-vinyl-shadow',
             'popup-show-vinyl', 'show-shuffle-loop', 'use-custom-colors', 'custom-bg-color',
             'custom-text-color', 'tablet-mode', 'pill-controls-position', 'inline-artist', 'show-artist', 'pill-dynamic-width',
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list', 'hide-text',
@@ -521,6 +521,12 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('popup-vinyl-square', popSquareToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         popSquareRow.add_suffix(popSquareToggle);
         popupGroup.add(popSquareRow);
+
+        const popVinylShadowRow = new Adw.ActionRow({ title: _('Album Art Shadow'), subtitle: _('Show drop shadow behind the album art in the pop-up') });
+        const popVinylShadowToggle = new Gtk.Switch({ active: settings.get_boolean('popup-vinyl-shadow'), valign: Gtk.Align.CENTER });
+        settings.bind('popup-vinyl-shadow', popVinylShadowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        popVinylShadowRow.add_suffix(popVinylShadowToggle);
+        popupGroup.add(popVinylShadowRow);
 
         const showShuffleRow = new Adw.ActionRow({ title: _('Show Shuffle and Loop'), subtitle: _('Display extra controls in the pop-up') });
         const showShuffleToggle = new Gtk.Switch({ active: settings.get_boolean('show-shuffle-loop'), valign: Gtk.Align.CENTER });
