@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-03 16:59+0200\n"
+"POT-Creation-Date: 2026-08-07 15:03+0200\n"
 "PO-Revision-Date: 2026-04-09 14:14+0000\n"
 "Last-Translator: László András <laszlo2002andras@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/dynamic-music-"
@@ -20,890 +20,898 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.17-dev\n"
 
-#: prefs.js:38
+#: prefs.js:39
 msgid "Main Pill"
 msgstr "Головна капсула"
 
-#: prefs.js:44
+#: prefs.js:45
 msgid "General Settings"
 msgstr "Основні налаштування"
 
-#: prefs.js:47
+#: prefs.js:48
 msgid "Always ON"
 msgstr "Завжди увімкнено"
 
-#: prefs.js:48
+#: prefs.js:49
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr ""
 "Зберегти останній відомий трек і залишити капсулу видимою після закриття "
 "плеєра"
 
-#: prefs.js:60
+#: prefs.js:61
 msgid "Show Album Art"
 msgstr "Показувати обкладинку"
 
-#: prefs.js:61
+#: prefs.js:62
 msgid "Display the cover art of the currently playing song"
 msgstr "Показувати обкладинку поточного треку"
 
-#: prefs.js:72
+#: prefs.js:73
 msgid "Fallback Album Art"
 msgstr "Резервна обкладинка"
 
-#: prefs.js:73 prefs.js:113
+#: prefs.js:74 prefs.js:114
 msgid "No image selected"
 msgstr "Зображення не вибрано"
 
-#: prefs.js:83
+#: prefs.js:84
 msgid "Select Fallback Image"
 msgstr "Виберіть резервне зображення"
 
-#: prefs.js:127
+#: prefs.js:128
 msgid "Enable Scroll Controls"
 msgstr "Увімкнути керування прокруткою"
 
-#: prefs.js:128
+#: prefs.js:129
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr ""
 "Змінювати треки, гучність або медіа плеєр використовуючи гортання мишею або "
 "сенсорною панеллю"
 
-#: prefs.js:139
+#: prefs.js:140
 msgid "Change Track"
 msgstr "Перемкнути трек"
 
-#: prefs.js:140
+#: prefs.js:141
 msgid "Change Volume"
 msgstr "Змінити гучність"
 
-#: prefs.js:141
+#: prefs.js:142
 msgid "Switch Player"
 msgstr "Перемкнути плеєр"
 
-#: prefs.js:142
+#: prefs.js:143
 msgid "Seek ±10s"
 msgstr ""
 
-#: prefs.js:151
+#: prefs.js:152
 msgid "Scroll Action"
 msgstr "Дія гортання"
 
-#: prefs.js:152
+#: prefs.js:153
 msgid "Choose what scrolling on the pill should do"
 msgstr "Вибрати дію гортання"
 
-#: prefs.js:178
+#: prefs.js:179
 msgid "Invert Scroll Animation"
 msgstr "Інвертувати анімацію гортання"
 
-#: prefs.js:179
+#: prefs.js:180
 msgid "Direction of the jump effect (Natural vs Traditional)"
 msgstr "Напрям ефекту стрибка (природний або традиційний)"
 
-#: prefs.js:190
+#: prefs.js:191
 msgid "Invert Scroll Direction"
 msgstr "Інвертувати напрям гортання"
 
-#: prefs.js:191
+#: prefs.js:192
 msgid "Swap up/down scrolling for track and volume actions"
 msgstr ""
 
-#: prefs.js:203
+#: prefs.js:204
 msgid "Scrolling Text"
 msgstr "Гортання тексту"
 
-#: prefs.js:204
+#: prefs.js:205
 msgid "Animate long track titles and artist names"
 msgstr "Анімувати довгі назви треків та виконавців"
 
-#: prefs.js:215
+#: prefs.js:216
 msgid "Scroll Only on Hover"
 msgstr ""
 
-#: prefs.js:216
+#: prefs.js:217
 msgid "Text stays still until you hover the pill"
 msgstr ""
 
-#: prefs.js:228
+#: prefs.js:229
 msgid "Freeze Scroll on Pause"
 msgstr ""
 
-#: prefs.js:229
+#: prefs.js:230
 msgid "Stop the text scrolling animation when the media player is paused"
 msgstr ""
 
-#: prefs.js:242
+#: prefs.js:243
 msgid "Lyrics Display"
 msgstr "Показувати текст пісні"
 
-#: prefs.js:243
+#: prefs.js:244
 msgid "Show real-time synchronized lyrics for current track."
 msgstr ""
 "Показувати в реальному часі синхронізований текст пісні для поточного треку."
 
-#: prefs.js:254
+#: prefs.js:255
 msgid "Lyrics language preference"
 msgstr ""
 
-#: prefs.js:255
+#: prefs.js:256
 msgid "When multiple versions exist"
 msgstr ""
 
-#: prefs.js:257
+#: prefs.js:258
 msgid "Auto"
 msgstr ""
 
-#: prefs.js:258
+#: prefs.js:259
 msgid "Prefer original script"
 msgstr ""
 
-#: prefs.js:259
+#: prefs.js:260
 msgid "Prefer Latin"
 msgstr ""
 
-#: prefs.js:268
+#: prefs.js:269
 msgid "Lyrics Fade-in Effect"
 msgstr "Ефект зникання тексту пісні"
 
-#: prefs.js:269
+#: prefs.js:270
 msgid "Smoothly fade in new lyric lines"
 msgstr ""
 
-#: prefs.js:281
+#: prefs.js:282
 msgid "Fade Duration (ms)"
 msgstr ""
 
-#: prefs.js:290
+#: prefs.js:291
 msgid "Tablet Mode Controls"
 msgstr ""
 
-#: prefs.js:291
+#: prefs.js:292
 msgid "Show media buttons directly on the pill"
 msgstr ""
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "Off"
 msgstr ""
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "Skip Only"
 msgstr ""
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "Play/Pause Only"
 msgstr ""
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "All Controls"
 msgstr ""
 
-#: prefs.js:302
+#: prefs.js:303
 msgid "Controls Position"
 msgstr ""
 
-#: prefs.js:303
+#: prefs.js:304
 msgid "Where to place the tablet controls on the pill"
 msgstr ""
 
-#: prefs.js:305
+#: prefs.js:306
 msgid "Before Text"
 msgstr ""
 
-#: prefs.js:305
+#: prefs.js:306
 msgid "After Text"
 msgstr ""
 
-#: prefs.js:305
+#: prefs.js:306
 msgid "After Visualizer"
 msgstr ""
 
-#: prefs.js:319
+#: prefs.js:320
 msgid "Inline Artist"
 msgstr "Виконавець у рядку"
 
-#: prefs.js:319
+#: prefs.js:320
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "Показувати \"Назва • Виконавець\" коли віджет стиснуто"
 
-#: prefs.js:325
+#: prefs.js:326
 msgid "Show Artist"
 msgstr ""
 
-#: prefs.js:325
+#: prefs.js:326
 msgid "Show the artist name in the main music pill"
 msgstr ""
 
-#: prefs.js:337
+#: prefs.js:338
 msgid "Compact Mode (Hide Text)"
 msgstr "Компактний режим (сховати текст)"
 
-#: prefs.js:338
+#: prefs.js:339
 msgid "Hide title and artist"
 msgstr "Сховати назву і виконавця"
 
-#: prefs.js:351
+#: prefs.js:352
 msgid "Mouse Actions"
 msgstr "Дії мишею"
 
-#: prefs.js:354 prefs.js:668
+#: prefs.js:355 prefs.js:675
 msgid "None"
 msgstr ""
 
-#: prefs.js:354
+#: prefs.js:355
 msgid "Play / Pause"
 msgstr ""
 
-#: prefs.js:354
+#: prefs.js:355
 msgid "Next Track"
 msgstr ""
 
-#: prefs.js:354
+#: prefs.js:355
 msgid "Previous Track"
 msgstr ""
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Open Player App"
 msgstr ""
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Open Menu"
 msgstr ""
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Select Player"
 msgstr ""
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Open Settings"
 msgstr ""
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Close Player App"
 msgstr ""
 
-#: prefs.js:362
+#: prefs.js:363
 msgid "Left Click"
 msgstr "Ліва кнопка миші"
 
-#: prefs.js:370
+#: prefs.js:371
 msgid "Double Click"
 msgstr ""
 
-#: prefs.js:378
+#: prefs.js:379
 msgid "Middle Click"
 msgstr "Середня кнопка миші"
 
-#: prefs.js:386
+#: prefs.js:387
 msgid "Right Click"
 msgstr "Права кнопка миші"
 
-#: prefs.js:394
+#: prefs.js:395
 msgid "Hover Action"
 msgstr ""
 
-#: prefs.js:405
+#: prefs.js:406
 msgid "Hover Delay (ms)"
 msgstr ""
 
-#: prefs.js:419
+#: prefs.js:420
 msgid "Pop-up Menu"
 msgstr "Спливаюче меню"
 
-#: prefs.js:423
+#: prefs.js:424
 msgid "Pop-up Appearance"
 msgstr "Вигляд спливаючого меню"
 
-#: prefs.js:425
+#: prefs.js:426
 msgid "Rotate Vinyl"
 msgstr "Обертати обкладинку"
 
-#: prefs.js:426
+#: prefs.js:427
 msgid "Spin the album art when playing"
 msgstr "Обертати обкладинку під час відтворення"
 
-#: prefs.js:437
+#: prefs.js:438
 msgid "Rotation Speed"
 msgstr ""
 
-#: prefs.js:438
+#: prefs.js:439
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
 msgstr ""
 
-#: prefs.js:446 prefs.js:860
+#: prefs.js:447 prefs.js:867
 msgid "Enable Shadow"
 msgstr "Увімкнути тінь"
 
-#: prefs.js:447
+#: prefs.js:448
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "Показувати тінь спливаючого меню"
 
-#: prefs.js:458
+#: prefs.js:459
 msgid "Close on Mouse Leave"
 msgstr ""
 
-#: prefs.js:459
+#: prefs.js:460
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr ""
 
-#: prefs.js:470
+#: prefs.js:471
 msgid "Follow Custom Background Color"
 msgstr ""
 
-#: prefs.js:471
+#: prefs.js:472
 msgid "Use the custom background color for the pop-up (if active)"
 msgstr ""
 
-#: prefs.js:480
+#: prefs.js:481
 msgid "Follow Custom Text Color"
 msgstr ""
 
-#: prefs.js:481
+#: prefs.js:482
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr ""
 
-#: prefs.js:490
+#: prefs.js:491
 msgid "Follow Transparency"
 msgstr "Наслідувати прозорість"
 
-#: prefs.js:491
+#: prefs.js:492
 msgid "Inherit opacity settings from the main pill"
 msgstr "Наслідувати налаштування прозорості головної капсули"
 
-#: prefs.js:502
+#: prefs.js:503
 msgid "Follow Border Radius"
 msgstr "Наслідувати радіус кутів"
 
-#: prefs.js:503
+#: prefs.js:504
 msgid "Inherit corner roundness from the main pill"
 msgstr "Наслідувати налаштування радіуса кутів головної капсули"
 
-#: prefs.js:512
+#: prefs.js:513
 msgid "Show Vinyl"
 msgstr "Показувати обкладинку"
 
-#: prefs.js:512
+#: prefs.js:513
 msgid "Display the album art in the pop-up"
 msgstr "Показувати обкладинку у спливаючому меню"
 
-#: prefs.js:518
+#: prefs.js:519
 msgid "Square Vinyl Image"
 msgstr "Квадратний вигляд обкладинки"
 
-#: prefs.js:518
+#: prefs.js:519
 msgid "Use a square album art (disables rotation)"
 msgstr "Використовувати квадратний вигляд обкладинки (вимикає обертання)"
 
-#: prefs.js:524
+#: prefs.js:525
+msgid "Album Art Shadow"
+msgstr ""
+
+#: prefs.js:525
+msgid "Show drop shadow behind the album art in the pop-up"
+msgstr ""
+
+#: prefs.js:531
 msgid "Show Shuffle and Loop"
 msgstr "Показувати кнопки перемішування і повторення"
 
-#: prefs.js:524
+#: prefs.js:531
 msgid "Display extra controls in the pop-up"
 msgstr "Показувати додаткові елементи керування спливаючого меню"
 
-#: prefs.js:530
+#: prefs.js:537
 msgid "Use Custom Width"
 msgstr "Задати власну ширину"
 
-#: prefs.js:530
+#: prefs.js:537
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "Вимкнути динамічну зміну розміру спливаючого меню"
 
-#: prefs.js:537
+#: prefs.js:544
 msgid "Custom Width Value"
 msgstr "Значення власної ширини"
 
-#: prefs.js:553
+#: prefs.js:560
 msgid "Show Player Selector"
 msgstr ""
 
-#: prefs.js:554
+#: prefs.js:561
 msgid "Display active player icons in the pop-up"
 msgstr ""
 
-#: prefs.js:562
+#: prefs.js:569
 msgid "Hide Auto (Smart Selection)"
 msgstr ""
 
-#: prefs.js:563
+#: prefs.js:570
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr ""
 
-#: prefs.js:574
+#: prefs.js:581
 msgid "Player Selector Position"
 msgstr ""
 
-#: prefs.js:575
+#: prefs.js:582
 msgid "Where to place the player icons inside the pop-up"
 msgstr ""
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Top"
 msgstr ""
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Bottom"
 msgstr ""
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Left"
 msgstr ""
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Right"
 msgstr ""
 
-#: prefs.js:587
+#: prefs.js:594
 msgid "Show Album Title"
 msgstr ""
 
-#: prefs.js:588
+#: prefs.js:595
 msgid "Display album name next to the artist (Artist • Album)"
 msgstr ""
 
-#: prefs.js:596
+#: prefs.js:603
 msgid "Show HH:MM:SS"
 msgstr ""
 
-#: prefs.js:597
+#: prefs.js:604
 msgid "Display hours in the time labels when media is longer than 60 minutes"
 msgstr ""
 
-#: prefs.js:608
+#: prefs.js:615
 msgid "Show Visualizer in Pop-up"
 msgstr "Показувати візуалізатор у спливаючому меню"
 
-#: prefs.js:615
+#: prefs.js:622
 msgid "Hide Pill Visualizer"
 msgstr "Сховати візуалізатор на головній капсулі"
 
-#: prefs.js:616
+#: prefs.js:623
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr "Створює ефект \"руху\" ховаючи візуалізатор з головної капсули"
 
-#: prefs.js:625
+#: prefs.js:632
 msgid "Popup Visualizer Bar Count"
 msgstr ""
 
-#: prefs.js:633
+#: prefs.js:640
 msgid "Popup Visualizer Bar Width"
 msgstr ""
 
-#: prefs.js:641
+#: prefs.js:648
 msgid "Popup Visualizer Height"
 msgstr ""
 
-#: prefs.js:651
+#: prefs.js:658
 msgid "Custom Control Buttons"
 msgstr ""
 
-#: prefs.js:652
+#: prefs.js:659
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr ""
 
-#: prefs.js:656
+#: prefs.js:663
 msgid "Enable Custom Buttons"
 msgstr ""
 
-#: prefs.js:657
+#: prefs.js:664
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr ""
 
-#: prefs.js:669
+#: prefs.js:676
 msgid "Volume Control"
 msgstr ""
 
-#: prefs.js:670
+#: prefs.js:677
 msgid "Seek ±10 Seconds"
 msgstr ""
 
-#: prefs.js:671
+#: prefs.js:678
 msgid "Audio Output Switcher"
 msgstr ""
 
-#: prefs.js:672 src/uiExpandedPlayer.js:1533
+#: prefs.js:679 src/uiExpandedPlayer.js:1572
 msgid "Sleep Timer"
 msgstr "Таймер сну"
 
-#: prefs.js:673 src/uiExpandedPlayer.js:1574
+#: prefs.js:680 src/uiExpandedPlayer.js:1613
 msgid "Playback Speed"
 msgstr "Швидкість відтворення"
 
-#: prefs.js:674
+#: prefs.js:681
 msgid "Track History"
 msgstr ""
 
-#: prefs.js:705
+#: prefs.js:712
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
 msgstr ""
 
-#: prefs.js:708
+#: prefs.js:715
 msgid "Custom Button 1"
 msgstr ""
 
-#: prefs.js:708
+#: prefs.js:715
 msgid "Placed left of Shuffle."
 msgstr ""
 
-#: prefs.js:711
+#: prefs.js:718
 msgid "Custom Button 2"
 msgstr ""
 
-#: prefs.js:711
+#: prefs.js:718
 msgid "Placed right of Loop."
 msgstr ""
 
-#: prefs.js:722
+#: prefs.js:729
 msgid "Style & Layout"
 msgstr "Стиль і розташування"
 
-#: prefs.js:726
+#: prefs.js:733
 msgid "Visualizer and Shape"
 msgstr "Візуалізатор і форма"
 
-#: prefs.js:729
+#: prefs.js:736
 msgid "Off (Disabled)"
 msgstr "Вимкнено"
 
-#: prefs.js:730
+#: prefs.js:737
 msgid "Wave (Smooth)"
 msgstr "Хвиля (плавно)"
 
-#: prefs.js:731
+#: prefs.js:738
 msgid "Beat (Jumpy)"
 msgstr "Ритм (стрибучий)"
 
-#: prefs.js:732
+#: prefs.js:739
 msgid "Real-Time (Cava needed)"
 msgstr ""
 
-#: prefs.js:735
+#: prefs.js:742
 msgid "Visualizer Animation"
 msgstr "Анімація візуалізатора"
 
-#: prefs.js:736
+#: prefs.js:743
 msgid "Select the style of the audio reaction bars"
 msgstr "Вибір стилю смужок аудіореакції"
 
-#: prefs.js:744
+#: prefs.js:751
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
 msgstr ""
 
-#: prefs.js:753
+#: prefs.js:760
 msgid "Visualizer Bar Count"
 msgstr ""
 
-#: prefs.js:754
+#: prefs.js:761
 msgid "Number of bars displayed in the animation"
 msgstr ""
 
-#: prefs.js:761
+#: prefs.js:768
 msgid "Visualizer Bar Width"
 msgstr ""
 
-#: prefs.js:762
+#: prefs.js:769
 msgid "Thickness of individual bars (pixels)"
 msgstr ""
 
-#: prefs.js:769
+#: prefs.js:776
 msgid "Visualizer Height"
 msgstr ""
 
-#: prefs.js:770
+#: prefs.js:777
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
 
-#: prefs.js:777
+#: prefs.js:784
 msgid "Visualizer Margin"
 msgstr "Відступ візуалізатора"
 
-#: prefs.js:778
+#: prefs.js:785
 msgid "Distance between the text and the wave animation"
 msgstr "Відстань між текстом та анімацією хвиль"
 
-#: prefs.js:785
+#: prefs.js:792
 msgid "Outer Edge Margin"
 msgstr ""
 
-#: prefs.js:786
+#: prefs.js:793
 msgid "Spacing before the album art and after the visualizer"
 msgstr ""
 
-#: prefs.js:793
+#: prefs.js:800
 msgid "Corner Radius"
 msgstr "Радіус кута"
 
-#: prefs.js:794
+#: prefs.js:801
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
 msgstr "Радіус округлення кутів віджета (0 = квадратне, 25 = капсула)"
 
-#: prefs.js:801
+#: prefs.js:808
 msgid "Show Pill Outline"
 msgstr ""
 
-#: prefs.js:802
+#: prefs.js:809
 msgid "Display a subtle border around the main pill"
 msgstr ""
 
-#: prefs.js:815
+#: prefs.js:822
 msgid "Background and Transparency"
 msgstr "Фон і прозорість"
 
-#: prefs.js:817
+#: prefs.js:824
 msgid "Enable Transparency"
 msgstr "Увімкнути прозорість"
 
-#: prefs.js:818
+#: prefs.js:825
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr "Перемикання між стандартним фоном та власним прозорим виглядом"
 
-#: prefs.js:829
+#: prefs.js:836
 msgid "Background Opacity"
 msgstr "Непрозорість фону"
 
-#: prefs.js:830
+#: prefs.js:837
 msgid "Adjust transparency level"
 msgstr "Налаштування рівня прозорості"
 
-#: prefs.js:837
+#: prefs.js:844
 msgid "Apply to Album Art"
 msgstr "Застосувати до обкладинки"
 
-#: prefs.js:844
+#: prefs.js:851
 msgid "Apply to Text"
 msgstr "Застосувати до тексту"
 
-#: prefs.js:851
+#: prefs.js:858
 msgid "Apply to Visualizer"
 msgstr "Застосувати до візуалізатора"
 
-#: prefs.js:859
+#: prefs.js:866
 msgid "Main Pill Shadow"
 msgstr "Тінь головної капсули"
 
-#: prefs.js:867
+#: prefs.js:874
 msgid "Shadow Intensity"
 msgstr "Інтенсивність тіні"
 
-#: prefs.js:874
+#: prefs.js:881
 msgid "Shadow Blur"
 msgstr "Розмиття тіні"
 
-#: prefs.js:881
+#: prefs.js:888
 msgid "Positioning"
 msgstr "Розташування"
 
-#: prefs.js:883
+#: prefs.js:890
 msgid "Dock"
 msgstr "Док"
 
-#: prefs.js:884
+#: prefs.js:891
 msgid "Panel: Left Box"
 msgstr "Ліворуч на панелі"
 
-#: prefs.js:885
+#: prefs.js:892
 msgid "Panel: Center Box"
 msgstr "По центру на панелі"
 
-#: prefs.js:886
+#: prefs.js:893
 msgid "Panel: Right Box"
 msgstr "Праворуч на панелі"
 
-#: prefs.js:889
+#: prefs.js:896
 msgid "Container Target"
 msgstr "Місце розташування елемента"
 
-#: prefs.js:890
+#: prefs.js:897
 msgid "Select which UI element should host the music pill"
 msgstr "Вибір розташування головної капсули"
 
-#: prefs.js:901
+#: prefs.js:908
 msgid "Dynamic Width"
 msgstr "Динамічна ширина"
 
-#: prefs.js:901
+#: prefs.js:908
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
 "Автоматично змінювати ширину капсули (повзунок задає максимальну ширину)"
 
-#: prefs.js:916
+#: prefs.js:923
 msgid "Manual Index"
 msgstr "Ручне встановлення індексу"
 
-#: prefs.js:917
+#: prefs.js:924
 msgid "First (Start)"
 msgstr "Перший (на початку)"
 
-#: prefs.js:918
+#: prefs.js:925
 msgid "Center"
 msgstr "По центру"
 
-#: prefs.js:919
+#: prefs.js:926
 msgid "Last (End)"
 msgstr "Останній (в кінці)"
 
-#: prefs.js:922
+#: prefs.js:929
 msgid "Alignment Preset"
 msgstr "Шаблон вирівнювання"
 
-#: prefs.js:923
+#: prefs.js:930
 msgid "How the widget aligns relative to other items"
 msgstr "Як віджет вирівнюється відносно інших елементів"
 
-#: prefs.js:931
+#: prefs.js:938
 msgid "Manual Index Position"
 msgstr "Ручне встановлення позиції індексу"
 
-#: prefs.js:932
+#: prefs.js:939
 msgid "Order in the list (0 is first). Only for Manual mode."
 msgstr "Порядок в списку (0 — перший). Тільки для ручного режиму."
 
-#: prefs.js:939
+#: prefs.js:946
 msgid "Vertical Offset (Y)"
 msgstr "Вертикальне зміщення (Y)"
 
-#: prefs.js:940
+#: prefs.js:947
 msgid "Shift Up (-) or Down (+)"
 msgstr "Зміщення вгору (-) або вниз (+)"
 
-#: prefs.js:947
+#: prefs.js:954
 msgid "Horizontal Offset (X)"
 msgstr "Горизонтальне зміщення (X)"
 
-#: prefs.js:948
+#: prefs.js:955
 msgid "Shift Left (-) or Right (+)"
 msgstr "Зміщення вліво (-) або вправо (+)"
 
-#: prefs.js:954
+#: prefs.js:961
 msgid "Dimensions (Dock Mode)"
 msgstr "Розміри (док режим)"
 
-#: prefs.js:956 prefs.js:978
+#: prefs.js:963 prefs.js:985
 msgid "Album Art Size"
 msgstr "Розмір обкладинки"
 
-#: prefs.js:962 prefs.js:984
+#: prefs.js:969 prefs.js:991
 msgid "Widget Width"
 msgstr "Ширина віджета"
 
-#: prefs.js:969 prefs.js:991
+#: prefs.js:976 prefs.js:998
 msgid "Widget Height"
 msgstr "Висота віджета"
 
-#: prefs.js:976
+#: prefs.js:983
 msgid "Dimensions (Panel Mode)"
 msgstr "Розміри (режим панелі)"
 
-#: prefs.js:997
+#: prefs.js:1004
 msgid "Custom Colors"
 msgstr "Власні кольори"
 
-#: prefs.js:1000
+#: prefs.js:1007
 msgid "Sync GNOME Accent Color"
 msgstr ""
 
-#: prefs.js:1001
+#: prefs.js:1008
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr ""
 
-#: prefs.js:1011
+#: prefs.js:1018
 msgid "Use Custom Colors"
 msgstr "Використати власні кольори"
 
-#: prefs.js:1011
+#: prefs.js:1018
 msgid "Override dynamic colors"
 msgstr "Перевизначити динамічні кольори"
 
-#: prefs.js:1040
+#: prefs.js:1047
 msgid "Background Color"
 msgstr "Колір фону"
 
-#: prefs.js:1041
+#: prefs.js:1048
 msgid "Text Color"
 msgstr "Колір тексту"
 
-#: prefs.js:1052
+#: prefs.js:1059
 msgid "System & Reset"
 msgstr "Система та скидання"
 
-#: prefs.js:1056
+#: prefs.js:1063
 msgid "System"
 msgstr "Система"
 
-#: prefs.js:1059
+#: prefs.js:1066
 msgid "Hide Default GNOME Player"
 msgstr "Сховати стандартний плеєр GNOME"
 
-#: prefs.js:1060
+#: prefs.js:1067
 msgid "Remove the duplicate built-in media controls"
 msgstr "Прибрати дублікат вбудованого керування медіа"
 
-#: prefs.js:1070
+#: prefs.js:1077
 msgid "Game Mode"
 msgstr "Ігровий режим"
 
-#: prefs.js:1070
+#: prefs.js:1077
 msgid "Disable animations when a fullscreen app is active"
 msgstr "Вимикати анімації під час роботи повноекранного додатка"
 
-#: prefs.js:1077
+#: prefs.js:1084
 msgid "Slow Player Workaround"
 msgstr "Виправлення повільної роботи плеєра"
 
-#: prefs.js:1078
+#: prefs.js:1085
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr "Додає невелику затримку до змін треку (вирішує проблеми синхронізації)"
 
-#: prefs.js:1086
+#: prefs.js:1093
 msgid "Off (Allow All)"
 msgstr "Вимкнути (дозволити всі)"
 
-#: prefs.js:1087
+#: prefs.js:1094
 msgid "Blacklist (Exclude listed)"
 msgstr "Чорний список (ігнорувати вказані)"
 
-#: prefs.js:1088
+#: prefs.js:1095
 msgid "Whitelist (Only allow listed)"
 msgstr "Білий список (дозволяти вказані)"
 
-#: prefs.js:1091
+#: prefs.js:1098
 msgid "Player Filter Mode"
 msgstr "Режим фільтру плеєра"
 
-#: prefs.js:1092
+#: prefs.js:1099
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr "Виберіть, як фільтрувати плеєри (наприклад, браузери)"
 
-#: prefs.js:1103
+#: prefs.js:1110
 msgid "Filtered Players (comma separated)"
 msgstr "Відфільтровані плеєри (розділені комою)"
 
-#: prefs.js:1117
+#: prefs.js:1124
 msgid "Detected Players"
 msgstr "Виявлені плеєри"
 
-#: prefs.js:1118
+#: prefs.js:1125
 msgid "Click an active player to add it to the filter list"
 msgstr "Клацніть на активний плеєр, щоб додати його до фільтра"
 
-#: prefs.js:1153
+#: prefs.js:1160
 msgid "No players found"
 msgstr "Плеєрів не виявлено"
 
-#: prefs.js:1187
+#: prefs.js:1194
 msgid "💡 How to find the correct App ID?"
 msgstr ""
 
-#: prefs.js:1188
+#: prefs.js:1195
 msgid "Click here for a quick guide and examples"
 msgstr ""
 
-#: prefs.js:1192
+#: prefs.js:1199
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -924,151 +932,151 @@ msgid ""
 "5. Press Esc to close the debugger."
 msgstr ""
 
-#: prefs.js:1220
+#: prefs.js:1227
 msgid "Saved App Mappings"
 msgstr ""
 
-#: prefs.js:1221
+#: prefs.js:1228
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 
-#: prefs.js:1242
+#: prefs.js:1249
 msgid "No manual mappings saved."
 msgstr ""
 
-#: prefs.js:1247
+#: prefs.js:1254
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr ""
 
-#: prefs.js:1266
+#: prefs.js:1273
 msgid "Save App ID"
 msgstr ""
 
-#: prefs.js:1298
+#: prefs.js:1305
 msgid "Delete Mapping"
 msgstr ""
 
-#: prefs.js:1327
+#: prefs.js:1334
 msgid "Running Players Detection"
 msgstr ""
 
-#: prefs.js:1328
+#: prefs.js:1335
 msgid "Click on a detected player to automatically fill the mapping."
 msgstr ""
 
-#: prefs.js:1351
+#: prefs.js:1358
 msgid "No active players detected. Open a music app first!"
 msgstr ""
 
-#: prefs.js:1353
+#: prefs.js:1360
 msgid "Select a player to help the extension identify it:"
 msgstr ""
 
-#: prefs.js:1373
+#: prefs.js:1380
 msgid "Use This"
 msgstr ""
 
-#: prefs.js:1403
+#: prefs.js:1410
 msgid "Refresh List"
 msgstr ""
 
-#: prefs.js:1404
+#: prefs.js:1411
 msgid "Click to scan for active players again"
 msgstr ""
 
-#: prefs.js:1419
+#: prefs.js:1426
 msgid "Backup & Restore"
 msgstr "Резервна копія та відновлення"
 
-#: prefs.js:1422
+#: prefs.js:1429
 msgid "Export Settings"
 msgstr "Експортувати налаштування"
 
-#: prefs.js:1423
+#: prefs.js:1430
 msgid "Export"
 msgstr "Експорт"
 
-#: prefs.js:1427
+#: prefs.js:1434
 msgid "Save Settings"
 msgstr "Зберегти налаштування"
 
-#: prefs.js:1442
+#: prefs.js:1449
 msgid "Import Settings"
 msgstr "Імпортувати налаштування"
 
-#: prefs.js:1443
+#: prefs.js:1450
 msgid "Import"
 msgstr "Імпортувати"
 
-#: prefs.js:1445
+#: prefs.js:1452
 msgid "Open Settings Backup"
 msgstr "Відкрити резервну копію налаштувань"
 
-#: prefs.js:1472
+#: prefs.js:1479
 msgid "Art Cache"
 msgstr ""
 
-#: prefs.js:1494
+#: prefs.js:1501
 msgid "covers cached"
 msgstr ""
 
-#: prefs.js:1497
+#: prefs.js:1504
 msgid "Album Art Cache"
 msgstr ""
 
-#: prefs.js:1502
+#: prefs.js:1509
 msgid "Clear"
 msgstr ""
 
-#: prefs.js:1524
+#: prefs.js:1531
 msgid "Danger Zone"
 msgstr "Небезпечна зона"
 
-#: prefs.js:1525
+#: prefs.js:1532
 msgid "Reset All"
 msgstr "Скинути всі"
 
-#: prefs.js:1527
+#: prefs.js:1534
 msgid "Factory Reset"
 msgstr "Заводські налаштування"
 
-#: prefs.js:1538
+#: prefs.js:1545
 msgid "About"
 msgstr "Інформація"
 
-#: prefs.js:1543
+#: prefs.js:1550
 msgid "What's New"
 msgstr ""
 
-#: prefs.js:1670
+#: prefs.js:1700
 msgid "Support the Project"
 msgstr "Підтримати проєкт"
 
-#: prefs.js:1673
+#: prefs.js:1703
 msgid "Support on Ko-fi"
 msgstr "Підтримати на Ko-fi"
 
-#: prefs.js:1674
+#: prefs.js:1704
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Підтримати мене на Ko-fi"
 
-#: prefs.js:1676 prefs.js:1685
+#: prefs.js:1706 prefs.js:1715
 msgid "Open"
 msgstr ""
 
-#: prefs.js:1682
+#: prefs.js:1712
 msgid "Buy Me a Coffee"
 msgstr "Buy Me a Coffee"
 
-#: prefs.js:1683
+#: prefs.js:1713
 msgid "Support via BuyMeACoffee"
 msgstr "Підтримати через BuyMeACoffee"
 
-#: prefs.js:1691
+#: prefs.js:1721
 msgid "Source Code"
 msgstr "Вихідний код"
 
-#: prefs.js:1692
+#: prefs.js:1722
 msgid "Report bugs or view source on GitHub"
 msgstr "Повідомити про вади або переглянути вихідний код на GitHub"
 
@@ -1089,99 +1097,99 @@ msgstr "Автоматично (розумне)"
 msgid "Not supported"
 msgstr "Не підтримується"
 
-#: src/uiExpandedPlayer.js:402
+#: src/uiExpandedPlayer.js:415
 msgid "First time? Check settings for custom buttons, scroll actions & more"
 msgstr ""
 
-#: src/uiExpandedPlayer.js:725
+#: src/uiExpandedPlayer.js:738
 msgid "Unknown Title"
 msgstr "Невідома назва"
 
-#: src/uiExpandedPlayer.js:728
+#: src/uiExpandedPlayer.js:741
 msgid "Unknown Artist"
 msgstr "Невідомий виконавець"
 
-#: src/uiExpandedPlayer.js:1336
+#: src/uiExpandedPlayer.js:1375
 msgid "Volume"
 msgstr "Гучність"
 
-#: src/uiExpandedPlayer.js:1344
+#: src/uiExpandedPlayer.js:1383
 msgid "System Volume"
 msgstr ""
 
-#: src/uiExpandedPlayer.js:1356
+#: src/uiExpandedPlayer.js:1395
 msgid "Player"
 msgstr ""
 
-#: src/uiExpandedPlayer.js:1362
+#: src/uiExpandedPlayer.js:1401
 msgid "No audio stream available"
 msgstr "Немає доступного аудіо потоку"
 
-#: src/uiExpandedPlayer.js:1454
+#: src/uiExpandedPlayer.js:1493
 msgid "Toggle Mute All"
 msgstr ""
 
-#: src/uiExpandedPlayer.js:1474
+#: src/uiExpandedPlayer.js:1513
 msgid "Seek"
 msgstr "Пошук"
 
-#: src/uiExpandedPlayer.js:1478
+#: src/uiExpandedPlayer.js:1517
 msgid "This player does not support seeking"
 msgstr "Цей плеєр не підтримує пошук"
 
-#: src/uiExpandedPlayer.js:1504
+#: src/uiExpandedPlayer.js:1543
 msgid "Audio Output"
 msgstr "Пристрій відтворення"
 
-#: src/uiExpandedPlayer.js:1506
+#: src/uiExpandedPlayer.js:1545
 msgid "Audio control unavailable"
 msgstr "Управління аудіо недоступне"
 
-#: src/uiExpandedPlayer.js:1509
+#: src/uiExpandedPlayer.js:1548
 msgid "No output devices found"
 msgstr "Не знайдено пристроїв відтворення"
 
-#: src/uiExpandedPlayer.js:1512
+#: src/uiExpandedPlayer.js:1551
 msgid "Unknown Device"
 msgstr "Невідомий пристрій"
 
-#: src/uiExpandedPlayer.js:1533
+#: src/uiExpandedPlayer.js:1572
 msgid "min left"
 msgstr "хв залишилось"
 
-#: src/uiExpandedPlayer.js:1536
+#: src/uiExpandedPlayer.js:1575
 msgid "Cancel Timer"
 msgstr "Відмінити таймер"
 
-#: src/uiExpandedPlayer.js:1569
+#: src/uiExpandedPlayer.js:1608
 msgid "Runs inside the shell — works on lock screen"
 msgstr "Працює всередині оболонки - показує на заблокованому екрані"
 
-#: src/uiExpandedPlayer.js:1581
+#: src/uiExpandedPlayer.js:1620
 msgid "This player does not support playback speed"
 msgstr "Цей плеєр не підтримує змінення швидкості відтворення"
 
-#: src/uiExpandedPlayer.js:1621
+#: src/uiExpandedPlayer.js:1660
 msgid "Player must support MPRIS Rate"
 msgstr "Плеєр повинен підтримувати MPRIS Rate"
 
-#: src/uiExpandedPlayer.js:1621
+#: src/uiExpandedPlayer.js:1660
 msgid "Not supported by this player"
 msgstr "Не підтримується цим плеєром"
 
-#: src/uiExpandedPlayer.js:1627
+#: src/uiExpandedPlayer.js:1666
 msgid "Recently Played"
 msgstr "Нещодавно відтворені"
 
-#: src/uiExpandedPlayer.js:1629
+#: src/uiExpandedPlayer.js:1668
 msgid "No history yet"
 msgstr "Ще немає історії"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1701
 msgid "Unknown"
 msgstr "Невідомий"
 
-#: src/uiExpandedPlayer.js:1717
+#: src/uiExpandedPlayer.js:1756
 msgid "Clear History"
 msgstr "Очистити історію"
 

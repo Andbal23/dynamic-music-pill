@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-03 16:59+0200\n"
+"POT-Creation-Date: 2026-08-07 15:03+0200\n"
 "PO-Revision-Date: 2026-06-07 08:07+0000\n"
 "Last-Translator: Christian Lauinger <christian.lauinger@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/dynamic-music-"
@@ -15,540 +15,548 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.6\n"
 
-#: prefs.js:38
+#: prefs.js:39
 msgid "Main Pill"
 msgstr "Hauptpille"
 
-#: prefs.js:44
+#: prefs.js:45
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: prefs.js:47
+#: prefs.js:48
 msgid "Always ON"
 msgstr "Immer eingeschaltet"
 
-#: prefs.js:48
+#: prefs.js:49
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr ""
 "Letzten bekannten Titel speichern und Pille nach dem Schließen des Players "
 "sichtbar lassen"
 
-#: prefs.js:60
+#: prefs.js:61
 msgid "Show Album Art"
 msgstr "Albumcover anzeigen"
 
-#: prefs.js:61
+#: prefs.js:62
 msgid "Display the cover art of the currently playing song"
 msgstr "Cover des aktuell gespielten Titels anzeigen"
 
-#: prefs.js:72
+#: prefs.js:73
 msgid "Fallback Album Art"
 msgstr "Ausweich-Albumcover"
 
-#: prefs.js:73 prefs.js:113
+#: prefs.js:74 prefs.js:114
 msgid "No image selected"
 msgstr "Kein Bild ausgewählt"
 
-#: prefs.js:83
+#: prefs.js:84
 msgid "Select Fallback Image"
 msgstr "Ausweichbild auswählen"
 
-#: prefs.js:127
+#: prefs.js:128
 msgid "Enable Scroll Controls"
 msgstr "Scroll-Steuerung aktivieren"
 
-#: prefs.js:128
+#: prefs.js:129
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr ""
 "Wechseln Sie Titel, Lautstärke oder Media Player mithilfe des Scrollrads "
 "oder Touchpads"
 
-#: prefs.js:139
+#: prefs.js:140
 msgid "Change Track"
 msgstr "Spur wechseln"
 
-#: prefs.js:140
+#: prefs.js:141
 msgid "Change Volume"
 msgstr "Lautstärke ändern"
 
-#: prefs.js:141
+#: prefs.js:142
 msgid "Switch Player"
 msgstr "Spieler wechseln"
 
-#: prefs.js:142
+#: prefs.js:143
 msgid "Seek ±10s"
 msgstr "Suche±10s"
 
-#: prefs.js:151
+#: prefs.js:152
 msgid "Scroll Action"
 msgstr "Bildlauf-Aktion"
 
-#: prefs.js:152
+#: prefs.js:153
 msgid "Choose what scrolling on the pill should do"
 msgstr "Wählen Sie aus, was beim Scrollen auf der Pille geschehen soll"
 
-#: prefs.js:178
+#: prefs.js:179
 msgid "Invert Scroll Animation"
 msgstr "Scroll-Animation umkehren"
 
-#: prefs.js:179
+#: prefs.js:180
 msgid "Direction of the jump effect (Natural vs Traditional)"
 msgstr "Richtung des Sprungeffekts (Natürlich vs Traditionell)"
 
-#: prefs.js:190
+#: prefs.js:191
 msgid "Invert Scroll Direction"
 msgstr "Scrollrichtung umkehren"
 
-#: prefs.js:191
+#: prefs.js:192
 msgid "Swap up/down scrolling for track and volume actions"
 msgstr "Scrollen nach oben/unten für Titel- und Lautstärkeregelung"
 
-#: prefs.js:203
+#: prefs.js:204
 msgid "Scrolling Text"
 msgstr "Lauftext"
 
-#: prefs.js:204
+#: prefs.js:205
 msgid "Animate long track titles and artist names"
 msgstr "Lange Titel und Künstlernamen animieren"
 
-#: prefs.js:215
+#: prefs.js:216
 msgid "Scroll Only on Hover"
 msgstr "Nur beim Bewegen des Mauszeigers scrollen"
 
-#: prefs.js:216
+#: prefs.js:217
 msgid "Text stays still until you hover the pill"
 msgstr ""
 "Der Text bleibt unverändert, bis du mit der Maus über die Schaltfläche fährst"
 
-#: prefs.js:228
+#: prefs.js:229
 msgid "Freeze Scroll on Pause"
 msgstr "Bildlauf bei Pause anhalten"
 
-#: prefs.js:229
+#: prefs.js:230
 msgid "Stop the text scrolling animation when the media player is paused"
 msgstr ""
 "Die Text-Scroll-Animation anhalten, wenn der Mediaplayer angehalten wird"
 
-#: prefs.js:242
+#: prefs.js:243
 msgid "Lyrics Display"
 msgstr "Anzeige der Liedtexte"
 
-#: prefs.js:243
+#: prefs.js:244
 msgid "Show real-time synchronized lyrics for current track."
 msgstr ""
 "Zeige synchronisierte Liedtexte für den aktuellen Titel in Echtzeit an."
 
-#: prefs.js:254
+#: prefs.js:255
 msgid "Lyrics language preference"
 msgstr "Sprache der Liedtexte"
 
-#: prefs.js:255
+#: prefs.js:256
 msgid "When multiple versions exist"
 msgstr "Wenn mehrere Versionen vorhanden sind"
 
-#: prefs.js:257
+#: prefs.js:258
 msgid "Auto"
 msgstr "Auto"
 
-#: prefs.js:258
+#: prefs.js:259
 msgid "Prefer original script"
 msgstr "Bevorzuge das Originalmanuskript"
 
-#: prefs.js:259
+#: prefs.js:260
 msgid "Prefer Latin"
 msgstr "Bevorzuge Latein"
 
-#: prefs.js:268
+#: prefs.js:269
 msgid "Lyrics Fade-in Effect"
 msgstr "Text-Einblendungseffekt"
 
-#: prefs.js:269
+#: prefs.js:270
 msgid "Smoothly fade in new lyric lines"
 msgstr "Neue Liedtextzeilen sanft einblenden"
 
-#: prefs.js:281
+#: prefs.js:282
 msgid "Fade Duration (ms)"
 msgstr "Ausblenddauer (ms)"
 
-#: prefs.js:290
+#: prefs.js:291
 msgid "Tablet Mode Controls"
 msgstr "Steuerelemente im Tablet-Modus"
 
-#: prefs.js:291
+#: prefs.js:292
 msgid "Show media buttons directly on the pill"
 msgstr "Medien-Schaltflächen direkt auf der Pille anzeigen"
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "Off"
 msgstr "Aus"
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "Skip Only"
 msgstr "Nur überspringen"
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "Play/Pause Only"
 msgstr "Nur Wiedergabe/Pause"
 
-#: prefs.js:293
+#: prefs.js:294
 msgid "All Controls"
 msgstr "Alle Steuerelemente"
 
-#: prefs.js:302
+#: prefs.js:303
 msgid "Controls Position"
 msgstr "Position der Bedienelemente"
 
-#: prefs.js:303
+#: prefs.js:304
 msgid "Where to place the tablet controls on the pill"
 msgstr ""
 "Wo sollen die Bedienelemente des Tablets auf der Pille angebracht werden"
 
-#: prefs.js:305
+#: prefs.js:306
 msgid "Before Text"
 msgstr "Vor dem Text"
 
-#: prefs.js:305
+#: prefs.js:306
 msgid "After Text"
 msgstr "Nach dem Text"
 
-#: prefs.js:305
+#: prefs.js:306
 msgid "After Visualizer"
 msgstr "Nach dem Visualizer"
 
-#: prefs.js:319
+#: prefs.js:320
 msgid "Inline Artist"
 msgstr "Inline-Künstler"
 
-#: prefs.js:319
+#: prefs.js:320
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "Zeige „Titel • Künstler“ an, wenn das Widget zusammengedrückt wird"
 
-#: prefs.js:325
+#: prefs.js:326
 msgid "Show Artist"
 msgstr "Künstler anzeigen"
 
-#: prefs.js:325
+#: prefs.js:326
 msgid "Show the artist name in the main music pill"
 msgstr "Den Namen des Interpreten in der Haupt-Musik-Pille anzeigen"
 
-#: prefs.js:337
+#: prefs.js:338
 msgid "Compact Mode (Hide Text)"
 msgstr "Kompaktmodus (Text ausblenden)"
 
-#: prefs.js:338
+#: prefs.js:339
 msgid "Hide title and artist"
 msgstr "Titel und Interpret ausblenden"
 
-#: prefs.js:351
+#: prefs.js:352
 msgid "Mouse Actions"
 msgstr "Mausaktionen"
 
-#: prefs.js:354 prefs.js:668
+#: prefs.js:355 prefs.js:675
 msgid "None"
 msgstr "Keine"
 
-#: prefs.js:354
+#: prefs.js:355
 msgid "Play / Pause"
 msgstr "Wiedergabe/Pause"
 
-#: prefs.js:354
+#: prefs.js:355
 msgid "Next Track"
 msgstr "Nächster Titel"
 
-#: prefs.js:354
+#: prefs.js:355
 msgid "Previous Track"
 msgstr "Vorheriger Titel"
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Open Player App"
 msgstr "Player-App öffnen"
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Open Menu"
 msgstr "Menü Öffnen"
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Select Player"
 msgstr "Spieler auswählen"
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Open Settings"
 msgstr "Einstellungen öffnen"
 
-#: prefs.js:355
+#: prefs.js:356
 msgid "Close Player App"
 msgstr "Spieler-App schließen"
 
-#: prefs.js:362
+#: prefs.js:363
 msgid "Left Click"
 msgstr "Linksklick"
 
-#: prefs.js:370
+#: prefs.js:371
 msgid "Double Click"
 msgstr "Doppelklick"
 
-#: prefs.js:378
+#: prefs.js:379
 msgid "Middle Click"
 msgstr "Mittelklick"
 
-#: prefs.js:386
+#: prefs.js:387
 msgid "Right Click"
 msgstr "Rechtsklick"
 
-#: prefs.js:394
+#: prefs.js:395
 msgid "Hover Action"
 msgstr "Schweben-Aktion"
 
-#: prefs.js:405
+#: prefs.js:406
 msgid "Hover Delay (ms)"
 msgstr "Verzögerung beim Bewegen des Mauszeigers (ms)"
 
-#: prefs.js:419
+#: prefs.js:420
 msgid "Pop-up Menu"
 msgstr "Pop-up Menü"
 
-#: prefs.js:423
+#: prefs.js:424
 msgid "Pop-up Appearance"
 msgstr "Pop-up Darstellung"
 
-#: prefs.js:425
+#: prefs.js:426
 msgid "Rotate Vinyl"
 msgstr "Vinyl drehen"
 
-#: prefs.js:426
+#: prefs.js:427
 msgid "Spin the album art when playing"
 msgstr "Dreht das Albumcover beim Spielen"
 
-#: prefs.js:437
+#: prefs.js:438
 msgid "Rotation Speed"
 msgstr "Rotationsgeschwindigkeit"
 
-#: prefs.js:438
+#: prefs.js:439
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
 msgstr ""
 "Stelle die Drehzahl der Schallplatte ein (niedrigerer Wert bedeutet "
 "langsamer, Standard: 10)"
 
-#: prefs.js:446 prefs.js:860
+#: prefs.js:447 prefs.js:867
 msgid "Enable Shadow"
 msgstr "Schatten aktivieren"
 
-#: prefs.js:447
+#: prefs.js:448
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "Schlagschatten hinter dem Popup-Menü anzeigen"
 
-#: prefs.js:458
+#: prefs.js:459
 msgid "Close on Mouse Leave"
 msgstr "Beim Verlassen mit der Maus schließen"
 
-#: prefs.js:459
+#: prefs.js:460
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr ""
 "Das Popup-Fenster automatisch ausblenden, wenn Sie den Cursor wegbewegen"
 
-#: prefs.js:470
+#: prefs.js:471
 msgid "Follow Custom Background Color"
 msgstr "Benutzerdefinierte Hintergrundfarbe beibehalten"
 
-#: prefs.js:471
+#: prefs.js:472
 msgid "Use the custom background color for the pop-up (if active)"
 msgstr ""
 "Verwenden Sie die benutzerdefinierte Hintergrundfarbe für das Popup-Fenster "
 "(falls aktiv)"
 
-#: prefs.js:480
+#: prefs.js:481
 msgid "Follow Custom Text Color"
 msgstr "Benutzerdefinierte Textfarbe befolgen"
 
-#: prefs.js:481
+#: prefs.js:482
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr ""
 "Verwenden Sie die benutzerdefinierte Textfarbe für das Popup-Fenster (falls "
 "aktiv)"
 
-#: prefs.js:490
+#: prefs.js:491
 msgid "Follow Transparency"
 msgstr "Transparenz folgen"
 
-#: prefs.js:491
+#: prefs.js:492
 msgid "Inherit opacity settings from the main pill"
 msgstr "Deckkraft-Einstellungen von der Hauptpille übernehmen"
 
-#: prefs.js:502
+#: prefs.js:503
 msgid "Follow Border Radius"
 msgstr "Eckenradius folgen"
 
-#: prefs.js:503
+#: prefs.js:504
 msgid "Inherit corner roundness from the main pill"
 msgstr "Eckrundung von der Hauptpille übernehmen"
 
-#: prefs.js:512
+#: prefs.js:513
 msgid "Show Vinyl"
 msgstr "Vinyl anzeigen"
 
-#: prefs.js:512
+#: prefs.js:513
 msgid "Display the album art in the pop-up"
 msgstr "Zeige das Albumcover im Popup an"
 
-#: prefs.js:518
+#: prefs.js:519
 msgid "Square Vinyl Image"
 msgstr "Quadratisches Vinylbild"
 
-#: prefs.js:518
+#: prefs.js:519
 msgid "Use a square album art (disables rotation)"
 msgstr "Verwende ein quadratisches Albumcover (deaktiviert die Drehung)"
 
-#: prefs.js:524
+#: prefs.js:525
+msgid "Album Art Shadow"
+msgstr ""
+
+#: prefs.js:525
+msgid "Show drop shadow behind the album art in the pop-up"
+msgstr ""
+
+#: prefs.js:531
 msgid "Show Shuffle and Loop"
 msgstr "Shuffle und Loop anzeigen"
 
-#: prefs.js:524
+#: prefs.js:531
 msgid "Display extra controls in the pop-up"
 msgstr "Zusätzliche Steuerelemente im Popup anzeigen"
 
-#: prefs.js:530
+#: prefs.js:537
 msgid "Use Custom Width"
 msgstr "Benutzerdefinierte Breite verwenden"
 
-#: prefs.js:530
+#: prefs.js:537
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "Deaktivieren Sie die dynamische Größenanpassung für das Popup-Fenster"
 
-#: prefs.js:537
+#: prefs.js:544
 msgid "Custom Width Value"
 msgstr "Benutzerdefinierter Breitenwert"
 
-#: prefs.js:553
+#: prefs.js:560
 msgid "Show Player Selector"
 msgstr "Spielerauswahl anzeigen"
 
-#: prefs.js:554
+#: prefs.js:561
 msgid "Display active player icons in the pop-up"
 msgstr "Symbole der aktiven Spieler im Popup anzeigen"
 
-#: prefs.js:562
+#: prefs.js:569
 msgid "Hide Auto (Smart Selection)"
 msgstr "Automatisch ausblenden (Intelligente Auswahl)"
 
-#: prefs.js:563
+#: prefs.js:570
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr ""
 "Entfernen Sie den Eintrag zur automatischen Spielerauswahl aus dem Menü zur "
 "Spielerauswahl"
 
-#: prefs.js:574
+#: prefs.js:581
 msgid "Player Selector Position"
 msgstr "Position des Spielerauswahlers"
 
-#: prefs.js:575
+#: prefs.js:582
 msgid "Where to place the player icons inside the pop-up"
 msgstr "Wo sollen die Player-Symbole im Popup-Fenster platziert werden"
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Top"
 msgstr "Oben"
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Bottom"
 msgstr "Unten"
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Left"
 msgstr "Links"
 
-#: prefs.js:576
+#: prefs.js:583
 msgid "Right"
 msgstr "Rechts"
 
-#: prefs.js:587
+#: prefs.js:594
 msgid "Show Album Title"
 msgstr "Albumtitel anzeigen"
 
-#: prefs.js:588
+#: prefs.js:595
 msgid "Display album name next to the artist (Artist • Album)"
 msgstr "Den Albumnamen neben dem Interpreten anzeigen (Interpret • Album)"
 
-#: prefs.js:596
+#: prefs.js:603
 msgid "Show HH:MM:SS"
 msgstr "Anzeige: HH:MM:SS"
 
-#: prefs.js:597
+#: prefs.js:604
 msgid "Display hours in the time labels when media is longer than 60 minutes"
 msgstr ""
 "In den Zeitangaben die Dauer anzeigen, wenn die Mediendatei länger als 60 "
 "Minuten ist"
 
-#: prefs.js:608
+#: prefs.js:615
 msgid "Show Visualizer in Pop-up"
 msgstr "Visualizer in Pop-up anzeigen"
 
-#: prefs.js:615
+#: prefs.js:622
 msgid "Hide Pill Visualizer"
 msgstr "Pillen-Visualizer ausblenden"
 
-#: prefs.js:616
+#: prefs.js:623
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr ""
 "Erzeugt einen „Bewegungseffekt“, indem der Haupt-Pillen-Visualizer "
 "ausgeblendet wird"
 
-#: prefs.js:625
+#: prefs.js:632
 msgid "Popup Visualizer Bar Count"
 msgstr "Popup-Visualisierungsleiste zählen"
 
-#: prefs.js:633
+#: prefs.js:640
 msgid "Popup Visualizer Bar Width"
 msgstr "Breite der Popup-Visualisierungsleiste"
 
-#: prefs.js:641
+#: prefs.js:648
 msgid "Popup Visualizer Height"
 msgstr "Höhe des Popup-Visualizers"
 
-#: prefs.js:651
+#: prefs.js:658
 msgid "Custom Control Buttons"
 msgstr "Benutzerdefinierte Steuerelemente"
 
-#: prefs.js:652
+#: prefs.js:659
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr ""
 "Füge bis zu zwei zusätzliche Schaltflächen in der Steuerungsleiste des "
 "erweiterten Players hinzu."
 
-#: prefs.js:656
+#: prefs.js:663
 msgid "Enable Custom Buttons"
 msgstr "Benutzerdefinierte Schaltflächen aktivieren"
 
-#: prefs.js:657
+#: prefs.js:664
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr ""
 "Zusätzliche Aktionsschaltflächen neben „Zufällig“ und „Wiederholen“ anzeigen"
 
-#: prefs.js:669
+#: prefs.js:676
 msgid "Volume Control"
 msgstr "Lautstärkeregelung"
 
-#: prefs.js:670
+#: prefs.js:677
 msgid "Seek ±10 Seconds"
 msgstr "Suche ±10 Sekunden"
 
-#: prefs.js:671
+#: prefs.js:678
 msgid "Audio Output Switcher"
 msgstr "Audioausgangsumschalter"
 
-#: prefs.js:672 src/uiExpandedPlayer.js:1533
+#: prefs.js:679 src/uiExpandedPlayer.js:1572
 msgid "Sleep Timer"
 msgstr "Ausschalt-Timer"
 
-#: prefs.js:673 src/uiExpandedPlayer.js:1574
+#: prefs.js:680 src/uiExpandedPlayer.js:1613
 msgid "Playback Speed"
 msgstr "Wiedergabegeschwindigkeit"
 
-#: prefs.js:674
+#: prefs.js:681
 msgid "Track History"
 msgstr "Verlauf"
 
-#: prefs.js:705
+#: prefs.js:712
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
@@ -557,55 +565,55 @@ msgstr ""
 "(Schaltfläche 1 = −10 s, Schaltfläche 2 = +10 s). Andernfalls öffnet "
 "„Suchen“ eine Unterseite."
 
-#: prefs.js:708
+#: prefs.js:715
 msgid "Custom Button 1"
 msgstr "Benutzerdefinierte Schaltfläche 1"
 
-#: prefs.js:708
+#: prefs.js:715
 msgid "Placed left of Shuffle."
 msgstr "Links neben „Mischen“ platziert."
 
-#: prefs.js:711
+#: prefs.js:718
 msgid "Custom Button 2"
 msgstr "Benutzerdefinierte Schaltfläche 2"
 
-#: prefs.js:711
+#: prefs.js:718
 msgid "Placed right of Loop."
 msgstr "Rechts von Wiederholen platziert."
 
-#: prefs.js:722
+#: prefs.js:729
 msgid "Style & Layout"
 msgstr "Stil & Layout"
 
-#: prefs.js:726
+#: prefs.js:733
 msgid "Visualizer and Shape"
 msgstr "Visualizer und Form"
 
-#: prefs.js:729
+#: prefs.js:736
 msgid "Off (Disabled)"
 msgstr "Aus (Deaktiviert)"
 
-#: prefs.js:730
+#: prefs.js:737
 msgid "Wave (Smooth)"
 msgstr "Welle (Glatt)"
 
-#: prefs.js:731
+#: prefs.js:738
 msgid "Beat (Jumpy)"
 msgstr "Beat (Sprunghaft)"
 
-#: prefs.js:732
+#: prefs.js:739
 msgid "Real-Time (Cava needed)"
 msgstr "Echtzeit (Cava erforderlich)"
 
-#: prefs.js:735
+#: prefs.js:742
 msgid "Visualizer Animation"
 msgstr "Visualizer-Animation"
 
-#: prefs.js:736
+#: prefs.js:743
 msgid "Select the style of the audio reaction bars"
 msgstr "Stil der Audio-Reaktionsbalken auswählen"
 
-#: prefs.js:744
+#: prefs.js:751
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
@@ -613,322 +621,322 @@ msgstr ""
 "Hinweis: Für den „Echtzeit“-Modus muss das „cava“-Paket auf Ihrem Linux-"
 "System installiert sein."
 
-#: prefs.js:753
+#: prefs.js:760
 msgid "Visualizer Bar Count"
 msgstr "Visualizer-Leiste zählen"
 
-#: prefs.js:754
+#: prefs.js:761
 msgid "Number of bars displayed in the animation"
 msgstr "Anzahl der in der Animation angezeigten Balken"
 
-#: prefs.js:761
+#: prefs.js:768
 msgid "Visualizer Bar Width"
 msgstr "Breite der Visualisierungsleiste"
 
-#: prefs.js:762
+#: prefs.js:769
 msgid "Thickness of individual bars (pixels)"
 msgstr "Dicke einzelner Balken (Pixel)"
 
-#: prefs.js:769
+#: prefs.js:776
 msgid "Visualizer Height"
 msgstr "Höhe des Visualizers"
 
-#: prefs.js:770
+#: prefs.js:777
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
 "Maximale Höhe des Visualizers (automatische Arretierung auf Tablettenhöhe)"
 
-#: prefs.js:777
+#: prefs.js:784
 msgid "Visualizer Margin"
 msgstr "Visualisierungsrand"
 
-#: prefs.js:778
+#: prefs.js:785
 msgid "Distance between the text and the wave animation"
 msgstr "Abstand zwischen dem Text und der Wellenanimation"
 
-#: prefs.js:785
+#: prefs.js:792
 msgid "Outer Edge Margin"
 msgstr "Außenrand"
 
-#: prefs.js:786
+#: prefs.js:793
 msgid "Spacing before the album art and after the visualizer"
 msgstr "Abstand vor dem Albumcover und nach dem Visualizer"
 
-#: prefs.js:793
+#: prefs.js:800
 msgid "Corner Radius"
 msgstr "Eckenradius"
 
-#: prefs.js:794
+#: prefs.js:801
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
 msgstr "Rundung der Widget-Ecken (0 = Eckig, 25 = Pille)"
 
-#: prefs.js:801
+#: prefs.js:808
 msgid "Show Pill Outline"
 msgstr "Pill-Umriss anzeigen"
 
-#: prefs.js:802
+#: prefs.js:809
 msgid "Display a subtle border around the main pill"
 msgstr "Zeige einen dezenten Rahmen um die Hauptkapsel an"
 
-#: prefs.js:815
+#: prefs.js:822
 msgid "Background and Transparency"
 msgstr "Hintergrund und Transparenz"
 
-#: prefs.js:817
+#: prefs.js:824
 msgid "Enable Transparency"
 msgstr "Transparenz aktivieren"
 
-#: prefs.js:818
+#: prefs.js:825
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr "Zwischen festem Themenhintergrund und transparentem Look wechseln"
 
-#: prefs.js:829
+#: prefs.js:836
 msgid "Background Opacity"
 msgstr "Hintergrund-Deckkraft"
 
-#: prefs.js:830
+#: prefs.js:837
 msgid "Adjust transparency level"
 msgstr "Transparenzstufe anpassen"
 
-#: prefs.js:837
+#: prefs.js:844
 msgid "Apply to Album Art"
 msgstr "Auf Albumcover anwenden"
 
-#: prefs.js:844
+#: prefs.js:851
 msgid "Apply to Text"
 msgstr "Auf Text anwenden"
 
-#: prefs.js:851
+#: prefs.js:858
 msgid "Apply to Visualizer"
 msgstr "Auf Visualizer anwenden"
 
-#: prefs.js:859
+#: prefs.js:866
 msgid "Main Pill Shadow"
 msgstr "Hauptpillenschatten"
 
-#: prefs.js:867
+#: prefs.js:874
 msgid "Shadow Intensity"
 msgstr "Schattenintensität"
 
-#: prefs.js:874
+#: prefs.js:881
 msgid "Shadow Blur"
 msgstr "Schattenunschärfe"
 
-#: prefs.js:881
+#: prefs.js:888
 msgid "Positioning"
 msgstr "Positionierung und Layout"
 
-#: prefs.js:883
+#: prefs.js:890
 msgid "Dock"
 msgstr "Dock"
 
-#: prefs.js:884
+#: prefs.js:891
 msgid "Panel: Left Box"
 msgstr "Panel: Linke Box"
 
-#: prefs.js:885
+#: prefs.js:892
 msgid "Panel: Center Box"
 msgstr "Panel: Mittlere Box"
 
-#: prefs.js:886
+#: prefs.js:893
 msgid "Panel: Right Box"
 msgstr "Panel: Rechte Box"
 
-#: prefs.js:889
+#: prefs.js:896
 msgid "Container Target"
 msgstr "Container-Ziel"
 
-#: prefs.js:890
+#: prefs.js:897
 msgid "Select which UI element should host the music pill"
 msgstr "Wählen Sie das UI-Element, das die Musik-Pille enthalten soll"
 
-#: prefs.js:901
+#: prefs.js:908
 msgid "Dynamic Width"
 msgstr "Dynamische Breite"
 
-#: prefs.js:901
+#: prefs.js:908
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
 "Automatische Anpassung der Tablettenbreite (Schieberegler dient als maximale "
 "Breite)"
 
-#: prefs.js:916
+#: prefs.js:923
 msgid "Manual Index"
 msgstr "Manueller Index"
 
-#: prefs.js:917
+#: prefs.js:924
 msgid "First (Start)"
 msgstr "Erster (Anfang)"
 
-#: prefs.js:918
+#: prefs.js:925
 msgid "Center"
 msgstr "Mitte"
 
-#: prefs.js:919
+#: prefs.js:926
 msgid "Last (End)"
 msgstr "Letzter (Ende)"
 
-#: prefs.js:922
+#: prefs.js:929
 msgid "Alignment Preset"
 msgstr "Ausrichtungsvoreinstellung"
 
-#: prefs.js:923
+#: prefs.js:930
 msgid "How the widget aligns relative to other items"
 msgstr "Wie sich das Widget relativ zu anderen Elementen ausrichtet"
 
-#: prefs.js:931
+#: prefs.js:938
 msgid "Manual Index Position"
 msgstr "Manuelle Indexposition"
 
-#: prefs.js:932
+#: prefs.js:939
 msgid "Order in the list (0 is first). Only for Manual mode."
 msgstr "Reihenfolge in der Liste (0 ist erster). Nur im manuellen Modus."
 
-#: prefs.js:939
+#: prefs.js:946
 msgid "Vertical Offset (Y)"
 msgstr "Vertikaler Versatz (Y)"
 
-#: prefs.js:940
+#: prefs.js:947
 msgid "Shift Up (-) or Down (+)"
 msgstr "Nach oben (-) oder unten (+) verschieben"
 
-#: prefs.js:947
+#: prefs.js:954
 msgid "Horizontal Offset (X)"
 msgstr "Horizontaler Versatz (X)"
 
-#: prefs.js:948
+#: prefs.js:955
 msgid "Shift Left (-) or Right (+)"
 msgstr "Nach links (-) oder rechts (+) verschieben"
 
-#: prefs.js:954
+#: prefs.js:961
 msgid "Dimensions (Dock Mode)"
 msgstr "Abmessungen (Dock-Modus)"
 
-#: prefs.js:956 prefs.js:978
+#: prefs.js:963 prefs.js:985
 msgid "Album Art Size"
 msgstr "Größe des Albumcovers"
 
-#: prefs.js:962 prefs.js:984
+#: prefs.js:969 prefs.js:991
 msgid "Widget Width"
 msgstr "Widget-Breite"
 
-#: prefs.js:969 prefs.js:991
+#: prefs.js:976 prefs.js:998
 msgid "Widget Height"
 msgstr "Widget-Höhe"
 
-#: prefs.js:976
+#: prefs.js:983
 msgid "Dimensions (Panel Mode)"
 msgstr "Abmessungen (Panel-Modus)"
 
-#: prefs.js:997
+#: prefs.js:1004
 msgid "Custom Colors"
 msgstr "Benutzerdefinierte Farben"
 
-#: prefs.js:1000
+#: prefs.js:1007
 msgid "Sync GNOME Accent Color"
 msgstr "GNOME-Akzentfarbe synchronisieren"
 
-#: prefs.js:1001
+#: prefs.js:1008
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr "Die Akzentfarbe der GNOME Shell dynamisch an das Albumcover anpassen"
 
-#: prefs.js:1011
+#: prefs.js:1018
 msgid "Use Custom Colors"
 msgstr "Benutzerdefinierte Farben verwenden"
 
-#: prefs.js:1011
+#: prefs.js:1018
 msgid "Override dynamic colors"
 msgstr "Dynamische Farben überschreiben"
 
-#: prefs.js:1040
+#: prefs.js:1047
 msgid "Background Color"
 msgstr "Hintergrundfarbe"
 
-#: prefs.js:1041
+#: prefs.js:1048
 msgid "Text Color"
 msgstr "Textfarbe"
 
-#: prefs.js:1052
+#: prefs.js:1059
 msgid "System & Reset"
 msgstr "System & Zurücksetzen"
 
-#: prefs.js:1056
+#: prefs.js:1063
 msgid "System"
 msgstr "System"
 
-#: prefs.js:1059
+#: prefs.js:1066
 msgid "Hide Default GNOME Player"
 msgstr "Standard-GNOME-Player ausblenden"
 
-#: prefs.js:1060
+#: prefs.js:1067
 msgid "Remove the duplicate built-in media controls"
 msgstr "Entfernen Sie die doppelten integrierten Mediensteuerelemente"
 
-#: prefs.js:1070
+#: prefs.js:1077
 msgid "Game Mode"
 msgstr "Spielmodus"
 
-#: prefs.js:1070
+#: prefs.js:1077
 msgid "Disable animations when a fullscreen app is active"
 msgstr "Animationen bei Vollbild-Apps deaktivieren"
 
-#: prefs.js:1077
+#: prefs.js:1084
 msgid "Slow Player Workaround"
 msgstr "Langsamer Player – Workaround"
 
-#: prefs.js:1078
+#: prefs.js:1085
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
 "Fügt eine leichte Verzögerung bei der Verfolgung von Änderungen hinzu "
 "(behebt Synchronisierungsprobleme)"
 
-#: prefs.js:1086
+#: prefs.js:1093
 msgid "Off (Allow All)"
 msgstr "Aus (Alle erlauben)"
 
-#: prefs.js:1087
+#: prefs.js:1094
 msgid "Blacklist (Exclude listed)"
 msgstr "Blacklist (Aufgelistete ausschließen)"
 
-#: prefs.js:1088
+#: prefs.js:1095
 msgid "Whitelist (Only allow listed)"
 msgstr "Whitelist (Nur aufgelistete zulassen)"
 
-#: prefs.js:1091
+#: prefs.js:1098
 msgid "Player Filter Mode"
 msgstr "Spieler-Filter-Modus"
 
-#: prefs.js:1092
+#: prefs.js:1099
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr ""
 "Wählen Sie aus, wie Medienplayer (z. B. Browser) gefiltert werden sollen"
 
-#: prefs.js:1103
+#: prefs.js:1110
 msgid "Filtered Players (comma separated)"
 msgstr "Gefilterte Spieler (durch Kommas getrennt)"
 
-#: prefs.js:1117
+#: prefs.js:1124
 msgid "Detected Players"
 msgstr "Erkannte Spieler"
 
-#: prefs.js:1118
+#: prefs.js:1125
 msgid "Click an active player to add it to the filter list"
 msgstr ""
 "Klicken Sie auf einen aktiven Spieler, um ihn zur Filterliste hinzuzufügen"
 
-#: prefs.js:1153
+#: prefs.js:1160
 msgid "No players found"
 msgstr "Keine Spieler gefunden"
 
-#: prefs.js:1187
+#: prefs.js:1194
 msgid "💡 How to find the correct App ID?"
 msgstr "💡 Wie finde ich die richtige App-ID?"
 
-#: prefs.js:1188
+#: prefs.js:1195
 msgid "Click here for a quick guide and examples"
 msgstr "Klicken Sie hier für eine Kurzanleitung und Beispiele"
 
-#: prefs.js:1192
+#: prefs.js:1199
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -968,159 +976,159 @@ msgstr ""
 "App-ID! <i>(Entfernen Sie den Teil .desktop)</i>\n"
 "5. Drücken Sie Esc, um den Debugger zu schließen."
 
-#: prefs.js:1220
+#: prefs.js:1227
 msgid "Saved App Mappings"
 msgstr "Gespeicherte App-Zuordnungen"
 
-#: prefs.js:1221
+#: prefs.js:1228
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 "Bearbeiten Sie die Ziel-App-ID für manuell zugeordnete Player oder entfernen "
 "Sie diese."
 
-#: prefs.js:1242
+#: prefs.js:1249
 msgid "No manual mappings saved."
 msgstr "Es wurden keine manuellen Zuordnungen gespeichert."
 
-#: prefs.js:1247
+#: prefs.js:1254
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr ""
 "Geben Sie die richtige App-ID ein und drücken Sie die Eingabetaste oder "
 "klicken Sie auf das Symbol „Speichern“!"
 
-#: prefs.js:1266
+#: prefs.js:1273
 msgid "Save App ID"
 msgstr "App-ID speichern"
 
-#: prefs.js:1298
+#: prefs.js:1305
 msgid "Delete Mapping"
 msgstr "Zuordnung löschen"
 
-#: prefs.js:1327
+#: prefs.js:1334
 msgid "Running Players Detection"
 msgstr "Erkennung von laufenden Spielern"
 
-#: prefs.js:1328
+#: prefs.js:1335
 msgid "Click on a detected player to automatically fill the mapping."
 msgstr ""
 "Klicken Sie auf einen erkannten Player, um die Zuordnung automatisch "
 "auszufüllen."
 
-#: prefs.js:1351
+#: prefs.js:1358
 msgid "No active players detected. Open a music app first!"
 msgstr ""
 "Es wurden keine aktiven Spieler erkannt. Öffnen Sie zuerst eine Musik-App!"
 
-#: prefs.js:1353
+#: prefs.js:1360
 msgid "Select a player to help the extension identify it:"
 msgstr ""
 "Wählen Sie einen Player aus, damit die Erweiterung ihn identifizieren kann:"
 
-#: prefs.js:1373
+#: prefs.js:1380
 msgid "Use This"
 msgstr "Verwenden Sie dies"
 
-#: prefs.js:1403
+#: prefs.js:1410
 msgid "Refresh List"
 msgstr "Liste aktualisieren"
 
-#: prefs.js:1404
+#: prefs.js:1411
 msgid "Click to scan for active players again"
 msgstr "Klicken Sie hier, um erneut nach aktiven Spielern zu suchen"
 
-#: prefs.js:1419
+#: prefs.js:1426
 msgid "Backup & Restore"
 msgstr "Sichern und Wiederherstellen"
 
-#: prefs.js:1422
+#: prefs.js:1429
 msgid "Export Settings"
 msgstr "Export-Einstellungen"
 
-#: prefs.js:1423
+#: prefs.js:1430
 msgid "Export"
 msgstr "Exportieren"
 
-#: prefs.js:1427
+#: prefs.js:1434
 msgid "Save Settings"
 msgstr "Einstellungen speichern"
 
-#: prefs.js:1442
+#: prefs.js:1449
 msgid "Import Settings"
 msgstr "Einstellungen importieren"
 
-#: prefs.js:1443
+#: prefs.js:1450
 msgid "Import"
 msgstr "Importieren"
 
-#: prefs.js:1445
+#: prefs.js:1452
 msgid "Open Settings Backup"
 msgstr "Einstellungen öffnen Sicherung"
 
-#: prefs.js:1472
+#: prefs.js:1479
 msgid "Art Cache"
 msgstr "Zwischenspeicher"
 
-#: prefs.js:1494
+#: prefs.js:1501
 msgid "covers cached"
 msgstr "Cover zwischengespeichert"
 
-#: prefs.js:1497
+#: prefs.js:1504
 msgid "Album Art Cache"
 msgstr "Zwischenspeicher für Albumcover"
 
-#: prefs.js:1502
+#: prefs.js:1509
 msgid "Clear"
 msgstr "Leeren"
 
-#: prefs.js:1524
+#: prefs.js:1531
 msgid "Danger Zone"
 msgstr "Gefahrenzone"
 
-#: prefs.js:1525
+#: prefs.js:1532
 msgid "Reset All"
 msgstr "Alles zurücksetzen"
 
-#: prefs.js:1527
+#: prefs.js:1534
 msgid "Factory Reset"
 msgstr "Werksreset"
 
-#: prefs.js:1538
+#: prefs.js:1545
 msgid "About"
 msgstr "Über"
 
-#: prefs.js:1543
+#: prefs.js:1550
 msgid "What's New"
 msgstr "Was gibt es Neues"
 
-#: prefs.js:1670
+#: prefs.js:1700
 msgid "Support the Project"
 msgstr "Projekt unterstützen"
 
-#: prefs.js:1673
+#: prefs.js:1703
 msgid "Support on Ko-fi"
 msgstr "Auf Ko-fi unterstützen"
 
-#: prefs.js:1674
+#: prefs.js:1704
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Kauf mir einen Kaffee auf Ko-fi"
 
-#: prefs.js:1676 prefs.js:1685
+#: prefs.js:1706 prefs.js:1715
 msgid "Open"
 msgstr "Öffnen"
 
-#: prefs.js:1682
+#: prefs.js:1712
 msgid "Buy Me a Coffee"
 msgstr "Kauf mir einen Kaffee"
 
-#: prefs.js:1683
+#: prefs.js:1713
 msgid "Support via BuyMeACoffee"
 msgstr "Unterstützung über BuyMeACoffee"
 
-#: prefs.js:1691
+#: prefs.js:1721
 msgid "Source Code"
 msgstr "Quellcode"
 
-#: prefs.js:1692
+#: prefs.js:1722
 msgid "Report bugs or view source on GitHub"
 msgstr "Fehler melden oder Code auf GitHub ansehen"
 
@@ -1141,102 +1149,102 @@ msgstr "Auto (Smart)"
 msgid "Not supported"
 msgstr "Nicht unterstützt"
 
-#: src/uiExpandedPlayer.js:402
+#: src/uiExpandedPlayer.js:415
 msgid "First time? Check settings for custom buttons, scroll actions & more"
 msgstr ""
 "Zum ersten Mal hier? Überprüfe die Einstellungen für benutzerdefinierte "
 "Schaltflächen, Scroll-Aktionen und mehr"
 
-#: src/uiExpandedPlayer.js:725
+#: src/uiExpandedPlayer.js:738
 msgid "Unknown Title"
 msgstr "Unbekannter Titel"
 
-#: src/uiExpandedPlayer.js:728
+#: src/uiExpandedPlayer.js:741
 msgid "Unknown Artist"
 msgstr "Unbekannter Künstler"
 
-#: src/uiExpandedPlayer.js:1336
+#: src/uiExpandedPlayer.js:1375
 msgid "Volume"
 msgstr "Lautstärke"
 
-#: src/uiExpandedPlayer.js:1344
+#: src/uiExpandedPlayer.js:1383
 msgid "System Volume"
 msgstr "System-Lautstärke"
 
-#: src/uiExpandedPlayer.js:1356
+#: src/uiExpandedPlayer.js:1395
 msgid "Player"
 msgstr "Spieler"
 
-#: src/uiExpandedPlayer.js:1362
+#: src/uiExpandedPlayer.js:1401
 msgid "No audio stream available"
 msgstr "Es ist kein Audiostream verfügbar"
 
-#: src/uiExpandedPlayer.js:1454
+#: src/uiExpandedPlayer.js:1493
 msgid "Toggle Mute All"
 msgstr "Alle stummschalten"
 
-#: src/uiExpandedPlayer.js:1474
+#: src/uiExpandedPlayer.js:1513
 msgid "Seek"
 msgstr "Suchen"
 
-#: src/uiExpandedPlayer.js:1478
+#: src/uiExpandedPlayer.js:1517
 msgid "This player does not support seeking"
 msgstr "Dieser Spieler unterstützt keine Positionssprungfunktion"
 
-#: src/uiExpandedPlayer.js:1504
+#: src/uiExpandedPlayer.js:1543
 msgid "Audio Output"
 msgstr "Audioausgang"
 
-#: src/uiExpandedPlayer.js:1506
+#: src/uiExpandedPlayer.js:1545
 msgid "Audio control unavailable"
 msgstr "Audiosteuerung nicht verfügbar"
 
-#: src/uiExpandedPlayer.js:1509
+#: src/uiExpandedPlayer.js:1548
 msgid "No output devices found"
 msgstr "Es wurden keine Ausgabegeräte gefunden"
 
-#: src/uiExpandedPlayer.js:1512
+#: src/uiExpandedPlayer.js:1551
 msgid "Unknown Device"
 msgstr "Unbekanntes Gerät"
 
-#: src/uiExpandedPlayer.js:1533
+#: src/uiExpandedPlayer.js:1572
 msgid "min left"
 msgstr "noch Minuten"
 
-#: src/uiExpandedPlayer.js:1536
+#: src/uiExpandedPlayer.js:1575
 msgid "Cancel Timer"
 msgstr "Timer abbrechen"
 
-#: src/uiExpandedPlayer.js:1569
+#: src/uiExpandedPlayer.js:1608
 msgid "Runs inside the shell — works on lock screen"
 msgstr ""
 "Wird innerhalb der Shell ausgeführt – funktioniert auf dem Sperrbildschirm"
 
-#: src/uiExpandedPlayer.js:1581
+#: src/uiExpandedPlayer.js:1620
 msgid "This player does not support playback speed"
 msgstr "Dieser Player unterstützt keine Wiedergabegeschwindigkeit"
 
-#: src/uiExpandedPlayer.js:1621
+#: src/uiExpandedPlayer.js:1660
 msgid "Player must support MPRIS Rate"
 msgstr "Der Player muss die MPRIS-Rate unterstützen"
 
-#: src/uiExpandedPlayer.js:1621
+#: src/uiExpandedPlayer.js:1660
 msgid "Not supported by this player"
 msgstr "Wird von diesem Player nicht unterstützt"
 
-#: src/uiExpandedPlayer.js:1627
+#: src/uiExpandedPlayer.js:1666
 msgid "Recently Played"
 msgstr "Zuletzt gespielt"
 
-#: src/uiExpandedPlayer.js:1629
+#: src/uiExpandedPlayer.js:1668
 msgid "No history yet"
 msgstr "Noch keine Einträge"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1701
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: src/uiExpandedPlayer.js:1717
+#: src/uiExpandedPlayer.js:1756
 msgid "Clear History"
 msgstr "Verlauf leeren"
 
