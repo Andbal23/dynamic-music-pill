@@ -1601,6 +1601,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                     "• LRCLib Cloudflare Fix: Custom User-Agent on lyrics requests to bypass HTTP 403 blocks.\n\n" +
                     "🐛 Bug Fixes:\n" +
                     "• Fixed Volume Scrolling (#148): Fixed stream.change_volume() Gvc method invocation for PulseAudio/Pipewire volume scrolling.\n" +
+                    "• Fixed Missing Album Art Shadow Blob: Immediately hide vinyl container and drop shadow when album art is unavailable (e.g. YouTube videos without thumbnails) to prevent layout shifts and dark shadow artifacts.\n" +
                     "• Fixed pop-up play/pause button icon and player controls state when album art is disabled.\n" +
                     "• Fixed empty shadow box and pop-up layout shift when turning off album art.\n" +
                     "• Fixed seeker progress bar jumping to 0:00 when seeking with album art disabled.\n\n" +

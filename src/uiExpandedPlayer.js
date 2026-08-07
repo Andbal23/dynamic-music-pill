@@ -775,7 +775,7 @@ export const ExpandedPlayer = GObject.registerClass(
             }
 
             let showVinyl = this._settings.get_boolean('popup-show-vinyl');
-            if (!showVinyl) {
+            if (!showVinyl || !artUrl) {
                 if (this._artVisibilityTimer) {
                     GLib.Source.remove(this._artVisibilityTimer);
                     this._artVisibilityTimer = null;
@@ -794,28 +794,6 @@ export const ExpandedPlayer = GObject.registerClass(
                     if (topRow) {
                         topRow.x_align = Clutter.ActorAlign.CENTER;
                     }
-                }
-            } else if (!artUrl) {
-                if (!this._artVisibilityTimer) {
-                    this._artVisibilityTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
-                        this._artVisibilityTimer = null;
-                        this._vinylBin.hide();
-                        this._vinyl.hide();
-                        this._stopVinyl();
-                        this._currentArtUrl = null;
-
-                        if (this._titleLabel && this._titleLabel.get_parent()) {
-                            let infoBox = this._titleLabel.get_parent();
-                            infoBox.x_expand = false;
-                            infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
-
-                            let topRow = infoBox.get_parent();
-                            if (topRow) {
-                                topRow.x_align = Clutter.ActorAlign.CENTER;
-                            }
-                        }
-                        return GLib.SOURCE_REMOVE;
-                    });
                 }
             } else {
                 if (this._artVisibilityTimer) {
