@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 16:03+0200\n"
+"POT-Creation-Date: 2026-08-07 16:09+0200\n"
 "PO-Revision-Date: 2026-06-29 09:02+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/dynamic-music-pill/"
@@ -90,468 +90,484 @@ msgstr "ச்க்ரோல் செயல்"
 msgid "Choose what scrolling on the pill should do"
 msgstr "மாத்திரையில் என்ன ச்க்ரோலிங் செய்ய வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்"
 
+#: prefs.js:178
+msgid "System Master Volume"
+msgstr ""
+
 #: prefs.js:179
+msgid "Active Media App Volume"
+msgstr ""
+
+#: prefs.js:183
+msgid "Volume Scroll Target"
+msgstr ""
+
+#: prefs.js:184
+msgid "Choose which sound source to control when scrolling volume"
+msgstr ""
+
+#: prefs.js:203
 msgid "Invert Scroll Animation"
 msgstr "தலைகீழ் ச்க்ரோல் அனிமேசன்"
 
-#: prefs.js:180
+#: prefs.js:204
 msgid "Direction of the jump effect (Natural vs Traditional)"
 msgstr "சம்ப் விளைவின் திசை (இயற்கை vs பாரம்பரியம்)"
 
-#: prefs.js:191
+#: prefs.js:215
 msgid "Invert Scroll Direction"
 msgstr "ச்க்ரோல் திசையை மாற்றவும்"
 
-#: prefs.js:192
+#: prefs.js:216
 msgid "Swap up/down scrolling for track and volume actions"
 msgstr "டிராக் மற்றும் வால்யூம் செயல்களுக்கு மேல்/கீழ் ச்க்ரோலிங்கை மாற்றவும்"
 
-#: prefs.js:204
+#: prefs.js:228
 msgid "Scrolling Text"
 msgstr "ச்க்ரோலிங் உரை"
 
-#: prefs.js:205
+#: prefs.js:229
 msgid "Animate long track titles and artist names"
 msgstr "நீண்ட பாடல் தலைப்புகள் மற்றும் கலைஞர் பெயர்களை அனிமேட் செய்யவும்"
 
-#: prefs.js:216
+#: prefs.js:240
 msgid "Scroll Only on Hover"
 msgstr "ஓவரில் மட்டும் உருட்டவும்"
 
-#: prefs.js:217
+#: prefs.js:241
 msgid "Text stays still until you hover the pill"
 msgstr "மாத்திரையை எடுத்து வைக்கும் வரை உரை அசையாமல் இருக்கும்"
 
-#: prefs.js:229
+#: prefs.js:253
 msgid "Freeze Scroll on Pause"
 msgstr "இடைநிறுத்தத்தில் உருட்டலை முடக்கு"
 
-#: prefs.js:230
+#: prefs.js:254
 msgid "Stop the text scrolling animation when the media player is paused"
 msgstr "மீடியா பிளேயர் இடைநிறுத்தப்படும் போது உரை ச்க்ரோலிங் அனிமேசனை நிறுத்தவும்"
 
-#: prefs.js:243
+#: prefs.js:267
 msgid "Lyrics Display"
 msgstr "பாடல் வரிகள் காட்சி"
 
-#: prefs.js:244
+#: prefs.js:268
 msgid "Show real-time synchronized lyrics for current track."
 msgstr "தற்போதைய டிராக்கிற்கான நிகழ்நேர ஒத்திசைக்கப்பட்ட பாடல் வரிகளைக் காட்டு."
 
-#: prefs.js:255
+#: prefs.js:279
 msgid "Word-level Karaoke in Pill"
 msgstr ""
 
-#: prefs.js:256
+#: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
 
-#: prefs.js:268
+#: prefs.js:292
 msgid "Lyrics language preference"
 msgstr "பாடல் வரிகள் மொழி விருப்பம்"
 
-#: prefs.js:269
+#: prefs.js:293
 msgid "When multiple versions exist"
 msgstr "பல பதிப்புகள் இருக்கும்போது"
 
-#: prefs.js:271
+#: prefs.js:295
 msgid "Auto"
 msgstr "தானி"
 
-#: prefs.js:272
+#: prefs.js:296
 msgid "Prefer original script"
 msgstr "அசல் ச்கிரிப்டை விரும்பு"
 
-#: prefs.js:273
+#: prefs.js:297
 msgid "Prefer Latin"
 msgstr "லத்தீன் மொழிக்கு முன்னுரிமை கொடுங்கள்"
 
-#: prefs.js:282
+#: prefs.js:306
 msgid "Lyrics Fade-in Effect"
 msgstr "பாடல் வரிகள் ஃபேட்-இன் எஃபெக்ட்"
 
-#: prefs.js:283
+#: prefs.js:307
 msgid "Smoothly fade in new lyric lines"
 msgstr "புதிய பாடல் வரிகளில் மென்மையாக மங்கிவிடும்"
 
-#: prefs.js:295
+#: prefs.js:319
 msgid "Fade Duration (ms)"
 msgstr "மங்கல் கால அளவு (மிவி)"
 
-#: prefs.js:304
+#: prefs.js:328
 msgid "Tablet Mode Controls"
 msgstr "டேப்லெட் பயன்முறை கட்டுப்பாடுகள்"
 
-#: prefs.js:305
+#: prefs.js:329
 msgid "Show media buttons directly on the pill"
 msgstr "மாத்திரையில் நேரடியாக மீடியா பொத்தான்களைக் காட்டு"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "Off"
 msgstr "அணை"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "Skip Only"
 msgstr "தவிர் மட்டும்"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "Play/Pause Only"
 msgstr "விளையாட/இடைநிறுத்த மட்டும்"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "All Controls"
 msgstr "அனைத்து கட்டுப்பாடுகள்"
 
-#: prefs.js:316
+#: prefs.js:340
 msgid "Controls Position"
 msgstr "கட்டுப்பாட்டு நிலை"
 
-#: prefs.js:317
+#: prefs.js:341
 msgid "Where to place the tablet controls on the pill"
 msgstr "மாத்திரை கட்டுப்பாடுகளை மாத்திரையில் எங்கு வைக்க வேண்டும்"
 
-#: prefs.js:319
+#: prefs.js:343
 msgid "Before Text"
 msgstr "உரைக்கு முன்"
 
-#: prefs.js:319
+#: prefs.js:343
 msgid "After Text"
 msgstr "உரைக்குப் பிறகு"
 
-#: prefs.js:319
+#: prefs.js:343
 msgid "After Visualizer"
 msgstr "விசுவலைசருக்குப் பிறகு"
 
-#: prefs.js:333
+#: prefs.js:357
 msgid "Inline Artist"
 msgstr "இன்லைன் கலைஞர்"
 
-#: prefs.js:333
+#: prefs.js:357
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "விட்செட்டை அழுத்தும் போது \"தலைப்பு • கலைஞர்\" என்பதைக் காட்டு"
 
-#: prefs.js:339
+#: prefs.js:363
 msgid "Show Artist"
 msgstr "கலைஞரைக் காட்டு"
 
-#: prefs.js:339
+#: prefs.js:363
 msgid "Show the artist name in the main music pill"
 msgstr "முக்கிய இசை மாத்திரையில் கலைஞரின் பெயரைக் காட்டு"
 
-#: prefs.js:351
+#: prefs.js:375
 msgid "Compact Mode (Hide Text)"
 msgstr "கச்சிதமான பயன்முறை (உரையை மறை)"
 
-#: prefs.js:352
+#: prefs.js:376
 msgid "Hide title and artist"
 msgstr "தலைப்பையும் கலைஞரையும் மறை"
 
-#: prefs.js:365
+#: prefs.js:389
 msgid "Mouse Actions"
 msgstr "சுட்டி செயல்கள்"
 
-#: prefs.js:368 prefs.js:688
+#: prefs.js:392 prefs.js:712
 msgid "None"
 msgstr "எதுவுமில்லை"
 
-#: prefs.js:368
+#: prefs.js:392
 msgid "Play / Pause"
 msgstr "விளையாடு / இடைநிறுத்து"
 
-#: prefs.js:368
+#: prefs.js:392
 msgid "Next Track"
 msgstr "அடுத்த ட்ராக்"
 
-#: prefs.js:368
+#: prefs.js:392
 msgid "Previous Track"
 msgstr "முந்தைய ட்ராக்"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Open Player App"
 msgstr "பிளேயர் பயன்பாட்டைத் திறக்கவும்"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Open Menu"
 msgstr "மெனுவைத் திற"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Select Player"
 msgstr "பிளேயரைத் தேர்ந்தெடுக்கவும்"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Open Settings"
 msgstr "அமைப்புகளைத் திறக்கவும்"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Close Player App"
 msgstr "பிளேயர் பயன்பாட்டை மூடு"
 
-#: prefs.js:376
+#: prefs.js:400
 msgid "Left Click"
 msgstr "இடது சொடுக்கு செய்யவும்"
 
-#: prefs.js:384
+#: prefs.js:408
 msgid "Double Click"
 msgstr "இருமுறை சொடுக்கு செய்யவும்"
 
-#: prefs.js:392
+#: prefs.js:416
 msgid "Middle Click"
 msgstr "மிடில் சொடுக்கு"
 
-#: prefs.js:400
+#: prefs.js:424
 msgid "Right Click"
 msgstr "வலது சொடுக்கு செய்யவும்"
 
-#: prefs.js:408
+#: prefs.js:432
 msgid "Hover Action"
 msgstr "மிதவை நடவடிக்கை"
 
-#: prefs.js:419
+#: prefs.js:443
 msgid "Hover Delay (ms)"
 msgstr "மிதவை நேரந்தவறுகை (மிவி)"
 
-#: prefs.js:433
+#: prefs.js:457
 msgid "Pop-up Menu"
 msgstr "பாப்-அப் பட்டியல்"
 
-#: prefs.js:437
+#: prefs.js:461
 msgid "Pop-up Appearance"
 msgstr "பாப்-அப் தோற்றம்"
 
-#: prefs.js:439
+#: prefs.js:463
 msgid "Rotate Vinyl"
 msgstr "வினைலை சுழற்று"
 
-#: prefs.js:440
+#: prefs.js:464
 msgid "Spin the album art when playing"
 msgstr "விளையாடும் போது ஆல்பம் கலையை சுழற்றவும்"
 
-#: prefs.js:451
+#: prefs.js:475
 msgid "Rotation Speed"
 msgstr "சுழற்சி விரைவு"
 
-#: prefs.js:452
+#: prefs.js:476
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
 msgstr "வினைல் சுழல் வேகத்தை சரிசெய்யவும் (குறைவானது மெதுவாக உள்ளது, இயல்புநிலை: 10)"
 
-#: prefs.js:460 prefs.js:880
+#: prefs.js:484 prefs.js:904
 msgid "Enable Shadow"
 msgstr "நிழலை இயக்கு"
 
-#: prefs.js:461
+#: prefs.js:485
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "பாப்-அப் மெனுவின் பின்னால் துளி நிழலைக் காட்டு"
 
-#: prefs.js:472
+#: prefs.js:496
 msgid "Close on Mouse Leave"
 msgstr "மவுச் லீவில் மூடு"
 
-#: prefs.js:473
+#: prefs.js:497
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr "கர்சரை நகர்த்தும்போது தானாகவே பாப்-அப்பை மறைக்கவும்"
 
-#: prefs.js:484
+#: prefs.js:508
 msgid "Follow Custom Background Color"
 msgstr "தனிப்பயன் பின்னணி வண்ணத்தைப் பின்பற்றவும்"
 
-#: prefs.js:485
+#: prefs.js:509
 msgid "Use the custom background color for the pop-up (if active)"
 msgstr "பாப்-அப்பிற்கு தனிப்பயன் பின்னணி வண்ணத்தைப் பயன்படுத்தவும் (செயலில் இருந்தால்)"
 
-#: prefs.js:494
+#: prefs.js:518
 msgid "Follow Custom Text Color"
 msgstr "தனிப்பயன் உரை வண்ணத்தைப் பின்பற்றவும்"
 
-#: prefs.js:495
+#: prefs.js:519
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr "பாப்-அப்பிற்கு தனிப்பயன் உரை வண்ணத்தைப் பயன்படுத்தவும் (செயலில் இருந்தால்)"
 
-#: prefs.js:504
+#: prefs.js:528
 msgid "Follow Transparency"
 msgstr "வெளிப்படைத்தன்மையைப் பின்பற்றவும்"
 
-#: prefs.js:505
+#: prefs.js:529
 msgid "Inherit opacity settings from the main pill"
 msgstr "முதன்மையான மாத்திரையிலிருந்து ஒளிபுகா அமைப்புகளைப் பெறவும்"
 
-#: prefs.js:516
+#: prefs.js:540
 msgid "Follow Border Radius"
 msgstr "பார்டர் ரேடியசைப் பின்தொடரவும்"
 
-#: prefs.js:517
+#: prefs.js:541
 msgid "Inherit corner roundness from the main pill"
 msgstr "முதன்மையான மாத்திரையிலிருந்து மூலையின் வட்டத்தன்மையைப் பெறுங்கள்"
 
-#: prefs.js:526
+#: prefs.js:550
 msgid "Show Vinyl"
 msgstr "வினைலைக் காட்டு"
 
-#: prefs.js:526
+#: prefs.js:550
 msgid "Display the album art in the pop-up"
 msgstr "பாப்-அப்பில் ஆல்பம் கலையைக் காட்டு"
 
-#: prefs.js:532
+#: prefs.js:556
 msgid "Square Vinyl Image"
 msgstr "சதுர வினைல் படம்"
 
-#: prefs.js:532
+#: prefs.js:556
 msgid "Use a square album art (disables rotation)"
 msgstr "சதுர ஆல்பம் கலையைப் பயன்படுத்தவும் (சுழற்சியை முடக்குகிறது)"
 
-#: prefs.js:538
+#: prefs.js:562
 msgid "Album Art Shadow"
 msgstr ""
 
-#: prefs.js:538
+#: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
 msgstr ""
 
-#: prefs.js:544
+#: prefs.js:568
 msgid "Show Shuffle and Loop"
 msgstr "சஃபிள் மற்றும் லூப்பைக் காட்டு"
 
-#: prefs.js:544
+#: prefs.js:568
 msgid "Display extra controls in the pop-up"
 msgstr "பாப்-அப்பில் கூடுதல் கட்டுப்பாடுகளைக் காண்பி"
 
-#: prefs.js:550
+#: prefs.js:574
 msgid "Use Custom Width"
 msgstr "தனிப்பயன் அகலத்தைப் பயன்படுத்தவும்"
 
-#: prefs.js:550
+#: prefs.js:574
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "பாப்-அப்பிற்கான மாறும் அளவை முடக்கு"
 
-#: prefs.js:557
+#: prefs.js:581
 msgid "Custom Width Value"
 msgstr "தனிப்பயன் அகல மதிப்பு"
 
-#: prefs.js:573
+#: prefs.js:597
 msgid "Show Player Selector"
 msgstr "பிளேயர் தேர்வாளரைக் காட்டு"
 
-#: prefs.js:574
+#: prefs.js:598
 msgid "Display active player icons in the pop-up"
 msgstr "பாப்-அப்பில் செயலில் உள்ள பிளேயர் ஐகான்களைக் காண்பி"
 
-#: prefs.js:582
+#: prefs.js:606
 msgid "Hide Auto (Smart Selection)"
 msgstr "ஆட்டோவை மறை (ச்மார்ட் தேர்வு)"
 
-#: prefs.js:583
+#: prefs.js:607
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr "பிளேயர் தேர்வாளர் மெனுவிலிருந்து தானியங்கி பிளேயர் தேர்வு உள்ளீட்டை அகற்றவும்"
 
-#: prefs.js:594
+#: prefs.js:618
 msgid "Player Selector Position"
 msgstr "வீரர் தேர்வாளர் நிலை"
 
-#: prefs.js:595
+#: prefs.js:619
 msgid "Where to place the player icons inside the pop-up"
 msgstr "பாப்-அப்பில் பிளேயர் ஐகான்களை எங்கு வைக்க வேண்டும்"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Top"
 msgstr "மேலே"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Bottom"
 msgstr "கீழே"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Left"
 msgstr "இடது"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Right"
 msgstr "வலது"
 
-#: prefs.js:607
+#: prefs.js:631
 msgid "Show Album Title"
 msgstr "ஆல்பத்தின் தலைப்பைக் காட்டு"
 
-#: prefs.js:608
+#: prefs.js:632
 msgid "Display album name next to the artist (Artist • Album)"
 msgstr "கலைஞருக்கு அருகில் ஆல்பத்தின் பெயரைக் காண்பி (கலைஞர் • ஆல்பம்)"
 
-#: prefs.js:616
+#: prefs.js:640
 msgid "Show HH:MM:SS"
 msgstr "HH:MM:SSஐக் காட்டு"
 
-#: prefs.js:617
+#: prefs.js:641
 msgid "Display hours in the time labels when media is longer than 60 minutes"
 msgstr ""
 "மீடியா 60 நிமிடங்களுக்கு மேல் இருக்கும் போது நேர லேபிள்களில் மணிநேரத்தைக் காட்டவும்"
 
-#: prefs.js:628
+#: prefs.js:652
 msgid "Show Visualizer in Pop-up"
 msgstr "பாப்-அப்பில் விசுவலைசரைக் காட்டு"
 
-#: prefs.js:635
+#: prefs.js:659
 msgid "Hide Pill Visualizer"
 msgstr "மாத்திரை விசுவலைசரை மறை"
 
-#: prefs.js:636
+#: prefs.js:660
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr "முக்கிய மாத்திரை விசுவலைசரை மறைத்து \"நகரும்\" விளைவை உருவாக்குகிறது"
 
-#: prefs.js:645
+#: prefs.js:669
 msgid "Popup Visualizer Bar Count"
 msgstr "மேல்தோன்றல் விசுவலைசர் பார் எண்ணிக்கை"
 
-#: prefs.js:653
+#: prefs.js:677
 msgid "Popup Visualizer Bar Width"
 msgstr "மேல்தோன்றல் விசுவலைசர் பார் அகலம்"
 
-#: prefs.js:661
+#: prefs.js:685
 msgid "Popup Visualizer Height"
 msgstr "மேல்தோன்றல் விசுவலைசர் உயரம்"
 
-#: prefs.js:671
+#: prefs.js:695
 msgid "Custom Control Buttons"
 msgstr "தனிப்பயன் கட்டுப்பாட்டு பொத்தான்கள்"
 
-#: prefs.js:672
+#: prefs.js:696
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr ""
 "விரிவாக்கப்பட்ட பிளேயரின் கட்டுப்பாடுகள் வரிசையில் இரண்டு கூடுதல் பொத்தான்களைச் சேர்க்கவும்."
 
-#: prefs.js:676
+#: prefs.js:700
 msgid "Enable Custom Buttons"
 msgstr "தனிப்பயன் பொத்தான்களை இயக்கு"
 
-#: prefs.js:677
+#: prefs.js:701
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr "சஃபிள் மற்றும் லூப்பிற்கு அடுத்துள்ள கூடுதல் செயல் பொத்தான்களைக் காட்டு"
 
-#: prefs.js:689
+#: prefs.js:713
 msgid "Volume Control"
 msgstr "தொகுதி கட்டுப்பாடு"
 
-#: prefs.js:690
+#: prefs.js:714
 msgid "Seek ±10 Seconds"
 msgstr "சீக் ±10 வினாடிகள்"
 
-#: prefs.js:691
+#: prefs.js:715
 msgid "Audio Output Switcher"
 msgstr "ஆடியோ அவுட்புட் ச்விட்சர்"
 
-#: prefs.js:692 src/uiExpandedPlayer.js:1574
+#: prefs.js:716 src/uiExpandedPlayer.js:1574
 msgid "Sleep Timer"
 msgstr "ச்லீப் நேரங்குறிகருவி"
 
-#: prefs.js:693 src/uiExpandedPlayer.js:1615
+#: prefs.js:717 src/uiExpandedPlayer.js:1615
 msgid "Playback Speed"
 msgstr "பின்னணி விரைவு"
 
-#: prefs.js:694
+#: prefs.js:718
 msgid "Track History"
 msgstr "தட வரலாறு"
 
-#: prefs.js:725
+#: prefs.js:749
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
@@ -559,55 +575,55 @@ msgstr ""
 "இரண்டு பொத்தான்களும் சீக் என அமைக்கப்பட்டால், அவை நேரடியாகச் செயல்படும் (பட்டன் 1 = -10கள், "
 "பட்டன் 2 = +10கள்). இல்லையெனில் சீக் ஒரு துணைப் பக்கத்தைத் திறக்கும்."
 
-#: prefs.js:728
+#: prefs.js:752
 msgid "Custom Button 1"
 msgstr "தனிப்பயன் பொத்தான் 1"
 
-#: prefs.js:728
+#: prefs.js:752
 msgid "Placed left of Shuffle."
 msgstr "சஃபிளின் இடதுபுறம் வைக்கப்பட்டுள்ளது."
 
-#: prefs.js:731
+#: prefs.js:755
 msgid "Custom Button 2"
 msgstr "தனிப்பயன் பட்டன் 2"
 
-#: prefs.js:731
+#: prefs.js:755
 msgid "Placed right of Loop."
 msgstr "லூப்பின் வலதுபுறம் வைக்கப்பட்டுள்ளது."
 
-#: prefs.js:742
+#: prefs.js:766
 msgid "Style & Layout"
 msgstr "உடை & தளவமைப்பு"
 
-#: prefs.js:746
+#: prefs.js:770
 msgid "Visualizer and Shape"
 msgstr "காட்சிப்படுத்தி மற்றும் வடிவம்"
 
-#: prefs.js:749
+#: prefs.js:773
 msgid "Off (Disabled)"
 msgstr "முடக்கப்பட்டுள்ளது (முடக்கப்பட்டது)"
 
-#: prefs.js:750
+#: prefs.js:774
 msgid "Wave (Smooth)"
 msgstr "அலை (மென்மையான)"
 
-#: prefs.js:751
+#: prefs.js:775
 msgid "Beat (Jumpy)"
 msgstr "பீட் (சம்பி)"
 
-#: prefs.js:752
+#: prefs.js:776
 msgid "Real-Time (Cava needed)"
 msgstr "நிகழ்நேரம் (காவா தேவை)"
 
-#: prefs.js:755
+#: prefs.js:779
 msgid "Visualizer Animation"
 msgstr "விசுவலைசர் அனிமேசன்"
 
-#: prefs.js:756
+#: prefs.js:780
 msgid "Select the style of the audio reaction bars"
 msgstr "ஆடியோ எதிர்வினை பார்களின் பாணியைத் தேர்ந்தெடுக்கவும்"
 
-#: prefs.js:764
+#: prefs.js:788
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
@@ -615,320 +631,320 @@ msgstr ""
 "குறிப்பு: 'நிகழ்நேர' பயன்முறைக்கு உங்கள் லினக்ச் கணினியில் 'காவா' தொகுப்பு நிறுவப்பட "
 "வேண்டும்."
 
-#: prefs.js:773
+#: prefs.js:797
 msgid "Visualizer Bar Count"
 msgstr "விசுவலைசர் பார் எண்ணிக்கை"
 
-#: prefs.js:774
+#: prefs.js:798
 msgid "Number of bars displayed in the animation"
 msgstr "அனிமேசனில் காட்டப்படும் பார்களின் எண்ணிக்கை"
 
-#: prefs.js:781
+#: prefs.js:805
 msgid "Visualizer Bar Width"
 msgstr "விசுவலைசர் பார் அகலம்"
 
-#: prefs.js:782
+#: prefs.js:806
 msgid "Thickness of individual bars (pixels)"
 msgstr "தனிப்பட்ட பார்களின் தடிமன் (பிக்சல்கள்)"
 
-#: prefs.js:789
+#: prefs.js:813
 msgid "Visualizer Height"
 msgstr "விசுவலைசர் உயரம்"
 
-#: prefs.js:790
+#: prefs.js:814
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr "விசுவலைசரின் அதிகபட்ச உயரம் (மாத்திரை உயரத்திற்கு தானாக இறுகப் பட்டது)"
 
-#: prefs.js:797
+#: prefs.js:821
 msgid "Visualizer Margin"
 msgstr "விசுவலைசர் விளிம்பு"
 
-#: prefs.js:798
+#: prefs.js:822
 msgid "Distance between the text and the wave animation"
 msgstr "உரைக்கும் அலை அனிமேசனுக்கும் இடையே உள்ள தூரம்"
 
-#: prefs.js:805
+#: prefs.js:829
 msgid "Outer Edge Margin"
 msgstr "வெளிப்புற விளிம்பு விளிம்பு"
 
-#: prefs.js:806
+#: prefs.js:830
 msgid "Spacing before the album art and after the visualizer"
 msgstr "ஆல்பம் கலைக்கு முன் மற்றும் காட்சிப்படுத்தலுக்குப் பிறகு இடைவெளி"
 
-#: prefs.js:813
+#: prefs.js:837
 msgid "Corner Radius"
 msgstr "மூலை ஆரம்"
 
-#: prefs.js:814
+#: prefs.js:838
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
 msgstr "விட்செட் விளிம்புகளின் வட்டமானது (0 = நாற்கை, 25 = மாத்திரை)"
 
-#: prefs.js:821
+#: prefs.js:845
 msgid "Show Pill Outline"
 msgstr "மாத்திரை அவுட்லைனைக் காட்டு"
 
-#: prefs.js:822
+#: prefs.js:846
 msgid "Display a subtle border around the main pill"
 msgstr "முதன்மையான மாத்திரையைச் சுற்றி ஒரு நுட்பமான எல்லையைக் காட்டவும்"
 
-#: prefs.js:835
+#: prefs.js:859
 msgid "Background and Transparency"
 msgstr "பின்னணி மற்றும் வெளிப்படைத்தன்மை"
 
-#: prefs.js:837
+#: prefs.js:861
 msgid "Enable Transparency"
 msgstr "வெளிப்படைத்தன்மையை இயக்கு"
 
-#: prefs.js:838
+#: prefs.js:862
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr ""
 "திடமான கருப்பொருள் பின்னணி மற்றும் தனிப்பயன் வெளிப்படையான தோற்றத்திற்கு இடையே மாறவும்"
 
-#: prefs.js:849
+#: prefs.js:873
 msgid "Background Opacity"
 msgstr "பின்னணி ஒளிபுகாநிலை"
 
-#: prefs.js:850
+#: prefs.js:874
 msgid "Adjust transparency level"
 msgstr "வெளிப்படைத்தன்மை அளவை சரிசெய்யவும்"
 
-#: prefs.js:857
+#: prefs.js:881
 msgid "Apply to Album Art"
 msgstr "ஆல்பம் கலைக்கு விண்ணப்பிக்கவும்"
 
-#: prefs.js:864
+#: prefs.js:888
 msgid "Apply to Text"
 msgstr "உரைக்கு விண்ணப்பிக்கவும்"
 
-#: prefs.js:871
+#: prefs.js:895
 msgid "Apply to Visualizer"
 msgstr "விசுவலைசருக்கு விண்ணப்பிக்கவும்"
 
-#: prefs.js:879
+#: prefs.js:903
 msgid "Main Pill Shadow"
 msgstr "முக்கிய மாத்திரை நிழல்"
 
-#: prefs.js:887
+#: prefs.js:911
 msgid "Shadow Intensity"
 msgstr "நிழல் தீவிரம்"
 
-#: prefs.js:894
+#: prefs.js:918
 msgid "Shadow Blur"
 msgstr "நிழல் தெளிவின்மை"
 
-#: prefs.js:901
+#: prefs.js:925
 msgid "Positioning"
 msgstr "நிலைப்படுத்துதல்"
 
-#: prefs.js:903
+#: prefs.js:927
 msgid "Dock"
 msgstr "கப்பல் கூடம்"
 
-#: prefs.js:904
+#: prefs.js:928
 msgid "Panel: Left Box"
 msgstr "குழு: இடது பெட்டி"
 
-#: prefs.js:905
+#: prefs.js:929
 msgid "Panel: Center Box"
 msgstr "குழு: மையப் பெட்டி"
 
-#: prefs.js:906
+#: prefs.js:930
 msgid "Panel: Right Box"
 msgstr "குழு: வலது பெட்டி"
 
-#: prefs.js:909
+#: prefs.js:933
 msgid "Container Target"
 msgstr "கொள்கலன் இலக்கு"
 
-#: prefs.js:910
+#: prefs.js:934
 msgid "Select which UI element should host the music pill"
 msgstr ""
 "எந்த இடைமுகம் உறுப்பு இசை மாத்திரையை புரவலன் செய்ய வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்"
 
-#: prefs.js:921
+#: prefs.js:945
 msgid "Dynamic Width"
 msgstr "மாறும் அகலம்"
 
-#: prefs.js:921
+#: prefs.js:945
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr "மாத்திரை அகலத்தை தானாக சரிசெய்தல் (ச்லைடர் அதிகபட்ச அகலமாக செயல்படுகிறது)"
 
-#: prefs.js:936
+#: prefs.js:960
 msgid "Manual Index"
 msgstr "கையேடு குறியீடு"
 
-#: prefs.js:937
+#: prefs.js:961
 msgid "First (Start)"
 msgstr "முதலில் (தொடங்கு)"
 
-#: prefs.js:938
+#: prefs.js:962
 msgid "Center"
 msgstr "நடுவண்"
 
-#: prefs.js:939
+#: prefs.js:963
 msgid "Last (End)"
 msgstr "கடைசி (முடிவு)"
 
-#: prefs.js:942
+#: prefs.js:966
 msgid "Alignment Preset"
 msgstr "சீரமைப்பு முன்னமைவு"
 
-#: prefs.js:943
+#: prefs.js:967
 msgid "How the widget aligns relative to other items"
 msgstr "மற்ற உருப்படிகளுடன் ஒப்பிடும்போது விட்செட் எவ்வாறு சீரமைக்கப்படுகிறது"
 
-#: prefs.js:951
+#: prefs.js:975
 msgid "Manual Index Position"
 msgstr "கையேடு குறியீட்டு நிலை"
 
-#: prefs.js:952
+#: prefs.js:976
 msgid "Order in the list (0 is first). Only for Manual mode."
 msgstr "பட்டியலில் உள்ள வரிசை (0 முதல்). கைமுறை பயன்முறைக்கு மட்டுமே."
 
-#: prefs.js:959
+#: prefs.js:983
 msgid "Vertical Offset (Y)"
 msgstr "செங்குத்து ஆஃப்செட் (Y)"
 
-#: prefs.js:960
+#: prefs.js:984
 msgid "Shift Up (-) or Down (+)"
 msgstr "மேலே (-) அல்லது கீழ் (+)"
 
-#: prefs.js:967
+#: prefs.js:991
 msgid "Horizontal Offset (X)"
 msgstr "கிடைமட்ட ஆஃப்செட் (X)"
 
-#: prefs.js:968
+#: prefs.js:992
 msgid "Shift Left (-) or Right (+)"
 msgstr "இடது (-) அல்லது வலது (+)"
 
-#: prefs.js:974
+#: prefs.js:998
 msgid "Dimensions (Dock Mode)"
 msgstr "பரிமாணங்கள் (டாக் பயன்முறை)"
 
-#: prefs.js:976 prefs.js:998
+#: prefs.js:1000 prefs.js:1022
 msgid "Album Art Size"
 msgstr "ஆல்பம் கலை அளவு"
 
-#: prefs.js:982 prefs.js:1004
+#: prefs.js:1006 prefs.js:1028
 msgid "Widget Width"
 msgstr "விட்செட் அகலம்"
 
-#: prefs.js:989 prefs.js:1011
+#: prefs.js:1013 prefs.js:1035
 msgid "Widget Height"
 msgstr "விட்செட் உயரம்"
 
-#: prefs.js:996
+#: prefs.js:1020
 msgid "Dimensions (Panel Mode)"
 msgstr "பரிமாணங்கள் (பேனல் பயன்முறை)"
 
-#: prefs.js:1017
+#: prefs.js:1041
 msgid "Custom Colors"
 msgstr "விருப்ப நிறங்கள்"
 
-#: prefs.js:1020
+#: prefs.js:1044
 msgid "Sync GNOME Accent Color"
 msgstr "க்னோம் உச்சரிப்பு நிறத்தை ஒத்திசைக்கவும்"
 
-#: prefs.js:1021
+#: prefs.js:1045
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr ""
 "ஆல்பம் கலைக்கு பொருந்தும் வகையில் GNOME செல் உச்சரிப்பு நிறத்தை மாறும் வகையில் மாற்றவும்"
 
-#: prefs.js:1031
+#: prefs.js:1055
 msgid "Use Custom Colors"
 msgstr "தனிப்பயன் வண்ணங்களைப் பயன்படுத்தவும்"
 
-#: prefs.js:1031
+#: prefs.js:1055
 msgid "Override dynamic colors"
 msgstr "மாறும் வண்ணங்களை மேலெழுதவும்"
 
-#: prefs.js:1060
+#: prefs.js:1084
 msgid "Background Color"
 msgstr "பின்னணி நிறம்"
 
-#: prefs.js:1061
+#: prefs.js:1085
 msgid "Text Color"
 msgstr "உரை நிறம்"
 
-#: prefs.js:1072
+#: prefs.js:1096
 msgid "System & Reset"
 msgstr "சிச்டம் & ரீசெட்"
 
-#: prefs.js:1076
+#: prefs.js:1100
 msgid "System"
 msgstr "மண்டலம்"
 
-#: prefs.js:1079
+#: prefs.js:1103
 msgid "Hide Default GNOME Player"
 msgstr "இயல்புநிலை க்னோம் பிளேயரை மறை"
 
-#: prefs.js:1080
+#: prefs.js:1104
 msgid "Remove the duplicate built-in media controls"
 msgstr "உள்ளமைக்கப்பட்ட மீடியா கட்டுப்பாடுகளின் நகல்களை அகற்றவும்"
 
-#: prefs.js:1090
+#: prefs.js:1114
 msgid "Game Mode"
 msgstr "விளையாட்டு முறை"
 
-#: prefs.js:1090
+#: prefs.js:1114
 msgid "Disable animations when a fullscreen app is active"
 msgstr "முழுத்திரை பயன்பாடு செயலில் இருக்கும்போது அனிமேசன்களை முடக்கவும்"
 
-#: prefs.js:1097
+#: prefs.js:1121
 msgid "Slow Player Workaround"
 msgstr "ச்லோ பிளேயர் ஒர்க்ரவுண்ட்"
 
-#: prefs.js:1098
+#: prefs.js:1122
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
 "மாற்றங்களைக் கண்காணிக்க சிறிது தாமதத்தைச் சேர்க்கிறது (ஒத்திசைவுச் சிக்கல்களைச் "
 "சரிசெய்கிறது)"
 
-#: prefs.js:1106
+#: prefs.js:1130
 msgid "Off (Allow All)"
 msgstr "ஆஃப் (அனைத்தையும் அனுமதி)"
 
-#: prefs.js:1107
+#: prefs.js:1131
 msgid "Blacklist (Exclude listed)"
 msgstr "தடுப்புப்பட்டியல் (பட்டியலிடப்பட்டவை விலக்கு)"
 
-#: prefs.js:1108
+#: prefs.js:1132
 msgid "Whitelist (Only allow listed)"
 msgstr "ஏற்புப்பட்டியல் (பட்டியலிடப்பட்டவை மட்டுமே அனுமதிக்கவும்)"
 
-#: prefs.js:1111
+#: prefs.js:1135
 msgid "Player Filter Mode"
 msgstr "பிளேயர் வடிகட்டி பயன்முறை"
 
-#: prefs.js:1112
+#: prefs.js:1136
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr "மீடியா பிளேயர்களை எவ்வாறு வடிகட்டுவது என்பதைத் தேர்வுசெய்யவும் (எ.கா. உலாவிகள்)"
 
-#: prefs.js:1123
+#: prefs.js:1147
 msgid "Filtered Players (comma separated)"
 msgstr "வடிகட்டப்பட்ட வீரர்கள் (கமாவால் பிரிக்கப்பட்டது)"
 
-#: prefs.js:1137
+#: prefs.js:1161
 msgid "Detected Players"
 msgstr "கண்டறியப்பட்ட வீரர்கள்"
 
-#: prefs.js:1138
+#: prefs.js:1162
 msgid "Click an active player to add it to the filter list"
 msgstr "வடிகட்டி பட்டியலில் சேர்க்க செயலில் உள்ள பிளேயரைக் சொடுக்கு செய்யவும்"
 
-#: prefs.js:1173
+#: prefs.js:1197
 msgid "No players found"
 msgstr "வீரர்கள் இல்லை"
 
-#: prefs.js:1207
+#: prefs.js:1231
 msgid "💡 How to find the correct App ID?"
 msgstr "💡 சரியான ஆப் ஐடியை எப்படி கண்டுபிடிப்பது?"
 
-#: prefs.js:1208
+#: prefs.js:1232
 msgid "Click here for a quick guide and examples"
 msgstr "விரைவான வழிகாட்டி மற்றும் எடுத்துக்காட்டுகளுக்கு இங்கே சொடுக்கு செய்யவும்"
 
-#: prefs.js:1212
+#: prefs.js:1236
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -966,155 +982,155 @@ msgstr ""
 "<i>(.டெச்க்டாப் பகுதியை அகற்று)</i> \n"
 "5. பிழைத்திருத்தியை மூட தப்பி ஐ அழுத்தவும்."
 
-#: prefs.js:1240
+#: prefs.js:1264
 msgid "Saved App Mappings"
 msgstr "சேமிக்கப்பட்ட ஆப்ச் மேப்பிங்ச்"
 
-#: prefs.js:1241
+#: prefs.js:1265
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 "கைமுறையாக மேப் செய்யப்பட்ட பிளேயர்களுக்கான இலக்கு பயன்பாட்டு ஐடியைத் திருத்தவும் அல்லது "
 "அவற்றை அகற்றவும்."
 
-#: prefs.js:1262
+#: prefs.js:1286
 msgid "No manual mappings saved."
 msgstr "கைமுறை மேப்பிங் எதுவும் சேமிக்கப்படவில்லை."
 
-#: prefs.js:1267
+#: prefs.js:1291
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr ""
 "சரியான ஆப் ஐடியைத் தட்டச்சு செய்து, Enter ஐ அழுத்தவும் அல்லது சேமி ஐகானைக் சொடுக்கு "
 "செய்யவும்!"
 
-#: prefs.js:1286
+#: prefs.js:1310
 msgid "Save App ID"
 msgstr "ஆப் ஐடியைச் சேமிக்கவும்"
 
-#: prefs.js:1318
+#: prefs.js:1342
 msgid "Delete Mapping"
 msgstr "மேப்பிங்கை நீக்கு"
 
-#: prefs.js:1347
+#: prefs.js:1371
 msgid "Running Players Detection"
 msgstr "இயங்கும் வீரர்களைக் கண்டறிதல்"
 
-#: prefs.js:1348
+#: prefs.js:1372
 msgid "Click on a detected player to automatically fill the mapping."
 msgstr "மேப்பிங்கை தானாக நிரப்ப கண்டறியப்பட்ட பிளேயரை சொடுக்கு செய்யவும்."
 
-#: prefs.js:1371
+#: prefs.js:1395
 msgid "No active players detected. Open a music app first!"
 msgstr "செயலில் உள்ள வீரர்கள் கண்டறியப்படவில்லை. முதலில் இசை பயன்பாட்டைத் திறக்கவும்!"
 
-#: prefs.js:1373
+#: prefs.js:1397
 msgid "Select a player to help the extension identify it:"
 msgstr "நீட்டிப்பு அதை அடையாளம் காண உதவும் ஒரு பிளேயரைத் தேர்ந்தெடுக்கவும்:"
 
-#: prefs.js:1393
+#: prefs.js:1417
 msgid "Use This"
 msgstr "இதை பயன்படுத்தவும்"
 
-#: prefs.js:1423
+#: prefs.js:1447
 msgid "Refresh List"
 msgstr "பட்டியலைப் புதுப்பிக்கவும்"
 
-#: prefs.js:1424
+#: prefs.js:1448
 msgid "Click to scan for active players again"
 msgstr "செயலில் உள்ள பிளேயர்களை மீண்டும் வருடு செய்ய சொடுக்கு செய்யவும்"
 
-#: prefs.js:1439
+#: prefs.js:1463
 msgid "Backup & Restore"
 msgstr "காப்புப்பிரதி & மீட்டமை"
 
-#: prefs.js:1442
+#: prefs.js:1466
 msgid "Export Settings"
 msgstr "ஏற்றுமதி அமைப்புகள்"
 
-#: prefs.js:1443
+#: prefs.js:1467
 msgid "Export"
 msgstr "ஏற்றுமதி"
 
-#: prefs.js:1447
+#: prefs.js:1471
 msgid "Save Settings"
 msgstr "அமைப்புகளைச் சேமிக்கவும்"
 
-#: prefs.js:1462
+#: prefs.js:1486
 msgid "Import Settings"
 msgstr "இறக்குமதி அமைப்புகள்"
 
-#: prefs.js:1463
+#: prefs.js:1487
 msgid "Import"
 msgstr "இறக்குமதி"
 
-#: prefs.js:1465
+#: prefs.js:1489
 msgid "Open Settings Backup"
 msgstr "அமைப்புகள் காப்புப்பிரதியைத் திறக்கவும்"
 
-#: prefs.js:1492
+#: prefs.js:1516
 msgid "Art Cache"
 msgstr "கலை கேச்"
 
-#: prefs.js:1514
+#: prefs.js:1538
 msgid "covers cached"
 msgstr "கவர்கள் தற்காலிகமாக சேமிக்கப்பட்டது"
 
-#: prefs.js:1517
+#: prefs.js:1541
 msgid "Album Art Cache"
 msgstr "ஆல்பம் கலை கேச்"
 
-#: prefs.js:1522
+#: prefs.js:1546
 msgid "Clear"
 msgstr "தெளிவு"
 
-#: prefs.js:1544
+#: prefs.js:1568
 msgid "Danger Zone"
 msgstr "இடர் மண்டலம்"
 
-#: prefs.js:1545
+#: prefs.js:1569
 msgid "Reset All"
 msgstr "அனைத்தையும் மீட்டமைக்கவும்"
 
-#: prefs.js:1547
+#: prefs.js:1571
 msgid "Factory Reset"
 msgstr "தொழிற்சாலை மீட்டமைப்பு"
 
-#: prefs.js:1558
+#: prefs.js:1582
 msgid "About"
 msgstr "பற்றி"
 
-#: prefs.js:1563
+#: prefs.js:1587
 msgid "What's New"
 msgstr "புதியது என்ன"
 
-#: prefs.js:1730
+#: prefs.js:1756
 msgid "Support the Project"
 msgstr "திட்டத்தை ஆதரிக்கவும்"
 
-#: prefs.js:1733
+#: prefs.js:1759
 msgid "Support on Ko-fi"
 msgstr "Ko-fi இல் உதவி"
 
-#: prefs.js:1734
+#: prefs.js:1760
 msgid "Buy me a coffee on Ko-fi"
 msgstr "கோ-ஃபையில் எனக்கு ஒரு காபி வாங்கு"
 
-#: prefs.js:1736 prefs.js:1745
+#: prefs.js:1762 prefs.js:1771
 msgid "Open"
 msgstr "திற"
 
-#: prefs.js:1742
+#: prefs.js:1768
 msgid "Buy Me a Coffee"
 msgstr "எனக்கு ஒரு காபி வாங்கு"
 
-#: prefs.js:1743
+#: prefs.js:1769
 msgid "Support via BuyMeACoffee"
 msgstr "BuyMeACoffee வழியாக உதவி"
 
-#: prefs.js:1751
+#: prefs.js:1777
 msgid "Source Code"
 msgstr "மூலக் குறியீடு"
 
-#: prefs.js:1752
+#: prefs.js:1778
 msgid "Report bugs or view source on GitHub"
 msgstr "GitHub இல் பிழைகளைப் புகாரளிக்கவும் அல்லது மூலத்தைப் பார்க்கவும்"
 
@@ -1126,12 +1142,12 @@ msgstr "தெரியாத பிளேயர்"
 msgid "No active media"
 msgstr "செயலில் உள்ள மீடியா இல்லை"
 
-#: src/controller.js:1976
+#: src/controller.js:1996
 msgid "Auto (Smart)"
 msgstr "ஆட்டோ (ச்மார்ட்)"
 
-#: src/controller.js:1996 src/controller.js:2014 src/controller.js:2037
-#: src/controller.js:2063
+#: src/controller.js:2016 src/controller.js:2034 src/controller.js:2057
+#: src/controller.js:2083
 msgid "Not supported"
 msgstr "ஆதரிக்கப்படவில்லை"
 

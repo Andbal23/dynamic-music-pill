@@ -22,6 +22,11 @@
       <summary>Scroll Action</summary>
       <description>What to do when scrolling (track, volume, player, or seek)</description>
     </key>
+    <key name="volume-scroll-target" type="s">
+      <default>'system'</default>
+      <summary>Volume Scroll Target</summary>
+      <description>Target for volume scroll action (system master volume or current app volume)</description>
+    </key>
 	<key name="hide-text" type="b">
 	<default>false</default>
 	<summary>Hide title and artist entirely</summary>

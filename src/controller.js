@@ -1922,31 +1922,51 @@ export class MusicController {
     }
 
     changeVolume(up) {
-        let { stream, mixer } = this._getAppStream();
-        if (!stream || !mixer) return;
+        let volTarget = this._settings ? this._settings.get_string('volume-scroll-target') : 'system';
+        let stream = null;
+        let mixer = getMixerControl();
+        if (!mixer) return;
+
+        if (volTarget === 'app') {
+            let appData = this._getAppStream();
+            stream = appData ? appData.stream : null;
+        } else {
+            stream = mixer.get_default_sink();
+        }
+
+        if (!stream) {
+            stream = mixer.get_default_sink();
+        }
+        if (!stream) return;
 
         let maxVolume = mixer.get_vol_max_norm();
         let step = Math.round(maxVolume * 0.05);
 
         if (up && stream.is_muted) {
-            stream.change_is_muted(false);
+            if (typeof stream.change_is_muted === 'function') {
+                stream.change_is_muted(false);
+            }
         }
 
-        let newVolume = up ? stream.volume + step : stream.volume - step;
+        let currentVol = stream.volume || 0;
+        let newVolume = up ? currentVol + step : currentVol - step;
         newVolume = Math.max(0, Math.min(maxVolume, newVolume));
 
-        if (stream.volume !== newVolume) {
-            stream.volume = newVolume;
-            stream.push_volume();
-
-            let percent = newVolume / maxVolume;
-            let iconName = 'audio-volume-high-symbolic';
-            if (stream.is_muted || newVolume === 0) iconName = 'audio-volume-muted-symbolic';
-            else if (percent < 0.33) iconName = 'audio-volume-low-symbolic';
-            else if (percent < 0.66) iconName = 'audio-volume-medium-symbolic';
-
-            this._showPillFeedback(iconName, '', percent);
+        if (typeof stream.change_volume === 'function') {
+            stream.change_volume(newVolume);
         }
+        stream.volume = newVolume;
+        if (typeof stream.push_volume === 'function') {
+            stream.push_volume();
+        }
+
+        let percent = newVolume / maxVolume;
+        let iconName = 'audio-volume-high-symbolic';
+        if (stream.is_muted || newVolume === 0) iconName = 'audio-volume-muted-symbolic';
+        else if (percent < 0.33) iconName = 'audio-volume-low-symbolic';
+        else if (percent < 0.66) iconName = 'audio-volume-medium-symbolic';
+
+        this._showPillFeedback(iconName, '', percent);
     }
 
     switchPlayer(isNext) {

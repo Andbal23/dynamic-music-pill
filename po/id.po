@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 16:03+0200\n"
+"POT-Creation-Date: 2026-08-07 16:09+0200\n"
 "PO-Revision-Date: 2026-06-11 13:01+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/dynamic-music-"
@@ -90,471 +90,487 @@ msgstr "Aksi Gulir"
 msgid "Choose what scrolling on the pill should do"
 msgstr "Pilih fungsi guliran pada pil"
 
+#: prefs.js:178
+msgid "System Master Volume"
+msgstr ""
+
 #: prefs.js:179
+msgid "Active Media App Volume"
+msgstr ""
+
+#: prefs.js:183
+msgid "Volume Scroll Target"
+msgstr ""
+
+#: prefs.js:184
+msgid "Choose which sound source to control when scrolling volume"
+msgstr ""
+
+#: prefs.js:203
 msgid "Invert Scroll Animation"
 msgstr "Balikkan Animasi Gulir"
 
-#: prefs.js:180
+#: prefs.js:204
 msgid "Direction of the jump effect (Natural vs Traditional)"
 msgstr "Arah efek lompatan (Alami vs Tradisional)"
 
-#: prefs.js:191
+#: prefs.js:215
 msgid "Invert Scroll Direction"
 msgstr "Balikkan Arah Gulir"
 
-#: prefs.js:192
+#: prefs.js:216
 msgid "Swap up/down scrolling for track and volume actions"
 msgstr "Tukar gulir atas/bawah untuk aksi trek dan volume"
 
-#: prefs.js:204
+#: prefs.js:228
 msgid "Scrolling Text"
 msgstr "Teks Bergulir"
 
-#: prefs.js:205
+#: prefs.js:229
 msgid "Animate long track titles and artist names"
 msgstr "Animasikan judul trek dan nama artis yang panjang"
 
-#: prefs.js:216
+#: prefs.js:240
 msgid "Scroll Only on Hover"
 msgstr "Gulir Hanya saat Disorot"
 
-#: prefs.js:217
+#: prefs.js:241
 msgid "Text stays still until you hover the pill"
 msgstr "Teks tetap diam sampai Anda menyorot pil"
 
-#: prefs.js:229
+#: prefs.js:253
 msgid "Freeze Scroll on Pause"
 msgstr "Bekukan gulir saat jeda"
 
-#: prefs.js:230
+#: prefs.js:254
 msgid "Stop the text scrolling animation when the media player is paused"
 msgstr "Hentikan animasi gulir teks saat pemutar media dijeda"
 
-#: prefs.js:243
+#: prefs.js:267
 msgid "Lyrics Display"
 msgstr "Tampilan Lirik"
 
-#: prefs.js:244
+#: prefs.js:268
 msgid "Show real-time synchronized lyrics for current track."
 msgstr "Tampilkan lirik sinkron waktu nyata untuk trek saat ini."
 
-#: prefs.js:255
+#: prefs.js:279
 msgid "Word-level Karaoke in Pill"
 msgstr ""
 
-#: prefs.js:256
+#: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
 
-#: prefs.js:268
+#: prefs.js:292
 msgid "Lyrics language preference"
 msgstr "Preferensi bahasa lirik"
 
-#: prefs.js:269
+#: prefs.js:293
 msgid "When multiple versions exist"
 msgstr "Saat ada beberapa versi"
 
-#: prefs.js:271
+#: prefs.js:295
 msgid "Auto"
 msgstr "Otomatis"
 
-#: prefs.js:272
+#: prefs.js:296
 msgid "Prefer original script"
 msgstr "Utamakan aksara asli"
 
-#: prefs.js:273
+#: prefs.js:297
 msgid "Prefer Latin"
 msgstr "Utamakan Latin"
 
-#: prefs.js:282
+#: prefs.js:306
 msgid "Lyrics Fade-in Effect"
 msgstr "Efek Fade-in Lirik"
 
-#: prefs.js:283
+#: prefs.js:307
 msgid "Smoothly fade in new lyric lines"
 msgstr "Munculkan baris lirik baru secara halus"
 
-#: prefs.js:295
+#: prefs.js:319
 msgid "Fade Duration (ms)"
 msgstr "Durasi Fade (md)"
 
-#: prefs.js:304
+#: prefs.js:328
 msgid "Tablet Mode Controls"
 msgstr "Kontrol Mode Tablet"
 
-#: prefs.js:305
+#: prefs.js:329
 msgid "Show media buttons directly on the pill"
 msgstr "Tampilkan tombol media langsung pada pil"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "Off"
 msgstr "Nonaktif"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "Skip Only"
 msgstr "Hanya Lewati"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "Play/Pause Only"
 msgstr "Hanya Putar/Jeda"
 
-#: prefs.js:307
+#: prefs.js:331
 msgid "All Controls"
 msgstr "Semua Kontrol"
 
-#: prefs.js:316
+#: prefs.js:340
 msgid "Controls Position"
 msgstr "Posisi kontrol"
 
-#: prefs.js:317
+#: prefs.js:341
 msgid "Where to place the tablet controls on the pill"
 msgstr "Tempat menaruh kontrol tablet pada pill"
 
-#: prefs.js:319
+#: prefs.js:343
 msgid "Before Text"
 msgstr "Sebelum teks"
 
-#: prefs.js:319
+#: prefs.js:343
 msgid "After Text"
 msgstr "Setelah teks"
 
-#: prefs.js:319
+#: prefs.js:343
 msgid "After Visualizer"
 msgstr "Setelah visualizer"
 
-#: prefs.js:333
+#: prefs.js:357
 msgid "Inline Artist"
 msgstr "Artis Inline"
 
-#: prefs.js:333
+#: prefs.js:357
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "Tampilkan \"Judul -  Artis\" saat widget dipersempit"
 
-#: prefs.js:339
+#: prefs.js:363
 msgid "Show Artist"
 msgstr "Tampilkan artis"
 
-#: prefs.js:339
+#: prefs.js:363
 msgid "Show the artist name in the main music pill"
 msgstr "Tampilkan nama artis di pill musik utama"
 
-#: prefs.js:351
+#: prefs.js:375
 msgid "Compact Mode (Hide Text)"
 msgstr "Mode Ringkas (Sembunyikan Teks)"
 
-#: prefs.js:352
+#: prefs.js:376
 msgid "Hide title and artist"
 msgstr "Sembunyikan judul dan artis"
 
-#: prefs.js:365
+#: prefs.js:389
 msgid "Mouse Actions"
 msgstr "Aksi Mouse"
 
-#: prefs.js:368 prefs.js:688
+#: prefs.js:392 prefs.js:712
 msgid "None"
 msgstr "Tidak ada"
 
-#: prefs.js:368
+#: prefs.js:392
 msgid "Play / Pause"
 msgstr "Putar / Jeda"
 
-#: prefs.js:368
+#: prefs.js:392
 msgid "Next Track"
 msgstr "Trek Berikutnya"
 
-#: prefs.js:368
+#: prefs.js:392
 msgid "Previous Track"
 msgstr "Trek Sebelumnya"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Open Player App"
 msgstr "Buka Aplikasi Pemutar"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Open Menu"
 msgstr "Buka Menu"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Select Player"
 msgstr "Pilih Pemutar"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Open Settings"
 msgstr "Buka Pengaturan"
 
-#: prefs.js:369
+#: prefs.js:393
 msgid "Close Player App"
 msgstr "Tutup Aplikasi Pemutar"
 
-#: prefs.js:376
+#: prefs.js:400
 msgid "Left Click"
 msgstr "Klik Kiri"
 
-#: prefs.js:384
+#: prefs.js:408
 msgid "Double Click"
 msgstr "Klik Ganda"
 
-#: prefs.js:392
+#: prefs.js:416
 msgid "Middle Click"
 msgstr "Klik Tengah"
 
-#: prefs.js:400
+#: prefs.js:424
 msgid "Right Click"
 msgstr "Klik Kanan"
 
-#: prefs.js:408
+#: prefs.js:432
 msgid "Hover Action"
 msgstr "Aksi Sorot"
 
-#: prefs.js:419
+#: prefs.js:443
 msgid "Hover Delay (ms)"
 msgstr "Tunda Sorot (md)"
 
-#: prefs.js:433
+#: prefs.js:457
 msgid "Pop-up Menu"
 msgstr "Menu Pop-up"
 
-#: prefs.js:437
+#: prefs.js:461
 msgid "Pop-up Appearance"
 msgstr "Tampilan Pop-up"
 
-#: prefs.js:439
+#: prefs.js:463
 msgid "Rotate Vinyl"
 msgstr "Putar Piringan Hitam"
 
-#: prefs.js:440
+#: prefs.js:464
 msgid "Spin the album art when playing"
 msgstr "Putar seni album saat diputar"
 
-#: prefs.js:451
+#: prefs.js:475
 msgid "Rotation Speed"
 msgstr "Kecepatan Putaran"
 
-#: prefs.js:452
+#: prefs.js:476
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
 msgstr ""
 "Sesuaikan kecepatan putaran piringan hitam (lebih rendah = lebih lambat, "
 "bawaan: 10)"
 
-#: prefs.js:460 prefs.js:880
+#: prefs.js:484 prefs.js:904
 msgid "Enable Shadow"
 msgstr "Aktifkan Bayangan"
 
-#: prefs.js:461
+#: prefs.js:485
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "Tampilkan bayangan jatuh di belakang menu pop-up"
 
-#: prefs.js:472
+#: prefs.js:496
 msgid "Close on Mouse Leave"
 msgstr "Tutup saat Mouse Keluar"
 
-#: prefs.js:473
+#: prefs.js:497
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr "Sembunyikan pop-up secara otomatis saat Anda menjauhkan kursor"
 
-#: prefs.js:484
+#: prefs.js:508
 msgid "Follow Custom Background Color"
 msgstr "Ikuti Warna Latar Kustom"
 
-#: prefs.js:485
+#: prefs.js:509
 msgid "Use the custom background color for the pop-up (if active)"
 msgstr "Gunakan warna latar kustom untuk pop-up (jika aktif)"
 
-#: prefs.js:494
+#: prefs.js:518
 msgid "Follow Custom Text Color"
 msgstr "Ikuti Warna Teks Kustom"
 
-#: prefs.js:495
+#: prefs.js:519
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr "Gunakan warna teks kustom untuk pop-up (jika aktif)"
 
-#: prefs.js:504
+#: prefs.js:528
 msgid "Follow Transparency"
 msgstr "Ikuti Transparansi"
 
-#: prefs.js:505
+#: prefs.js:529
 msgid "Inherit opacity settings from the main pill"
 msgstr "Warisi pengaturan opasitas dari pil utama"
 
-#: prefs.js:516
+#: prefs.js:540
 msgid "Follow Border Radius"
 msgstr "Ikuti Radius Sudut"
 
-#: prefs.js:517
+#: prefs.js:541
 msgid "Inherit corner roundness from the main pill"
 msgstr "Warisi kebulatan sudut dari pil utama"
 
-#: prefs.js:526
+#: prefs.js:550
 msgid "Show Vinyl"
 msgstr "Tampilkan Piringan Hitam"
 
-#: prefs.js:526
+#: prefs.js:550
 msgid "Display the album art in the pop-up"
 msgstr "Tampilkan seni album pada pop-up"
 
-#: prefs.js:532
+#: prefs.js:556
 msgid "Square Vinyl Image"
 msgstr "Gambar Piringan Hitam Persegi"
 
-#: prefs.js:532
+#: prefs.js:556
 msgid "Use a square album art (disables rotation)"
 msgstr "Gunakan seni album persegi (menonaktifkan rotasi)"
 
-#: prefs.js:538
+#: prefs.js:562
 msgid "Album Art Shadow"
 msgstr ""
 
-#: prefs.js:538
+#: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
 msgstr ""
 
-#: prefs.js:544
+#: prefs.js:568
 msgid "Show Shuffle and Loop"
 msgstr "Tampilkan Acak dan Ulangi"
 
-#: prefs.js:544
+#: prefs.js:568
 msgid "Display extra controls in the pop-up"
 msgstr "Tampilkan kontrol tambahan pada pop-up"
 
-#: prefs.js:550
+#: prefs.js:574
 msgid "Use Custom Width"
 msgstr "Gunakan Lebar Kustom"
 
-#: prefs.js:550
+#: prefs.js:574
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "Nonaktifkan ukuran dinamis untuk pop-up"
 
-#: prefs.js:557
+#: prefs.js:581
 msgid "Custom Width Value"
 msgstr "Nilai Lebar Kustom"
 
-#: prefs.js:573
+#: prefs.js:597
 msgid "Show Player Selector"
 msgstr "Tampilkan Pemilih Pemutar"
 
-#: prefs.js:574
+#: prefs.js:598
 msgid "Display active player icons in the pop-up"
 msgstr "Tampilkan ikon pemutar yang aktif di pop-up"
 
-#: prefs.js:582
+#: prefs.js:606
 msgid "Hide Auto (Smart Selection)"
 msgstr "Sembunyikan Otomatis (Seleksi Cerdas)"
 
-#: prefs.js:583
+#: prefs.js:607
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr "Hapus entri pemilihan pemutar otomatis dari menu pemilih pemutar"
 
-#: prefs.js:594
+#: prefs.js:618
 msgid "Player Selector Position"
 msgstr "Posisi pemilih pemutar"
 
-#: prefs.js:595
+#: prefs.js:619
 msgid "Where to place the player icons inside the pop-up"
 msgstr "Tempat menaruh ikon pemutar di dalam pop-up"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Top"
 msgstr "Atas"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Bottom"
 msgstr "Bawah"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Left"
 msgstr "Kiri"
 
-#: prefs.js:596
+#: prefs.js:620
 msgid "Right"
 msgstr "Kanan"
 
-#: prefs.js:607
+#: prefs.js:631
 msgid "Show Album Title"
 msgstr "Tampilkan Judul Album"
 
-#: prefs.js:608
+#: prefs.js:632
 msgid "Display album name next to the artist (Artist • Album)"
 msgstr "Tampilkan nama album di samping artis (Artis -  Album)"
 
-#: prefs.js:616
+#: prefs.js:640
 msgid "Show HH:MM:SS"
 msgstr "Tampilkan HH:MM:SS"
 
-#: prefs.js:617
+#: prefs.js:641
 msgid "Display hours in the time labels when media is longer than 60 minutes"
 msgstr "Tampilkan jam pada label waktu saat media lebih dari 60 menit"
 
-#: prefs.js:628
+#: prefs.js:652
 msgid "Show Visualizer in Pop-up"
 msgstr "Tampilkan Visualizer di Pop-up"
 
-#: prefs.js:635
+#: prefs.js:659
 msgid "Hide Pill Visualizer"
 msgstr "Sembunyikan Visualizer Pil"
 
-#: prefs.js:636
+#: prefs.js:660
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr ""
 "Menciptakan efek \"bergerak\" dengan menyembunyikan visualizer pil utama"
 
-#: prefs.js:645
+#: prefs.js:669
 msgid "Popup Visualizer Bar Count"
 msgstr "Jumlah Batang Visualizer Pop-up"
 
-#: prefs.js:653
+#: prefs.js:677
 msgid "Popup Visualizer Bar Width"
 msgstr "Lebar Batang Visualizer Pop-up"
 
-#: prefs.js:661
+#: prefs.js:685
 msgid "Popup Visualizer Height"
 msgstr "Tinggi Visualizer Pop-up"
 
-#: prefs.js:671
+#: prefs.js:695
 msgid "Custom Control Buttons"
 msgstr "Tombol Kontrol Kustom"
 
-#: prefs.js:672
+#: prefs.js:696
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr ""
 "Tambahkan hingga dua tombol tambahan pada baris kontrol pemutar yang "
 "diperluas."
 
-#: prefs.js:676
+#: prefs.js:700
 msgid "Enable Custom Buttons"
 msgstr "Aktifkan Tombol Kustom"
 
-#: prefs.js:677
+#: prefs.js:701
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr "Tampilkan tombol aksi tambahan di samping Acak dan Ulangi"
 
-#: prefs.js:689
+#: prefs.js:713
 msgid "Volume Control"
 msgstr "Kontrol Volume"
 
-#: prefs.js:690
+#: prefs.js:714
 msgid "Seek ±10 Seconds"
 msgstr "Cari ±10 Detik"
 
-#: prefs.js:691
+#: prefs.js:715
 msgid "Audio Output Switcher"
 msgstr "Pengalih Keluaran Audio"
 
-#: prefs.js:692 src/uiExpandedPlayer.js:1574
+#: prefs.js:716 src/uiExpandedPlayer.js:1574
 msgid "Sleep Timer"
 msgstr "Timer Tidur"
 
-#: prefs.js:693 src/uiExpandedPlayer.js:1615
+#: prefs.js:717 src/uiExpandedPlayer.js:1615
 msgid "Playback Speed"
 msgstr "Kecepatan Pemutaran"
 
-#: prefs.js:694
+#: prefs.js:718
 msgid "Track History"
 msgstr "Riwayat Trek"
 
-#: prefs.js:725
+#: prefs.js:749
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
@@ -562,55 +578,55 @@ msgstr ""
 "Jika kedua tombol diatur ke Cari, keduanya akan bertindak langsung (Tombol 1 "
 "= −10d, Tombol 2 = +10d). Jika tidak, Cari akan membuka subhalaman."
 
-#: prefs.js:728
+#: prefs.js:752
 msgid "Custom Button 1"
 msgstr "Tombol Kustom 1"
 
-#: prefs.js:728
+#: prefs.js:752
 msgid "Placed left of Shuffle."
 msgstr "Ditempatkan di sebelah kiri Acak."
 
-#: prefs.js:731
+#: prefs.js:755
 msgid "Custom Button 2"
 msgstr "Tombol Kustom 2"
 
-#: prefs.js:731
+#: prefs.js:755
 msgid "Placed right of Loop."
 msgstr "Ditempatkan di sebelah kanan Ulangi."
 
-#: prefs.js:742
+#: prefs.js:766
 msgid "Style & Layout"
 msgstr "Gaya & Tata Letak"
 
-#: prefs.js:746
+#: prefs.js:770
 msgid "Visualizer and Shape"
 msgstr "Visualizer dan Bentuk"
 
-#: prefs.js:749
+#: prefs.js:773
 msgid "Off (Disabled)"
 msgstr "Nonaktif (Dinonaktifkan)"
 
-#: prefs.js:750
+#: prefs.js:774
 msgid "Wave (Smooth)"
 msgstr "Gelombang (Halus)"
 
-#: prefs.js:751
+#: prefs.js:775
 msgid "Beat (Jumpy)"
 msgstr "Beat (Melompat)"
 
-#: prefs.js:752
+#: prefs.js:776
 msgid "Real-Time (Cava needed)"
 msgstr "Real-Time (Perlu Cava)"
 
-#: prefs.js:755
+#: prefs.js:779
 msgid "Visualizer Animation"
 msgstr "Animasi Visualizer"
 
-#: prefs.js:756
+#: prefs.js:780
 msgid "Select the style of the audio reaction bars"
 msgstr "Pilih gaya batang reaksi audio"
 
-#: prefs.js:764
+#: prefs.js:788
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
@@ -618,320 +634,320 @@ msgstr ""
 "Catatan: mode 'Real-Time' memerlukan paket 'cava' terpasang di sistem Linux "
 "Anda."
 
-#: prefs.js:773
+#: prefs.js:797
 msgid "Visualizer Bar Count"
 msgstr "Jumlah Batang Visualizer"
 
-#: prefs.js:774
+#: prefs.js:798
 msgid "Number of bars displayed in the animation"
 msgstr "Jumlah batang yang ditampilkan dalam animasi"
 
-#: prefs.js:781
+#: prefs.js:805
 msgid "Visualizer Bar Width"
 msgstr "Lebar Batang Visualizer"
 
-#: prefs.js:782
+#: prefs.js:806
 msgid "Thickness of individual bars (pixels)"
 msgstr "Ketebalan setiap batang (piksel)"
 
-#: prefs.js:789
+#: prefs.js:813
 msgid "Visualizer Height"
 msgstr "Tinggi Visualizer"
 
-#: prefs.js:790
+#: prefs.js:814
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr "Tinggi maksimum visualizer (dibatasi otomatis sesuai tinggi pil)"
 
-#: prefs.js:797
+#: prefs.js:821
 msgid "Visualizer Margin"
 msgstr "Margin Visualizer"
 
-#: prefs.js:798
+#: prefs.js:822
 msgid "Distance between the text and the wave animation"
 msgstr "Jarak antara teks dan animasi gelombang"
 
-#: prefs.js:805
+#: prefs.js:829
 msgid "Outer Edge Margin"
 msgstr "Margin Tepi Luar"
 
-#: prefs.js:806
+#: prefs.js:830
 msgid "Spacing before the album art and after the visualizer"
 msgstr "Jarak sebelum seni album dan setelah visualizer"
 
-#: prefs.js:813
+#: prefs.js:837
 msgid "Corner Radius"
 msgstr "Radius Sudut"
 
-#: prefs.js:814
+#: prefs.js:838
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
 msgstr "Kebulatan tepi widget (0 = Persegi, 25 = Pil)"
 
-#: prefs.js:821
+#: prefs.js:845
 msgid "Show Pill Outline"
 msgstr "Tampilkan Garis Tepi Pil"
 
-#: prefs.js:822
+#: prefs.js:846
 msgid "Display a subtle border around the main pill"
 msgstr "Tampilkan garis tepi halus di sekitar pil utama"
 
-#: prefs.js:835
+#: prefs.js:859
 msgid "Background and Transparency"
 msgstr "Latar Belakang dan Transparansi"
 
-#: prefs.js:837
+#: prefs.js:861
 msgid "Enable Transparency"
 msgstr "Aktifkan Transparansi"
 
-#: prefs.js:838
+#: prefs.js:862
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr ""
 "Beralih antara latar belakang tema solid dan tampilan transparan kustom"
 
-#: prefs.js:849
+#: prefs.js:873
 msgid "Background Opacity"
 msgstr "Opasitas Latar Belakang"
 
-#: prefs.js:850
+#: prefs.js:874
 msgid "Adjust transparency level"
 msgstr "Sesuaikan tingkat transparansi"
 
-#: prefs.js:857
+#: prefs.js:881
 msgid "Apply to Album Art"
 msgstr "Terapkan ke Seni Album"
 
-#: prefs.js:864
+#: prefs.js:888
 msgid "Apply to Text"
 msgstr "Terapkan ke Teks"
 
-#: prefs.js:871
+#: prefs.js:895
 msgid "Apply to Visualizer"
 msgstr "Terapkan ke Visualizer"
 
-#: prefs.js:879
+#: prefs.js:903
 msgid "Main Pill Shadow"
 msgstr "Bayangan Pil Utama"
 
-#: prefs.js:887
+#: prefs.js:911
 msgid "Shadow Intensity"
 msgstr "Intensitas Bayangan"
 
-#: prefs.js:894
+#: prefs.js:918
 msgid "Shadow Blur"
 msgstr "Blur Bayangan"
 
-#: prefs.js:901
+#: prefs.js:925
 msgid "Positioning"
 msgstr "Penempatan"
 
-#: prefs.js:903
+#: prefs.js:927
 msgid "Dock"
 msgstr "Dock"
 
-#: prefs.js:904
+#: prefs.js:928
 msgid "Panel: Left Box"
 msgstr "Panel: Kotak Kiri"
 
-#: prefs.js:905
+#: prefs.js:929
 msgid "Panel: Center Box"
 msgstr "Panel: Kotak Tengah"
 
-#: prefs.js:906
+#: prefs.js:930
 msgid "Panel: Right Box"
 msgstr "Panel: Kotak Kanan"
 
-#: prefs.js:909
+#: prefs.js:933
 msgid "Container Target"
 msgstr "Target Kontainer"
 
-#: prefs.js:910
+#: prefs.js:934
 msgid "Select which UI element should host the music pill"
 msgstr "Pilih elemen UI yang akan menjadi tempat pil musik"
 
-#: prefs.js:921
+#: prefs.js:945
 msgid "Dynamic Width"
 msgstr "Lebar Dinamis"
 
-#: prefs.js:921
+#: prefs.js:945
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
 "Sesuaikan lebar pil secara otomatis (slider berfungsi sebagai lebar maksimum)"
 
-#: prefs.js:936
+#: prefs.js:960
 msgid "Manual Index"
 msgstr "Indeks Manual"
 
-#: prefs.js:937
+#: prefs.js:961
 msgid "First (Start)"
 msgstr "Pertama (Awal)"
 
-#: prefs.js:938
+#: prefs.js:962
 msgid "Center"
 msgstr "Tengah"
 
-#: prefs.js:939
+#: prefs.js:963
 msgid "Last (End)"
 msgstr "Terakhir (Akhir)"
 
-#: prefs.js:942
+#: prefs.js:966
 msgid "Alignment Preset"
 msgstr "Preset Perataan"
 
-#: prefs.js:943
+#: prefs.js:967
 msgid "How the widget aligns relative to other items"
 msgstr "Bagaimana widget diratakan relatif terhadap item lain"
 
-#: prefs.js:951
+#: prefs.js:975
 msgid "Manual Index Position"
 msgstr "Posisi Indeks Manual"
 
-#: prefs.js:952
+#: prefs.js:976
 msgid "Order in the list (0 is first). Only for Manual mode."
 msgstr "Urutan dalam daftar (0 adalah yang pertama). Hanya untuk mode Manual."
 
-#: prefs.js:959
+#: prefs.js:983
 msgid "Vertical Offset (Y)"
 msgstr "Offset Vertikal (Y)"
 
-#: prefs.js:960
+#: prefs.js:984
 msgid "Shift Up (-) or Down (+)"
 msgstr "Geser Naik (-) atau Turun (+)"
 
-#: prefs.js:967
+#: prefs.js:991
 msgid "Horizontal Offset (X)"
 msgstr "Offset Horizontal (X)"
 
-#: prefs.js:968
+#: prefs.js:992
 msgid "Shift Left (-) or Right (+)"
 msgstr "Geser Kiri (-) atau Kanan (+)"
 
-#: prefs.js:974
+#: prefs.js:998
 msgid "Dimensions (Dock Mode)"
 msgstr "Dimensi (Mode Dock)"
 
-#: prefs.js:976 prefs.js:998
+#: prefs.js:1000 prefs.js:1022
 msgid "Album Art Size"
 msgstr "Ukuran Seni Album"
 
-#: prefs.js:982 prefs.js:1004
+#: prefs.js:1006 prefs.js:1028
 msgid "Widget Width"
 msgstr "Lebar Widget"
 
-#: prefs.js:989 prefs.js:1011
+#: prefs.js:1013 prefs.js:1035
 msgid "Widget Height"
 msgstr "Tinggi Widget"
 
-#: prefs.js:996
+#: prefs.js:1020
 msgid "Dimensions (Panel Mode)"
 msgstr "Dimensi (Mode Panel)"
 
-#: prefs.js:1017
+#: prefs.js:1041
 msgid "Custom Colors"
 msgstr "Warna Kustom"
 
-#: prefs.js:1020
+#: prefs.js:1044
 msgid "Sync GNOME Accent Color"
 msgstr "Sinkronkan Warna Aksen GNOME"
 
-#: prefs.js:1021
+#: prefs.js:1045
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr ""
 "Ubah warna aksen GNOME Shell secara dinamis agar sesuai dengan seni album"
 
-#: prefs.js:1031
+#: prefs.js:1055
 msgid "Use Custom Colors"
 msgstr "Gunakan Warna Kustom"
 
-#: prefs.js:1031
+#: prefs.js:1055
 msgid "Override dynamic colors"
 msgstr "Timpa warna dinamis"
 
-#: prefs.js:1060
+#: prefs.js:1084
 msgid "Background Color"
 msgstr "Warna Latar Belakang"
 
-#: prefs.js:1061
+#: prefs.js:1085
 msgid "Text Color"
 msgstr "Warna Teks"
 
-#: prefs.js:1072
+#: prefs.js:1096
 msgid "System & Reset"
 msgstr "Sistem & Reset"
 
-#: prefs.js:1076
+#: prefs.js:1100
 msgid "System"
 msgstr "Sistem"
 
-#: prefs.js:1079
+#: prefs.js:1103
 msgid "Hide Default GNOME Player"
 msgstr "Sembunyikan Pemutar GNOME Bawaan"
 
-#: prefs.js:1080
+#: prefs.js:1104
 msgid "Remove the duplicate built-in media controls"
 msgstr "Hapus kontrol media bawaan yang duplikat"
 
-#: prefs.js:1090
+#: prefs.js:1114
 msgid "Game Mode"
 msgstr "Mode Game"
 
-#: prefs.js:1090
+#: prefs.js:1114
 msgid "Disable animations when a fullscreen app is active"
 msgstr "Nonaktifkan animasi saat aplikasi layar penuh aktif"
 
-#: prefs.js:1097
+#: prefs.js:1121
 msgid "Slow Player Workaround"
 msgstr "Solusi Sementara untuk Pemutar Lambat"
 
-#: prefs.js:1098
+#: prefs.js:1122
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
 "Menambahkan sedikit jeda pada pergantian trek (memperbaiki masalah "
 "sinkronisasi)"
 
-#: prefs.js:1106
+#: prefs.js:1130
 msgid "Off (Allow All)"
 msgstr "Nonaktif (Izinkan Semua)"
 
-#: prefs.js:1107
+#: prefs.js:1131
 msgid "Blacklist (Exclude listed)"
 msgstr "Daftar Hitam (Kecualikan yang tercantum)"
 
-#: prefs.js:1108
+#: prefs.js:1132
 msgid "Whitelist (Only allow listed)"
 msgstr "Daftar Putih (Hanya izinkan yang tercantum)"
 
-#: prefs.js:1111
+#: prefs.js:1135
 msgid "Player Filter Mode"
 msgstr "Mode Filter Pemutar"
 
-#: prefs.js:1112
+#: prefs.js:1136
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr "Pilih cara memfilter pemutar media (misalnya browser)"
 
-#: prefs.js:1123
+#: prefs.js:1147
 msgid "Filtered Players (comma separated)"
 msgstr "Pemutar yang Difilter (dipisahkan koma)"
 
-#: prefs.js:1137
+#: prefs.js:1161
 msgid "Detected Players"
 msgstr "Pemutar Terdeteksi"
 
-#: prefs.js:1138
+#: prefs.js:1162
 msgid "Click an active player to add it to the filter list"
 msgstr "Klik pemutar aktif untuk menambahkannya ke daftar filter"
 
-#: prefs.js:1173
+#: prefs.js:1197
 msgid "No players found"
 msgstr "Tidak ada pemutar yang ditemukan"
 
-#: prefs.js:1207
+#: prefs.js:1231
 msgid "💡 How to find the correct App ID?"
 msgstr "💡 Bagaimana cara menemukan App ID yang benar?"
 
-#: prefs.js:1208
+#: prefs.js:1232
 msgid "Click here for a quick guide and examples"
 msgstr "Klik di sini untuk panduan singkat dan contoh"
 
-#: prefs.js:1212
+#: prefs.js:1236
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -969,153 +985,153 @@ msgstr ""
 "<i>(Hapus bagian .desktop)</i>\n"
 "5. Tekan Esc untuk menutup debugger."
 
-#: prefs.js:1240
+#: prefs.js:1264
 msgid "Saved App Mappings"
 msgstr "Pemetaan Aplikasi Tersimpan"
 
-#: prefs.js:1241
+#: prefs.js:1265
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 "Edit target App ID untuk pemutar yang dipetakan secara manual, atau hapus."
 
-#: prefs.js:1262
+#: prefs.js:1286
 msgid "No manual mappings saved."
 msgstr "Belum ada pemetaan manual yang disimpan."
 
-#: prefs.js:1267
+#: prefs.js:1291
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr "Ketik App ID yang benar, lalu tekan Enter atau klik ikon Simpan!"
 
-#: prefs.js:1286
+#: prefs.js:1310
 msgid "Save App ID"
 msgstr "Simpan App ID"
 
-#: prefs.js:1318
+#: prefs.js:1342
 msgid "Delete Mapping"
 msgstr "Hapus Pemetaan"
 
-#: prefs.js:1347
+#: prefs.js:1371
 msgid "Running Players Detection"
 msgstr "Deteksi Pemutar yang Sedang Berjalan"
 
-#: prefs.js:1348
+#: prefs.js:1372
 msgid "Click on a detected player to automatically fill the mapping."
 msgstr "Klik pemutar yang terdeteksi untuk mengisi pemetaan secara otomatis."
 
-#: prefs.js:1371
+#: prefs.js:1395
 msgid "No active players detected. Open a music app first!"
 msgstr ""
 "Tidak ada pemutar aktif yang terdeteksi. Buka aplikasi musik terlebih dahulu!"
 
-#: prefs.js:1373
+#: prefs.js:1397
 msgid "Select a player to help the extension identify it:"
 msgstr "Pilih pemutar untuk membantu ekstensi mengidentifikasinya:"
 
-#: prefs.js:1393
+#: prefs.js:1417
 msgid "Use This"
 msgstr "Gunakan Ini"
 
-#: prefs.js:1423
+#: prefs.js:1447
 msgid "Refresh List"
 msgstr "Segarkan Daftar"
 
-#: prefs.js:1424
+#: prefs.js:1448
 msgid "Click to scan for active players again"
 msgstr "Klik untuk memindai ulang pemutar aktif"
 
-#: prefs.js:1439
+#: prefs.js:1463
 msgid "Backup & Restore"
 msgstr "Cadangkan & Pulihkan"
 
-#: prefs.js:1442
+#: prefs.js:1466
 msgid "Export Settings"
 msgstr "Ekspor Pengaturan"
 
-#: prefs.js:1443
+#: prefs.js:1467
 msgid "Export"
 msgstr "Ekspor"
 
-#: prefs.js:1447
+#: prefs.js:1471
 msgid "Save Settings"
 msgstr "Simpan Pengaturan"
 
-#: prefs.js:1462
+#: prefs.js:1486
 msgid "Import Settings"
 msgstr "Impor Pengaturan"
 
-#: prefs.js:1463
+#: prefs.js:1487
 msgid "Import"
 msgstr "Impor"
 
-#: prefs.js:1465
+#: prefs.js:1489
 msgid "Open Settings Backup"
 msgstr "Buka Cadangan Pengaturan"
 
-#: prefs.js:1492
+#: prefs.js:1516
 msgid "Art Cache"
 msgstr "Cache Seni"
 
-#: prefs.js:1514
+#: prefs.js:1538
 msgid "covers cached"
 msgstr "sampul di-cache"
 
-#: prefs.js:1517
+#: prefs.js:1541
 msgid "Album Art Cache"
 msgstr "Cache Seni Album"
 
-#: prefs.js:1522
+#: prefs.js:1546
 msgid "Clear"
 msgstr "Hapus"
 
-#: prefs.js:1544
+#: prefs.js:1568
 msgid "Danger Zone"
 msgstr "Zona Berbahaya"
 
-#: prefs.js:1545
+#: prefs.js:1569
 msgid "Reset All"
 msgstr "Reset Semua"
 
-#: prefs.js:1547
+#: prefs.js:1571
 msgid "Factory Reset"
 msgstr "Reset Pabrik"
 
-#: prefs.js:1558
+#: prefs.js:1582
 msgid "About"
 msgstr "Tentang"
 
-#: prefs.js:1563
+#: prefs.js:1587
 msgid "What's New"
 msgstr "Apa yang Baru"
 
-#: prefs.js:1730
+#: prefs.js:1756
 msgid "Support the Project"
 msgstr "Dukung Proyek Ini"
 
-#: prefs.js:1733
+#: prefs.js:1759
 msgid "Support on Ko-fi"
 msgstr "Dukung di Ko-fi"
 
-#: prefs.js:1734
+#: prefs.js:1760
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Belikan saya kopi di Ko-fi"
 
-#: prefs.js:1736 prefs.js:1745
+#: prefs.js:1762 prefs.js:1771
 msgid "Open"
 msgstr "Buka"
 
-#: prefs.js:1742
+#: prefs.js:1768
 msgid "Buy Me a Coffee"
 msgstr "Belikan Saya Kopi"
 
-#: prefs.js:1743
+#: prefs.js:1769
 msgid "Support via BuyMeACoffee"
 msgstr "Dukung lewat BuyMeACoffee"
 
-#: prefs.js:1751
+#: prefs.js:1777
 msgid "Source Code"
 msgstr "Kode Sumber"
 
-#: prefs.js:1752
+#: prefs.js:1778
 msgid "Report bugs or view source on GitHub"
 msgstr "Laporkan bug atau lihat kode sumber di GitHub"
 
@@ -1127,12 +1143,12 @@ msgstr "Pemutar Tidak Dikenal"
 msgid "No active media"
 msgstr "Tidak ada media yang aktif"
 
-#: src/controller.js:1976
+#: src/controller.js:1996
 msgid "Auto (Smart)"
 msgstr "Otomatis (Cerdas)"
 
-#: src/controller.js:1996 src/controller.js:2014 src/controller.js:2037
-#: src/controller.js:2063
+#: src/controller.js:2016 src/controller.js:2034 src/controller.js:2057
+#: src/controller.js:2083
 msgid "Not supported"
 msgstr "Tidak didukung"
 

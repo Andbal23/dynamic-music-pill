@@ -19,7 +19,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'enable-scroll-controls', 'action-left-click', 'action-middle-click',
             'action-right-click', 'action-double-click', 'dock-art-size', 'panel-art-size',
             'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius',
-            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action', 'popup-vinyl-square', 'popup-vinyl-shadow',
+            'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action', 'volume-scroll-target', 'popup-vinyl-square', 'popup-vinyl-shadow',
             'popup-show-vinyl', 'show-shuffle-loop', 'use-custom-colors', 'custom-bg-color',
             'custom-text-color', 'tablet-mode', 'pill-controls-position', 'inline-artist', 'show-artist', 'pill-dynamic-width',
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list', 'hide-text',
@@ -173,6 +173,30 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         settings.bind('enable-scroll-controls', scrollActionRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
         genGroup.add(scrollActionRow);
+
+        const volTargetModel = Gtk.StringList.new([
+            _('System Master Volume'),
+            _('Active Media App Volume')
+        ]);
+        let currentVolTarget = settings.get_string('volume-scroll-target');
+        const volTargetRow = new Adw.ComboRow({
+            title: _('Volume Scroll Target'),
+            subtitle: _('Choose which sound source to control when scrolling volume'),
+            model: volTargetModel,
+            selected: currentVolTarget === 'app' ? 1 : 0
+        });
+        volTargetRow.connect('notify::selected', () => {
+            settings.set_string('volume-scroll-target', volTargetRow.selected === 1 ? 'app' : 'system');
+        });
+        const updateVolTargetSensitivity = () => {
+            let scrollEnabled = settings.get_boolean('enable-scroll-controls');
+            let isVolAction = settings.get_string('scroll-action') === 'volume';
+            volTargetRow.sensitive = scrollEnabled && isVolAction;
+        };
+        settings.connect('changed::enable-scroll-controls', updateVolTargetSensitivity);
+        settings.connect('changed::scroll-action', updateVolTargetSensitivity);
+        updateVolTargetSensitivity();
+        genGroup.add(volTargetRow);
 
         // Invert Scroll
         const invertRow = new Adw.ActionRow({
@@ -1566,15 +1590,17 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         const changelog = [
             {
                 version: "1.3.0",
-                subtitle: "Multi-Provider Word-Level Karaoke, Album Art Shadow & Bug Fixes",
+                subtitle: "Multi-Provider Word-Level Karaoke, Volume Scroll Fix & Shadow Customization",
                 expanded: true,
                 notes: "✨ New Features:\n" +
                     "• Multi-Provider Word-Level Karaoke Lyrics: Integrated BetterLyrics and BiniLyrics API providers with TTML XML parsing.\n" +
                     "• Spotify-Style Pop-up Karaoke: Real-time word-by-word karaoke highlighting with crisp 100% white bold sung words and active line scaling.\n" +
                     "• Pill Word-Level Karaoke: Real-time stationary word-level karaoke highlighting in the main Pill, with a dedicated 'Word-level Karaoke in Pill' toggle in Preferences.\n" +
-                    "• Album Art Shadow Customization: Added setting to show/hide the drop shadow behind the album art in the pop-up menu.\n" +
+                    "• Volume Scroll Target Selector (#148): Added a setting to choose between controlling System Master Volume or Active Media App Volume when scrolling on the pill.\n" +
+                    "• Album Art Shadow Customization (#149): Added setting to show/hide the drop shadow behind the album art in the pop-up menu.\n" +
                     "• LRCLib Cloudflare Fix: Custom User-Agent on lyrics requests to bypass HTTP 403 blocks.\n\n" +
                     "🐛 Bug Fixes:\n" +
+                    "• Fixed Volume Scrolling (#148): Fixed stream.change_volume() Gvc method invocation for PulseAudio/Pipewire volume scrolling.\n" +
                     "• Fixed pop-up play/pause button icon and player controls state when album art is disabled.\n" +
                     "• Fixed empty shadow box and pop-up layout shift when turning off album art.\n" +
                     "• Fixed seeker progress bar jumping to 0:00 when seeking with album art disabled.\n\n" +
