@@ -33,6 +33,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._updateTimer = null;
             this._seekLockTime = 0;
             this._currentArtUrl = null;
+            this._lastArtUrl = null;
             this._lastPopupCss = null;
             this._isSpinning = false;
 
@@ -735,11 +736,11 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._artistLabel.setText(displayArtist, false);
             }
 
-            this._seekLockTime = 0;
-
-            let trackChanged = (this._currentArtUrl !== artUrl || this._lastTrackTitle !== title);
+            let trackChanged = (this._lastArtUrl !== artUrl || this._lastTrackTitle !== title);
+            this._lastArtUrl = artUrl;
             this._lastTrackTitle = title;
             if (trackChanged && this._player) {
+                this._seekLockTime = 0;
                 this._player._lastPosition = 0;
                 this._player._lastPositionTime = Date.now();
 
@@ -762,7 +763,27 @@ export const ExpandedPlayer = GObject.registerClass(
             }
 
             let showVinyl = this._settings.get_boolean('popup-show-vinyl');
-            if (!artUrl || !showVinyl) {
+            if (!showVinyl) {
+                if (this._artVisibilityTimer) {
+                    GLib.Source.remove(this._artVisibilityTimer);
+                    this._artVisibilityTimer = null;
+                }
+                this._vinylBin.hide();
+                this._vinyl.hide();
+                this._stopVinyl();
+                this._currentArtUrl = null;
+
+                if (this._titleLabel && this._titleLabel.get_parent()) {
+                    let infoBox = this._titleLabel.get_parent();
+                    infoBox.x_expand = false;
+                    infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
+
+                    let topRow = infoBox.get_parent();
+                    if (topRow) {
+                        topRow.x_align = Clutter.ActorAlign.CENTER;
+                    }
+                }
+            } else if (!artUrl) {
                 if (!this._artVisibilityTimer) {
                     this._artVisibilityTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
                         this._artVisibilityTimer = null;
@@ -811,10 +832,9 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._vinyl.set_style_class_name(newClass);
                 }
 
-                if (trackChanged) {
+                let children = this._vinyl.get_children();
+                if (trackChanged || children.length === 0) {
                     this._currentArtUrl = artUrl;
-
-                    let children = this._vinyl.get_children();
                     if (children.length === 0 || children[children.length - 1]._bgUrl !== artUrl) {
                         let bg = `url("${artUrl}")`;
                         let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
@@ -868,79 +888,79 @@ export const ExpandedPlayer = GObject.registerClass(
                         c.set_style(style);
                     });
                 }
-
-                if (status === 'Playing') {
-                    this._playPauseIcon.icon_name = 'media-playback-pause-symbolic';
-                    if (this._visualizer) this._visualizer.setPlaying(true);
-                    if (this._lastStatus !== 'Playing' || trackChanged) {
-                        this._startVinyl();
-                    }
-                } else {
-                    this._playPauseIcon.icon_name = 'media-playback-start-symbolic';
-                    if (this._visualizer) this._visualizer.setPlaying(false);
-                    if (this._lastStatus === 'Playing') {
-                        this._stopVinyl();
-                    }
-                }
-                this._lastStatus = status;
-
-                if (this.visible && trackChanged) {
-                    this.animateResize();
-                }
-
-                let caps = this._controller.getPlayerCapabilities();
-                this._lastCaps = caps;
-
-                if (this._prevBtn) {
-                    this._prevBtn.reactive = caps.canGoPrevious;
-                    this._prevBtn.opacity = caps.canGoPrevious ? 255 : 80;
-                }
-                if (this._nextBtn) {
-                    this._nextBtn.reactive = caps.canGoNext;
-                    this._nextBtn.opacity = caps.canGoNext ? 255 : 80;
-                }
-
-                if (this._player) {
-                    let shuffle = this._player.Shuffle;
-                    let loop = this._player.LoopStatus;
-
-                    if (this._shuffleBtn) {
-                        if (!caps.canShuffle) {
-                            this._shuffleBtn.reactive = false;
-                            this._shuffleIcon.opacity = 40;
-                        } else {
-                            this._shuffleBtn.reactive = true;
-                            this._shuffleIcon.opacity = shuffle ? 255 : 100;
-                        }
-                    }
-
-                    if (this._repeatBtn) {
-                        if (!caps.canLoop) {
-                            this._repeatBtn.reactive = false;
-                            this._repeatIcon.icon_name = 'media-playlist-repeat-symbolic';
-                            this._repeatIcon.opacity = 40;
-                        } else {
-                            this._repeatBtn.reactive = true;
-                            if (loop === 'Track') {
-                                this._repeatIcon.icon_name = 'media-playlist-repeat-song-symbolic';
-                                this._repeatIcon.opacity = 255;
-                            } else if (loop === 'Playlist') {
-                                this._repeatIcon.icon_name = 'media-playlist-repeat-symbolic';
-                                this._repeatIcon.opacity = 255;
-                            } else {
-                                this._repeatIcon.icon_name = 'media-playlist-repeat-symbolic';
-                                this._repeatIcon.opacity = 100;
-                            }
-                        }
-                    }
-                }
-                let showShufLoop = this._settings.get_boolean('show-shuffle-loop');
-                if (this._shuffleBtn) this._shuffleBtn.visible = showShufLoop;
-                if (this._repeatBtn) this._repeatBtn.visible = showShufLoop;
-
-                this._updateCustomButtons();
-                this._updatePlayerSelector();
             }
+
+            if (status === 'Playing') {
+                this._playPauseIcon.icon_name = 'media-playback-pause-symbolic';
+                if (this._visualizer) this._visualizer.setPlaying(true);
+                if (this._lastStatus !== 'Playing' || trackChanged) {
+                    this._startVinyl();
+                }
+            } else {
+                this._playPauseIcon.icon_name = 'media-playback-start-symbolic';
+                if (this._visualizer) this._visualizer.setPlaying(false);
+                if (this._lastStatus === 'Playing') {
+                    this._stopVinyl();
+                }
+            }
+            this._lastStatus = status;
+
+            if (this.visible && trackChanged) {
+                this.animateResize();
+            }
+
+            let caps = this._controller.getPlayerCapabilities();
+            this._lastCaps = caps;
+
+            if (this._prevBtn) {
+                this._prevBtn.reactive = caps.canGoPrevious;
+                this._prevBtn.opacity = caps.canGoPrevious ? 255 : 80;
+            }
+            if (this._nextBtn) {
+                this._nextBtn.reactive = caps.canGoNext;
+                this._nextBtn.opacity = caps.canGoNext ? 255 : 80;
+            }
+
+            if (this._player) {
+                let shuffle = this._player.Shuffle;
+                let loop = this._player.LoopStatus;
+
+                if (this._shuffleBtn) {
+                    if (!caps.canShuffle) {
+                        this._shuffleBtn.reactive = false;
+                        this._shuffleIcon.opacity = 40;
+                    } else {
+                        this._shuffleBtn.reactive = true;
+                        this._shuffleIcon.opacity = shuffle ? 255 : 100;
+                    }
+                }
+
+                if (this._repeatBtn) {
+                    if (!caps.canLoop) {
+                        this._repeatBtn.reactive = false;
+                        this._repeatIcon.icon_name = 'media-playlist-repeat-symbolic';
+                        this._repeatIcon.opacity = 40;
+                    } else {
+                        this._repeatBtn.reactive = true;
+                        if (loop === 'Track') {
+                            this._repeatIcon.icon_name = 'media-playlist-repeat-song-symbolic';
+                            this._repeatIcon.opacity = 255;
+                        } else if (loop === 'Playlist') {
+                            this._repeatIcon.icon_name = 'media-playlist-repeat-symbolic';
+                            this._repeatIcon.opacity = 255;
+                        } else {
+                            this._repeatIcon.icon_name = 'media-playlist-repeat-symbolic';
+                            this._repeatIcon.opacity = 100;
+                        }
+                    }
+                }
+            }
+            let showShufLoop = this._settings.get_boolean('show-shuffle-loop');
+            if (this._shuffleBtn) this._shuffleBtn.visible = showShufLoop;
+            if (this._repeatBtn) this._repeatBtn.visible = showShufLoop;
+
+            this._updateCustomButtons();
+            this._updatePlayerSelector();
         }
 
 
