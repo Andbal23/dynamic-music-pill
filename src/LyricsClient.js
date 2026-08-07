@@ -6,6 +6,10 @@ const decode = (data) => new TextDecoder().decode(data);
 
 const CJK_RE = /[\u3040-\u9FFF\uAC00-\uD7AF]/;
 
+// lrclib.net sits behind Cloudflare, which 403s requests with no User-Agent,
+// and libsoup sends none by default.
+const USER_AGENT = "dynamic-music-pill (https://github.com/Andbal23/dynamic-music-pill)";
+
 export class LyricsClient {
   constructor() {
     Gio._promisify(
@@ -13,7 +17,7 @@ export class LyricsClient {
       "send_and_read_async",
       "send_and_read_finish",
     );
-    this._session = new Soup.Session();
+    this._session = new Soup.Session({ user_agent: USER_AGENT });
   }
 
 
@@ -114,6 +118,8 @@ export class LyricsClient {
       try { msg = Soup.Message.new("GET", url); } catch (_e) { throw new Error('Failed to create search request'); }
       if (!msg) throw new Error('Failed to create search request');
       const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+      if (msg.status_code !== Soup.Status.OK)
+        throw new Error(`Search request failed with status ${msg.status_code}`);
       const data = JSON.parse(decode(bytes.get_data()));
       return Array.isArray(data)
         ? data.filter(item => Math.abs((item.duration || 0) - duration) < 5)
