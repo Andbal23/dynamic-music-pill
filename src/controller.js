@@ -1159,17 +1159,30 @@ export class MusicController {
         this._lastLyricIndex = -1;
 
         try {
-            let lyrics = await this._lyricsClient.getLyrics(title, artist, album, durationSec, this._settings);
+            let res = await this._lyricsClient.getLyrics(title, artist, album, durationSec, this._settings);
             if (this._fetchedTrackKey !== trackKey) return;
 
-            this._fetchedLyricsData = lyrics;
+            if (res && res.lines) {
+                this._fetchedLyricsData = res.lines;
+                this._fetchedLyricsProvider = res.provider || 'LRCLib';
+            } else if (Array.isArray(res)) {
+                this._fetchedLyricsData = res;
+                this._fetchedLyricsProvider = 'LRCLib';
+            } else {
+                this._fetchedLyricsData = null;
+                this._fetchedLyricsProvider = null;
+            }
 
-            if (lyrics && lyrics.length > 0) {
+            this._lastLyricIndex = -1;
+
+            if (this._fetchedLyricsData && this._fetchedLyricsData.length > 0) {
                 this._startLyricsTimer();
+                this._onLyricsTick();
             }
         } catch (e) {
             console.debug(`[DynamicMusicPill] Network lyrics fetch error: ${e}`);
             this._fetchedLyricsData = null;
+            this._fetchedLyricsProvider = null;
         }
     }
 
@@ -1261,7 +1274,7 @@ export class MusicController {
             }
         }
 
-        if (currentIndex >= 0 && currentIndex !== this._lastLyricIndex) {
+        if (currentIndex >= 0) {
             this._lastLyricIndex = currentIndex;
 
             let currentLine = this._fetchedLyricsData[currentIndex];
@@ -1270,10 +1283,14 @@ export class MusicController {
                 durationSec = (this._fetchedLyricsData[currentIndex + 1].time - currentLine.time) / 1000;
             }
 
+            let enablePillWordLevel = this._settings ? this._settings.get_boolean('pill-enable-word-level') : true;
+
             let lrc = {
-                sender: "lrclib",
+                sender: this._fetchedLyricsProvider || "lrclib",
                 content: currentLine.text,
                 time: durationSec,
+                words: enablePillWordLevel ? (currentLine.words || null) : null,
+                positionMs: positionMs,
             };
             this._pill.setLyric(lrc);
         }

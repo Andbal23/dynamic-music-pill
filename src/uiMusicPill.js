@@ -952,16 +952,37 @@ export const MusicPill = GObject.registerClass(
             let oldTime = this._lyricObj ? this._lyricObj.time : null;
             let newTime = lyricObj ? lyricObj.time : null;
 
-            if (oldContent === newContent && oldTime === newTime) return;
-
+            let contentChanged = (oldContent !== newContent || oldTime !== newTime);
             let wasActive = !!oldContent;
             this._lyricObj = lyricObj;
             let isActive = !!newContent;
 
             if (!this._isActiveState) return;
-            this._updateTextDisplay(true);
 
-            if (wasActive !== isActive) {
+            if (contentChanged) {
+                this._updateTextDisplay(true);
+            }
+
+            // Word-level karaoke markup in Pill (updates text markup silently without moving text position)
+            if (this._lyricObj && Array.isArray(this._lyricObj.words) && this._lyricObj.words.length > 0 && this._titleScroll) {
+                let currentMs = this._lyricObj.positionMs || 0;
+                let markup = "";
+                for (const word of this._lyricObj.words) {
+                    let wStr = (word.text || "").trim();
+                    if (!wStr) continue;
+                    let escapedText = GLib.markup_escape_text(wStr, -1);
+                    if (currentMs >= word.time) {
+                        markup += `<b><span alpha="100%">${escapedText}</span></b> `;
+                    } else {
+                        markup += `<span alpha="45%">${escapedText}</span> `;
+                    }
+                }
+                if (markup) {
+                    this._titleScroll.updateLyricMarkup(markup.trim());
+                }
+            }
+
+            if (contentChanged && wasActive !== isActive) {
                 this._updateDimensions();
             }
         }

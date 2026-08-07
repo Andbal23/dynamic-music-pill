@@ -88,10 +88,11 @@ export const LyricsWidget = GObject.registerClass(
             this.queue_repaint();
         }
 
-        setLyrics(lyrics) {
+        setLyrics(lyrics, provider = null) {
             if (!lyrics || lyrics.length === 0) { this.showEmpty(); return; }
             this._fullReset('lyrics');
             this._lyrics = lyrics;
+            this._providerName = provider;
             this._lineAlpha = new Array(lyrics.length).fill(0.22);
             this._lineScale = new Array(lyrics.length).fill(1.0);
             this._hoverExtras = new Array(lyrics.length).fill(0.0);
@@ -100,18 +101,20 @@ export const LyricsWidget = GObject.registerClass(
         }
 
         updatePosition(timeMs) {
+            this._currentTimeMs = timeMs;
             if (this._state !== 'lyrics') return;
             let newIndex = -1;
             for (let i = 0; i < this._lyrics.length; i++) {
                 if (this._lyrics[i].time <= timeMs) newIndex = i;
                 else break;
             }
-            if (newIndex === this._activeIndex) return;
-            this._activeIndex = newIndex;
-            this._startAlphaAnim();
-            if (!this._manualScroll && this._geomBuilt) {
-                this._updateScrollTarget();
-                this._startScrollAnim();
+            if (newIndex !== this._activeIndex) {
+                this._activeIndex = newIndex;
+                this._startAlphaAnim();
+                if (!this._manualScroll && this._geomBuilt) {
+                    this._updateScrollTarget();
+                    this._startScrollAnim();
+                }
             }
             this.queue_repaint();
         }
@@ -154,7 +157,7 @@ export const LyricsWidget = GObject.registerClass(
             );
 
             this._geoms = [];
-            let curY = 0;
+            let curY = 40;
             for (let i = 0; i < this._lyrics.length; i++) {
                 layout.set_text(this._lyrics[i].text, -1);
                 let [, log] = layout.get_extents();
@@ -532,7 +535,34 @@ export const LyricsWidget = GObject.registerClass(
                 alpha = Math.max(0, Math.min(1, alpha));
                 if (alpha < 0.01) continue;
 
-                layout.set_text(geo.text, -1);
+                let lineObj = this._lyrics[i];
+                let isWordLevel = (i === this._activeIndex && lineObj && Array.isArray(lineObj.words) && lineObj.words.length > 0);
+
+                if (isWordLevel) {
+                    let currentMs = this._currentTimeMs || 0;
+                    let markup = "";
+                    for (const word of lineObj.words) {
+                        let wStr = (word.text || "").trim();
+                        if (!wStr) continue;
+                        let escapedText = GLib.markup_escape_text(wStr, -1);
+
+                        if (currentMs >= word.time) {
+                            markup += `<b><span alpha="100%">${escapedText}</span></b> `;
+                        } else {
+                            markup += `<span alpha="40%">${escapedText}</span> `;
+                        }
+                    }
+                    try {
+                        layout.set_markup(markup.trim(), -1);
+                    } catch (_) {
+                        layout.set_attributes(null);
+                        layout.set_text(geo.text, -1);
+                    }
+                } else {
+                    layout.set_attributes(null);
+                    layout.set_text(geo.text, -1);
+                }
+
                 cr.setSourceRGBA(R, G, B, alpha);
                 let scale = this._lineScale[i] ?? 1.0;
                 if (scale !== 1.0) {

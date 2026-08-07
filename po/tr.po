@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 15:03+0200\n"
+"POT-Creation-Date: 2026-08-07 16:03+0200\n"
 "PO-Revision-Date: 2026-07-03 22:01+0000\n"
 "Last-Translator: Yiğithan Karabel <yigithankarabel@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/dynamic-music-"
@@ -142,411 +142,421 @@ msgstr ""
 "gösterin."
 
 #: prefs.js:255
+msgid "Word-level Karaoke in Pill"
+msgstr ""
+
+#: prefs.js:256
+msgid ""
+"Highlight individual words on the main pill when available (pop-up always "
+"uses word-level)."
+msgstr ""
+
+#: prefs.js:268
 msgid "Lyrics language preference"
 msgstr "Şarkı sözü dil tercihi"
 
-#: prefs.js:256
+#: prefs.js:269
 msgid "When multiple versions exist"
 msgstr "Birden fazla sürümü olduğunda"
 
-#: prefs.js:258
+#: prefs.js:271
 msgid "Auto"
 msgstr "Otomatik"
 
-#: prefs.js:259
+#: prefs.js:272
 msgid "Prefer original script"
 msgstr "Orijinal yazımı tercih edin"
 
-#: prefs.js:260
+#: prefs.js:273
 msgid "Prefer Latin"
 msgstr "Latinceyi tercih edin"
 
-#: prefs.js:269
+#: prefs.js:282
 msgid "Lyrics Fade-in Effect"
 msgstr "Şarkı Sözleri Giriş Efekti"
 
-#: prefs.js:270
+#: prefs.js:283
 msgid "Smoothly fade in new lyric lines"
 msgstr "Yeni şarkı sözü satırları yavaşça görünür hâle gelsin"
 
-#: prefs.js:282
+#: prefs.js:295
 msgid "Fade Duration (ms)"
 msgstr "Giriş Süresi (ms)"
 
-#: prefs.js:291
+#: prefs.js:304
 msgid "Tablet Mode Controls"
 msgstr "Tablet Modu Kontrolleri"
 
-#: prefs.js:292
+#: prefs.js:305
 msgid "Show media buttons directly on the pill"
 msgstr "Medya kontrol düğmelerini doğrudan simge üzerinde gösterin"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "Off"
 msgstr "Kapalı"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "Skip Only"
 msgstr "Sadece Atlama Kontrolleri"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "Play/Pause Only"
 msgstr "Sadece Oynat/Duraklat"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "All Controls"
 msgstr "Tüm Kontroller"
 
-#: prefs.js:303
+#: prefs.js:316
 msgid "Controls Position"
 msgstr "Kontrollerin Konumu"
 
-#: prefs.js:304
+#: prefs.js:317
 msgid "Where to place the tablet controls on the pill"
 msgstr "Simge üzerindeki tablet kontrollerinin yerleştirileceği yer"
 
-#: prefs.js:306
+#: prefs.js:319
 msgid "Before Text"
 msgstr "Metinden Önce"
 
-#: prefs.js:306
+#: prefs.js:319
 msgid "After Text"
 msgstr "Metinden Sonra"
 
-#: prefs.js:306
+#: prefs.js:319
 msgid "After Visualizer"
 msgstr "Görselleştiriciden Sonra"
 
-#: prefs.js:320
+#: prefs.js:333
 msgid "Inline Artist"
 msgstr "Satır İçinde Sanatçıyı Göster"
 
-#: prefs.js:320
+#: prefs.js:333
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "Simge küçültüldüğünde \"Başlık • Sanatçı\" şeklinde gösterin"
 
-#: prefs.js:326
+#: prefs.js:339
 msgid "Show Artist"
 msgstr "Sanatçıyı Göster"
 
-#: prefs.js:326
+#: prefs.js:339
 msgid "Show the artist name in the main music pill"
 msgstr "Ana müzik simgesinde sanatçının ismini gösterin"
 
-#: prefs.js:338
+#: prefs.js:351
 msgid "Compact Mode (Hide Text)"
 msgstr "Kompakt Mod (Metni Gizle)"
 
-#: prefs.js:339
+#: prefs.js:352
 msgid "Hide title and artist"
 msgstr "Başlık ve sanatçıyı gizleyin"
 
-#: prefs.js:352
+#: prefs.js:365
 msgid "Mouse Actions"
 msgstr "Fare Eylemleri"
 
-#: prefs.js:355 prefs.js:675
+#: prefs.js:368 prefs.js:688
 msgid "None"
 msgstr "Hiçbiri"
 
-#: prefs.js:355
+#: prefs.js:368
 msgid "Play / Pause"
 msgstr "Oynat / Duraklat"
 
-#: prefs.js:355
+#: prefs.js:368
 msgid "Next Track"
 msgstr "Sonraki Parça"
 
-#: prefs.js:355
+#: prefs.js:368
 msgid "Previous Track"
 msgstr "Önceki Parça"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Open Player App"
 msgstr "Oynatıcı Uygulamasını Aç"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Open Menu"
 msgstr "Menüyü Aç"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Select Player"
 msgstr "Oynatıcıyı Seç"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Open Settings"
 msgstr "Ayarları Aç"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Close Player App"
 msgstr "Oynatıcı Uyg. Kapat"
 
-#: prefs.js:363
+#: prefs.js:376
 msgid "Left Click"
 msgstr "Sol Tıklama"
 
-#: prefs.js:371
+#: prefs.js:384
 msgid "Double Click"
 msgstr "Çift Tıklama"
 
-#: prefs.js:379
+#: prefs.js:392
 msgid "Middle Click"
 msgstr "Orta Tıklama"
 
-#: prefs.js:387
+#: prefs.js:400
 msgid "Right Click"
 msgstr "Sağ Tıklama"
 
-#: prefs.js:395
+#: prefs.js:408
 msgid "Hover Action"
 msgstr "Üzerine Gelme Eylemi"
 
-#: prefs.js:406
+#: prefs.js:419
 msgid "Hover Delay (ms)"
 msgstr "Üzerine Gelme Gecikmesi (ms)"
 
-#: prefs.js:420
+#: prefs.js:433
 msgid "Pop-up Menu"
 msgstr "Açılır Menü"
 
-#: prefs.js:424
+#: prefs.js:437
 msgid "Pop-up Appearance"
 msgstr "Açılır Menü Görünümü"
 
-#: prefs.js:426
+#: prefs.js:439
 msgid "Rotate Vinyl"
 msgstr "Plağı Döndür"
 
-#: prefs.js:427
+#: prefs.js:440
 msgid "Spin the album art when playing"
 msgstr "Çalarken albüm kapağını döndürün"
 
-#: prefs.js:438
+#: prefs.js:451
 msgid "Rotation Speed"
 msgstr "Dönme Hızı"
 
-#: prefs.js:439
+#: prefs.js:452
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
 msgstr "Plağın dönüş hızını ayarlayın (düşük ayar yavaşlatır, varsayılan: 10)"
 
-#: prefs.js:447 prefs.js:867
+#: prefs.js:460 prefs.js:880
 msgid "Enable Shadow"
 msgstr "Gölgeyi Etkinleştir"
 
-#: prefs.js:448
+#: prefs.js:461
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "Açılır menünün arkasında gölge efekti gösterin"
 
-#: prefs.js:459
+#: prefs.js:472
 msgid "Close on Mouse Leave"
 msgstr "Fare Ayrıldığında Kapat"
 
-#: prefs.js:460
+#: prefs.js:473
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr "Fare imleci uzaklaştığında açılır menüyü otomatik olarak gizleyin"
 
-#: prefs.js:471
+#: prefs.js:484
 msgid "Follow Custom Background Color"
 msgstr "Özel Arka Plan Rengini Eşitle"
 
-#: prefs.js:472
+#: prefs.js:485
 msgid "Use the custom background color for the pop-up (if active)"
 msgstr "Açılır menü için özel arka plan rengi kullanın (etkin ise)"
 
-#: prefs.js:481
+#: prefs.js:494
 msgid "Follow Custom Text Color"
 msgstr "Özel Metin Rengini Eşitle"
 
-#: prefs.js:482
+#: prefs.js:495
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr "Açılır menü için özel metin rengi kullanın (etkin ise)"
 
-#: prefs.js:491
+#: prefs.js:504
 msgid "Follow Transparency"
 msgstr "Saydamlığı Eşitle"
 
-#: prefs.js:492
+#: prefs.js:505
 msgid "Inherit opacity settings from the main pill"
 msgstr "Ana simgedeki opaklık ayarını kullanın"
 
-#: prefs.js:503
+#: prefs.js:516
 msgid "Follow Border Radius"
 msgstr "Köşe Yuvarlaklığını Eşitle"
 
-#: prefs.js:504
+#: prefs.js:517
 msgid "Inherit corner roundness from the main pill"
 msgstr "Ana simgedeki köşe yuvarlaklığını kullanın"
 
-#: prefs.js:513
+#: prefs.js:526
 msgid "Show Vinyl"
 msgstr "Plağı Göster"
 
-#: prefs.js:513
+#: prefs.js:526
 msgid "Display the album art in the pop-up"
 msgstr "Açılır menüde albüm kapağını gösterin"
 
-#: prefs.js:519
+#: prefs.js:532
 msgid "Square Vinyl Image"
 msgstr "Kare Albüm Kapağı"
 
-#: prefs.js:519
+#: prefs.js:532
 msgid "Use a square album art (disables rotation)"
 msgstr "Kare albüm kapağı kullanın (plağı döndürmeyi kapatır)"
 
-#: prefs.js:525
+#: prefs.js:538
 msgid "Album Art Shadow"
 msgstr ""
 
-#: prefs.js:525
+#: prefs.js:538
 msgid "Show drop shadow behind the album art in the pop-up"
 msgstr ""
 
-#: prefs.js:531
+#: prefs.js:544
 msgid "Show Shuffle and Loop"
 msgstr "Karıştırma ve Döngü Düğmelerini Göster"
 
-#: prefs.js:531
+#: prefs.js:544
 msgid "Display extra controls in the pop-up"
 msgstr "Açılır menüde ekstra kontrolleri gösterin"
 
-#: prefs.js:537
+#: prefs.js:550
 msgid "Use Custom Width"
 msgstr "Özel Genişlik Kullan"
 
-#: prefs.js:537
+#: prefs.js:550
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "Açılır menü için dinamik boyutlandırmayı devre dışı bırakın"
 
-#: prefs.js:544
+#: prefs.js:557
 msgid "Custom Width Value"
 msgstr "Özel Genişlik Değeri"
 
-#: prefs.js:560
+#: prefs.js:573
 msgid "Show Player Selector"
 msgstr "Oynatıcı Seçiciyi Göster"
 
-#: prefs.js:561
+#: prefs.js:574
 msgid "Display active player icons in the pop-up"
 msgstr "Açılır menüde etkin oynatıcıların ikonlarını gösterin"
 
-#: prefs.js:569
+#: prefs.js:582
 msgid "Hide Auto (Smart Selection)"
 msgstr ""
 
-#: prefs.js:570
+#: prefs.js:583
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr ""
 
-#: prefs.js:581
+#: prefs.js:594
 msgid "Player Selector Position"
 msgstr "Oynatıcı Seçici Konumu"
 
-#: prefs.js:582
+#: prefs.js:595
 msgid "Where to place the player icons inside the pop-up"
 msgstr "Açılır menüde oynatıcı ikonlarının görüneceği yer"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Top"
 msgstr "Üst"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Bottom"
 msgstr "Alt"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Left"
 msgstr "Sol"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Right"
 msgstr "Sağ"
 
-#: prefs.js:594
+#: prefs.js:607
 msgid "Show Album Title"
 msgstr "Albüm Başlığını Göster"
 
-#: prefs.js:595
+#: prefs.js:608
 msgid "Display album name next to the artist (Artist • Album)"
 msgstr "Sanatçının yanında albüm adını gösterin (Sanatçı • Albüm)"
 
-#: prefs.js:603
+#: prefs.js:616
 msgid "Show HH:MM:SS"
 msgstr "HH:MM:SS Şeklinde Göster"
 
-#: prefs.js:604
+#: prefs.js:617
 msgid "Display hours in the time labels when media is longer than 60 minutes"
 msgstr ""
 "Medya 60 dakikadan uzun olduğunda zaman etiketinde saat bilgisini de gösterin"
 
-#: prefs.js:615
+#: prefs.js:628
 msgid "Show Visualizer in Pop-up"
 msgstr "Açılır Menüde Görselleştiriciyi Göster"
 
-#: prefs.js:622
+#: prefs.js:635
 msgid "Hide Pill Visualizer"
 msgstr "Simgedeki Görselleştiriciyi Gizle"
 
-#: prefs.js:623
+#: prefs.js:636
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr ""
 "Ana simgedeki görselleştiriciyi gizleyerek \"hareket ediyor\" efekti "
 "oluşturur"
 
-#: prefs.js:632
+#: prefs.js:645
 msgid "Popup Visualizer Bar Count"
 msgstr "Açılır Menü Görselleştiricisi Çubuk Sayısı"
 
-#: prefs.js:640
+#: prefs.js:653
 msgid "Popup Visualizer Bar Width"
 msgstr "Açılır Menü Görselleştiricisi Çubuk Genişliği"
 
-#: prefs.js:648
+#: prefs.js:661
 msgid "Popup Visualizer Height"
 msgstr "Açılır Menü Görselleştiricisi Yüksekliği"
 
-#: prefs.js:658
+#: prefs.js:671
 msgid "Custom Control Buttons"
 msgstr "Özel Kontrol Düğmeleri"
 
-#: prefs.js:659
+#: prefs.js:672
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr ""
 "Genişletilmiş oynatıcının kontrol satırına en fazla iki ek düğme ekleyin."
 
-#: prefs.js:663
+#: prefs.js:676
 msgid "Enable Custom Buttons"
 msgstr "Özel Düğmeleri Etkinleştir"
 
-#: prefs.js:664
+#: prefs.js:677
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr "Karıştır ve Döngü düğmelerinin yanında ek eylem düğmelerini gösterin"
 
-#: prefs.js:676
+#: prefs.js:689
 msgid "Volume Control"
 msgstr "Ses Kontrolü"
 
-#: prefs.js:677
+#: prefs.js:690
 msgid "Seek ±10 Seconds"
 msgstr "±10 Saniye Atla"
 
-#: prefs.js:678
+#: prefs.js:691
 msgid "Audio Output Switcher"
 msgstr "Ses Çıkışını Değiştir"
 
-#: prefs.js:679 src/uiExpandedPlayer.js:1572
+#: prefs.js:692 src/uiExpandedPlayer.js:1574
 msgid "Sleep Timer"
 msgstr "Uyku Zamanlayıcısı"
 
-#: prefs.js:680 src/uiExpandedPlayer.js:1613
+#: prefs.js:693 src/uiExpandedPlayer.js:1615
 msgid "Playback Speed"
 msgstr "Oynatma Hızı"
 
-#: prefs.js:681
+#: prefs.js:694
 msgid "Track History"
 msgstr "Parça Geçmişi"
 
-#: prefs.js:712
+#: prefs.js:725
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
@@ -554,55 +564,55 @@ msgstr ""
 "Her iki düğme de Atla'ya ayarlanmışsa doğrudan eylemi yaparlar (düğme 1 = "
 "-10s, düğme 2 = +10s). Aksi takdirde Atla, bir alt sayfa açar."
 
-#: prefs.js:715
+#: prefs.js:728
 msgid "Custom Button 1"
 msgstr "Özel Düğme 1"
 
-#: prefs.js:715
+#: prefs.js:728
 msgid "Placed left of Shuffle."
 msgstr "Karıştır düğmesinin solundadır."
 
-#: prefs.js:718
+#: prefs.js:731
 msgid "Custom Button 2"
 msgstr "Özel Düğme 2"
 
-#: prefs.js:718
+#: prefs.js:731
 msgid "Placed right of Loop."
 msgstr "Döngü düğmesinin sağındadır."
 
-#: prefs.js:729
+#: prefs.js:742
 msgid "Style & Layout"
 msgstr "Stil & Düzen"
 
-#: prefs.js:733
+#: prefs.js:746
 msgid "Visualizer and Shape"
 msgstr "Görselleştirici ve Şekil"
 
-#: prefs.js:736
+#: prefs.js:749
 msgid "Off (Disabled)"
 msgstr "Kapalı (Devre Dışı)"
 
-#: prefs.js:737
+#: prefs.js:750
 msgid "Wave (Smooth)"
 msgstr ""
 
-#: prefs.js:738
+#: prefs.js:751
 msgid "Beat (Jumpy)"
 msgstr ""
 
-#: prefs.js:739
+#: prefs.js:752
 msgid "Real-Time (Cava needed)"
 msgstr "Gerçek Zamanlı (Cava gereklidir)"
 
-#: prefs.js:742
+#: prefs.js:755
 msgid "Visualizer Animation"
 msgstr "Görselleştirici Animasyonu"
 
-#: prefs.js:743
+#: prefs.js:756
 msgid "Select the style of the audio reaction bars"
 msgstr "Ses tepki çubuklarının stilini seçin"
 
-#: prefs.js:751
+#: prefs.js:764
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
@@ -610,320 +620,320 @@ msgstr ""
 "Not: 'Gerçek Zamanlı' mod, Linux sisteminizde 'cava' paketinin kurulu "
 "olmasını gerektirir."
 
-#: prefs.js:760
+#: prefs.js:773
 msgid "Visualizer Bar Count"
 msgstr "Görselleştirici Çubuk Sayısı"
 
-#: prefs.js:761
+#: prefs.js:774
 msgid "Number of bars displayed in the animation"
 msgstr "Animasyonda görüntülenen çubuk sayısı"
 
-#: prefs.js:768
+#: prefs.js:781
 msgid "Visualizer Bar Width"
 msgstr "Görselleştirici Çubuk Genişliği"
 
-#: prefs.js:769
+#: prefs.js:782
 msgid "Thickness of individual bars (pixels)"
 msgstr "Bağımsız çubukların kalınlığı (piksel)"
 
-#: prefs.js:776
+#: prefs.js:789
 msgid "Visualizer Height"
 msgstr "Görselleştirici Yüksekliği"
 
-#: prefs.js:777
+#: prefs.js:790
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
 
-#: prefs.js:784
+#: prefs.js:797
 msgid "Visualizer Margin"
 msgstr "Görselleştirici Kenar Boşluğu"
 
-#: prefs.js:785
+#: prefs.js:798
 msgid "Distance between the text and the wave animation"
 msgstr "Metin ile dalga animasyonu arasındaki mesafe"
 
-#: prefs.js:792
+#: prefs.js:805
 msgid "Outer Edge Margin"
 msgstr "Dış Kenar Boşluğu"
 
-#: prefs.js:793
+#: prefs.js:806
 msgid "Spacing before the album art and after the visualizer"
 msgstr "Albüm kapağından önce ve görselleştiriciden sonraki boşluk"
 
-#: prefs.js:800
+#: prefs.js:813
 msgid "Corner Radius"
 msgstr "Köşe Yarıçapı"
 
-#: prefs.js:801
+#: prefs.js:814
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
 msgstr "Simge kenarlarının yuvarlaklığı (0 = Kare, 25 = Kıvrımlı)"
 
-#: prefs.js:808
+#: prefs.js:821
 msgid "Show Pill Outline"
 msgstr "Simge Çerçevesini Göster"
 
-#: prefs.js:809
+#: prefs.js:822
 msgid "Display a subtle border around the main pill"
 msgstr "Ana simgenin etrafında ince bir çerçeve göster"
 
-#: prefs.js:822
+#: prefs.js:835
 msgid "Background and Transparency"
 msgstr "Arka Plan ve Saydamlık"
 
-#: prefs.js:824
+#: prefs.js:837
 msgid "Enable Transparency"
 msgstr "Saydamlığı Etkinleştir"
 
-#: prefs.js:825
+#: prefs.js:838
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr ""
 "Düz bir tema arka planı ile özel saydam bir görünüm arasında geçiş yapın"
 
-#: prefs.js:836
+#: prefs.js:849
 msgid "Background Opacity"
 msgstr "Arka Plan Opaklığı"
 
-#: prefs.js:837
+#: prefs.js:850
 msgid "Adjust transparency level"
 msgstr "Saydamlık seviyesini ayarlayın"
 
-#: prefs.js:844
+#: prefs.js:857
 msgid "Apply to Album Art"
 msgstr "Albüm Kapağına Uygula"
 
-#: prefs.js:851
+#: prefs.js:864
 msgid "Apply to Text"
 msgstr "Metne Uygula"
 
-#: prefs.js:858
+#: prefs.js:871
 msgid "Apply to Visualizer"
 msgstr "Görselleştiriciye Uygula"
 
-#: prefs.js:866
+#: prefs.js:879
 msgid "Main Pill Shadow"
 msgstr "Ana Simge Gölgesi"
 
-#: prefs.js:874
+#: prefs.js:887
 msgid "Shadow Intensity"
 msgstr "Gölge Yoğunluğu"
 
-#: prefs.js:881
+#: prefs.js:894
 msgid "Shadow Blur"
 msgstr "Gölge Bulanıklığı"
 
-#: prefs.js:888
+#: prefs.js:901
 msgid "Positioning"
 msgstr "Konumlandırma"
 
-#: prefs.js:890
+#: prefs.js:903
 msgid "Dock"
 msgstr "Rıhtım"
 
-#: prefs.js:891
+#: prefs.js:904
 msgid "Panel: Left Box"
 msgstr "Panel: Sol"
 
-#: prefs.js:892
+#: prefs.js:905
 msgid "Panel: Center Box"
 msgstr "Panel: Orta"
 
-#: prefs.js:893
+#: prefs.js:906
 msgid "Panel: Right Box"
 msgstr "Panel: Sağ"
 
-#: prefs.js:896
+#: prefs.js:909
 msgid "Container Target"
 msgstr "Hedef Konum"
 
-#: prefs.js:897
+#: prefs.js:910
 msgid "Select which UI element should host the music pill"
 msgstr "Müzik simgesinin hangi kullanıcı arayüz ögesinde bulunacağını seçin"
 
-#: prefs.js:908
+#: prefs.js:921
 msgid "Dynamic Width"
 msgstr "Dinamik Genişlik"
 
-#: prefs.js:908
+#: prefs.js:921
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
 
-#: prefs.js:923
+#: prefs.js:936
 msgid "Manual Index"
 msgstr "Manuel İndeks"
 
-#: prefs.js:924
+#: prefs.js:937
 msgid "First (Start)"
 msgstr "Baş"
 
-#: prefs.js:925
+#: prefs.js:938
 msgid "Center"
 msgstr "Orta"
 
-#: prefs.js:926
+#: prefs.js:939
 msgid "Last (End)"
 msgstr "Son"
 
-#: prefs.js:929
+#: prefs.js:942
 msgid "Alignment Preset"
 msgstr "Hizalama Ön Ayarı"
 
-#: prefs.js:930
+#: prefs.js:943
 msgid "How the widget aligns relative to other items"
 msgstr "Simgenin diğer ögelere göre nasıl hızalandığıdır"
 
-#: prefs.js:938
+#: prefs.js:951
 msgid "Manual Index Position"
 msgstr "Manuel İndeks Konumu"
 
-#: prefs.js:939
+#: prefs.js:952
 msgid "Order in the list (0 is first). Only for Manual mode."
 msgstr "Listedeki konumudur (0 ilktir). Sadece manuel modda."
 
-#: prefs.js:946
+#: prefs.js:959
 msgid "Vertical Offset (Y)"
 msgstr "Dikey Öteleme (Y)"
 
-#: prefs.js:947
+#: prefs.js:960
 msgid "Shift Up (-) or Down (+)"
 msgstr "Yukarı (-) veya aşağı (+) kaydırın"
 
-#: prefs.js:954
+#: prefs.js:967
 msgid "Horizontal Offset (X)"
 msgstr "Yatay Öteleme (X)"
 
-#: prefs.js:955
+#: prefs.js:968
 msgid "Shift Left (-) or Right (+)"
 msgstr "Sola (-) veya sağa (+) kaydırın"
 
-#: prefs.js:961
+#: prefs.js:974
 msgid "Dimensions (Dock Mode)"
 msgstr "Boyutlar (Rıhtım Modu)"
 
-#: prefs.js:963 prefs.js:985
+#: prefs.js:976 prefs.js:998
 msgid "Album Art Size"
 msgstr "Albüm Kapak Boyutu"
 
-#: prefs.js:969 prefs.js:991
+#: prefs.js:982 prefs.js:1004
 msgid "Widget Width"
 msgstr "Simge Genişliği"
 
-#: prefs.js:976 prefs.js:998
+#: prefs.js:989 prefs.js:1011
 msgid "Widget Height"
 msgstr "Simge Yüksekliği"
 
-#: prefs.js:983
+#: prefs.js:996
 msgid "Dimensions (Panel Mode)"
 msgstr "Boyutlar (Panel Modu)"
 
-#: prefs.js:1004
+#: prefs.js:1017
 msgid "Custom Colors"
 msgstr "Özel Renkler"
 
-#: prefs.js:1007
+#: prefs.js:1020
 msgid "Sync GNOME Accent Color"
 msgstr "GNOME Vurgu Rengini Senkronize Et"
 
-#: prefs.js:1008
+#: prefs.js:1021
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr ""
 "GNOME kabuğunun vurgu rengini albüm kapağıyla eşleşecek şekilde dinamik "
 "olarak değiştirin"
 
-#: prefs.js:1018
+#: prefs.js:1031
 msgid "Use Custom Colors"
 msgstr "Özel Renkler Kullan"
 
-#: prefs.js:1018
+#: prefs.js:1031
 msgid "Override dynamic colors"
 msgstr "Dinamik renkleri geçersiz kılın"
 
-#: prefs.js:1047
+#: prefs.js:1060
 msgid "Background Color"
 msgstr "Arka Plan Rengi"
 
-#: prefs.js:1048
+#: prefs.js:1061
 msgid "Text Color"
 msgstr "Metin Rengi"
 
-#: prefs.js:1059
+#: prefs.js:1072
 msgid "System & Reset"
 msgstr "Sistem & Sıfırla"
 
-#: prefs.js:1063
+#: prefs.js:1076
 msgid "System"
 msgstr "Sistem"
 
-#: prefs.js:1066
+#: prefs.js:1079
 msgid "Hide Default GNOME Player"
 msgstr "Varsayılan GNOME Oynatıcısını Gizle"
 
-#: prefs.js:1067
+#: prefs.js:1080
 msgid "Remove the duplicate built-in media controls"
 msgstr "Yinelenen yerleşik medya kontrollerini kaldırın"
 
-#: prefs.js:1077
+#: prefs.js:1090
 msgid "Game Mode"
 msgstr "Oyun Modu"
 
-#: prefs.js:1077
+#: prefs.js:1090
 msgid "Disable animations when a fullscreen app is active"
 msgstr ""
 "Tam ekran bir uygulama etkin olduğunda animasyonları devre dışı bırakın"
 
-#: prefs.js:1084
+#: prefs.js:1097
 msgid "Slow Player Workaround"
 msgstr "Yavaş Oynatıcı Düzeltmesi"
 
-#: prefs.js:1085
+#: prefs.js:1098
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
 "Parça geçişlerine kısa bir gecikme ekler (senkronizasyon sorunlarını çözer)"
 
-#: prefs.js:1093
+#: prefs.js:1106
 msgid "Off (Allow All)"
 msgstr "Kapalı (Tümüne izin ver)"
 
-#: prefs.js:1094
+#: prefs.js:1107
 msgid "Blacklist (Exclude listed)"
 msgstr "Kara Liste (Listedekileri hariç tut)"
 
-#: prefs.js:1095
+#: prefs.js:1108
 msgid "Whitelist (Only allow listed)"
 msgstr "Beyaz Liste (Sadece listedekilere izin ver)"
 
-#: prefs.js:1098
+#: prefs.js:1111
 msgid "Player Filter Mode"
 msgstr "Oynatıcı Filtresi Modu"
 
-#: prefs.js:1099
+#: prefs.js:1112
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr "Medya oynatıcıları (ör: tarayıcılar) nasıl filtreleyeceğinizi seçin"
 
-#: prefs.js:1110
+#: prefs.js:1123
 msgid "Filtered Players (comma separated)"
 msgstr "Filtrelenmiş Oynatıcılar (virgülle ayrılmış)"
 
-#: prefs.js:1124
+#: prefs.js:1137
 msgid "Detected Players"
 msgstr "Algılanan Oynatıcılar"
 
-#: prefs.js:1125
+#: prefs.js:1138
 msgid "Click an active player to add it to the filter list"
 msgstr "Filtre listesine eklemek için etkin bir oynatıcıya tıklayın"
 
-#: prefs.js:1160
+#: prefs.js:1173
 msgid "No players found"
 msgstr "Oynatıcı bulunamadı"
 
-#: prefs.js:1194
+#: prefs.js:1207
 msgid "💡 How to find the correct App ID?"
 msgstr "💡 Doğru Uygulama Kimliği Nasıl Bulunur?"
 
-#: prefs.js:1195
+#: prefs.js:1208
 msgid "Click here for a quick guide and examples"
 msgstr "Hızlı kılavuz ve örnekler için buraya tıklayın"
 
-#: prefs.js:1199
+#: prefs.js:1212
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -961,173 +971,173 @@ msgstr ""
 "kimliğinizdir! <i>(.desktop kısmını kaldırın)</i>\n"
 "5. Hata ayıklayıcıyı Esc tuşuyla kapatın."
 
-#: prefs.js:1227
+#: prefs.js:1240
 msgid "Saved App Mappings"
 msgstr "Kaydedilen Uygulama Eşleştirmeleri"
 
-#: prefs.js:1228
+#: prefs.js:1241
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 "El ile eşleştirilmiş oynatıcılar için hedef uygulama kimliğini düzenleyin "
 "veya kaldırın."
 
-#: prefs.js:1249
+#: prefs.js:1262
 msgid "No manual mappings saved."
 msgstr "Hiçbir el ile eşleştirme kaydedilmedi."
 
-#: prefs.js:1254
+#: prefs.js:1267
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr ""
 "Doğru uygulama kimliğini girin, sonra Enter tuşuna veya Kaydet düğmesine "
 "basın!"
 
-#: prefs.js:1273
+#: prefs.js:1286
 msgid "Save App ID"
 msgstr "Uyg. Kimliğini Kaydet"
 
-#: prefs.js:1305
+#: prefs.js:1318
 msgid "Delete Mapping"
 msgstr "Eşleştirmeyi Sil"
 
-#: prefs.js:1334
+#: prefs.js:1347
 msgid "Running Players Detection"
 msgstr "Çalışan Oynatıcı Tespiti"
 
-#: prefs.js:1335
+#: prefs.js:1348
 msgid "Click on a detected player to automatically fill the mapping."
 msgstr ""
 "Eşleştirmeyi otomatik doldurmak için algılanan bir oynatıcıya tıklayın."
 
-#: prefs.js:1358
+#: prefs.js:1371
 msgid "No active players detected. Open a music app first!"
 msgstr "Etkin oynatıcı tespit edilemedi. Önce bir müzik uygulaması açın!"
 
-#: prefs.js:1360
+#: prefs.js:1373
 msgid "Select a player to help the extension identify it:"
 msgstr "Eklentinin tanımasına yardımcı olmak için bir oynatıcı seçin:"
 
-#: prefs.js:1380
+#: prefs.js:1393
 msgid "Use This"
 msgstr "Kullan"
 
-#: prefs.js:1410
+#: prefs.js:1423
 msgid "Refresh List"
 msgstr "Listeyi Yenile"
 
-#: prefs.js:1411
+#: prefs.js:1424
 msgid "Click to scan for active players again"
 msgstr "Etkin oynatıcıları tekrar taramak için tıklayın"
 
-#: prefs.js:1426
+#: prefs.js:1439
 msgid "Backup & Restore"
 msgstr "Yedekleme & Geri Yükleme"
 
-#: prefs.js:1429
+#: prefs.js:1442
 msgid "Export Settings"
 msgstr "Ayarları Dışa Aktar"
 
-#: prefs.js:1430
+#: prefs.js:1443
 msgid "Export"
 msgstr "Dışa Aktar"
 
-#: prefs.js:1434
+#: prefs.js:1447
 msgid "Save Settings"
 msgstr "Ayarları Kaydet"
 
-#: prefs.js:1449
+#: prefs.js:1462
 msgid "Import Settings"
 msgstr "Ayarları İçe Aktar"
 
-#: prefs.js:1450
+#: prefs.js:1463
 msgid "Import"
 msgstr "İçe Aktar"
 
-#: prefs.js:1452
+#: prefs.js:1465
 msgid "Open Settings Backup"
 msgstr ""
 
-#: prefs.js:1479
+#: prefs.js:1492
 msgid "Art Cache"
 msgstr "Kapak Önbelleği"
 
-#: prefs.js:1501
+#: prefs.js:1514
 msgid "covers cached"
 msgstr "kapak önbelleğe alındı"
 
-#: prefs.js:1504
+#: prefs.js:1517
 msgid "Album Art Cache"
 msgstr "Albüm Kapağı Önbelleği"
 
-#: prefs.js:1509
+#: prefs.js:1522
 msgid "Clear"
 msgstr "Temizle"
 
-#: prefs.js:1531
+#: prefs.js:1544
 msgid "Danger Zone"
 msgstr "Tehlikeli Alan"
 
-#: prefs.js:1532
+#: prefs.js:1545
 msgid "Reset All"
 msgstr "Tümünü Sıfırla"
 
-#: prefs.js:1534
+#: prefs.js:1547
 msgid "Factory Reset"
 msgstr "Fabrika Ayarlarına Dön"
 
-#: prefs.js:1545
+#: prefs.js:1558
 msgid "About"
 msgstr "Hakkında"
 
-#: prefs.js:1550
+#: prefs.js:1563
 msgid "What's New"
 msgstr "Ne Var Ne Yok"
 
-#: prefs.js:1700
+#: prefs.js:1730
 msgid "Support the Project"
 msgstr "Projeyi Destekleyin"
 
-#: prefs.js:1703
+#: prefs.js:1733
 msgid "Support on Ko-fi"
 msgstr "Ko-fi'de Destekleyin"
 
-#: prefs.js:1704
+#: prefs.js:1734
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Ko-fi'den bana bir kahve ısmarlayın"
 
-#: prefs.js:1706 prefs.js:1715
+#: prefs.js:1736 prefs.js:1745
 msgid "Open"
 msgstr "Aç"
 
-#: prefs.js:1712
+#: prefs.js:1742
 msgid "Buy Me a Coffee"
 msgstr "Buy Me a Coffee"
 
-#: prefs.js:1713
+#: prefs.js:1743
 msgid "Support via BuyMeACoffee"
 msgstr "BuyMeACoffee aracılığıyla destekleyin"
 
-#: prefs.js:1721
+#: prefs.js:1751
 msgid "Source Code"
 msgstr "Kaynak Kodu"
 
-#: prefs.js:1722
+#: prefs.js:1752
 msgid "Report bugs or view source on GitHub"
 msgstr "GitHub üzerinden hataları bildirin veya kaynak kodunu görüntüleyin"
 
-#: src/controller.js:1398
+#: src/controller.js:1415
 msgid "Unknown Player"
 msgstr "Bilinmeyen Oynatıcı"
 
-#: src/controller.js:1399
+#: src/controller.js:1416
 msgid "No active media"
 msgstr "Etkin medya yok"
 
-#: src/controller.js:1959
+#: src/controller.js:1976
 msgid "Auto (Smart)"
 msgstr "Otomatik (Akıllı)"
 
-#: src/controller.js:1979 src/controller.js:1997 src/controller.js:2020
-#: src/controller.js:2046
+#: src/controller.js:1996 src/controller.js:2014 src/controller.js:2037
+#: src/controller.js:2063
 msgid "Not supported"
 msgstr "Desteklenmiyor"
 
@@ -1145,99 +1155,99 @@ msgstr "Bilinmeyen Başlık"
 msgid "Unknown Artist"
 msgstr "Bilinmeyen Sanatçı"
 
-#: src/uiExpandedPlayer.js:1375
+#: src/uiExpandedPlayer.js:1377
 msgid "Volume"
 msgstr "Ses"
 
-#: src/uiExpandedPlayer.js:1383
+#: src/uiExpandedPlayer.js:1385
 msgid "System Volume"
 msgstr "Sistem Sesi"
 
-#: src/uiExpandedPlayer.js:1395
+#: src/uiExpandedPlayer.js:1397
 msgid "Player"
 msgstr "Oynatıcı"
 
-#: src/uiExpandedPlayer.js:1401
+#: src/uiExpandedPlayer.js:1403
 msgid "No audio stream available"
 msgstr "Ses akışı mevcut değil"
 
-#: src/uiExpandedPlayer.js:1493
+#: src/uiExpandedPlayer.js:1495
 msgid "Toggle Mute All"
 msgstr ""
 
-#: src/uiExpandedPlayer.js:1513
+#: src/uiExpandedPlayer.js:1515
 msgid "Seek"
 msgstr "Atla"
 
-#: src/uiExpandedPlayer.js:1517
+#: src/uiExpandedPlayer.js:1519
 msgid "This player does not support seeking"
 msgstr "Bu oynatıcı atlamayı desteklemiyor"
 
-#: src/uiExpandedPlayer.js:1543
+#: src/uiExpandedPlayer.js:1545
 msgid "Audio Output"
 msgstr "Ses Çıkışı"
 
-#: src/uiExpandedPlayer.js:1545
+#: src/uiExpandedPlayer.js:1547
 msgid "Audio control unavailable"
 msgstr "Ses kontrolü kullanılamıyor"
 
-#: src/uiExpandedPlayer.js:1548
+#: src/uiExpandedPlayer.js:1550
 msgid "No output devices found"
 msgstr "Çıkış aygıtı bulunamadı"
 
-#: src/uiExpandedPlayer.js:1551
+#: src/uiExpandedPlayer.js:1553
 msgid "Unknown Device"
 msgstr "Bilinmeyen Aygıt"
 
-#: src/uiExpandedPlayer.js:1572
+#: src/uiExpandedPlayer.js:1574
 msgid "min left"
 msgstr "dakika kaldı"
 
-#: src/uiExpandedPlayer.js:1575
+#: src/uiExpandedPlayer.js:1577
 msgid "Cancel Timer"
 msgstr "Zamanlayıcıyı İptal Et"
 
-#: src/uiExpandedPlayer.js:1608
+#: src/uiExpandedPlayer.js:1610
 msgid "Runs inside the shell — works on lock screen"
 msgstr "Kabuk içinde çalışır — kilit ekranında çalışır"
 
-#: src/uiExpandedPlayer.js:1620
+#: src/uiExpandedPlayer.js:1622
 msgid "This player does not support playback speed"
 msgstr "Bu oynatıcı oynatma hızını desteklemiyor"
 
-#: src/uiExpandedPlayer.js:1660
+#: src/uiExpandedPlayer.js:1662
 msgid "Player must support MPRIS Rate"
 msgstr ""
 
-#: src/uiExpandedPlayer.js:1660
+#: src/uiExpandedPlayer.js:1662
 msgid "Not supported by this player"
 msgstr "Bu oynatıcı tarafından desteklenmiyor"
 
-#: src/uiExpandedPlayer.js:1666
+#: src/uiExpandedPlayer.js:1668
 msgid "Recently Played"
 msgstr "Son Çalan"
 
-#: src/uiExpandedPlayer.js:1668
+#: src/uiExpandedPlayer.js:1670
 msgid "No history yet"
 msgstr "Henüz geçmiş yok"
 
-#: src/uiExpandedPlayer.js:1701
+#: src/uiExpandedPlayer.js:1703
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
-#: src/uiExpandedPlayer.js:1756
+#: src/uiExpandedPlayer.js:1758
 msgid "Clear History"
 msgstr "Geçmişi Temizle"
 
-#: src/uiMusicPill.js:734 src/uiMusicPill.js:1042
+#: src/uiMusicPill.js:734 src/uiMusicPill.js:1063
 msgid "No Media"
 msgstr "Medya Yok"
 
-#: src/uiMusicPill.js:1043
+#: src/uiMusicPill.js:1064
 msgid "Waiting for playback..."
 msgstr ""
 
-#: src/uiMusicPill.js:1281
+#: src/uiMusicPill.js:1302
 msgid "Loading..."
 msgstr "Yükleniyor..."
 

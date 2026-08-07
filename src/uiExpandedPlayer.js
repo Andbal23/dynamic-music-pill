@@ -1279,11 +1279,13 @@ export const ExpandedPlayer = GObject.registerClass(
 
                     this._lyricsClient.getLyrics(
                         fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings
-                    ).then(lyrics => {
+                    ).then(result => {
                         if (page !== this._currentSubPage || !page.get_parent()) return;
                         if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
-                        if (lyrics && lyrics.length > 0) {
-                            lyricsWidget.setLyrics(lyrics);
+                        let lines = Array.isArray(result) ? result : (result ? result.lines : null);
+                        let provider = result?.provider || null;
+                        if (lines && lines.length > 0) {
+                            lyricsWidget.setLyrics(lines, provider);
                             lyricsWidget.updatePosition(this._getCurrentPositionMs());
                         } else {
                             lyricsWidget.showEmpty();

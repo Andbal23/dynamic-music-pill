@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 15:03+0200\n"
+"POT-Creation-Date: 2026-08-07 16:03+0200\n"
 "PO-Revision-Date: 2026-07-10 09:01+0000\n"
 "Last-Translator: Huynh Tuan Dung <tuandung5a@outlook.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/dynamic-music-"
@@ -137,408 +137,418 @@ msgid "Show real-time synchronized lyrics for current track."
 msgstr "Hiện lời theo thời gian thực."
 
 #: prefs.js:255
+msgid "Word-level Karaoke in Pill"
+msgstr ""
+
+#: prefs.js:256
+msgid ""
+"Highlight individual words on the main pill when available (pop-up always "
+"uses word-level)."
+msgstr ""
+
+#: prefs.js:268
 msgid "Lyrics language preference"
 msgstr "Tuỳ chọn ngôn ngữ lời bài hát"
 
-#: prefs.js:256
+#: prefs.js:269
 msgid "When multiple versions exist"
 msgstr "Khi tồn tại nhiều phiên bản"
 
-#: prefs.js:258
+#: prefs.js:271
 msgid "Auto"
 msgstr "Tự động"
 
-#: prefs.js:259
+#: prefs.js:272
 msgid "Prefer original script"
 msgstr "Ưu tiên bản gốc"
 
-#: prefs.js:260
+#: prefs.js:273
 msgid "Prefer Latin"
 msgstr "Ưu tiên bản chuyển tự Latin"
 
-#: prefs.js:269
+#: prefs.js:282
 msgid "Lyrics Fade-in Effect"
 msgstr "Hiệu ứng fade-in lời bài hát"
 
-#: prefs.js:270
+#: prefs.js:283
 msgid "Smoothly fade in new lyric lines"
 msgstr "Hiện lời bài hát mới với hiệu ứng fade-in mượt mà"
 
-#: prefs.js:282
+#: prefs.js:295
 msgid "Fade Duration (ms)"
 msgstr "Thời lượng hiệu ứng fade (ms)"
 
-#: prefs.js:291
+#: prefs.js:304
 msgid "Tablet Mode Controls"
 msgstr "Hiện nút điều khiển chế độ tablet"
 
-#: prefs.js:292
+#: prefs.js:305
 msgid "Show media buttons directly on the pill"
 msgstr "Hiện nút điều khiển ngay trên pill"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "Off"
 msgstr "Tắt"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "Skip Only"
 msgstr "Chỉ nút chuyển bài"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "Play/Pause Only"
 msgstr "Chỉ nút phát/tạm dừng"
 
-#: prefs.js:294
+#: prefs.js:307
 msgid "All Controls"
 msgstr "Tất cả nút điều khiển"
 
-#: prefs.js:303
+#: prefs.js:316
 msgid "Controls Position"
 msgstr "Vị trí nút điều khiển"
 
-#: prefs.js:304
+#: prefs.js:317
 msgid "Where to place the tablet controls on the pill"
 msgstr "Vị trí hiển thị nút điều khiển trên pill"
 
-#: prefs.js:306
+#: prefs.js:319
 msgid "Before Text"
 msgstr "Trước văn bản"
 
-#: prefs.js:306
+#: prefs.js:319
 msgid "After Text"
 msgstr "Sau văn bản"
 
-#: prefs.js:306
+#: prefs.js:319
 msgid "After Visualizer"
 msgstr "Sau sóng nhạc"
 
-#: prefs.js:320
+#: prefs.js:333
 msgid "Inline Artist"
 msgstr "Hiện nghệ sĩ cùng dòng"
 
-#: prefs.js:320
+#: prefs.js:333
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "Hiển thị dạng \"Tên bài • Nghệ sĩ\" khi widget bị ép theo chiều ngang"
 
-#: prefs.js:326
+#: prefs.js:339
 msgid "Show Artist"
 msgstr "Hiện nghệ sĩ"
 
-#: prefs.js:326
+#: prefs.js:339
 msgid "Show the artist name in the main music pill"
 msgstr "Hiện tên nghệ sĩ trong pill chính"
 
-#: prefs.js:338
+#: prefs.js:351
 msgid "Compact Mode (Hide Text)"
 msgstr "Chế độ nhỏ gọn (ẩn văn bản)"
 
-#: prefs.js:339
+#: prefs.js:352
 msgid "Hide title and artist"
 msgstr "Ẩn tên bài và nghệ sĩ"
 
-#: prefs.js:352
+#: prefs.js:365
 msgid "Mouse Actions"
 msgstr "Thao tác chuột"
 
-#: prefs.js:355 prefs.js:675
+#: prefs.js:368 prefs.js:688
 msgid "None"
 msgstr "Không có"
 
-#: prefs.js:355
+#: prefs.js:368
 msgid "Play / Pause"
 msgstr "Phát / Tạm dừng"
 
-#: prefs.js:355
+#: prefs.js:368
 msgid "Next Track"
 msgstr "Chuyển bài tiếp theo"
 
-#: prefs.js:355
+#: prefs.js:368
 msgid "Previous Track"
 msgstr "Chuyển bài trước"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Open Player App"
 msgstr "Mở ứng dụng trình phát"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Open Menu"
 msgstr "Mở menu"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Select Player"
 msgstr "Chọn trình phát"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Open Settings"
 msgstr "Mở cài đặt"
 
-#: prefs.js:356
+#: prefs.js:369
 msgid "Close Player App"
 msgstr "Đóng ứng dụng trình phát"
 
-#: prefs.js:363
+#: prefs.js:376
 msgid "Left Click"
 msgstr "Nhấp chuột trái"
 
-#: prefs.js:371
+#: prefs.js:384
 msgid "Double Click"
 msgstr "Nhấp đúp"
 
-#: prefs.js:379
+#: prefs.js:392
 msgid "Middle Click"
 msgstr "Nhấp chuột giữa"
 
-#: prefs.js:387
+#: prefs.js:400
 msgid "Right Click"
 msgstr "Nhấp chuột phải"
 
-#: prefs.js:395
+#: prefs.js:408
 msgid "Hover Action"
 msgstr "Di chuột qua"
 
-#: prefs.js:406
+#: prefs.js:419
 msgid "Hover Delay (ms)"
 msgstr "Độ trễ di chuột (ms)"
 
-#: prefs.js:420
+#: prefs.js:433
 msgid "Pop-up Menu"
 msgstr "Menu pop-up"
 
-#: prefs.js:424
+#: prefs.js:437
 msgid "Pop-up Appearance"
 msgstr "Giao diện pop-up"
 
-#: prefs.js:426
+#: prefs.js:439
 msgid "Rotate Vinyl"
 msgstr "Đĩa xoay"
 
-#: prefs.js:427
+#: prefs.js:440
 msgid "Spin the album art when playing"
 msgstr "Xoay ảnh bìa album khi đang phát"
 
-#: prefs.js:438
+#: prefs.js:451
 msgid "Rotation Speed"
 msgstr "Tốc độ xoay"
 
-#: prefs.js:439
+#: prefs.js:452
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
 msgstr ""
 "Tuỳ chỉnh tốc độ xoay đĩa (giá trị càng thấp thì càng chậm, mặc định: 10)"
 
-#: prefs.js:447 prefs.js:867
+#: prefs.js:460 prefs.js:880
 msgid "Enable Shadow"
 msgstr "Bật đổ bóng"
 
-#: prefs.js:448
+#: prefs.js:461
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "Hiện hiệu ứng đổ bóng phía sau menu pop-up"
 
-#: prefs.js:459
+#: prefs.js:472
 msgid "Close on Mouse Leave"
 msgstr "Đóng khi di chuột ra ngoài"
 
-#: prefs.js:460
+#: prefs.js:473
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr "Tự động ẩn pop-up khi di con trỏ ra ngoài"
 
-#: prefs.js:471
+#: prefs.js:484
 msgid "Follow Custom Background Color"
 msgstr "Dùng màu nền tuỳ chỉnh"
 
-#: prefs.js:472
+#: prefs.js:485
 msgid "Use the custom background color for the pop-up (if active)"
 msgstr "Sử dụng màu nền tuỳ chỉnh cho menu pop-up (nếu hoạt động)"
 
-#: prefs.js:481
+#: prefs.js:494
 msgid "Follow Custom Text Color"
 msgstr "Dùng màu văn bản tuỳ chỉnh"
 
-#: prefs.js:482
+#: prefs.js:495
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr "Sử dụng màu văn bản tuỳ chỉnh cho menu pop-up (nếu hoạt động)"
 
-#: prefs.js:491
+#: prefs.js:504
 msgid "Follow Transparency"
 msgstr "Dùng chung độ trong suốt"
 
-#: prefs.js:492
+#: prefs.js:505
 msgid "Inherit opacity settings from the main pill"
 msgstr "Dùng chung cài đặt trong suốt với pill chính"
 
-#: prefs.js:503
+#: prefs.js:516
 msgid "Follow Border Radius"
 msgstr "Dùng chung bán kính góc"
 
-#: prefs.js:504
+#: prefs.js:517
 msgid "Inherit corner roundness from the main pill"
 msgstr "Dùng chung độ cong góc với pill chính"
 
-#: prefs.js:513
+#: prefs.js:526
 msgid "Show Vinyl"
 msgstr "Hiện đĩa nhạc"
 
-#: prefs.js:513
+#: prefs.js:526
 msgid "Display the album art in the pop-up"
 msgstr "Hiện ảnh bìa album trong menu pop-up"
 
-#: prefs.js:519
+#: prefs.js:532
 msgid "Square Vinyl Image"
 msgstr "Ảnh đĩa dạng vuông"
 
-#: prefs.js:519
+#: prefs.js:532
 msgid "Use a square album art (disables rotation)"
 msgstr "Sử dụng ảnh bìa album hình vuông (hiệu ứng xoay sẽ bị tắt)"
 
-#: prefs.js:525
+#: prefs.js:538
 msgid "Album Art Shadow"
 msgstr ""
 
-#: prefs.js:525
+#: prefs.js:538
 msgid "Show drop shadow behind the album art in the pop-up"
 msgstr ""
 
-#: prefs.js:531
+#: prefs.js:544
 msgid "Show Shuffle and Loop"
 msgstr "Hiện nút trộn bài và lặp lại"
 
-#: prefs.js:531
+#: prefs.js:544
 msgid "Display extra controls in the pop-up"
 msgstr "Hiện thêm nút điều khiển trong menu pop-up"
 
-#: prefs.js:537
+#: prefs.js:550
 msgid "Use Custom Width"
 msgstr "Đặt chiều rộng tùy chỉnh"
 
-#: prefs.js:537
+#: prefs.js:550
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "Không tự động thay đổi kích cỡ pop-up theo nội dung"
 
-#: prefs.js:544
+#: prefs.js:557
 msgid "Custom Width Value"
 msgstr "Giá trị chiều rộng tùy chỉnh"
 
-#: prefs.js:560
+#: prefs.js:573
 msgid "Show Player Selector"
 msgstr "Hiện nút chọn trình phát"
 
-#: prefs.js:561
+#: prefs.js:574
 msgid "Display active player icons in the pop-up"
 msgstr "Hiện biểu tượng trình phát đang hoạt động trong pop-up"
 
-#: prefs.js:569
+#: prefs.js:582
 msgid "Hide Auto (Smart Selection)"
 msgstr "Tự động ẩn (chọn thông minh)"
 
-#: prefs.js:570
+#: prefs.js:583
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr "Bỏ mục chọn trình phát tự động trong menu chọn trình phát"
 
-#: prefs.js:581
+#: prefs.js:594
 msgid "Player Selector Position"
 msgstr "Vị trí nút chọn trình phát"
 
-#: prefs.js:582
+#: prefs.js:595
 msgid "Where to place the player icons inside the pop-up"
 msgstr "Vị trí đặt biểu tượng trình phát trong pop-up"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Top"
 msgstr "Trên"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Bottom"
 msgstr "Dưới"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Left"
 msgstr "Trái"
 
-#: prefs.js:583
+#: prefs.js:596
 msgid "Right"
 msgstr "Phải"
 
-#: prefs.js:594
+#: prefs.js:607
 msgid "Show Album Title"
 msgstr "Hiện tựa đề album"
 
-#: prefs.js:595
+#: prefs.js:608
 msgid "Display album name next to the artist (Artist • Album)"
 msgstr "Hiện tựa đề album bên cạnh tên nghệ sĩ (Nghệ sĩ • Album)"
 
-#: prefs.js:603
+#: prefs.js:616
 msgid "Show HH:MM:SS"
 msgstr "Hiện thời lượng dạng HH:MM:SS"
 
-#: prefs.js:604
+#: prefs.js:617
 msgid "Display hours in the time labels when media is longer than 60 minutes"
 msgstr "Hiện giờ ở phần thời lượng khi phương tiện dài quá 60 phút"
 
-#: prefs.js:615
+#: prefs.js:628
 msgid "Show Visualizer in Pop-up"
 msgstr "Hiện sóng nhạc trong pop-up"
 
-#: prefs.js:622
+#: prefs.js:635
 msgid "Hide Pill Visualizer"
 msgstr "Ẩn sóng nhạc trên pill"
 
-#: prefs.js:623
+#: prefs.js:636
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr "Tạo hiệu ứng \"chuyển động\" bằng cách ẩn sóng nhạc trên pill chính"
 
-#: prefs.js:632
+#: prefs.js:645
 msgid "Popup Visualizer Bar Count"
 msgstr "Số thanh sóng nhạc trên popup"
 
-#: prefs.js:640
+#: prefs.js:653
 msgid "Popup Visualizer Bar Width"
 msgstr "Chiều rộng thanh sóng nhạc trên popup"
 
-#: prefs.js:648
+#: prefs.js:661
 msgid "Popup Visualizer Height"
 msgstr "Chiều cao sóng nhạc trên popup"
 
-#: prefs.js:658
+#: prefs.js:671
 msgid "Custom Control Buttons"
 msgstr "Nút điều khiển tùy chỉnh"
 
-#: prefs.js:659
+#: prefs.js:672
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr "Thêm tối đa hai nút vào hàng nút điều khiển của trình phát mở rộng."
 
-#: prefs.js:663
+#: prefs.js:676
 msgid "Enable Custom Buttons"
 msgstr "Bật các nút điều khiển tùy chỉnh"
 
-#: prefs.js:664
+#: prefs.js:677
 msgid "Show additional action buttons next to Shuffle and Loop"
 msgstr "Hiện thêm các nút điều khiển cạnh nút Trộn bài và Lặp"
 
-#: prefs.js:676
+#: prefs.js:689
 msgid "Volume Control"
 msgstr "Điều khiển âm lượng"
 
-#: prefs.js:677
+#: prefs.js:690
 msgid "Seek ±10 Seconds"
 msgstr "Tua ±10 giây"
 
-#: prefs.js:678
+#: prefs.js:691
 msgid "Audio Output Switcher"
 msgstr "Chuyển đầu ra âm thanh"
 
-#: prefs.js:679 src/uiExpandedPlayer.js:1572
+#: prefs.js:692 src/uiExpandedPlayer.js:1574
 msgid "Sleep Timer"
 msgstr "Hẹn giờ ngủ"
 
-#: prefs.js:680 src/uiExpandedPlayer.js:1613
+#: prefs.js:693 src/uiExpandedPlayer.js:1615
 msgid "Playback Speed"
 msgstr "Tốc độ phát"
 
-#: prefs.js:681
+#: prefs.js:694
 msgid "Track History"
 msgstr "Lịch sử bài hát"
 
-#: prefs.js:712
+#: prefs.js:725
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
@@ -546,56 +556,56 @@ msgstr ""
 "Nếu cả hai nút được đặt là nút Tua, chúng sẽ hoạt động theo chiều tương ứng "
 "(Nút 1 = −10s, Nút 2 = +10s). Nếu không thì khi ấn Tua sẽ mở trang con."
 
-#: prefs.js:715
+#: prefs.js:728
 msgid "Custom Button 1"
 msgstr "Nút tùy chỉnh 1"
 
-#: prefs.js:715
+#: prefs.js:728
 msgid "Placed left of Shuffle."
 msgstr "Đặt bên trái nút Trộn bài."
 
-#: prefs.js:718
+#: prefs.js:731
 msgid "Custom Button 2"
 msgstr "Nút tùy chỉnh 2"
 
-#: prefs.js:718
+#: prefs.js:731
 msgid "Placed right of Loop."
 msgstr "Đặt bên phải nút Lặp lại."
 
-#: prefs.js:729
+#: prefs.js:742
 msgid "Style & Layout"
 msgstr "Giao diện & Bố cục"
 
-#: prefs.js:733
+#: prefs.js:746
 msgid "Visualizer and Shape"
 msgstr "Sóng nhạc và hình dạng"
 
-#: prefs.js:736
+#: prefs.js:749
 msgid "Off (Disabled)"
 msgstr "Tắt (vô hiệu hoá)"
 
-#: prefs.js:737
+#: prefs.js:750
 msgid "Wave (Smooth)"
 msgstr "Sóng (mượt mà)"
 
-#: prefs.js:738
+#: prefs.js:751
 #, fuzzy
 msgid "Beat (Jumpy)"
 msgstr "Beat (Jumpy)"
 
-#: prefs.js:739
+#: prefs.js:752
 msgid "Real-Time (Cava needed)"
 msgstr "Thời gian thực (cần có Cava)"
 
-#: prefs.js:742
+#: prefs.js:755
 msgid "Visualizer Animation"
 msgstr "Hoạt ảnh sóng nhạc"
 
-#: prefs.js:743
+#: prefs.js:756
 msgid "Select the style of the audio reaction bars"
 msgstr "Chọn kiểu thanh sóng âm"
 
-#: prefs.js:751
+#: prefs.js:764
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
@@ -603,323 +613,323 @@ msgstr ""
 "Lưu ý: Chế độ 'Thời gian thực' yêu cầu gói 'cava' phải được cài đặt trên hệ "
 "thống Linux của bạn."
 
-#: prefs.js:760
+#: prefs.js:773
 msgid "Visualizer Bar Count"
 msgstr "Số thanh sóng nhạc"
 
-#: prefs.js:761
+#: prefs.js:774
 msgid "Number of bars displayed in the animation"
 msgstr "Số thanh được hiển thị trong hoạt ảnh"
 
-#: prefs.js:768
+#: prefs.js:781
 msgid "Visualizer Bar Width"
 msgstr "Chiều rộng thanh sóng nhạc"
 
-#: prefs.js:769
+#: prefs.js:782
 msgid "Thickness of individual bars (pixels)"
 msgstr "Độ dày của từng thanh (tính theo pixel)"
 
-#: prefs.js:776
+#: prefs.js:789
 msgid "Visualizer Height"
 msgstr "Chiều cao sóng nhạc"
 
-#: prefs.js:777
+#: prefs.js:790
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
 "Chiều cao tối đa của biểu đồ sóng nhạc (tự động bị giới hạn bởi chiều cao "
 "của pill)"
 
-#: prefs.js:784
+#: prefs.js:797
 msgid "Visualizer Margin"
 msgstr "Khoảng cách lề sóng nhạc"
 
-#: prefs.js:785
+#: prefs.js:798
 msgid "Distance between the text and the wave animation"
 msgstr "Khoảng cách giữa phần văn bản và sóng nhạc"
 
-#: prefs.js:792
+#: prefs.js:805
 msgid "Outer Edge Margin"
 msgstr "Khoảng cách lề cạnh ngoài"
 
-#: prefs.js:793
+#: prefs.js:806
 msgid "Spacing before the album art and after the visualizer"
 msgstr "Khoảng không gian trước ảnh bìa album và sau sóng nhạc"
 
-#: prefs.js:800
+#: prefs.js:813
 msgid "Corner Radius"
 msgstr "Bán kính góc"
 
-#: prefs.js:801
+#: prefs.js:814
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
 msgstr "Độ cong của cạnh widget (0 = Vuông, 25 = Hình viên thuốc)"
 
-#: prefs.js:808
+#: prefs.js:821
 msgid "Show Pill Outline"
 msgstr "Hiện đường viền pill"
 
-#: prefs.js:809
+#: prefs.js:822
 msgid "Display a subtle border around the main pill"
 msgstr "Hiện đường viền mỏng bao quanh pill chính"
 
-#: prefs.js:822
+#: prefs.js:835
 msgid "Background and Transparency"
 msgstr "Màu nền và độ trong suốt"
 
-#: prefs.js:824
+#: prefs.js:837
 msgid "Enable Transparency"
 msgstr "Bật trong suốt"
 
-#: prefs.js:825
+#: prefs.js:838
 msgid "Switch between a solid theme background and a custom transparent look"
 msgstr "Thay đổi giữa giao diện nền màu đồng nhất và nền trong suốt tùy chỉnh"
 
-#: prefs.js:836
+#: prefs.js:849
 msgid "Background Opacity"
 msgstr "Độ trong suốt nền"
 
-#: prefs.js:837
+#: prefs.js:850
 msgid "Adjust transparency level"
 msgstr "Điều chỉnh độ trong suốt"
 
-#: prefs.js:844
+#: prefs.js:857
 msgid "Apply to Album Art"
 msgstr "Áp dụng cho ảnh bìa album"
 
-#: prefs.js:851
+#: prefs.js:864
 msgid "Apply to Text"
 msgstr "Áp dụng cho văn bản"
 
-#: prefs.js:858
+#: prefs.js:871
 msgid "Apply to Visualizer"
 msgstr "Áp dụng cho sóng nhạc"
 
-#: prefs.js:866
+#: prefs.js:879
 msgid "Main Pill Shadow"
 msgstr "Đổ bóng pill chính"
 
-#: prefs.js:874
+#: prefs.js:887
 msgid "Shadow Intensity"
 msgstr "Độ đậm nhạt của bóng"
 
-#: prefs.js:881
+#: prefs.js:894
 msgid "Shadow Blur"
 msgstr "Độ nhòe của bóng"
 
-#: prefs.js:888
+#: prefs.js:901
 msgid "Positioning"
 msgstr "Vị trí"
 
-#: prefs.js:890
+#: prefs.js:903
 msgid "Dock"
 msgstr "Dock"
 
-#: prefs.js:891
+#: prefs.js:904
 msgid "Panel: Left Box"
 msgstr "Panel: Hộp bên trái"
 
-#: prefs.js:892
+#: prefs.js:905
 msgid "Panel: Center Box"
 msgstr "Panel: Hộp ở giữa"
 
-#: prefs.js:893
+#: prefs.js:906
 msgid "Panel: Right Box"
 msgstr "Panel: Hộp bên phải"
 
-#: prefs.js:896
+#: prefs.js:909
 msgid "Container Target"
 msgstr "Hộp chứa đích"
 
-#: prefs.js:897
+#: prefs.js:910
 msgid "Select which UI element should host the music pill"
 msgstr "Chọn thành phần giao diện nào sẽ chứa pill"
 
-#: prefs.js:908
+#: prefs.js:921
 msgid "Dynamic Width"
 msgstr "Chiều rộng động"
 
-#: prefs.js:908
+#: prefs.js:921
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
 "Tự động điều chỉnh chiều rộng pill (thanh trượt đóng vai trò chiều rộng tối "
 "đa)"
 
-#: prefs.js:923
+#: prefs.js:936
 msgid "Manual Index"
 msgstr "Đặt chỉ số thủ công"
 
-#: prefs.js:924
+#: prefs.js:937
 msgid "First (Start)"
 msgstr "Đầu"
 
-#: prefs.js:925
+#: prefs.js:938
 msgid "Center"
 msgstr "Giữa"
 
-#: prefs.js:926
+#: prefs.js:939
 msgid "Last (End)"
 msgstr "Cuối"
 
-#: prefs.js:929
+#: prefs.js:942
 msgid "Alignment Preset"
 msgstr "Chế độ căn chỉnh"
 
-#: prefs.js:930
+#: prefs.js:943
 msgid "How the widget aligns relative to other items"
 msgstr "Căn chỉnh vị trí widget so với các đối tượng khác"
 
-#: prefs.js:938
+#: prefs.js:951
 msgid "Manual Index Position"
 msgstr "Chỉ số vị trí thủ công"
 
-#: prefs.js:939
+#: prefs.js:952
 msgid "Order in the list (0 is first). Only for Manual mode."
 msgstr "Thứ tự trong danh sách (0 là đầu tiên). Chỉ dành cho chế độ Thủ công."
 
-#: prefs.js:946
+#: prefs.js:959
 msgid "Vertical Offset (Y)"
 msgstr "Độ lệch theo trục dọc (Y)"
 
-#: prefs.js:947
+#: prefs.js:960
 msgid "Shift Up (-) or Down (+)"
 msgstr "Chỉnh lệch lên phía trên (-) hoặc xuống dưới (+)"
 
-#: prefs.js:954
+#: prefs.js:967
 msgid "Horizontal Offset (X)"
 msgstr "Độ lệch theo chiều ngang (X)"
 
-#: prefs.js:955
+#: prefs.js:968
 msgid "Shift Left (-) or Right (+)"
 msgstr "Chỉnh lệch sang bên trái (-) hoặc bên phải (+)"
 
-#: prefs.js:961
+#: prefs.js:974
 msgid "Dimensions (Dock Mode)"
 msgstr "Kích thước (chế độ dock)"
 
-#: prefs.js:963 prefs.js:985
+#: prefs.js:976 prefs.js:998
 msgid "Album Art Size"
 msgstr "Kích thước ảnh bìa album"
 
-#: prefs.js:969 prefs.js:991
+#: prefs.js:982 prefs.js:1004
 msgid "Widget Width"
 msgstr "Chiều rộng widget"
 
-#: prefs.js:976 prefs.js:998
+#: prefs.js:989 prefs.js:1011
 msgid "Widget Height"
 msgstr "Chiều cao widget"
 
-#: prefs.js:983
+#: prefs.js:996
 msgid "Dimensions (Panel Mode)"
 msgstr "Kích thước (chế độ panel)"
 
-#: prefs.js:1004
+#: prefs.js:1017
 msgid "Custom Colors"
 msgstr "Màu tùy chỉnh"
 
-#: prefs.js:1007
+#: prefs.js:1020
 msgid "Sync GNOME Accent Color"
 msgstr "Đồng bộ màu chủ đề của GNOME"
 
-#: prefs.js:1008
+#: prefs.js:1021
 msgid "Dynamically change the GNOME Shell accent color to match the album art"
 msgstr ""
 "Tự động thay đổi màu chủ đề của GNOME Shell theo màu chủ đạo của ảnh bìa "
 "album"
 
-#: prefs.js:1018
+#: prefs.js:1031
 msgid "Use Custom Colors"
 msgstr "Dùng màu tùy chỉnh"
 
-#: prefs.js:1018
+#: prefs.js:1031
 msgid "Override dynamic colors"
 msgstr "Ghi đè màu sinh tự động"
 
-#: prefs.js:1047
+#: prefs.js:1060
 msgid "Background Color"
 msgstr "Màu nền"
 
-#: prefs.js:1048
+#: prefs.js:1061
 msgid "Text Color"
 msgstr "Màu chữ"
 
-#: prefs.js:1059
+#: prefs.js:1072
 msgid "System & Reset"
 msgstr "Hệ thống & Đặt lại"
 
-#: prefs.js:1063
+#: prefs.js:1076
 msgid "System"
 msgstr "Hệ thống"
 
-#: prefs.js:1066
+#: prefs.js:1079
 msgid "Hide Default GNOME Player"
 msgstr "Ẩn trình phát mặc định của GNOME"
 
-#: prefs.js:1067
+#: prefs.js:1080
 msgid "Remove the duplicate built-in media controls"
 msgstr "Loại bỏ thanh điều khiển phương tiện có sẵn bị trùng lặp"
 
-#: prefs.js:1077
+#: prefs.js:1090
 msgid "Game Mode"
 msgstr "Chế độ game"
 
-#: prefs.js:1077
+#: prefs.js:1090
 msgid "Disable animations when a fullscreen app is active"
 msgstr "Tắt các hiệu ứng hoạt ảnh khi đang có ứng dụng toàn màn hình hoạt động"
 
-#: prefs.js:1084
+#: prefs.js:1097
 msgid "Slow Player Workaround"
 msgstr ""
 
-#: prefs.js:1085
+#: prefs.js:1098
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
 
-#: prefs.js:1093
+#: prefs.js:1106
 msgid "Off (Allow All)"
 msgstr "Tắt (cho phép tất cả)"
 
-#: prefs.js:1094
+#: prefs.js:1107
 msgid "Blacklist (Exclude listed)"
 msgstr "Danh sách đen (không cho phép các ứng dụng trong danh sách)"
 
-#: prefs.js:1095
+#: prefs.js:1108
 msgid "Whitelist (Only allow listed)"
 msgstr "Danh sách trắng (chỉ cho phép các ứng dụng trong danh sách)"
 
-#: prefs.js:1098
+#: prefs.js:1111
 msgid "Player Filter Mode"
 msgstr "Chế độ lọc trình phát"
 
-#: prefs.js:1099
+#: prefs.js:1112
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr ""
 "Chọn cách lọc các trình phát phương tiện không cần áp dụng (ví dụ như trình "
 "duyệt)"
 
-#: prefs.js:1110
+#: prefs.js:1123
 msgid "Filtered Players (comma separated)"
 msgstr "Các trình phát được lọc (cách nhau bằng dấu phẩy)"
 
-#: prefs.js:1124
+#: prefs.js:1137
 msgid "Detected Players"
 msgstr "Các trình phát được phát hiện"
 
-#: prefs.js:1125
+#: prefs.js:1138
 msgid "Click an active player to add it to the filter list"
 msgstr "Chọn một trình phát đang hoạt động để thêm vào danh sách lọc"
 
-#: prefs.js:1160
+#: prefs.js:1173
 msgid "No players found"
 msgstr "Không tìm thấy trình phát nào"
 
-#: prefs.js:1194
+#: prefs.js:1207
 msgid "💡 How to find the correct App ID?"
 msgstr "💡 Làm thế nào để tìm ID ứng dụng đúng?"
 
-#: prefs.js:1195
+#: prefs.js:1208
 msgid "Click here for a quick guide and examples"
 msgstr "Nhấn vào đây để xem hướng dẫn nhanh và ví dụ"
 
-#: prefs.js:1199
+#: prefs.js:1212
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -958,170 +968,170 @@ msgstr ""
 "bạn! <i>(Bỏ phần .desktop)</i>\n"
 "5. Nhấn Esc để đóng trình gỡ lỗi."
 
-#: prefs.js:1227
+#: prefs.js:1240
 msgid "Saved App Mappings"
 msgstr ""
 
-#: prefs.js:1228
+#: prefs.js:1241
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 
-#: prefs.js:1249
+#: prefs.js:1262
 msgid "No manual mappings saved."
 msgstr ""
 
-#: prefs.js:1254
+#: prefs.js:1267
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr "Gõ ID ứng dụng đúng, sau đó nhấn Enter hoặc nhấp vào biểu tượng Lưu!"
 
-#: prefs.js:1273
+#: prefs.js:1286
 msgid "Save App ID"
 msgstr "Lưu ID ứng dụng"
 
-#: prefs.js:1305
+#: prefs.js:1318
 msgid "Delete Mapping"
 msgstr ""
 
-#: prefs.js:1334
+#: prefs.js:1347
 msgid "Running Players Detection"
 msgstr "Phát hiện trình phát đang chạy"
 
-#: prefs.js:1335
+#: prefs.js:1348
 msgid "Click on a detected player to automatically fill the mapping."
 msgstr ""
 
-#: prefs.js:1358
+#: prefs.js:1371
 msgid "No active players detected. Open a music app first!"
 msgstr ""
 "Không tìm thấy trình phát nào đang hoạt động. Hãy mở một ứng dụng nghe nhạc!"
 
-#: prefs.js:1360
+#: prefs.js:1373
 msgid "Select a player to help the extension identify it:"
 msgstr "Chọn một trình phát để giúp phần mở rộng nhận dạng nó:"
 
-#: prefs.js:1380
+#: prefs.js:1393
 msgid "Use This"
 msgstr "Dùng cái này"
 
-#: prefs.js:1410
+#: prefs.js:1423
 msgid "Refresh List"
 msgstr "Làm mới danh sách"
 
-#: prefs.js:1411
+#: prefs.js:1424
 msgid "Click to scan for active players again"
 msgstr "Nhấp để tìm lại các trình phát đang hoạt động"
 
-#: prefs.js:1426
+#: prefs.js:1439
 msgid "Backup & Restore"
 msgstr "Sao lưu & khôi phục"
 
-#: prefs.js:1429
+#: prefs.js:1442
 msgid "Export Settings"
 msgstr "Xuất các cài đặt"
 
-#: prefs.js:1430
+#: prefs.js:1443
 msgid "Export"
 msgstr "Xuất"
 
-#: prefs.js:1434
+#: prefs.js:1447
 msgid "Save Settings"
 msgstr "Lưu các cài đặt"
 
-#: prefs.js:1449
+#: prefs.js:1462
 msgid "Import Settings"
 msgstr "Nhập cài đặt"
 
-#: prefs.js:1450
+#: prefs.js:1463
 msgid "Import"
 msgstr "Nhập"
 
-#: prefs.js:1452
+#: prefs.js:1465
 msgid "Open Settings Backup"
 msgstr "Mở sao lưu cài đặt"
 
-#: prefs.js:1479
+#: prefs.js:1492
 msgid "Art Cache"
 msgstr "Cache ảnh bìa"
 
-#: prefs.js:1501
+#: prefs.js:1514
 msgid "covers cached"
 msgstr "ảnh bìa đã được cache"
 
-#: prefs.js:1504
+#: prefs.js:1517
 msgid "Album Art Cache"
 msgstr "Cache ảnh bìa album"
 
-#: prefs.js:1509
+#: prefs.js:1522
 msgid "Clear"
 msgstr "Xóa"
 
-#: prefs.js:1531
+#: prefs.js:1544
 msgid "Danger Zone"
 msgstr "Khu vực nguy hiểm"
 
-#: prefs.js:1532
+#: prefs.js:1545
 msgid "Reset All"
 msgstr "Đặt lại tất cả"
 
-#: prefs.js:1534
+#: prefs.js:1547
 msgid "Factory Reset"
 msgstr "Khôi phục cài đặt gốc"
 
-#: prefs.js:1545
+#: prefs.js:1558
 msgid "About"
 msgstr "Về ứng dụng"
 
-#: prefs.js:1550
+#: prefs.js:1563
 msgid "What's New"
 msgstr "Có gì mới"
 
-#: prefs.js:1700
+#: prefs.js:1730
 msgid "Support the Project"
 msgstr "Hỗ trợ cho dự án"
 
-#: prefs.js:1703
+#: prefs.js:1733
 msgid "Support on Ko-fi"
 msgstr "Ủng hộ trên Ko-fi"
 
-#: prefs.js:1704
+#: prefs.js:1734
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Ủng hộ tôi một tách cà phê trên Ko-fi"
 
-#: prefs.js:1706 prefs.js:1715
+#: prefs.js:1736 prefs.js:1745
 msgid "Open"
 msgstr "Mở"
 
-#: prefs.js:1712
+#: prefs.js:1742
 #, fuzzy
 msgid "Buy Me a Coffee"
 msgstr "Buy Me a Coffee"
 
-#: prefs.js:1713
+#: prefs.js:1743
 msgid "Support via BuyMeACoffee"
 msgstr "Ủng hộ qua BuyMeACoffee"
 
-#: prefs.js:1721
+#: prefs.js:1751
 msgid "Source Code"
 msgstr "Mã nguồn"
 
-#: prefs.js:1722
+#: prefs.js:1752
 msgid "Report bugs or view source on GitHub"
 msgstr "Báo cáo lỗi hoặc xem nguồn trên GitHub"
 
-#: src/controller.js:1398
+#: src/controller.js:1415
 msgid "Unknown Player"
 msgstr "Trình phát không xác định"
 
-#: src/controller.js:1399
+#: src/controller.js:1416
 msgid "No active media"
 msgstr "Không có media đang chạy"
 
-#: src/controller.js:1959
+#: src/controller.js:1976
 msgid "Auto (Smart)"
 msgstr "Tự động (thông minh)"
 
-#: src/controller.js:1979 src/controller.js:1997 src/controller.js:2020
-#: src/controller.js:2046
+#: src/controller.js:1996 src/controller.js:2014 src/controller.js:2037
+#: src/controller.js:2063
 msgid "Not supported"
 msgstr "Không hỗ trợ"
 
@@ -1139,99 +1149,99 @@ msgstr "Tựa đề chưa xác định"
 msgid "Unknown Artist"
 msgstr "Nghệ sĩ chưa xác định"
 
-#: src/uiExpandedPlayer.js:1375
+#: src/uiExpandedPlayer.js:1377
 msgid "Volume"
 msgstr "Âm lượng"
 
-#: src/uiExpandedPlayer.js:1383
+#: src/uiExpandedPlayer.js:1385
 msgid "System Volume"
 msgstr "Âm lượng hệ thống"
 
-#: src/uiExpandedPlayer.js:1395
+#: src/uiExpandedPlayer.js:1397
 msgid "Player"
 msgstr "Trình phát"
 
-#: src/uiExpandedPlayer.js:1401
+#: src/uiExpandedPlayer.js:1403
 msgid "No audio stream available"
 msgstr "Không có stream âm thanh nào"
 
-#: src/uiExpandedPlayer.js:1493
+#: src/uiExpandedPlayer.js:1495
 msgid "Toggle Mute All"
 msgstr "Bật/tắt tiếng tất cả"
 
-#: src/uiExpandedPlayer.js:1513
+#: src/uiExpandedPlayer.js:1515
 msgid "Seek"
 msgstr "Tua"
 
-#: src/uiExpandedPlayer.js:1517
+#: src/uiExpandedPlayer.js:1519
 msgid "This player does not support seeking"
 msgstr "Trình phát này không hỗ trợ tua"
 
-#: src/uiExpandedPlayer.js:1543
+#: src/uiExpandedPlayer.js:1545
 msgid "Audio Output"
 msgstr "Đầu ra âm thanh"
 
-#: src/uiExpandedPlayer.js:1545
+#: src/uiExpandedPlayer.js:1547
 msgid "Audio control unavailable"
 msgstr "Điều khiển âm thanh không có sẵn"
 
-#: src/uiExpandedPlayer.js:1548
+#: src/uiExpandedPlayer.js:1550
 msgid "No output devices found"
 msgstr "Không tìm thấy thiết bị đầu ra nào"
 
-#: src/uiExpandedPlayer.js:1551
+#: src/uiExpandedPlayer.js:1553
 msgid "Unknown Device"
 msgstr "Thiết bị chưa xác định"
 
-#: src/uiExpandedPlayer.js:1572
+#: src/uiExpandedPlayer.js:1574
 msgid "min left"
 msgstr "phút còn lại"
 
-#: src/uiExpandedPlayer.js:1575
+#: src/uiExpandedPlayer.js:1577
 msgid "Cancel Timer"
 msgstr "Hủy hẹn giờ"
 
-#: src/uiExpandedPlayer.js:1608
+#: src/uiExpandedPlayer.js:1610
 msgid "Runs inside the shell — works on lock screen"
 msgstr "Chạy bên trong shell — hoạt động được trên màn hình khóa"
 
-#: src/uiExpandedPlayer.js:1620
+#: src/uiExpandedPlayer.js:1622
 msgid "This player does not support playback speed"
 msgstr "Trình phát này không hỗ trợ chỉnh tốc độ phát"
 
-#: src/uiExpandedPlayer.js:1660
+#: src/uiExpandedPlayer.js:1662
 msgid "Player must support MPRIS Rate"
 msgstr "Trình phát phải hỗ trợ MPRIS Rate"
 
-#: src/uiExpandedPlayer.js:1660
+#: src/uiExpandedPlayer.js:1662
 msgid "Not supported by this player"
 msgstr "Không được hỗ trợ bởi trình phát này"
 
-#: src/uiExpandedPlayer.js:1666
+#: src/uiExpandedPlayer.js:1668
 msgid "Recently Played"
 msgstr "Đã phát gần đây"
 
-#: src/uiExpandedPlayer.js:1668
+#: src/uiExpandedPlayer.js:1670
 msgid "No history yet"
 msgstr "Chưa có lịch sử"
 
-#: src/uiExpandedPlayer.js:1701
+#: src/uiExpandedPlayer.js:1703
 msgid "Unknown"
 msgstr "Chưa xác định"
 
-#: src/uiExpandedPlayer.js:1756
+#: src/uiExpandedPlayer.js:1758
 msgid "Clear History"
 msgstr "Xóa lịch sử"
 
-#: src/uiMusicPill.js:734 src/uiMusicPill.js:1042
+#: src/uiMusicPill.js:734 src/uiMusicPill.js:1063
 msgid "No Media"
 msgstr "Không có phương tiện"
 
-#: src/uiMusicPill.js:1043
+#: src/uiMusicPill.js:1064
 msgid "Waiting for playback..."
 msgstr "Đang chờ phát lại..."
 
-#: src/uiMusicPill.js:1281
+#: src/uiMusicPill.js:1302
 msgid "Loading..."
 msgstr "Đang tải..."
 

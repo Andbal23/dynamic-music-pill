@@ -26,7 +26,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'fallback-art-path', 'popup-show-visualizer', 'popup-hide-pill-visualizer', 'compatibility-delay',
             'popup-follow-custom-bg', 'popup-follow-custom-text', 'action-hover', 'hover-delay', 'selected-player-bus',
             'popup-show-player-selector', 'hide-auto-smart-selection', 'popup-player-selector-position', 'show-pill-border', 'invert-scroll-direction', 'always-show-pill', 'popup-hide-on-leave',
-            'visualizer-bars', 'enable-lyrics', 'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
+            'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
             'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
             'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history',
             'show-hours-format', 'popup-show-album-title'
@@ -250,6 +250,19 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('enable-lyrics', lyricsToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         lyricsRow.add_suffix(lyricsToggle);
         genGroup.add(lyricsRow);
+
+        const wordLevelPillRow = new Adw.ActionRow({
+            title: _('Word-level Karaoke in Pill'),
+            subtitle: _('Highlight individual words on the main pill when available (pop-up always uses word-level).')
+        });
+        const wordLevelPillToggle = new Gtk.Switch({
+            active: settings.get_boolean('pill-enable-word-level'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('pill-enable-word-level', wordLevelPillToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('enable-lyrics', wordLevelPillRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
+        wordLevelPillRow.add_suffix(wordLevelPillToggle);
+        genGroup.add(wordLevelPillRow);
 
         const langPrefRow = new Adw.ComboRow({
             title: _('Lyrics language preference'),
@@ -1552,9 +1565,26 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const changelog = [
             {
+                version: "1.3.0",
+                subtitle: "Multi-Provider Word-Level Karaoke, Album Art Shadow & Bug Fixes",
+                expanded: true,
+                notes: "✨ New Features:\n" +
+                    "• Multi-Provider Word-Level Karaoke Lyrics: Integrated BetterLyrics and BiniLyrics API providers with TTML XML parsing.\n" +
+                    "• Spotify-Style Pop-up Karaoke: Real-time word-by-word karaoke highlighting with crisp 100% white bold sung words and active line scaling.\n" +
+                    "• Pill Word-Level Karaoke: Real-time stationary word-level karaoke highlighting in the main Pill, with a dedicated 'Word-level Karaoke in Pill' toggle in Preferences.\n" +
+                    "• Album Art Shadow Customization: Added setting to show/hide the drop shadow behind the album art in the pop-up menu.\n" +
+                    "• LRCLib Cloudflare Fix: Custom User-Agent on lyrics requests to bypass HTTP 403 blocks.\n\n" +
+                    "🐛 Bug Fixes:\n" +
+                    "• Fixed pop-up play/pause button icon and player controls state when album art is disabled.\n" +
+                    "• Fixed empty shadow box and pop-up layout shift when turning off album art.\n" +
+                    "• Fixed seeker progress bar jumping to 0:00 when seeking with album art disabled.\n\n" +
+                    "🌍 Translations:\n" +
+                    "• Recompiled and updated all translation locales (.po / .mo) via Weblate."
+            },
+            {
                 version: "1.2.1",
                 subtitle: "Translation Updates",
-                expanded: true,
+                expanded: false,
                 notes: "🌍 Translations:\n" +
                     "• Updated translations for all supported languages via Weblate."              
             },
