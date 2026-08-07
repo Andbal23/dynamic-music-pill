@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 16:09+0200\n"
+"POT-Creation-Date: 2026-08-07 16:22+0200\n"
 "PO-Revision-Date: 2026-06-29 09:02+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/dynamic-music-pill/"
@@ -555,11 +555,11 @@ msgstr "சீக் ±10 வினாடிகள்"
 msgid "Audio Output Switcher"
 msgstr "ஆடியோ அவுட்புட் ச்விட்சர்"
 
-#: prefs.js:716 src/uiExpandedPlayer.js:1574
+#: prefs.js:716 src/uiExpandedPlayer.js:1552
 msgid "Sleep Timer"
 msgstr "ச்லீப் நேரங்குறிகருவி"
 
-#: prefs.js:717 src/uiExpandedPlayer.js:1615
+#: prefs.js:717 src/uiExpandedPlayer.js:1593
 msgid "Playback Speed"
 msgstr "பின்னணி விரைவு"
 
@@ -1102,35 +1102,35 @@ msgstr "பற்றி"
 msgid "What's New"
 msgstr "புதியது என்ன"
 
-#: prefs.js:1756
+#: prefs.js:1757
 msgid "Support the Project"
 msgstr "திட்டத்தை ஆதரிக்கவும்"
 
-#: prefs.js:1759
+#: prefs.js:1760
 msgid "Support on Ko-fi"
 msgstr "Ko-fi இல் உதவி"
 
-#: prefs.js:1760
+#: prefs.js:1761
 msgid "Buy me a coffee on Ko-fi"
 msgstr "கோ-ஃபையில் எனக்கு ஒரு காபி வாங்கு"
 
-#: prefs.js:1762 prefs.js:1771
+#: prefs.js:1763 prefs.js:1772
 msgid "Open"
 msgstr "திற"
 
-#: prefs.js:1768
+#: prefs.js:1769
 msgid "Buy Me a Coffee"
 msgstr "எனக்கு ஒரு காபி வாங்கு"
 
-#: prefs.js:1769
+#: prefs.js:1770
 msgid "Support via BuyMeACoffee"
 msgstr "BuyMeACoffee வழியாக உதவி"
 
-#: prefs.js:1777
+#: prefs.js:1778
 msgid "Source Code"
 msgstr "மூலக் குறியீடு"
 
-#: prefs.js:1778
+#: prefs.js:1779
 msgid "Report bugs or view source on GitHub"
 msgstr "GitHub இல் பிழைகளைப் புகாரளிக்கவும் அல்லது மூலத்தைப் பார்க்கவும்"
 
@@ -1165,87 +1165,87 @@ msgstr "தெரியாத தலைப்பு"
 msgid "Unknown Artist"
 msgstr "தெரியாத கலைஞர்"
 
-#: src/uiExpandedPlayer.js:1377
+#: src/uiExpandedPlayer.js:1355
 msgid "Volume"
 msgstr "தொகுதி"
 
-#: src/uiExpandedPlayer.js:1385
+#: src/uiExpandedPlayer.js:1363
 msgid "System Volume"
 msgstr "கணினி தொகுதி"
 
-#: src/uiExpandedPlayer.js:1397
+#: src/uiExpandedPlayer.js:1375
 msgid "Player"
 msgstr "வீரர்"
 
-#: src/uiExpandedPlayer.js:1403
+#: src/uiExpandedPlayer.js:1381
 msgid "No audio stream available"
 msgstr "ஆடியோ ச்ட்ரீம் இல்லை"
 
-#: src/uiExpandedPlayer.js:1495
+#: src/uiExpandedPlayer.js:1473
 msgid "Toggle Mute All"
 msgstr "அனைத்தையும் முடக்கு"
 
-#: src/uiExpandedPlayer.js:1515
+#: src/uiExpandedPlayer.js:1493
 msgid "Seek"
 msgstr "தேடுங்கள்"
 
-#: src/uiExpandedPlayer.js:1519
+#: src/uiExpandedPlayer.js:1497
 msgid "This player does not support seeking"
 msgstr "இந்த வீரர் தேடுவதை ஆதரிக்கவில்லை"
 
-#: src/uiExpandedPlayer.js:1545
+#: src/uiExpandedPlayer.js:1523
 msgid "Audio Output"
 msgstr "ஆடியோ வெளியீடு"
 
-#: src/uiExpandedPlayer.js:1547
+#: src/uiExpandedPlayer.js:1525
 msgid "Audio control unavailable"
 msgstr "ஆடியோ கட்டுப்பாடு இல்லை"
 
-#: src/uiExpandedPlayer.js:1550
+#: src/uiExpandedPlayer.js:1528
 msgid "No output devices found"
 msgstr "வெளியீட்டு சாதனங்கள் எதுவும் இல்லை"
 
-#: src/uiExpandedPlayer.js:1553
+#: src/uiExpandedPlayer.js:1531
 msgid "Unknown Device"
 msgstr "தெரியாத சாதனம்"
 
-#: src/uiExpandedPlayer.js:1574
+#: src/uiExpandedPlayer.js:1552
 msgid "min left"
 msgstr "இன்னும் மணித்துளி"
 
-#: src/uiExpandedPlayer.js:1577
+#: src/uiExpandedPlayer.js:1555
 msgid "Cancel Timer"
 msgstr "டைமரை ரத்து வெற்றி"
 
-#: src/uiExpandedPlayer.js:1610
+#: src/uiExpandedPlayer.js:1588
 msgid "Runs inside the shell — works on lock screen"
 msgstr "செல்லின் உள்ளே இயங்குகிறது - பூட்டுத் திரையில் வேலை செய்கிறது"
 
-#: src/uiExpandedPlayer.js:1622
+#: src/uiExpandedPlayer.js:1600
 msgid "This player does not support playback speed"
 msgstr "பிளேபேக் வேகத்தை இந்த பிளேயர் ஆதரிக்கவில்லை"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1640
 msgid "Player must support MPRIS Rate"
 msgstr "வீரர் MPRIS விகிதத்தை ஆதரிக்க வேண்டும்"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1640
 msgid "Not supported by this player"
 msgstr "இந்த பிளேயர் ஆதரிக்கவில்லை"
 
-#: src/uiExpandedPlayer.js:1668
+#: src/uiExpandedPlayer.js:1646
 msgid "Recently Played"
 msgstr "அண்மைக் காலத்தில் விளையாடியது"
 
-#: src/uiExpandedPlayer.js:1670
+#: src/uiExpandedPlayer.js:1648
 msgid "No history yet"
 msgstr "இதுவரை வரலாறு இல்லை"
 
-#: src/uiExpandedPlayer.js:1703
+#: src/uiExpandedPlayer.js:1681
 msgid "Unknown"
 msgstr "தெரியவில்லை"
 
-#: src/uiExpandedPlayer.js:1758
+#: src/uiExpandedPlayer.js:1736
 msgid "Clear History"
 msgstr "தெளிவான வரலாறு"
 

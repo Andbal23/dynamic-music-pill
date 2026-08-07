@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 16:09+0200\n"
+"POT-Creation-Date: 2026-08-07 16:22+0200\n"
 "PO-Revision-Date: 2026-06-19 15:01+0000\n"
 "Last-Translator: Daniel Freak <whoisfreak@icloud.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/dynamic-music-"
@@ -556,11 +556,11 @@ msgstr "Перемотка на ±10 секунд"
 msgid "Audio Output Switcher"
 msgstr "Устройство воспроизведения"
 
-#: prefs.js:716 src/uiExpandedPlayer.js:1574
+#: prefs.js:716 src/uiExpandedPlayer.js:1552
 msgid "Sleep Timer"
 msgstr "Таймер сна"
 
-#: prefs.js:717 src/uiExpandedPlayer.js:1615
+#: prefs.js:717 src/uiExpandedPlayer.js:1593
 msgid "Playback Speed"
 msgstr "Скорость воспроизведения"
 
@@ -1100,35 +1100,35 @@ msgstr "О расширении"
 msgid "What's New"
 msgstr "Что нового"
 
-#: prefs.js:1756
+#: prefs.js:1757
 msgid "Support the Project"
 msgstr "Поддержать проект"
 
-#: prefs.js:1759
+#: prefs.js:1760
 msgid "Support on Ko-fi"
 msgstr "Поддержать на Ko-fi"
 
-#: prefs.js:1760
+#: prefs.js:1761
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Купить мне кофе на Ko-fi"
 
-#: prefs.js:1762 prefs.js:1771
+#: prefs.js:1763 prefs.js:1772
 msgid "Open"
 msgstr "Открыть"
 
-#: prefs.js:1768
+#: prefs.js:1769
 msgid "Buy Me a Coffee"
 msgstr "Buy Me a Coffee"
 
-#: prefs.js:1769
+#: prefs.js:1770
 msgid "Support via BuyMeACoffee"
 msgstr "Поддержка через BuyMeACoffee"
 
-#: prefs.js:1777
+#: prefs.js:1778
 msgid "Source Code"
 msgstr "Исходный код"
 
-#: prefs.js:1778
+#: prefs.js:1779
 msgid "Report bugs or view source on GitHub"
 msgstr "Сообщить об ошибке или посмотреть код на GitHub"
 
@@ -1163,87 +1163,87 @@ msgstr "Неизвестное название"
 msgid "Unknown Artist"
 msgstr "Неизвестный исполнитель"
 
-#: src/uiExpandedPlayer.js:1377
+#: src/uiExpandedPlayer.js:1355
 msgid "Volume"
 msgstr "Громкость"
 
-#: src/uiExpandedPlayer.js:1385
+#: src/uiExpandedPlayer.js:1363
 msgid "System Volume"
 msgstr "Системная громкость"
 
-#: src/uiExpandedPlayer.js:1397
+#: src/uiExpandedPlayer.js:1375
 msgid "Player"
 msgstr "Плеер"
 
-#: src/uiExpandedPlayer.js:1403
+#: src/uiExpandedPlayer.js:1381
 msgid "No audio stream available"
 msgstr "Аудиопоток недоступен"
 
-#: src/uiExpandedPlayer.js:1495
+#: src/uiExpandedPlayer.js:1473
 msgid "Toggle Mute All"
 msgstr "Включить/выключить звук для всех"
 
-#: src/uiExpandedPlayer.js:1515
+#: src/uiExpandedPlayer.js:1493
 msgid "Seek"
 msgstr "Перемотка"
 
-#: src/uiExpandedPlayer.js:1519
+#: src/uiExpandedPlayer.js:1497
 msgid "This player does not support seeking"
 msgstr "Этот плеер не поддерживает перемотку"
 
-#: src/uiExpandedPlayer.js:1545
+#: src/uiExpandedPlayer.js:1523
 msgid "Audio Output"
 msgstr "Аудиовыход"
 
-#: src/uiExpandedPlayer.js:1547
+#: src/uiExpandedPlayer.js:1525
 msgid "Audio control unavailable"
 msgstr "Управление аудио недоступно"
 
-#: src/uiExpandedPlayer.js:1550
+#: src/uiExpandedPlayer.js:1528
 msgid "No output devices found"
 msgstr "Устройства вывода не найдены"
 
-#: src/uiExpandedPlayer.js:1553
+#: src/uiExpandedPlayer.js:1531
 msgid "Unknown Device"
 msgstr "Неизвестное устройство"
 
-#: src/uiExpandedPlayer.js:1574
+#: src/uiExpandedPlayer.js:1552
 msgid "min left"
 msgstr "мин осталось"
 
-#: src/uiExpandedPlayer.js:1577
+#: src/uiExpandedPlayer.js:1555
 msgid "Cancel Timer"
 msgstr "Отменить таймер"
 
-#: src/uiExpandedPlayer.js:1610
+#: src/uiExpandedPlayer.js:1588
 msgid "Runs inside the shell — works on lock screen"
 msgstr "Работает внутри оболочки — доступно на экране блокировки"
 
-#: src/uiExpandedPlayer.js:1622
+#: src/uiExpandedPlayer.js:1600
 msgid "This player does not support playback speed"
 msgstr "Этот плеер не поддерживает изменение скорости"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1640
 msgid "Player must support MPRIS Rate"
 msgstr "Плеер должен поддерживать MPRIS Rate"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1640
 msgid "Not supported by this player"
 msgstr "Не поддерживается этим плеером"
 
-#: src/uiExpandedPlayer.js:1668
+#: src/uiExpandedPlayer.js:1646
 msgid "Recently Played"
 msgstr "Недавно прослушанные"
 
-#: src/uiExpandedPlayer.js:1670
+#: src/uiExpandedPlayer.js:1648
 msgid "No history yet"
 msgstr "История пока пуста"
 
-#: src/uiExpandedPlayer.js:1703
+#: src/uiExpandedPlayer.js:1681
 msgid "Unknown"
 msgstr "Неизвестно"
 
-#: src/uiExpandedPlayer.js:1758
+#: src/uiExpandedPlayer.js:1736
 msgid "Clear History"
 msgstr "Очистить историю"
 

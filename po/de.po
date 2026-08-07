@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 16:09+0200\n"
+"POT-Creation-Date: 2026-08-07 16:22+0200\n"
 "PO-Revision-Date: 2026-06-07 08:07+0000\n"
 "Last-Translator: Christian Lauinger <christian.lauinger@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/dynamic-music-"
@@ -570,11 +570,11 @@ msgstr "Suche ±10 Sekunden"
 msgid "Audio Output Switcher"
 msgstr "Audioausgangsumschalter"
 
-#: prefs.js:716 src/uiExpandedPlayer.js:1574
+#: prefs.js:716 src/uiExpandedPlayer.js:1552
 msgid "Sleep Timer"
 msgstr "Ausschalt-Timer"
 
-#: prefs.js:717 src/uiExpandedPlayer.js:1615
+#: prefs.js:717 src/uiExpandedPlayer.js:1593
 msgid "Playback Speed"
 msgstr "Wiedergabegeschwindigkeit"
 
@@ -1126,35 +1126,35 @@ msgstr "Über"
 msgid "What's New"
 msgstr "Was gibt es Neues"
 
-#: prefs.js:1756
+#: prefs.js:1757
 msgid "Support the Project"
 msgstr "Projekt unterstützen"
 
-#: prefs.js:1759
+#: prefs.js:1760
 msgid "Support on Ko-fi"
 msgstr "Auf Ko-fi unterstützen"
 
-#: prefs.js:1760
+#: prefs.js:1761
 msgid "Buy me a coffee on Ko-fi"
 msgstr "Kauf mir einen Kaffee auf Ko-fi"
 
-#: prefs.js:1762 prefs.js:1771
+#: prefs.js:1763 prefs.js:1772
 msgid "Open"
 msgstr "Öffnen"
 
-#: prefs.js:1768
+#: prefs.js:1769
 msgid "Buy Me a Coffee"
 msgstr "Kauf mir einen Kaffee"
 
-#: prefs.js:1769
+#: prefs.js:1770
 msgid "Support via BuyMeACoffee"
 msgstr "Unterstützung über BuyMeACoffee"
 
-#: prefs.js:1777
+#: prefs.js:1778
 msgid "Source Code"
 msgstr "Quellcode"
 
-#: prefs.js:1778
+#: prefs.js:1779
 msgid "Report bugs or view source on GitHub"
 msgstr "Fehler melden oder Code auf GitHub ansehen"
 
@@ -1189,88 +1189,88 @@ msgstr "Unbekannter Titel"
 msgid "Unknown Artist"
 msgstr "Unbekannter Künstler"
 
-#: src/uiExpandedPlayer.js:1377
+#: src/uiExpandedPlayer.js:1355
 msgid "Volume"
 msgstr "Lautstärke"
 
-#: src/uiExpandedPlayer.js:1385
+#: src/uiExpandedPlayer.js:1363
 msgid "System Volume"
 msgstr "System-Lautstärke"
 
-#: src/uiExpandedPlayer.js:1397
+#: src/uiExpandedPlayer.js:1375
 msgid "Player"
 msgstr "Spieler"
 
-#: src/uiExpandedPlayer.js:1403
+#: src/uiExpandedPlayer.js:1381
 msgid "No audio stream available"
 msgstr "Es ist kein Audiostream verfügbar"
 
-#: src/uiExpandedPlayer.js:1495
+#: src/uiExpandedPlayer.js:1473
 msgid "Toggle Mute All"
 msgstr "Alle stummschalten"
 
-#: src/uiExpandedPlayer.js:1515
+#: src/uiExpandedPlayer.js:1493
 msgid "Seek"
 msgstr "Suchen"
 
-#: src/uiExpandedPlayer.js:1519
+#: src/uiExpandedPlayer.js:1497
 msgid "This player does not support seeking"
 msgstr "Dieser Spieler unterstützt keine Positionssprungfunktion"
 
-#: src/uiExpandedPlayer.js:1545
+#: src/uiExpandedPlayer.js:1523
 msgid "Audio Output"
 msgstr "Audioausgang"
 
-#: src/uiExpandedPlayer.js:1547
+#: src/uiExpandedPlayer.js:1525
 msgid "Audio control unavailable"
 msgstr "Audiosteuerung nicht verfügbar"
 
-#: src/uiExpandedPlayer.js:1550
+#: src/uiExpandedPlayer.js:1528
 msgid "No output devices found"
 msgstr "Es wurden keine Ausgabegeräte gefunden"
 
-#: src/uiExpandedPlayer.js:1553
+#: src/uiExpandedPlayer.js:1531
 msgid "Unknown Device"
 msgstr "Unbekanntes Gerät"
 
-#: src/uiExpandedPlayer.js:1574
+#: src/uiExpandedPlayer.js:1552
 msgid "min left"
 msgstr "noch Minuten"
 
-#: src/uiExpandedPlayer.js:1577
+#: src/uiExpandedPlayer.js:1555
 msgid "Cancel Timer"
 msgstr "Timer abbrechen"
 
-#: src/uiExpandedPlayer.js:1610
+#: src/uiExpandedPlayer.js:1588
 msgid "Runs inside the shell — works on lock screen"
 msgstr ""
 "Wird innerhalb der Shell ausgeführt – funktioniert auf dem Sperrbildschirm"
 
-#: src/uiExpandedPlayer.js:1622
+#: src/uiExpandedPlayer.js:1600
 msgid "This player does not support playback speed"
 msgstr "Dieser Player unterstützt keine Wiedergabegeschwindigkeit"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1640
 msgid "Player must support MPRIS Rate"
 msgstr "Der Player muss die MPRIS-Rate unterstützen"
 
-#: src/uiExpandedPlayer.js:1662
+#: src/uiExpandedPlayer.js:1640
 msgid "Not supported by this player"
 msgstr "Wird von diesem Player nicht unterstützt"
 
-#: src/uiExpandedPlayer.js:1668
+#: src/uiExpandedPlayer.js:1646
 msgid "Recently Played"
 msgstr "Zuletzt gespielt"
 
-#: src/uiExpandedPlayer.js:1670
+#: src/uiExpandedPlayer.js:1648
 msgid "No history yet"
 msgstr "Noch keine Einträge"
 
-#: src/uiExpandedPlayer.js:1703
+#: src/uiExpandedPlayer.js:1681
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: src/uiExpandedPlayer.js:1758
+#: src/uiExpandedPlayer.js:1736
 msgid "Clear History"
 msgstr "Verlauf leeren"
 
