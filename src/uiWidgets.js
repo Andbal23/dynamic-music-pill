@@ -313,12 +313,10 @@ export const ScrollLabel = GObject.registerClass(
         updateLyricMarkup(markup) {
             if (!markup) return;
             if (this._label1 && this._label1.clutter_text) {
-                try {
-                    this._label1.clutter_text.set_markup(markup);
-                    if (this._label2 && this._label2.clutter_text && this._isScrolling) {
-                        this._label2.clutter_text.set_markup(markup);
-                    }
-                } catch (_) {}
+                this._label1.clutter_text.set_markup(markup);
+                if (this._label2 && this._label2.clutter_text && this._isScrolling) {
+                    this._label2.clutter_text.set_markup(markup);
+                }
             }
         }
 

@@ -1592,34 +1592,34 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 version: "1.3.0",
                 subtitle: "Multi-Provider Word-Level Karaoke, Volume Scroll Fix & Shadow Customization",
                 expanded: true,
-                notes: "✨ New Features:\n" +
+                notes: "New Features:\n" +
                     "• Multi-Provider Word-Level Karaoke Lyrics: Integrated BetterLyrics and BiniLyrics API providers with TTML XML parsing.\n" +
                     "• Spotify-Style Pop-up Karaoke: Real-time word-by-word karaoke highlighting with crisp 100% white bold sung words and active line scaling.\n" +
                     "• Pill Word-Level Karaoke: Real-time stationary word-level karaoke highlighting in the main Pill, with a dedicated 'Word-level Karaoke in Pill' toggle in Preferences.\n" +
                     "• Volume Scroll Target Selector (#148): Added a setting to choose between controlling System Master Volume or Active Media App Volume when scrolling on the pill.\n" +
                     "• Album Art Shadow Customization (#149): Added setting to show/hide the drop shadow behind the album art in the pop-up menu.\n" +
                     "• LRCLib Cloudflare Fix: Custom User-Agent on lyrics requests to bypass HTTP 403 blocks.\n\n" +
-                    "🐛 Bug Fixes:\n" +
+                    "Bug Fixes:\n" +
                     "• Fixed Volume Scrolling (#148): Fixed stream.change_volume() Gvc method invocation for PulseAudio/Pipewire volume scrolling.\n" +
                     "• Fixed Missing Album Art Shadow Blob: Immediately hide vinyl container and drop shadow when album art is unavailable (e.g. YouTube videos without thumbnails) to prevent layout shifts and dark shadow artifacts.\n" +
                     "• Fixed pop-up play/pause button icon and player controls state when album art is disabled.\n" +
                     "• Fixed empty shadow box and pop-up layout shift when turning off album art.\n" +
                     "• Fixed seeker progress bar jumping to 0:00 when seeking with album art disabled.\n\n" +
-                    "🌍 Translations:\n" +
+                    "Translations:\n" +
                     "• Recompiled and updated all translation locales (.po / .mo) via Weblate."
             },
             {
                 version: "1.2.1",
                 subtitle: "Translation Updates",
                 expanded: false,
-                notes: "🌍 Translations:\n" +
+                notes: "Translations:\n" +
                     "• Updated translations for all supported languages via Weblate."              
             },
             {
                 version: "1.2.0",
                 subtitle: "New features & Bug Fixes",
                 expanded: false,
-                notes: "✨ New Features:\n" +
+                notes: "New Features:\n" +
                     "• Added a new toggle 'Show artist'.\n" +
                     "• Tablet mode buttons, new positions.\n" +
                     "• Option to move the \"media source\" buttons to other placement.\n" +
@@ -1627,7 +1627,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                     "• Parallelize lyric fetching requests.\n" +
                     "• Translations update.\n" +
                     "• Add option to pause text scrolling when player is paused.\n\n" +
-                    "• Bug Fixes:\n" +
+                    "Bug Fixes:\n" +
                     "• Artist name is cropped away in panel mode.\n" +
                     "• The artist name and song title do not display correctly in the widget every time it starts up."
             },
@@ -1635,11 +1635,11 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                         version: "1.1.0",
                         subtitle: "Custom Buttons & Bug Fixes",
                         expanded: false,
-                        notes: "✨ New Features:\n" +
+                        notes: "New Features:\n" +
                                "• Add a 'Scroll Action' mode to fast-forward.\n" +
                                "• Per-App Volume Control.\n" +
         					   "• Resotre original GNOME accent color after player is closed.\n\n" +
-                               "• Bug Fixes:\n" +
+                               "Bug Fixes:\n" +
         					   "• Lyrics view crash fix.\n" +
                                "• Telegram crash fix."
                     },
@@ -1647,11 +1647,11 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 version: "1.0.0",
                 subtitle: "Custom Buttons & Bug Fixes",
                 expanded: false,
-                notes: "✨ New Features:\n" +
+                notes: "New Features:\n" +
                     "• Custom Control Buttons: Add up to two extra buttons to the pop-up controls row. Each can be assigned to Volume, Seek Step, Audio Output, Sleep Timer, Playback Speed, or Recently Played history.\n" +
                     "• First-Time Hint: A one-time tip in the pop-up suggests checking settings for more options (custom buttons, scroll actions, etc.). Dismissible with a click or via the settings button.\n" +
                     "• Scroll on Hover Only: A new setting to scroll long text only when hovering over the pill.\n\n" +
-                    "🐛 Bug Fixes:\n" +
+                    "Bug Fixes:\n" +
                     "• Fixed GNOME Shell freezes (metadata crash) when player state unexpectedly becomes undefined.\n" +
                     "• Fixed History showing incorrect album art for slow players (Zen Browser/Web apps) and prevents rapid-skip duplicates.\n" +
                     "• Fixed Dash to Dock autohide breaking after locking and unlocking the screen.\n" +
@@ -1665,20 +1665,20 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 version: "V29",
                 subtitle: "Real-Time Visualizer, App Mapping & Major Fixes",
                 expanded: false,
-                notes: "✨ New Features:\n" +
+                notes: "New Features:\n" +
                     "• Real-Time Visualizer: Added CAVA-powered real-time audio visualizer!\n" +
                     "• Accent Color Sync: Dynamically change the GNOME accent color to match the current album art.\n" +
                     "• Manual App Mapping: Added a new settings page to manually map unrecognized App IDs (fixes Open/Close app actions).\n" +
                     "• Translations: Implemented multi-language support! Contributions to complete missing languages are welcome on GitHub.\n" +
                     "• Shared Engine: Implemented a shared visualizer engine for better performance (paving the way for simultaneous Dash & Top Panel placement).\n" +
                     "• Implemented cache system for better performance.\n\n" +
-                    "🎨 Customization & Enhancements:\n" +
+                    "Customization & Enhancements:\n" +
                     "• Advanced Visualizer:Deep customization options added (bar count, width, height, margin, and border radius).\n" +
                     "• Smooth Fading: Added adjustable fade-in/out transitions for Lyrics and edge-fading for scrolling text.\n" +
                     "• Touch & Tablet: Added a dedicated Play/Pause button in Tablet Mode and implemented proper touchscreen target controls.\n" +
                     "• Pop-up Tweaks: Adjustable Vinyl rotation speed and a new option to auto-hide the pop-up on mouse leave/hover.\n" +
                     "• Added dynamic width with crossfade and a new 'Outer Edge Margin' setting.\n\n" +
-                    "🐛 Bug Fixes:\n" +
+                    "Bug Fixes:\n" +
                     "• Fixed blurry album art, text, and numbers inside the pop-up menu.\n" +
                     "• Fixed background color not updating properly to reflect the album artwork.\n" +
                     "• Fixed an issue where selecting a non-playing player caused the pill to hide and break the player selector.\n" +
