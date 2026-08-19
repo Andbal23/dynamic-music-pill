@@ -505,7 +505,7 @@ https://github.com/Andbal23/timed-do-not-disturb
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Andbal23/dynamic-music-pill&type=Date)](https://star-history.com/#Andbal23/dynamic-music-pill&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=Andbal23/dynamic-music-pill&type=Date)](https://star-history.dera.page/#Andbal23/dynamic-music-pill&Date)
 
 ---
 
