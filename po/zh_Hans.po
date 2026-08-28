@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-08-28 23:42+0000\n"
+"PO-Revision-Date: 2026-08-28 23:57+0000\n"
 "Last-Translator: O2bmm <xifangczy@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/dynamic-music-pill/settings/zh_Hans/>\n"
@@ -133,15 +133,15 @@ msgstr "仅在悬停时滚动"
 
 #: prefs.js:241
 msgid "Text stays still until you hover the pill"
-msgstr ""
+msgstr "文本静止不动除非悬停在该胶囊上"
 
 #: prefs.js:253
 msgid "Freeze Scroll on Pause"
-msgstr ""
+msgstr "暂停时冻结滚动"
 
 #: prefs.js:254
 msgid "Stop the text scrolling animation when the media player is paused"
-msgstr ""
+msgstr "暂停播放时停止文本滚动动画"
 
 #: prefs.js:267
 msgid "Lyrics Display"
@@ -163,15 +163,15 @@ msgstr ""
 
 #: prefs.js:292
 msgid "Lyrics language preference"
-msgstr ""
+msgstr "歌词语言偏好"
 
 #: prefs.js:293
 msgid "When multiple versions exist"
-msgstr ""
+msgstr "当存在多个版本时"
 
 #: prefs.js:295
 msgid "Auto"
-msgstr ""
+msgstr "自动"
 
 #: prefs.js:296
 msgid "Prefer original script"
