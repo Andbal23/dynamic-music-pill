@@ -5,11 +5,32 @@ import Gio from "gi://Gio";
 const decode = (data) => new TextDecoder().decode(data);
 const CJK_RE = /[\u3040-\u9FFF\uAC00-\uD7AF]/;
 
-const USER_AGENT = "dynamic-music-pill (https://github.com/Andbal23/dynamic-music-pill)";
+const USER_AGENT =
+  "dynamic-music-pill (https://github.com/Andbal23/dynamic-music-pill)";
 
-function cleanTitle(title) {
+function cleanTitle(title, artist) {
   if (!title) return "";
-  return title
+  let t = title;
+
+  // YouTube/browser titles often come as "Artist - Song Title". If the part
+  // before the hyphen matches the known artist, the REAL title is the part
+  // after the hyphen, not before. Without this, the old blind
+  const hyphenMatch = t.match(/^(.*?)\s+-+\s+(.*)$/);
+  if (hyphenMatch && artist) {
+    const before = hyphenMatch[1].trim().toLowerCase();
+    const artistLower = artist.trim().toLowerCase();
+    if (
+      before &&
+      artistLower &&
+      (before === artistLower ||
+        before.includes(artistLower) ||
+        artistLower.includes(before))
+    ) {
+      t = hyphenMatch[2];
+    }
+  }
+
+  return t
     .replace(/\s*[\(\[\{].*?[\)\]\}]/gi, "")
     .replace(/\s+feat\..*/gi, "")
     .replace(/\s+ft\..*/gi, "")
@@ -22,20 +43,31 @@ function ttmlTimeToMs(val) {
   try {
     const parts = String(val).trim().split(":");
     if (parts.length === 1) return Math.round(parseFloat(parts[0]) * 1000);
-    if (parts.length === 2) return Math.round((parseInt(parts[0]) * 60 + parseFloat(parts[1])) * 1000);
-    if (parts.length === 3) return Math.round((parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseFloat(parts[2])) * 1000);
+    if (parts.length === 2)
+      return Math.round(
+        (parseInt(parts[0]) * 60 + parseFloat(parts[1])) * 1000,
+      );
+    if (parts.length === 3)
+      return Math.round(
+        (parseInt(parts[0]) * 3600 +
+          parseInt(parts[1]) * 60 +
+          parseFloat(parts[2])) *
+          1000,
+      );
   } catch (_) {}
   return 0;
 }
 
 function parseTTML(ttmlText) {
-  if (!ttmlText || typeof ttmlText !== "string") return { lines: [], hasWordLevel: false };
+  if (!ttmlText || typeof ttmlText !== "string")
+    return { lines: [], hasWordLevel: false };
 
   const lines = [];
   let hasWordLevel = false;
 
-  const pRegex = /<p\s+[^>]*begin="([^"]+)"[^>]*>(.*?)<\/p>/gi;
-  const spanRegex = /<span\s+[^>]*begin="([^"]+)"[^>]*end="([^"]+)"[^>]*>([^<]+)<\/span>/gi;
+  const pRegex = /<p\s+[^>]*begin="([^"]+)"[^>]*>([\s\S]*?)<\/p>/gi;
+  const spanRegex =
+    /<span\s+[^>]*begin="([^"]+)"[^>]*end="([^"]+)"[^>]*>([^<]+)<\/span>/gi;
 
   let pMatch;
   while ((pMatch = pRegex.exec(ttmlText)) !== null) {
@@ -43,7 +75,10 @@ function parseTTML(ttmlText) {
     let pBody = pMatch[2];
 
     // Strip background vocal spans so they don't create overlapping active lines
-    pBody = pBody.replace(/<span\s+[^>]*ttm:role="x-bg"[^>]*>.*?<\/span>/gi, "");
+    pBody = pBody.replace(
+      /<span\s+[^>]*ttm:role="x-bg"[^>]*>[\s\S]*?<\/span>/gi,
+      "",
+    );
 
     const words = [];
     let spanMatch;
@@ -58,11 +93,19 @@ function parseTTML(ttmlText) {
       }
     }
 
-    const lineText = pBody.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    const lineText = pBody
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
     if (lineText) {
       if (words.length > 0) {
         hasWordLevel = true;
-        lines.push({ time: lineStart, text: lineText, words, isWordLevel: true });
+        lines.push({
+          time: lineStart,
+          text: lineText,
+          words,
+          isWordLevel: true,
+        });
       } else {
         lines.push({ time: lineStart, text: lineText, isWordLevel: false });
       }
@@ -75,11 +118,16 @@ function parseTTML(ttmlText) {
   // Merge lines with identical or near-identical timestamps
   const uniqueLines = [];
   for (const line of lines) {
-    if (uniqueLines.length > 0 && Math.abs(uniqueLines[uniqueLines.length - 1].time - line.time) < 100) {
+    if (
+      uniqueLines.length > 0 &&
+      Math.abs(uniqueLines[uniqueLines.length - 1].time - line.time) < 100
+    ) {
       if (!uniqueLines[uniqueLines.length - 1].text.includes(line.text)) {
         uniqueLines[uniqueLines.length - 1].text += " " + line.text;
         if (line.words && line.words.length > 0) {
-          uniqueLines[uniqueLines.length - 1].words = (uniqueLines[uniqueLines.length - 1].words || []).concat(line.words);
+          uniqueLines[uniqueLines.length - 1].words = (
+            uniqueLines[uniqueLines.length - 1].words || []
+          ).concat(line.words);
         }
       }
     } else {
@@ -88,9 +136,15 @@ function parseTTML(ttmlText) {
   }
 
   for (let i = 0; i < uniqueLines.length; i++) {
-    const nextTime = i + 1 < uniqueLines.length ? uniqueLines[i + 1].time : uniqueLines[i].time + 5000;
+    const nextTime =
+      i + 1 < uniqueLines.length
+        ? uniqueLines[i + 1].time
+        : uniqueLines[i].time + 5000;
     const raw = (nextTime - uniqueLines[i].time) / 1000;
-    uniqueLines[i].duration = Math.min(raw, Math.max(3.0, uniqueLines[i].text.length / 4));
+    uniqueLines[i].duration = Math.min(
+      raw,
+      Math.max(3.0, uniqueLines[i].text.length / 4),
+    );
   }
 
   return { lines: uniqueLines, hasWordLevel };
@@ -99,11 +153,17 @@ function parseTTML(ttmlText) {
 function parseLyricsInput(input) {
   if (!input) return { lines: [], hasWordLevel: false };
 
-  if (typeof input === "string" && (input.includes("<tt") || input.includes("<p begin="))) {
+  if (
+    typeof input === "string" &&
+    (input.includes("<tt") || input.includes("<p begin="))
+  ) {
     return parseTTML(input);
   }
 
-  if (typeof input === "object" || (typeof input === "string" && input.trim().startsWith("{"))) {
+  if (
+    typeof input === "object" ||
+    (typeof input === "string" && input.trim().startsWith("{"))
+  ) {
     try {
       const obj = typeof input === "object" ? input : JSON.parse(input);
 
@@ -116,18 +176,39 @@ function parseLyricsInput(input) {
         const lines = [];
         let hasWordLevel = false;
         for (const item of list) {
-          const time = parseInt(item.startTimeMs || item.time || item.begin || 0);
-          const text = (typeof item.text === "string" ? item.text : item.words || item.line || "").trim();
-          const subWords = item.syllables || item.wordsArray || item.lead || item.words_list;
+          const time = parseInt(
+            item.startTimeMs || item.time || item.begin || 0,
+          );
+          const text = (
+            typeof item.text === "string"
+              ? item.text
+              : item.words || item.line || ""
+          ).trim();
+          const subWords =
+            item.syllables || item.wordsArray || item.lead || item.words_list;
 
           if (Array.isArray(subWords) && subWords.length > 0) {
             hasWordLevel = true;
             const words = subWords.map((w, idx) => {
-              const wTime = parseInt(w.startTimeMs || w.time || w.begin || time);
-              const nextW = idx + 1 < subWords.length ? subWords[idx + 1] : null;
-              const wNextTime = nextW ? parseInt(nextW.startTimeMs || nextW.time || nextW.begin || wTime + 500) : wTime + 500;
+              const wTime = parseInt(
+                w.startTimeMs || w.time || w.begin || time,
+              );
+              const nextW =
+                idx + 1 < subWords.length ? subWords[idx + 1] : null;
+              const wNextTime = nextW
+                ? parseInt(
+                    nextW.startTimeMs ||
+                      nextW.time ||
+                      nextW.begin ||
+                      wTime + 500,
+                  )
+                : wTime + 500;
               const wDur = Math.max(0.2, (wNextTime - wTime) / 1000);
-              return { time: wTime, duration: wDur, text: w.text || w.word || "" };
+              return {
+                time: wTime,
+                duration: wDur,
+                text: w.text || w.word || "",
+              };
             });
             lines.push({ time, text, words, isWordLevel: true });
           } else {
@@ -137,9 +218,13 @@ function parseLyricsInput(input) {
         if (lines.length > 0) {
           lines.sort((a, b) => a.time - b.time);
           for (let i = 0; i < lines.length; i++) {
-            const nextTime = i + 1 < lines.length ? lines[i + 1].time : lines[i].time + 5000;
+            const nextTime =
+              i + 1 < lines.length ? lines[i + 1].time : lines[i].time + 5000;
             const raw = (nextTime - lines[i].time) / 1000;
-            lines[i].duration = Math.min(raw, Math.max(3.0, lines[i].text.length / 4));
+            lines[i].duration = Math.min(
+              raw,
+              Math.max(3.0, lines[i].text.length / 4),
+            );
           }
           return { lines, hasWordLevel };
         }
@@ -150,7 +235,8 @@ function parseLyricsInput(input) {
   if (typeof input !== "string") return { lines: [], hasWordLevel: false };
 
   const lineRegex = /\[(\d{2}):(\d{2})[\.:](\d{2,3})\](.*)/;
-  const wordTagRegex = /[<\(\[](\d{2}):(\d{2})[\.:](\d{2,3})[>\)\]]([^<\(\[\n]*)/g;
+  const wordTagRegex =
+    /[<\(\[](\d{2}):(\d{2})[\.:](\d{2,3})[>\)\]]([^<\(\[\n]*)/g;
 
   const all = [];
   let hasWordLevel = false;
@@ -179,7 +265,8 @@ function parseLyricsInput(input) {
         hasWordLevel = true;
         const cleanText = lineBody.replace(/[<\(\[].*?[>\)\]]/g, "").trim();
         for (let w = 0; w < words.length; w++) {
-          const nextWTime = w + 1 < words.length ? words[w + 1].time : words[w].time + 1500;
+          const nextWTime =
+            w + 1 < words.length ? words[w + 1].time : words[w].time + 1500;
           words[w].duration = (nextWTime - words[w].time) / 1000;
         }
         all.push({ time: lineTime, text: cleanText, words, isWordLevel: true });
@@ -211,7 +298,7 @@ class BetterLyricsProvider {
 
   async fetchLyrics(title, artist, album, duration) {
     if (!title?.trim()) return null;
-    const cleaned = cleanTitle(title);
+    const cleaned = cleanTitle(title, artist);
     const queryTitle = cleaned || title;
     const queryArtist = artist || "";
 
@@ -220,7 +307,11 @@ class BetterLyricsProvider {
       let msg = Soup.Message.new("GET", url);
       if (!msg) return null;
       msg.request_headers.append("User-Agent", "BetterLyrics/1.0");
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+      const bytes = await this._session.send_and_read_async(
+        msg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (msg.status_code !== Soup.Status.OK) return null;
       const text = decode(bytes.get_data());
 
@@ -249,7 +340,7 @@ class BiniLyricsProvider {
 
   async fetchLyrics(title, artist, album, duration) {
     if (!title?.trim()) return null;
-    const cleaned = cleanTitle(title);
+    const cleaned = cleanTitle(title, artist);
     const query = `${cleaned || title} ${artist || ""}`.trim();
     const searchUrl = `https://lyrics-api.binimum.org/getLyrics?q=${encodeURIComponent(query)}`;
 
@@ -257,20 +348,29 @@ class BiniLyricsProvider {
       let msg = Soup.Message.new("GET", searchUrl);
       if (!msg) return null;
       msg.request_headers.append("User-Agent", "BetterLyrics/1.0");
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+      const bytes = await this._session.send_and_read_async(
+        msg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (msg.status_code !== Soup.Status.OK) return null;
       const json = JSON.parse(decode(bytes.get_data()));
 
       const results = json?.results;
       if (!Array.isArray(results) || results.length === 0) return null;
 
-      let bestItem = results.find(r => r.timing_type === "word") || results[0];
+      let bestItem =
+        results.find((r) => r.timing_type === "word") || results[0];
       if (!bestItem || !bestItem.lyricsUrl) return null;
 
       let ttmlMsg = Soup.Message.new("GET", bestItem.lyricsUrl);
       if (!ttmlMsg) return null;
       ttmlMsg.request_headers.append("User-Agent", "BetterLyrics/1.0");
-      const ttmlBytes = await this._session.send_and_read_async(ttmlMsg, GLib.PRIORITY_DEFAULT, null);
+      const ttmlBytes = await this._session.send_and_read_async(
+        ttmlMsg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (ttmlMsg.status_code !== Soup.Status.OK) return null;
       const ttmlText = decode(ttmlBytes.get_data());
 
@@ -300,10 +400,10 @@ class LrclibProvider {
 
   async fetchLyrics(title, artist, album, duration, pref) {
     if (!title?.trim() && !artist?.trim()) return null;
-    const cleaned = cleanTitle(title);
+    const cleaned = cleanTitle(title, artist);
     const queryTitle = cleaned || title;
 
-    const exactUrl = `https://lrclib.net/api/get?track_name=${encodeURIComponent(queryTitle)}&artist_name=${encodeURIComponent(artist || '')}&album_name=${encodeURIComponent(album || '')}&duration=${duration}`;
+    const exactUrl = `https://lrclib.net/api/get?track_name=${encodeURIComponent(queryTitle)}&artist_name=${encodeURIComponent(artist || "")}&album_name=${encodeURIComponent(album || "")}&duration=${duration}`;
 
     const [exactItem, candidates] = await Promise.all([
       this._fetchExact(exactUrl),
@@ -314,7 +414,7 @@ class LrclibProvider {
     if (exactItem) allItems.push(exactItem);
     if (Array.isArray(candidates)) {
       for (const c of candidates) {
-        if (!allItems.some(x => x.id === c.id)) allItems.push(c);
+        if (!allItems.some((x) => x.id === c.id)) allItems.push(c);
       }
     }
 
@@ -336,13 +436,23 @@ class LrclibProvider {
 
     if (bestSynced) {
       const parsed = parseLyricsInput(bestSynced.syncedLyrics);
-      return { payload: bestSynced.syncedLyrics, parsed, isSynced: true, provider: this.name };
+      return {
+        payload: bestSynced.syncedLyrics,
+        parsed,
+        isSynced: true,
+        provider: this.name,
+      };
     }
 
     for (const item of allItems) {
       if (item.plainLyrics) {
         const parsed = parseLyricsInput(item.plainLyrics);
-        return { payload: item.plainLyrics, parsed, isSynced: false, provider: this.name };
+        return {
+          payload: item.plainLyrics,
+          parsed,
+          isSynced: false,
+          provider: this.name,
+        };
       }
     }
 
@@ -350,18 +460,22 @@ class LrclibProvider {
   }
 
   _detectScript(lines) {
-    if (!lines || lines.length === 0) return 'unknown';
-    const sample = lines.slice(0, Math.min(15, lines.length)).map(l => l.text).join(' ');
-    const cjkCount = (sample.match(new RegExp(CJK_RE.source, 'g')) || []).length;
+    if (!lines || lines.length === 0) return "unknown";
+    const sample = lines
+      .slice(0, Math.min(15, lines.length))
+      .map((l) => l.text)
+      .join(" ");
+    const cjkCount = (sample.match(new RegExp(CJK_RE.source, "g")) || [])
+      .length;
     const latinCount = (sample.match(/[a-zA-Z]/g) || []).length;
-    const totalChars = sample.replace(/\s/g, '').length;
-    if (totalChars === 0) return 'unknown';
+    const totalChars = sample.replace(/\s/g, "").length;
+    if (totalChars === 0) return "unknown";
 
     const cjkRatio = cjkCount / totalChars;
     const latinRatio = latinCount / totalChars;
-    if (cjkRatio > 0.15) return 'original';
-    if (latinRatio > 0.4) return 'latin';
-    return 'unknown';
+    if (cjkRatio > 0.15) return "original";
+    if (latinRatio > 0.4) return "latin";
+    return "unknown";
   }
 
   _scoreItem(item, pref) {
@@ -369,8 +483,10 @@ class LrclibProvider {
     if (pref === 0) return 0;
     const parsed = parseLyricsInput(item.syncedLyrics);
     const script = this._detectScript(parsed.lines);
-    if (pref === 1) return script === 'original' ? 2 : (script === 'unknown' ? 0 : 1);
-    if (pref === 2) return script === 'latin' ? 2 : (script === 'unknown' ? 0 : 1);
+    if (pref === 1)
+      return script === "original" ? 2 : script === "unknown" ? 0 : 1;
+    if (pref === 2)
+      return script === "latin" ? 2 : script === "unknown" ? 0 : 1;
     return 0;
   }
 
@@ -378,9 +494,15 @@ class LrclibProvider {
     try {
       let msg = Soup.Message.new("GET", url);
       if (!msg) return null;
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+      const bytes = await this._session.send_and_read_async(
+        msg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (msg.status_code === Soup.Status.OK) {
-        try { return JSON.parse(decode(bytes.get_data())); } catch (_) {}
+        try {
+          return JSON.parse(decode(bytes.get_data()));
+        } catch (_) {}
       }
       return null;
     } catch (_) {
@@ -390,15 +512,19 @@ class LrclibProvider {
 
   async _fetchCandidates(title, artist, duration) {
     try {
-      const query = `${artist || ''} ${title || ''}`.trim();
+      const query = `${artist || ""} ${title || ""}`.trim();
       const url = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
       let msg = Soup.Message.new("GET", url);
       if (!msg) return [];
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+      const bytes = await this._session.send_and_read_async(
+        msg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (msg.status_code !== Soup.Status.OK) return [];
       const data = JSON.parse(decode(bytes.get_data()));
       return Array.isArray(data)
-        ? data.filter(item => Math.abs((item.duration || 0) - duration) < 5)
+        ? data.filter((item) => Math.abs((item.duration || 0) - duration) < 5)
         : [];
     } catch (_) {
       return [];
@@ -414,8 +540,8 @@ class NeteaseProvider {
 
   async fetchLyrics(title, artist, album, duration) {
     if (!title?.trim()) return null;
-    const cleaned = cleanTitle(title);
-    const query = `${artist || ''} ${cleaned || title}`.trim();
+    const cleaned = cleanTitle(title, artist);
+    const query = `${artist || ""} ${cleaned || title}`.trim();
 
     try {
       const searchUrl = `https://music.163.com/api/search/get/web?s=${encodeURIComponent(query)}&type=1&offset=0&total=true&limit=5`;
@@ -424,7 +550,11 @@ class NeteaseProvider {
       msg.request_headers.append("User-Agent", USER_AGENT);
       msg.request_headers.append("Referer", "https://music.163.com");
 
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+      const bytes = await this._session.send_and_read_async(
+        msg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (msg.status_code !== Soup.Status.OK) return null;
       const data = JSON.parse(decode(bytes.get_data()));
 
@@ -451,7 +581,11 @@ class NeteaseProvider {
       lyricMsg.request_headers.append("User-Agent", USER_AGENT);
       lyricMsg.request_headers.append("Referer", "https://music.163.com");
 
-      const lyricBytes = await this._session.send_and_read_async(lyricMsg, GLib.PRIORITY_DEFAULT, null);
+      const lyricBytes = await this._session.send_and_read_async(
+        lyricMsg,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
       if (lyricMsg.status_code !== Soup.Status.OK) return null;
       const lyricData = JSON.parse(decode(lyricBytes.get_data()));
 
@@ -460,13 +594,28 @@ class NeteaseProvider {
 
       if (kLrcString && kLrcString.includes("[")) {
         const parsed = parseLyricsInput(kLrcString);
-        return { payload: kLrcString, parsed, isSynced: true, provider: this.name };
+        return {
+          payload: kLrcString,
+          parsed,
+          isSynced: true,
+          provider: this.name,
+        };
       } else if (lrcString && lrcString.includes("[")) {
         const parsed = parseLyricsInput(lrcString);
-        return { payload: lrcString, parsed, isSynced: true, provider: this.name };
+        return {
+          payload: lrcString,
+          parsed,
+          isSynced: true,
+          provider: this.name,
+        };
       } else if (lrcString && lrcString.trim()) {
         const parsed = parseLyricsInput(lrcString);
-        return { payload: lrcString, parsed, isSynced: false, provider: this.name };
+        return {
+          payload: lrcString,
+          parsed,
+          isSynced: false,
+          provider: this.name,
+        };
       }
       return null;
     } catch (e) {
@@ -499,35 +648,43 @@ export class LyricsClient {
     const pref = settings ? settings.get_int("lyrics-language-preference") : 0;
 
     // Launch all providers concurrently in parallel
-    const promises = this._providers.map(p =>
-      p.fetchLyrics(title, artist, album, duration, pref)
-        .catch(e => {
-          console.debug(`[LyricsClient] Provider ${p.name} failed: ${e.message}`);
-          return null;
-        })
+    const promises = this._providers.map((p) =>
+      p.fetchLyrics(title, artist, album, duration, pref).catch((e) => {
+        console.debug(`[LyricsClient] Provider ${p.name} failed: ${e.message}`);
+        return null;
+      }),
     );
 
     const results = await Promise.all(promises);
 
     const parsedResults = [];
     for (const res of results) {
-      if (res && res.parsed && res.parsed.lines && res.parsed.lines.length > 0) {
+      if (
+        res &&
+        res.parsed &&
+        res.parsed.lines &&
+        res.parsed.lines.length > 0
+      ) {
         parsedResults.push({
           lines: res.parsed.lines,
           hasWordLevel: res.parsed.hasWordLevel,
           provider: res.provider,
-          type: res.parsed.hasWordLevel ? 'word-level' : (res.isSynced ? 'synced' : 'plain'),
+          type: res.parsed.hasWordLevel
+            ? "word-level"
+            : res.isSynced
+              ? "synced"
+              : "plain",
         });
       }
     }
 
     // TIER 1 (TOP PRIORITY): word-level (karaoke word-by-word) lyrics
     for (const item of parsedResults) {
-      if (item.type === 'word-level') {
+      if (item.type === "word-level") {
         return {
           lines: item.lines,
           provider: item.provider,
-          type: 'word-level',
+          type: "word-level",
           isSynced: true,
         };
       }
@@ -535,11 +692,11 @@ export class LyricsClient {
 
     // TIER 2: synced (line-by-line LRC) lyrics
     for (const item of parsedResults) {
-      if (item.type === 'synced') {
+      if (item.type === "synced") {
         return {
           lines: item.lines,
           provider: item.provider,
-          type: 'synced',
+          type: "synced",
           isSynced: true,
         };
       }
@@ -547,11 +704,11 @@ export class LyricsClient {
 
     // TIER 3: plain text fallback
     for (const item of parsedResults) {
-      if (item.type === 'plain') {
+      if (item.type === "plain") {
         return {
           lines: item.lines,
           provider: item.provider,
-          type: 'plain',
+          type: "plain",
           isSynced: false,
         };
       }
