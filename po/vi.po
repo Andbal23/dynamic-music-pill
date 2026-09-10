@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-07-10 09:01+0000\n"
+"PO-Revision-Date: 2026-09-10 04:51+0000\n"
 "Last-Translator: Huynh Tuan Dung <tuandung5a@outlook.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/vi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.7.1.dev0\n"
+"X-Generator: Weblate 2026.9.1\n"
 
 #: prefs.js:39
 msgid "Main Pill"
@@ -90,19 +90,19 @@ msgstr "Chọn việc sẽ làm khi cuộn trên viên thuốc"
 
 #: prefs.js:178
 msgid "System Master Volume"
-msgstr ""
+msgstr "Âm lượng toàn hệ thống"
 
 #: prefs.js:179
 msgid "Active Media App Volume"
-msgstr ""
+msgstr "Âm lượng ứng dụng phát đang hoạt động"
 
 #: prefs.js:183
 msgid "Volume Scroll Target"
-msgstr ""
+msgstr "Âm lượng mục tiêu khi cuộn"
 
 #: prefs.js:184
 msgid "Choose which sound source to control when scrolling volume"
-msgstr ""
+msgstr "Chọn nguồn âm thanh cần điều khiển khi cuộn chỉnh âm lượng"
 
 #: prefs.js:203
 msgid "Invert Scroll Animation"
@@ -154,13 +154,15 @@ msgstr "Hiện lời theo thời gian thực."
 
 #: prefs.js:279
 msgid "Word-level Karaoke in Pill"
-msgstr ""
+msgstr "Hiệu ứng karaoke theo từng từ trong pill"
 
 #: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
+"Làm nổi bật từng từ trong lời bài hát trên pill chính khi có thể (luôn được "
+"bật trong pop-up)."
 
 #: prefs.js:292
 msgid "Lyrics language preference"
@@ -417,11 +419,11 @@ msgstr "Sử dụng ảnh bìa album hình vuông (hiệu ứng xoay sẽ bị t
 
 #: prefs.js:562
 msgid "Album Art Shadow"
-msgstr ""
+msgstr "Đổ bóng ảnh bìa album"
 
 #: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
-msgstr ""
+msgstr "Hiện hiệu ứng đổ bóng phía sau ảnh bìa album trong pop-up"
 
 #: prefs.js:568
 msgid "Show Shuffle and Loop"
@@ -893,11 +895,11 @@ msgstr "Tắt các hiệu ứng hoạt ảnh khi đang có ứng dụng toàn m�
 
 #: prefs.js:1121
 msgid "Slow Player Workaround"
-msgstr ""
+msgstr "Khắc phục tạm lỗi trình phát chậm"
 
 #: prefs.js:1122
 msgid "Adds a slight delay to track changes (fixes sync issues)"
-msgstr ""
+msgstr "Thêm một khoảng trì hoãn nhỏ khi chuyển bài (khắc phục vấn đề đồng bộ)"
 
 #: prefs.js:1130
 msgid "Off (Allow All)"
@@ -986,15 +988,17 @@ msgstr ""
 
 #: prefs.js:1264
 msgid "Saved App Mappings"
-msgstr ""
+msgstr "Ánh xạ ứng dụng đã lưu"
 
 #: prefs.js:1265
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
+"Chỉnh sửa ID ứng dụng đích cho các trình phát được ánh xạ thủ công hoặc xoá "
+"bỏ chúng."
 
 #: prefs.js:1286
 msgid "No manual mappings saved."
-msgstr ""
+msgstr "Chưa lưu ánh xạ thủ công nào."
 
 #: prefs.js:1291
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
@@ -1006,7 +1010,7 @@ msgstr "Lưu ID ứng dụng"
 
 #: prefs.js:1342
 msgid "Delete Mapping"
-msgstr ""
+msgstr "Xoá ánh xạ"
 
 #: prefs.js:1371
 msgid "Running Players Detection"
@@ -1014,7 +1018,7 @@ msgstr "Phát hiện trình phát đang chạy"
 
 #: prefs.js:1372
 msgid "Click on a detected player to automatically fill the mapping."
-msgstr ""
+msgstr "Nhấn vào một trình phát đã được phát hiện để tự động điền ánh xạ."
 
 #: prefs.js:1395
 msgid "No active players detected. Open a music app first!"
