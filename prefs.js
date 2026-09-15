@@ -265,7 +265,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         // Lyrics Display
         const lyricsRow = new Adw.ActionRow({
             title: _('Lyrics Display'),
-            subtitle: _('Show real-time synchronized lyrics for current track.')
+            subtitle: _('Show real-time synchronized lyrics for current track')
         });
         const lyricsToggle = new Gtk.Switch({
             active: settings.get_boolean('enable-lyrics'),
@@ -749,10 +749,10 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         customBtnGroup.set_description(_('If both buttons are set to Seek, they act directly (Button 1 = −10s, Button 2 = +10s). Otherwise Seek opens a sub-page.'));
 
         customBtnGroup.add(makeButtonActionRow(
-            _('Custom Button 1'), _('Placed left of Shuffle.'), 'custom-button-1'
+            _('Custom Button 1'), _('Placed left of Shuffle'), 'custom-button-1'
         ));
         customBtnGroup.add(makeButtonActionRow(
-            _('Custom Button 2'), _('Placed right of Loop.'), 'custom-button-2'
+            _('Custom Button 2'), _('Placed right of Loop'), 'custom-button-2'
         ));
 
         popupPage.add(customBtnGroup);
