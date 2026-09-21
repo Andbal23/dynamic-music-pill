@@ -120,11 +120,11 @@ export const ExpandedPlayer = GObject.registerClass(
             this._currentSubPage = null;
             this.add_child(this._box);
 
-            this._mainPage = new St.BoxLayout({ vertical: true, x_expand: true });
+            this._mainPage = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true });
             this._box.add_child(this._mainPage);
 
             this._playerSelectorBox = new PixelSnappedBox({
-                vertical: false,
+                orientation: Clutter.Orientation.HORIZONTAL,
                 x_align: Clutter.ActorAlign.CENTER,
                 style: 'margin-bottom: 12px; spacing: 10px;'
             });
@@ -132,8 +132,8 @@ export const ExpandedPlayer = GObject.registerClass(
 
             // _centerContent holds the main popup content; _middleRow wraps it horizontally
             // so the selector can be placed to the left or right
-            this._centerContent = new St.BoxLayout({ vertical: true, x_expand: true });
-            this._middleRow = new St.BoxLayout({ vertical: false, x_expand: true });
+            this._centerContent = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true });
+            this._middleRow = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, x_expand: true });
             this._middleRow.add_child(this._centerContent);
             this._mainPage.add_child(this._middleRow);
 
@@ -158,7 +158,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             }, this);
 
-            let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', vertical: false, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
+            let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', orientation: Clutter.Orientation.HORIZONTAL, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
 
             this._vinyl = new St.Widget({
                 style_class: 'vinyl-container',
@@ -238,7 +238,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
             this._centerContent.add_child(topRow);
 
-            let progressBox = new PixelSnappedBox({ style_class: 'progress-container', vertical: false, y_align: Clutter.ActorAlign.CENTER });
+            let progressBox = new PixelSnappedBox({ style_class: 'progress-container', orientation: Clutter.Orientation.HORIZONTAL, y_align: Clutter.ActorAlign.CENTER });
 
             this._currentTimeLabel = new St.Label({
                 style_class: 'progress-time',
@@ -287,7 +287,7 @@ export const ExpandedPlayer = GObject.registerClass(
             progressBox.add_child(this._totalTimeLabel);
             this._centerContent.add_child(progressBox);
 
-            let controlsRow = new PixelSnappedBox({ style_class: 'controls-row', vertical: false, x_align: Clutter.ActorAlign.CENTER, reactive: true });
+            let controlsRow = new PixelSnappedBox({ style_class: 'controls-row', orientation: Clutter.Orientation.HORIZONTAL, x_align: Clutter.ActorAlign.CENTER, reactive: true });
 
             this._shuffleIcon = new St.Icon({ icon_name: 'media-playlist-shuffle-symbolic', icon_size: 16 });
             this._shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: true });
@@ -403,7 +403,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._updatePlayerSelector();
 
             this._firstHintBox = new St.BoxLayout({
-                vertical: false,
+                orientation: Clutter.Orientation.HORIZONTAL,
                 x_expand: true,
                 reactive: true,
                 track_hover: true,
@@ -523,7 +523,7 @@ export const ExpandedPlayer = GObject.registerClass(
             let pos = this._settings.get_int('popup-player-selector-position');
             let isVertical = (pos === 2 || pos === 3);
 
-            this._playerSelectorBox.vertical = isVertical;
+            this._playerSelectorBox.orientation = isVertical ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL;
             if (isVertical) {
                 this._playerSelectorBox.y_align = Clutter.ActorAlign.CENTER;
                 this._playerSelectorBox.x_align = Clutter.ActorAlign.CENTER;
@@ -1006,7 +1006,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 ? this._controller._pill._displayedColor : { r: 255, g: 255, b: 255 };
 
             let page = new St.BoxLayout({
-                vertical: true, x_expand: true, y_expand: true,
+                orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: true,
                 clip_to_allocation: true,
                 style: `padding: 2px 8px 8px 8px; margin: 4px; border-radius: 20px; background-color: rgba(${pillCol.r},${pillCol.g},${pillCol.b},0.07);`
             });
@@ -1015,12 +1015,12 @@ export const ExpandedPlayer = GObject.registerClass(
             page.opacity = 0;
 
             let headerWrapper = new St.BoxLayout({
-                vertical: true, x_expand: true, y_expand: false,
+                orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: false,
                 y_align: Clutter.ActorAlign.START,
                 style: 'spacing: 4px; margin-bottom: 6px; min-height: 0;'
             });
             let header = new St.BoxLayout({
-                vertical: false, x_expand: true, y_expand: false,
+                orientation: Clutter.Orientation.HORIZONTAL, x_expand: true, y_expand: false,
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'min-height: 0;'
             });
@@ -1042,7 +1042,7 @@ export const ExpandedPlayer = GObject.registerClass(
             header.add_child(backBtn);
 
             let titleGroup = new St.BoxLayout({
-                vertical: false,
+                orientation: Clutter.Orientation.HORIZONTAL,
                 x_align: Clutter.ActorAlign.CENTER,
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'spacing: 5px;'
@@ -1077,7 +1077,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 vscrollbar_policy: St.PolicyType.AUTOMATIC,
                 overlay_scrollbars: false
             });
-            let contentBox = new St.BoxLayout({ vertical: true, x_expand: true, style: 'spacing: 10px;' });
+            let contentBox = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true, style: 'spacing: 10px;' });
             contentScroll.set_child(contentBox);
             page.add_child(contentScroll);
 
@@ -1386,15 +1386,15 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 for (let item of streamsToShow) {
                     let { stream, title, isMaster } = item;
-                    let wrapper = new St.BoxLayout({ vertical: true, style: 'margin-bottom: 12px;' });
+                    let wrapper = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, style: 'margin-bottom: 12px;' });
                     
-                    let titleBox = new St.BoxLayout({ vertical: false, style: 'margin-bottom: 6px;', x_align: Clutter.ActorAlign.START });
+                    let titleBox = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'margin-bottom: 6px;', x_align: Clutter.ActorAlign.START });
                     titleBox.add_child(new St.Icon({ icon_name: isMaster ? 'audio-speakers-symbolic' : 'audio-x-generic-symbolic', icon_size: 14, style: `color:${ta};margin-right:6px;`, y_align: Clutter.ActorAlign.CENTER }));
                     titleBox.add_child(new St.Label({ text: title, style: `color:${ta};font-size:9pt;font-weight:bold;`, y_align: Clutter.ActorAlign.CENTER }));
                     wrapper.add_child(titleBox);
 
                     let frac0 = stream.is_muted ? 0 : Math.min(1, stream.volume / maxVol);
-                    let sliderRow = new St.BoxLayout({ vertical: false, style: 'spacing: 10px;', x_expand: true });
+                    let sliderRow = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 10px;', x_expand: true });
                     let sliderBg = new St.Widget({ style: `background-color:rgba(128,128,128,0.25);border-radius:5px;`, x_expand: true, y_align: Clutter.ActorAlign.CENTER, reactive: true, height: 10 });
                     let sliderFill = new St.Widget({ style: `background-color:${tc};border-radius:5px;`, height: 10, reactive: false });
                     sliderFill.set_position(0, 0);
@@ -1499,7 +1499,7 @@ export const ExpandedPlayer = GObject.registerClass(
                         x_align: Clutter.ActorAlign.CENTER
                     }));
                 }
-                let row = new St.BoxLayout({ vertical: false, style: 'spacing: 12px;', x_align: Clutter.ActorAlign.CENTER, x_expand: true });
+                let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 12px;', x_align: Clutter.ActorAlign.CENTER, x_expand: true });
                 const mkBtn = (icon, fwd) => {
                     let btn = new St.Button({
                         child: new St.Icon({ icon_name: icon, icon_size: 28, style: `color:${tc};opacity:${caps.canSeek ? 1 : 0.35};` }),
@@ -1530,7 +1530,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     let isDef = defaultSink && (sink.id === defaultSink.id);
                     let desc = sink.get_description() || sink.get_name() || _('Unknown Device');
                     if (desc.length > 46) desc = desc.substring(0, 44) + '\u2026';
-                    let row = new St.BoxLayout({ vertical: false, style: 'spacing: 10px;', x_expand: true });
+                    let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 10px;', x_expand: true });
                     row.add_child(new St.Icon({ icon_name: isDef ? 'audio-speakers-symbolic' : 'audio-card-symbolic', icon_size: 18, style: `color:${tc};` }));
                     row.add_child(new St.Label({ text: desc, y_align: Clutter.ActorAlign.CENTER, style: `color:${tc};`, x_expand: true }));
                     if (isDef) row.add_child(new St.Icon({ icon_name: 'object-select-symbolic', icon_size: 14, style: `color:${tc};` }));
@@ -1562,7 +1562,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 let presets = [5, 10, 15, 20, 30, 45, 60, 90];
                 [[0, 4], [4, 8]].forEach(([s, e]) => {
-                    let row = new St.BoxLayout({ vertical: false, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
+                    let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
                     presets.slice(s, e).forEach(min => {
                         let btnLabel = new St.Label({ text: min + 'm', y_align: Clutter.ActorAlign.CENTER, style: 'color:' + tc + ';' });
                         let btn = new St.Button({ child: btnLabel, reactive: true, can_focus: true, style: 'border-radius:12px;padding:8px 12px;min-width:42px;background-color:rgba(255,255,255,0.1);' });
@@ -1604,11 +1604,11 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
 
                 [[0, 4], [4, 7]].forEach(([s, e]) => {
-                    let row = new St.BoxLayout({ vertical: false, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
+                    let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
                     rates.slice(s, e).forEach(rate => {
                         let isAct = Math.abs(rate - currentRate) < 0.05;
                         let btnLabel = new St.Label({ text: rate + '\u00d7', y_align: Clutter.ActorAlign.CENTER, style: 'color:' + tc + ';font-weight:' + (isAct ? 'bold' : 'normal') + ';' });
-                        let btnBox = new St.BoxLayout({ vertical: false, style: 'spacing:4px;', y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.CENTER });
+                        let btnBox = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing:4px;', y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.CENTER });
                         if (isAct) {
                             let checkIco = new St.Icon({ icon_name: 'object-select-symbolic', icon_size: 12, style: 'color:' + tc + ';' });
                             btnBox.add_child(checkIco);
@@ -1673,17 +1673,17 @@ export const ExpandedPlayer = GObject.registerClass(
                         ? ('background-color:rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.28);')
                         : 'background-color:rgba(128,128,128,0.10);';
 
-                    let innerRow = new St.BoxLayout({ vertical: false, style: 'spacing: 10px;', x_expand: true });
+                    let innerRow = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 10px;', x_expand: true });
                     let thumb = new St.Widget({ width: 38, height: 38, style: track.artUrl ? ('background-image:url("' + track.artUrl + '");background-size:cover;border-radius:6px;') : 'background-color:rgba(128,128,128,0.2);border-radius:6px;' });
                     innerRow.add_child(thumb);
 
-                    let infoBox = new St.BoxLayout({ vertical: true, x_expand: true, style: 'spacing:1px;', y_align: Clutter.ActorAlign.CENTER });
+                    let infoBox = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true, style: 'spacing:1px;', y_align: Clutter.ActorAlign.CENTER });
                     infoBox.add_child(new St.Label({ text: (track.title || _('Unknown')).substring(0, 38), style: 'color:' + tc + ';font-weight:600;font-size:9.5pt;', x_expand: true }));
                     let art = (track.artist || '').substring(0, 34);
                     if (art) infoBox.add_child(new St.Label({ text: art, style: 'color:' + ta + ';font-size:8.5pt;' }));
                     innerRow.add_child(infoBox);
 
-                    let rightCol = new St.BoxLayout({ vertical: true, y_align: Clutter.ActorAlign.CENTER, style: 'spacing:4px;' });
+                    let rightCol = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, y_align: Clutter.ActorAlign.CENTER, style: 'spacing:4px;' });
                     let tsLabel = new St.Label({ text: fmtTime(track.time), style: 'color:' + ta + ';font-size:7.5pt;', x_align: Clutter.ActorAlign.END });
                     let copyIcon = new St.Icon({ icon_name: 'edit-copy-symbolic', icon_size: 13, style: 'color:' + ta + ';', x_align: Clutter.ActorAlign.END });
                     rightCol.add_child(tsLabel);
