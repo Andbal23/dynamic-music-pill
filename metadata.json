@@ -3,7 +3,7 @@
     "gettext-domain": "dynamic-music-pill",
     "description": "An elegant, pill-shaped music player for your desktop. Features a smooth audio visualizer, scrolling text, and seamless integration with Dash-to-Dock and the Top Panel. Comes with a Pop-Up menu as well.",
     "uuid": "dynamic-music-pill@andbal",
-    "shell-version": [ "50" ],
+    "shell-version": [ "50", "51" ],
     "donations": {
     	"github": "Andbal23",
         "paypal": "andraslaszlo23",
