@@ -1589,9 +1589,17 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const changelog = [
             {
+                version: "1.4.0",
+                subtitle: "GNOME 51 support",
+                expanded: true,
+                notes: "New Features:\n" +
+                    "• GNOME 51 support\n" +
+                    "• Updated translations for all supported languages via Weblate."
+            },
+            {
                 version: "1.3.0",
                 subtitle: "Multi-Provider Word-Level Karaoke, Volume Scroll Fix & Shadow Customization",
-                expanded: true,
+                expanded: false,
                 notes: "New Features:\n" +
                     "• Multi-Provider Word-Level Karaoke Lyrics: Integrated BetterLyrics and BiniLyrics API providers with TTML XML parsing.\n" +
                     "• Spotify-Style Pop-up Karaoke: Real-time word-by-word karaoke highlighting with crisp 100% white bold sung words and active line scaling.\n" +
