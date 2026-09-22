@@ -8,7 +8,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 
 <div align="center">
 
-![Gnome Extensions Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal) ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2049-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
+![Gnome Extensions Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal) ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2051-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
 [![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/stargazers) [![Watchers](https://img.shields.io/github/watchers/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/watchers) [![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
 
 
@@ -199,10 +199,9 @@ cd ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
 glib-compile-schemas schemas/
 ```
 
-**6.** Restart GNOME Shell:
+**6.** Restart GNOME Shell (GNOME 50+ is Wayland-only):
 
-- **X11:** Press `Alt+F2`, type `r`, and press `Enter`.
-- **Wayland:** Log out and log back in.
+- **Wayland:** Log out and log back in (on GNOME 51 the `Alt+F2` reload command was removed).
 
 **7.** Enable the extension via **GNOME Extensions**, **Extension Manager**, or:
 

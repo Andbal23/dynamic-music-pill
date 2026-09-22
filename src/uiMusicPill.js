@@ -113,7 +113,7 @@ export const MusicPill = GObject.registerClass(
                 } return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this._tabletControls = new St.BoxLayout({ vertical: false, y_align: Clutter.ActorAlign.CENTER, style: 'margin-left: 6px;' });
+            this._tabletControls = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, y_align: Clutter.ActorAlign.CENTER, style: 'margin-left: 6px;' });
             this._tabletControls.add_child(this._prevBtn);
             this._tabletControls.add_child(this._playPauseBtnTablet);
             this._tabletControls.add_child(this._nextBtn);
