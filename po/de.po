@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-06-07 08:07+0000\n"
+"PO-Revision-Date: 2026-09-24 20:51+0000\n"
 "Last-Translator: Christian Lauinger <christian.lauinger@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/de/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: prefs.js:39
 msgid "Main Pill"
@@ -89,19 +89,20 @@ msgstr "Wählen Sie aus, was beim Scrollen auf der Pille geschehen soll"
 
 #: prefs.js:178
 msgid "System Master Volume"
-msgstr ""
+msgstr "System-Gesamtlautstärke"
 
 #: prefs.js:179
 msgid "Active Media App Volume"
-msgstr ""
+msgstr "Active Media App – Lautstärke"
 
 #: prefs.js:183
 msgid "Volume Scroll Target"
-msgstr ""
+msgstr "Ziel für Lautstärkeregelung"
 
 #: prefs.js:184
 msgid "Choose which sound source to control when scrolling volume"
 msgstr ""
+"Wählen Sie aus, welche Klangquelle beim Scrollen die Lautstärke steuern soll"
 
 #: prefs.js:203
 msgid "Invert Scroll Animation"
@@ -156,13 +157,15 @@ msgstr ""
 
 #: prefs.js:279
 msgid "Word-level Karaoke in Pill"
-msgstr ""
+msgstr "Karaoke auf Wortebene in Pill"
 
 #: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
+"Markiere einzelne Wörter auf der Hauptansicht, sofern verfügbar (das Popup-"
+"Fenster verwendet immer die Wortebene)."
 
 #: prefs.js:292
 msgid "Lyrics language preference"
@@ -426,11 +429,11 @@ msgstr "Verwende ein quadratisches Albumcover (deaktiviert die Drehung)"
 
 #: prefs.js:562
 msgid "Album Art Shadow"
-msgstr ""
+msgstr "Albumcover-Schatten"
 
 #: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
-msgstr ""
+msgstr "Im Popup-Fenster einen Schlagschatten hinter dem Albumcover anzeigen"
 
 #: prefs.js:568
 msgid "Show Shuffle and Loop"
