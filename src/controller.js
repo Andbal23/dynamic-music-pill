@@ -1795,7 +1795,7 @@ export class MusicController {
 
         if (!this._pill._feedbackBox) {
             this._pill._feedbackBox = new St.BoxLayout({
-                vertical: false,
+                orientation: Clutter.Orientation.HORIZONTAL,
                 x_align: Clutter.ActorAlign.CENTER,
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'spacing: 8px;'
