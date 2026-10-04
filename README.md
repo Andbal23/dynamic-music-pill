@@ -107,7 +107,7 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 
 ### Layout & Positioning
 
-**Four Placement Targets** — The pill can be placed in the Dock (requires Dash-to-Dock or Ubuntu Dock), or in any of the three Top Panel zones: Left Box, Center Box, or Right Box.
+**Four Placement Targets** — The pill can be placed in the Dock (supports Simple Taskbar, Dash-to-Dock, and Ubuntu Dock), or in any of the three Top Panel zones: Left Box, Center Box, or Right Box. With Simple Taskbar's dock enabled, Dock placement uses its primary-monitor dock and follows its orientation. Panel placement remains independent.
 
 **Alignment Presets** — Within the chosen container, the pill can be aligned to First (Start), Center, Last (End), or placed at a manually specified index position.
 
