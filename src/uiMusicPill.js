@@ -12,7 +12,7 @@ import { WaveformVisualizer } from './uiVisualizers.js';
 
 export const MusicPill = GObject.registerClass(
     class MusicPill extends St.Widget {
-        _init(controller) {
+        _init(controller, isMirror = false) {
             super._init({
                 style_class: 'music-pill-container',
                 reactive: false,
@@ -200,6 +200,7 @@ export const MusicPill = GObject.registerClass(
 
             this.connectObject('enter-event', () => {
                 this._isHovered = true;
+                this._controller._activePill = this;
                 if (this._titleScroll) this._titleScroll.setHoverMode(true);
                 if (this._artistScroll) this._artistScroll.setHoverMode(true);
                 let delay = this._settings.get_int('hover-delay');
@@ -389,11 +390,14 @@ export const MusicPill = GObject.registerClass(
                 return GLib.SOURCE_CONTINUE;
             });
 
-            try {
-                this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
-                this._originalAccent = this._interfaceSettings.get_string('accent-color');
-            } catch (e) {
-                this._interfaceSettings = null; //for older gnomes
+            // A mirror created during playback would save the synced accent as the original.
+            if (!isMirror) {
+                try {
+                    this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
+                    this._originalAccent = this._interfaceSettings.get_string('accent-color');
+                } catch (e) {
+                    this._interfaceSettings = null; //for older gnomes
+                }
             }
 
             this.connect('destroy', this._cleanup.bind(this));
