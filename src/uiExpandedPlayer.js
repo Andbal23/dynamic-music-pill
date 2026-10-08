@@ -666,11 +666,13 @@ export const ExpandedPlayer = GObject.registerClass(
             let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : 40;
             let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : 40;
 
+            let parseChan = (v, def) => { let n = parseInt(v); return isNaN(n) ? def : n; };
+
             if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
                 let customBg = this._settings.get_string('custom-bg-color').split(',');
-                safeR = parseInt(customBg[0]) || 40;
-                safeG = parseInt(customBg[1]) || 40;
-                safeB = parseInt(customBg[2]) || 40;
+                safeR = parseChan(customBg[0], 40);
+                safeG = parseChan(customBg[1], 40);
+                safeB = parseChan(customBg[2], 40);
             }
 
             let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${finalAlpha});`;
@@ -692,15 +694,25 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._vinylBin) this._vinylBin.opacity = 255;
             if (this._titleLabel) this._titleLabel.opacity = 255;
             if (this._artistLabel) this._artistLabel.opacity = 255;
-            if (this._visualizer) { this._visualizer.setColor({ r: safeR, g: safeG, b: safeB }); }
+            if (this._visualizer) {
+                if (this._settings.get_boolean('use-custom-colors')) {
+                    let customVis = this._settings.get_string('custom-vis-color').split(',');
+                    let vr = parseChan(customVis[0], 255);
+                    let vg = parseChan(customVis[1], 255);
+                    let vb = parseChan(customVis[2], 255);
+                    this._visualizer.setColor({ r: vr, g: vg, b: vb, exact: true });
+                } else {
+                    this._visualizer.setColor({ r: safeR, g: safeG, b: safeB });
+                }
+            }
 
             let fgR = 255, fgG = 255, fgB = 255;
 
             if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
                 let customTextStr = this._settings.get_string('custom-text-color').split(',');
-                fgR = parseInt(customTextStr[0]) || 255;
-                fgG = parseInt(customTextStr[1]) || 255;
-                fgB = parseInt(customTextStr[2]) || 255;
+                fgR = parseChan(customTextStr[0], 255);
+                fgG = parseChan(customTextStr[1], 255);
+                fgB = parseChan(customTextStr[2], 255);
             } else {
                 let brightness = (safeR * 299 + safeG * 587 + safeB * 114) / 1000;
                 if (brightness > 160) {

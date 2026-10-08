@@ -12,6 +12,7 @@ import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 import { LyricsClient } from './LyricsClient.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { SharedVisualizerEngine } from './visualizerEngine.js';
+import { getDockContainer } from './dockIntegration.js';
 
 
 
@@ -166,6 +167,18 @@ export class MusicController {
 
         global.display.connectObject('notify::focus-window', () => this._monitorGameMode(), this);
         this._settings.connectObject('changed::hide-default-player', () => this._updateDefaultPlayerVisibility(), this);
+        Main.uiGroup.connectObject(
+            'child-added', (_group, actor) => {
+                if (actor._simpleTaskbarPanelBox === 'dock' && this._settings?.get_int('target-container') === 0)
+                    this._queueInject();
+            },
+            'child-removed', (_group, actor) => {
+                if (actor._simpleTaskbarPanelBox === 'dock' && this._settings?.get_int('target-container') === 0)
+                    this._queueInject();
+            },
+            this
+        );
+        Main.layoutManager.connectObject('monitors-changed', () => this._queueInject(), this);
 
         if (Main.layoutManager._startingUp) {
             this._startupCompleteId = Main.layoutManager.connect('startup-complete', () => {
@@ -264,6 +277,8 @@ export class MusicController {
 
         global.display.disconnectObject(this);
         this._settings.disconnectObject(this);
+        Main.uiGroup.disconnectObject(this);
+        Main.layoutManager.disconnectObject(this);
 
         if (this._feedbackTimer) {
             GLib.Source.remove(this._feedbackTimer);
@@ -639,8 +654,7 @@ export class MusicController {
         let container = null;
 
         if (target === 0) {
-            let dtd = Main.panel.statusArea['dash-to-dock'] || Main.panel.statusArea['ubuntu-dock'];
-            container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
+            container = getDockContainer();
         } else if (target === 1) container = Main.panel._leftBox;
         else if (target === 2) container = Main.panel._centerBox;
         else if (target === 3) container = Main.panel._rightBox;
@@ -1425,8 +1439,7 @@ export class MusicController {
             let target = this._settings ? this._settings.get_int('target-container') : 0;
             let container = null;
             if (target === 0) {
-                let dtd = Main.panel.statusArea['dash-to-dock'] || Main.panel.statusArea['ubuntu-dock'];
-                container = (dtd && dtd._box) ? dtd._box : (Main.overview.dash._box || null);
+                container = getDockContainer();
             } else if (target === 1) container = Main.panel._leftBox;
             else if (target === 2) container = Main.panel._centerBox;
             else if (target === 3) container = Main.panel._rightBox;

@@ -38,11 +38,12 @@ const CavaVisualizer = GObject.registerClass(
             this.set_width(this._barCount * (bw + 2) - 2);
         }
 
-        setColor(c) {
+        setColor(c, isExact = false) {
+            let exact = isExact || (c && c.exact);
             let r = 255, g = 255, b = 255;
-            if (c && typeof c.r === 'number' && !isNaN(c.r)) r = Math.min(255, c.r + 100);
-            if (c && typeof c.g === 'number' && !isNaN(c.g)) g = Math.min(255, c.g + 100);
-            if (c && typeof c.b === 'number' && !isNaN(c.b)) b = Math.min(255, c.b + 100);
+            if (c && typeof c.r === 'number' && !isNaN(c.r)) r = exact ? c.r : Math.min(255, c.r + 100);
+            if (c && typeof c.g === 'number' && !isNaN(c.g)) g = exact ? c.g : Math.min(255, c.g + 100);
+            if (c && typeof c.b === 'number' && !isNaN(c.b)) b = exact ? c.b : Math.min(255, c.b + 100);
 
             this._colorR = r / 255.0; this._colorG = g / 255.0; this._colorB = b / 255.0;
             this.queue_repaint();
@@ -192,11 +193,12 @@ const SimulatedVisualizer = GObject.registerClass(
             this._bars.forEach(bar => { bar.set_pivot_point(0.5, pivotY); });
         }
 
-        setColor(c) {
+        setColor(c, isExact = false) {
+            let exact = isExact || (c && c.exact);
             let r = 255, g = 255, b = 255;
-            if (c && typeof c.r === 'number' && !isNaN(c.r)) r = Math.min(255, c.r + 100);
-            if (c && typeof c.g === 'number' && !isNaN(c.g)) g = Math.min(255, c.g + 100);
-            if (c && typeof c.b === 'number' && !isNaN(c.b)) b = Math.min(255, c.b + 100);
+            if (c && typeof c.r === 'number' && !isNaN(c.r)) r = exact ? c.r : Math.min(255, c.r + 100);
+            if (c && typeof c.g === 'number' && !isNaN(c.g)) g = exact ? c.g : Math.min(255, c.g + 100);
+            if (c && typeof c.b === 'number' && !isNaN(c.b)) b = exact ? c.b : Math.min(255, c.b + 100);
             this._color = `${Math.floor(r)},${Math.floor(g)},${Math.floor(b)}`;
             this._updateBarsCss();
             if (!this._isPlaying) this._updateVisuals(0);
@@ -308,7 +310,7 @@ export const WaveformVisualizer = GObject.registerClass(
             if (m === 3) {
                 if (!this._cava) {
                     this._cava = new CavaVisualizer(this._settings, this._isPopup);
-                    if (this._lastColor) this._cava.setColor(this._lastColor);
+                    if (this._lastColor) this._cava.setColor(this._lastColor, this._lastExact);
                 }
                 if (this.get_child() !== this._cava) this.set_child(this._cava);
                 this._cava.setPlaying(this._isPlaying);
@@ -323,10 +325,11 @@ export const WaveformVisualizer = GObject.registerClass(
             }
         }
 
-        setColor(c) {
+        setColor(c, isExact = false) {
             this._lastColor = c;
-            this._simulated.setColor(c);
-            if (this._cava) this._cava.setColor(c);
+            this._lastExact = isExact || (c && c.exact);
+            this._simulated.setColor(c, this._lastExact);
+            if (this._cava) this._cava.setColor(c, this._lastExact);
         }
 
         setPlaying(playing) {

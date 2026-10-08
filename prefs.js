@@ -21,7 +21,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius',
             'popup-vinyl-rotate', 'visualizer-padding', 'scroll-action', 'volume-scroll-target', 'popup-vinyl-square', 'popup-vinyl-shadow',
             'popup-show-vinyl', 'show-shuffle-loop', 'use-custom-colors', 'custom-bg-color',
-            'custom-text-color', 'tablet-mode', 'pill-controls-position', 'inline-artist', 'show-artist', 'pill-dynamic-width',
+            'custom-text-color', 'custom-vis-color', 'tablet-mode', 'pill-controls-position', 'inline-artist', 'show-artist', 'pill-dynamic-width',
             'popup-use-custom-width', 'popup-custom-width', 'player-filter-mode', 'player-filter-list', 'hide-text',
             'fallback-art-path', 'popup-show-visualizer', 'popup-hide-pill-visualizer', 'compatibility-delay',
             'popup-follow-custom-bg', 'popup-follow-custom-text', 'action-hover', 'hover-delay', 'selected-player-bus',
@@ -1083,6 +1083,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         colorGroup.add(createColorButtonRow(_('Background Color'), 'custom-bg-color'));
         colorGroup.add(createColorButtonRow(_('Text Color'), 'custom-text-color'));
+        colorGroup.add(createColorButtonRow(_('Visualizer Color'), 'custom-vis-color'));
 
         stylePage.add(colorGroup);
 

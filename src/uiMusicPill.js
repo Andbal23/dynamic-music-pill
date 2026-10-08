@@ -305,9 +305,15 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::hide-text', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::pill-dynamic-width', () => { this._updateDimensions(); if (this._isActiveState) this._body.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD }); }, this);
             this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
-            this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); }, this);
+            this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); this._updateVisualizerColor(); }, this);
             this._settings.connectObject('changed::custom-bg-color', () => this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b), this);
             this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
+            this._settings.connectObject('changed::custom-vis-color', () => {
+                this._updateVisualizerColor();
+                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle) {
+                    this._controller._expandedPlayer.updateStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+                }
+            }, this);
             this._settings.connectObject('changed::tablet-mode', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::pill-controls-position', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::scroll-action', () => { this._scrollDelta = 0; }, this);
@@ -360,8 +366,13 @@ export const MusicPill = GObject.registerClass(
                     this._allocTimer = null;
                     let parent = this.get_parent();
                     if (parent && !this._inPanel) {
-                        let [pw, ph] = parent.get_size();
-                        let side = (pw > 0 && ph > 0 && pw < ph);
+                        let side = false;
+                        if ('orientation' in parent && parent.orientation !== undefined) {
+                            side = (parent.orientation === Clutter.Orientation.VERTICAL);
+                        } else {
+                            let [pw, ph] = parent.get_size();
+                            side = (pw > 0 && ph > 0 && pw < ph);
+                        }
                         if (this._isSidePanel !== side) {
                             this._updateDimensions();
                         }
@@ -376,6 +387,7 @@ export const MusicPill = GObject.registerClass(
 
             this._updateTransparencyConfig();
             this._updateDimensions();
+            this._updateVisualizerColor();
 
             this._isActuallyVisible = true;
             this._cancellable = new Gio.Cancellable();
@@ -610,9 +622,13 @@ export const MusicPill = GObject.registerClass(
             let parent = this.get_parent();
             let isSidePanel = false;
             if (parent && !this._inPanel) {
-                let [pw, ph] = parent.get_size();
-                if (pw > 0 && ph > 0 && pw < ph) {
-                    isSidePanel = true;
+                if ('orientation' in parent && parent.orientation !== undefined) {
+                    isSidePanel = (parent.orientation === Clutter.Orientation.VERTICAL);
+                } else {
+                    let [pw, ph] = parent.get_size();
+                    if (pw > 0 && ph > 0 && pw < ph) {
+                        isSidePanel = true;
+                    }
                 }
             }
             this._isSidePanel = isSidePanel;
@@ -1068,6 +1084,7 @@ export const MusicPill = GObject.registerClass(
                     tempArtist = _('Waiting for playback...');
 
                     this._targetColor = { r: 40, g: 40, b: 40 };
+                    this._updateVisualizerColor();
                     this._lastArtUrl = null;
 
                     if (this._interfaceSettings && this._settings.get_boolean('sync-accent-color')) {
@@ -1347,7 +1364,7 @@ export const MusicPill = GObject.registerClass(
                                 }
 
                                 if (this._visualizer && this._visualizer.setColor) {
-                                    this._visualizer.setColor(this._targetColor);
+                                    this._updateVisualizerColor();
                                     this._startColorTransition();
                                 }
                             } catch (pixErr) {
@@ -1363,6 +1380,21 @@ export const MusicPill = GObject.registerClass(
                     }
                 }
             });
+        }
+
+        _updateVisualizerColor() {
+            if (!this._visualizer || !this._visualizer.setColor) return;
+
+            if (this._settings.get_boolean('use-custom-colors')) {
+                let visColorStr = this._settings.get_string('custom-vis-color').split(',');
+                let parseChan = (v, def) => { let n = parseInt(v); return isNaN(n) ? def : n; };
+                let r = parseChan(visColorStr[0], 255);
+                let g = parseChan(visColorStr[1], 255);
+                let b = parseChan(visColorStr[2], 255);
+                this._visualizer.setColor({ r, g, b, exact: true });
+            } else {
+                this._visualizer.setColor(this._targetColor || { r: 40, g: 40, b: 40 });
+            }
         }
 
         _startColorTransition() {
@@ -1408,9 +1440,10 @@ export const MusicPill = GObject.registerClass(
 
             if (this._settings.get_boolean('use-custom-colors')) {
                 let customBg = this._settings.get_string('custom-bg-color').split(',');
-                r = parseInt(customBg[0]) || 40;
-                g = parseInt(customBg[1]) || 40;
-                b = parseInt(customBg[2]) || 40;
+                let parseChan = (v, def) => { let n = parseInt(v); return isNaN(n) ? def : n; };
+                r = parseChan(customBg[0], 40);
+                g = parseChan(customBg[1], 40);
+                b = parseChan(customBg[2], 40);
             }
             if (!this._body || !this._body.get_parent()) return;
 
