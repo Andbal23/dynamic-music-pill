@@ -15,7 +15,7 @@ import { LyricsWidget } from './uiLyricsWidget.js';
 
 export const ExpandedPlayer = GObject.registerClass(
     class ExpandedPlayer extends St.Widget {
-        _init(controller) {
+        _init(controller, pill) {
             let [bgW, bgH] = global.display.get_size();
 
             super._init({
@@ -28,6 +28,7 @@ export const ExpandedPlayer = GObject.registerClass(
             });
 
             this._controller = controller;
+            this._pill = pill;
             this._settings = controller._settings;
             this._player = null;
             this._updateTimer = null;
@@ -1802,7 +1803,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._visualizer.visible = showVis;
 
             if (showVis && this._settings.get_boolean('popup-hide-pill-visualizer')) {
-                if (this._controller._pill) this._controller._pill._setPopupOpen(true);
+                this._pill._setPopupOpen(true);
             }
 
             this._updateCustomButtons();
@@ -1833,7 +1834,7 @@ export const ExpandedPlayer = GObject.registerClass(
             restoreDashToDockAutohide()
             this._stopTimer();
             this._stopVinyl();
-            if (this._controller._pill) this._controller._pill._setPopupOpen(false);
+            if (this._controller._pills().includes(this._pill)) this._pill._setPopupOpen(false);
             this.ease({
                 opacity: 0,
                 duration: 200,
@@ -2094,7 +2095,10 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         animateResize() {
-            if (!this._box || !this._controller || !this._controller._pill) return;
+            if (!this._box || !this._controller) return;
+            // The pill can be destroyed with its dock while the popup is open.
+            if (!this._controller._pills().includes(this._pill)) this._pill = this._controller._getAnchorPill();
+            if (!this._pill) return;
             if (this._currentSubPage) return;
 
             if (this._resizeDebounceId) {
@@ -2159,8 +2163,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 if (currentW > 0) this._box.set_width(currentW);
 
-                let pill = this._controller._pill;
-                if (!pill || !pill.get_parent()) return GLib.SOURCE_REMOVE;
+                let pill = this._pill;
+                if (!this._controller._pills().includes(pill) || !pill.get_parent()) return GLib.SOURCE_REMOVE;
                 let [px, py] = pill.get_transformed_position();
                 let [pw, ph] = pill.get_transformed_size();
                 let monitor = Main.layoutManager.findMonitorForActor(pill);

@@ -6,13 +6,13 @@ import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
-import { smartUnpack, initDTDModule, getPlayerIcon } from './utils.js';
+import { smartUnpack, initDTDModule, getDockManager, getPlayerIcon } from './utils.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 import { LyricsClient } from './LyricsClient.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { SharedVisualizerEngine } from './visualizerEngine.js';
-import { getDockContainer } from './dockIntegration.js';
+import { getDockContainer, getSecondaryDockContainers } from './dockIntegration.js';
 
 
 
@@ -91,6 +91,9 @@ export class MusicController {
         this._lastWinnerName = null;
         this._lastActionTime = 0;
         this._currentDock = null;
+        this._mirrorPills = new Map();
+        this._activePill = null;
+        this._dragFixDashes = new Set();
         this._isMovingItem = false;
 
         this._trackHistory = [];
@@ -146,6 +149,14 @@ export class MusicController {
         }
     }
 
+    _pills() {
+        return [this._pill, ...this._mirrorPills.values()].filter(Boolean);
+    }
+
+    _getAnchorPill() {
+        return this._pills().includes(this._activePill) ? this._activePill : this._pill;
+    }
+
     enable() {
         this._isShuttingDown = false;
         this._createPill();
@@ -189,7 +200,7 @@ export class MusicController {
 
         this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
             this._monitorGameMode();
-            if (!this._pill || !this._pill.get_parent()) {
+            if (!this._pill || this._pills().some(p => !p.get_parent())) {
                 this._inject();
             }
             return GLib.SOURCE_CONTINUE;
@@ -205,7 +216,7 @@ export class MusicController {
         this._createLyricProxy();
         this._settings.connectObject('changed::enable-lyrics', () => {
             if (!this._settings.get_boolean('enable-lyrics')) {
-                if (this._pill) this._pill.setLyric(null);
+                this._pills().forEach(p => p.setLyric(null));
                 this._stopLyricsTimer();
                 this._fetchedLyricsData = null;
                 this._fetchedTrackKey = null;
@@ -306,6 +317,7 @@ export class MusicController {
             this._expandedPlayer.destroy();
             this._expandedPlayer = null;
         }
+        for (const pill of this._mirrorPills.values()) pill.destroy();
         if (this._pill) {
             this._pill.destroy();
             this._pill = null;
@@ -502,21 +514,22 @@ export class MusicController {
             return;
         }
 
-        this._expandedPlayer = new ExpandedPlayer(this);
+        let pill = this._getAnchorPill();
+        this._expandedPlayer = new ExpandedPlayer(this, pill);
         this._expandedPlayer.connect('destroy', () => { this._expandedPlayer = null; });
         Main.layoutManager.addChrome(this._expandedPlayer);
 
         let player = this._getActivePlayer();
         if (!player) return;
 
-        let [px, py] = this._pill.get_transformed_position();
-        let [pw, ph] = this._pill.get_transformed_size();
-        let monitor = Main.layoutManager.findMonitorForActor(this._pill);
+        let [px, py] = pill.get_transformed_position();
+        let [pw, ph] = pill.get_transformed_size();
+        let monitor = Main.layoutManager.findMonitorForActor(pill);
 
-        let c = this._pill._displayedColor;
-        this._expandedPlayer.updateStyle(c.r, c.g, c.b, this._pill._currentBgAlpha);
+        let c = pill._displayedColor;
+        this._expandedPlayer.updateStyle(c.r, c.g, c.b, pill._currentBgAlpha);
 
-        let artUrl = this._pill._lastArtUrl;
+        let artUrl = pill._lastArtUrl;
         this._expandedPlayer.showFor(player, artUrl);
 
         this._expandedPlayer._box.set_width(-1);
@@ -567,9 +580,8 @@ export class MusicController {
     }
 
     _monitorGameMode() {
-        if (!this._pill) return;
         let isGame = this._isGameModeActive();
-        this._pill.setGameMode(isGame);
+        for (const pill of this._pills()) pill.setGameMode(isGame);
     }
 
     _queueInject() {
@@ -581,14 +593,14 @@ export class MusicController {
         });
     }
 
-    _ensurePosition(container) {
+    _ensurePosition(container, pill = this._pill) {
         if (!container || this._isMovingItem || this._isUserDragging) return false;
 
         let mode = this._settings ? this._settings.get_int('position-mode') : 1;
         let manualIndex = this._settings ? this._settings.get_int('dock-position') : 0;
 
         let children = container.get_children();
-        let otherChildren = children.filter(c => c !== this._pill);
+        let otherChildren = children.filter(c => c !== pill);
         let realItemCount = otherChildren.length;
         let targetIndex = 0;
 
@@ -600,14 +612,14 @@ export class MusicController {
         if (targetIndex > realItemCount) targetIndex = realItemCount;
         if (targetIndex < 0) targetIndex = 0;
 
-        let currentIndex = children.indexOf(this._pill);
-        let pillParent = this._pill.get_parent();
+        let currentIndex = children.indexOf(pill);
+        let pillParent = pill.get_parent();
 
         if (currentIndex === -1 && pillParent === container) {
             currentIndex = 0;
         }
         if (pillParent && pillParent !== container) {
-            pillParent.remove_child(this._pill);
+            pillParent.remove_child(pill);
             currentIndex = -1;
         }
 
@@ -615,9 +627,9 @@ export class MusicController {
             this._isMovingItem = true;
 
             if (currentIndex !== -1) {
-                container.set_child_at_index(this._pill, targetIndex);
+                container.set_child_at_index(pill, targetIndex);
             } else {
-                container.insert_child_at_index(this._pill, targetIndex);
+                container.insert_child_at_index(pill, targetIndex);
             }
 
             this._isMovingItem = false;
@@ -637,9 +649,10 @@ export class MusicController {
 
         let target = this._settings ? this._settings.get_int('target-container') : 0;
         let container = null;
+        let docks = target === 0 ? this._dockContainers() : [];
 
         if (target === 0) {
-            container = getDockContainer();
+            container = docks[0];
         } else if (target === 1) container = Main.panel._leftBox;
         else if (target === 2) container = Main.panel._centerBox;
         else if (target === 3) container = Main.panel._rightBox;
@@ -659,6 +672,7 @@ export class MusicController {
         }
 
         if (target === 0 && this._currentDock !== container) {
+            this._currentDock?.disconnectObject(this);
             this._currentDock = container;
             container.connectObject('child-added', (c, actor) => {
                 if (actor !== this._pill && !this._isMovingItem) this._queueInject();
@@ -686,6 +700,51 @@ export class MusicController {
         if (target === 0) {
             this._setupDragFix(container);
         }
+
+        this._syncMirrorPills(docks.slice(1));
+    }
+
+    _dockContainers() {
+        let mode = this._settings.get_int('dock-monitors');
+        if (mode === 0) return [getDockContainer()];
+
+        // The dock may be enabled after this extension; the import can also resolve after disable().
+        if (!getDockManager()) {
+            initDTDModule()?.then(() => {
+                if (this._watchdog && getDockManager()) this._queueInject();
+            });
+        }
+        let secondary = getSecondaryDockContainers();
+        if (mode === 2 && secondary.length > 0) return secondary;
+        return [getDockContainer(), ...secondary];
+    }
+
+    _syncMirrorPills(docks) {
+        for (const [container, pill] of this._mirrorPills) {
+            if (!docks.includes(container)) pill.destroy();
+        }
+
+        let created = false;
+        for (const container of docks) {
+            let pill = this._mirrorPills.get(container);
+            if (!pill) {
+                pill = new MusicPill(this, true);
+                this._mirrorPills.set(container, pill);
+                pill.connect('destroy', () => this._mirrorPills.delete(container));
+                container.connectObject(
+                    'child-added', (c, actor) => {
+                        if (actor !== pill && !this._isMovingItem) this._queueInject();
+                    },
+                    'child-removed', () => {
+                        if (!this._isMovingItem) this._queueInject();
+                    }, pill);
+                created = true;
+            }
+            if (this._ensurePosition(container, pill)) pill._updateDimensions();
+            this._setupDragFix(container);
+        }
+
+        if (created) this._triggerUpdate();
     }
 
     _setupDragFix(container) {
@@ -693,9 +752,11 @@ export class MusicController {
         if (!dash || typeof dash.handleDragOver !== 'function') return;
         if (dash._musicPillOrigHandleDragOver) return;
 
+        const pillIn = () => this._pills().find(p => p.get_parent() === container);
+
         const _adjustX = (x) => {
-            const pill = this._pill;
-            if (!pill || pill.get_parent() !== container) return x;
+            const pill = pillIn();
+            if (!pill) return x;
             const pillWidth = pill.get_width();
             const pillX = pill.x;
             if (x > pillX + pillWidth) return x - pillWidth;
@@ -704,8 +765,8 @@ export class MusicController {
         };
 
         const _adjustWidth = (fn) => {
-            const pill = this._pill;
-            const pillWidth = (pill && pill.get_parent() === container) ? pill.get_width() : 0;
+            const pill = pillIn();
+            const pillWidth = pill ? pill.get_width() : 0;
             if (pillWidth > 0) {
                 Object.defineProperty(container, 'width', {
                     get() { return container.get_width() - pillWidth; },
@@ -725,7 +786,7 @@ export class MusicController {
         if (typeof dash.acceptDrop === 'function') {
             dash._musicPillOrigAcceptDrop = dash.acceptDrop;
             dash.acceptDrop = (source, actor, x, y, time) => {
-                const pill = this._pill;
+                const pill = pillIn();
                 const parent = pill ? pill.get_parent() : null;
 
                 if (parent) {
@@ -741,7 +802,7 @@ export class MusicController {
                 } finally {
                     if (pill && parent) {
                         this._isMovingItem = true;
-                        this._ensurePosition(container);
+                        this._ensurePosition(container, pill);
                         this._isMovingItem = false;
                     }
                 }
@@ -749,23 +810,23 @@ export class MusicController {
             };
         }
 
-        this._dragFixDash = dash;
+        this._dragFixDashes.add(dash);
+        dash.connectObject('destroy', () => this._dragFixDashes.delete(dash), this);
     }
 
     _teardownDragFix() {
-        if (!this._dragFixDash) return;
-        const dash = this._dragFixDash;
-
-        if (dash._musicPillOrigHandleDragOver) {
-            dash.handleDragOver = dash._musicPillOrigHandleDragOver;
-            delete dash._musicPillOrigHandleDragOver;
+        for (const dash of this._dragFixDashes) {
+            dash.disconnectObject(this);
+            if (dash._musicPillOrigHandleDragOver) {
+                dash.handleDragOver = dash._musicPillOrigHandleDragOver;
+                delete dash._musicPillOrigHandleDragOver;
+            }
+            if (dash._musicPillOrigAcceptDrop) {
+                dash.acceptDrop = dash._musicPillOrigAcceptDrop;
+                delete dash._musicPillOrigAcceptDrop;
+            }
         }
-        if (dash._musicPillOrigAcceptDrop) {
-            dash.acceptDrop = dash._musicPillOrigAcceptDrop;
-            delete dash._musicPillOrigAcceptDrop;
-        }
-
-        this._dragFixDash = null;
+        this._dragFixDashes.clear();
     }
 
     _scan() {
@@ -1131,12 +1192,12 @@ export class MusicController {
                 let activeBus = active ? (active._busName || "") : "";
 
                 if (!active || lrc.content === "" || !activeBus.includes(lrc.sender)) {
-                    if (this._pill) this._pill.setLyric(null);
+                    this._pills().forEach(p => p.setLyric(null));
                     this._dbusLyricActive = false;
                 } else {
                     this._dbusLyricActive = true;
                     this._stopLyricsTimer();
-                    if (this._pill) this._pill.setLyric(lrc);
+                    this._pills().forEach(p => p.setLyric(lrc));
                 }
             } catch (e) {
                 console.debug(`[DynamicMusicPill] Lyric error: ${e}`);
@@ -1273,7 +1334,7 @@ export class MusicController {
 
         // If position hasn't changed for ~3 seconds (15 ticks × 200ms), hide lyrics
         if (this._stalePositionCount > 15) {
-            if (this._pill) this._pill.setLyric(null);
+            this._pills().forEach(p => p.setLyric(null));
             return;
         }
 
@@ -1306,7 +1367,7 @@ export class MusicController {
                 words: enablePillWordLevel ? (currentLine.words || null) : null,
                 positionMs: positionMs,
             };
-            this._pill.setLyric(lrc);
+            this._pills().forEach(p => p.setLyric(lrc));
         }
     }
 
@@ -1388,7 +1449,7 @@ export class MusicController {
             let target = this._settings ? this._settings.get_int('target-container') : 0;
             let container = null;
             if (target === 0) {
-                container = getDockContainer();
+                container = this._dockContainers()[0];
             } else if (target === 1) container = Main.panel._leftBox;
             else if (target === 2) container = Main.panel._centerBox;
             else if (target === 3) container = Main.panel._rightBox;
@@ -1397,6 +1458,8 @@ export class MusicController {
                 let moved = this._ensurePosition(container);
                 if (moved) {
                     this._pill._updateDimensions();
+                    // Let _inject() watch the new container and sync the other docks.
+                    this._queueInject();
                 }
             }
 
@@ -1669,7 +1732,7 @@ export class MusicController {
                     let currentTrackKey = `${currentTitle}||${currentArtist}`;
 
                     if (currentTitle && this._fetchedTrackKey !== currentTrackKey) {
-                        this._pill.setLyric(null);
+                        this._pills().forEach(p => p.setLyric(null));
                         this._fetchNetworkLyrics(active);
                     } else if (this._fetchedLyricsData && active.PlaybackStatus === 'Playing') {
                         this._startLyricsTimer();
@@ -1685,7 +1748,7 @@ export class MusicController {
                     }
                 }
 
-                this._pill.updateDisplay(title, artist, finalDisplayArt, active.PlaybackStatus, active._busName, isSkipActive, active);
+                this._pills().forEach(p => p.updateDisplay(title, artist, finalDisplayArt, active.PlaybackStatus, active._busName, isSkipActive, active));
             } else {
                 this._stopLyricsTimer();
                 this._fetchedTrackKey = null;
@@ -1693,7 +1756,7 @@ export class MusicController {
                 this._dbusLyricActive = false;
                 this._lastLyricIndex = -1;
                 this._lastPositionSync = 0;
-                this._pill.updateDisplay(null, null, null, 'Stopped', null, false);
+                this._pills().forEach(p => p.updateDisplay(null, null, null, 'Stopped', null, false));
             }
         } catch (e) {
             console.debug(`[Dynamic Music Pill] _updateUI error: ${e.message}`);
@@ -1799,93 +1862,96 @@ export class MusicController {
     previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
 
     _showPillFeedback(iconNameOrGicon, text, percent = null) {
-        if (!this._pill || !this._pill._textWrapper) return;
+        let pill = this._getAnchorPill();
+        if (!pill || !pill._textWrapper) return;
 
         if (this._feedbackTimer) {
             GLib.Source.remove(this._feedbackTimer);
             this._feedbackTimer = null;
         }
 
-        if (!this._pill._feedbackBox) {
-            this._pill._feedbackBox = new St.BoxLayout({
+        if (!pill._feedbackBox) {
+            pill._feedbackBox = new St.BoxLayout({
                 orientation: Clutter.Orientation.HORIZONTAL,
                 x_align: Clutter.ActorAlign.CENTER,
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'spacing: 8px;'
             });
 
-            this._pill._feedbackIcon = new St.Icon({ icon_size: 16 });
-            this._pill._feedbackLabel = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
+            pill._feedbackIcon = new St.Icon({ icon_size: 16 });
+            pill._feedbackLabel = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
 
-            this._pill._feedbackSliderBg = new St.Widget({
+            pill._feedbackSliderBg = new St.Widget({
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'border-radius: 4px;',
                 height: 6,
                 width: 80
             });
-            this._pill._feedbackSliderFill = new St.Widget({
+            pill._feedbackSliderFill = new St.Widget({
                 style: 'border-radius: 4px;',
                 height: 6,
                 width: 0
             });
-            this._pill._feedbackSliderBg.add_child(this._pill._feedbackSliderFill);
+            pill._feedbackSliderBg.add_child(pill._feedbackSliderFill);
 
-            this._pill._feedbackBox.add_child(this._pill._feedbackIcon);
-            this._pill._feedbackBox.add_child(this._pill._feedbackSliderBg);
-            this._pill._feedbackBox.add_child(this._pill._feedbackLabel);
+            pill._feedbackBox.add_child(pill._feedbackIcon);
+            pill._feedbackBox.add_child(pill._feedbackSliderBg);
+            pill._feedbackBox.add_child(pill._feedbackLabel);
 
-            this._pill._textWrapper.add_child(this._pill._feedbackBox);
+            pill._textWrapper.add_child(pill._feedbackBox);
         }
 
-        let c = this._pill._displayedColor || { r: 40, g: 40, b: 40 };
+        let c = pill._displayedColor || { r: 40, g: 40, b: 40 };
         let brightness = (c.r * 299 + c.g * 587 + c.b * 114) / 1000;
         let isLight = brightness > 160;
         let color = isLight ? 'rgb(30, 30, 30)' : 'rgb(255, 255, 255)';
         let bgTrack = isLight ? 'rgba(30, 30, 30, 0.2)' : 'rgba(255, 255, 255, 0.2)';
 
         if (typeof iconNameOrGicon === 'string') {
-            this._pill._feedbackIcon.icon_name = iconNameOrGicon;
-            this._pill._feedbackIcon.gicon = null;
-            this._pill._feedbackIcon.fallback_icon_name = 'audio-x-generic-symbolic';
+            pill._feedbackIcon.icon_name = iconNameOrGicon;
+            pill._feedbackIcon.gicon = null;
+            pill._feedbackIcon.fallback_icon_name = 'audio-x-generic-symbolic';
         } else {
-            this._pill._feedbackIcon.icon_name = null;
-            this._pill._feedbackIcon.fallback_icon_name = null;
-            this._pill._feedbackIcon.gicon = iconNameOrGicon;
+            pill._feedbackIcon.icon_name = null;
+            pill._feedbackIcon.fallback_icon_name = null;
+            pill._feedbackIcon.gicon = iconNameOrGicon;
         }
-        this._pill._feedbackIcon.set_style(`color: ${color};`);
+        pill._feedbackIcon.set_style(`color: ${color};`);
 
-        this._pill._feedbackLabel.text = text;
-        this._pill._feedbackLabel.set_style(`font-size: 10.5pt; font-weight: bold; color: ${color};`);
+        pill._feedbackLabel.text = text;
+        pill._feedbackLabel.set_style(`font-size: 10.5pt; font-weight: bold; color: ${color};`);
 
         if (percent !== null) {
-            this._pill._feedbackSliderBg.show();
-            this._pill._feedbackSliderBg.set_style(`background-color: ${bgTrack}; border-radius: 4px;`);
-            this._pill._feedbackSliderFill.set_style(`background-color: ${color}; border-radius: 4px;`);
+            pill._feedbackSliderBg.show();
+            pill._feedbackSliderBg.set_style(`background-color: ${bgTrack}; border-radius: 4px;`);
+            pill._feedbackSliderFill.set_style(`background-color: ${color}; border-radius: 4px;`);
 
-            this._pill._feedbackSliderFill.ease({
+            pill._feedbackSliderFill.ease({
                 width: Math.max(0, percent * 80),
                 duration: 100,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD
             });
 
-            this._pill._feedbackLabel.text = `${Math.round(percent * 100)}%`;
+            pill._feedbackLabel.text = `${Math.round(percent * 100)}%`;
         } else {
-            this._pill._feedbackSliderBg.hide();
+            pill._feedbackSliderBg.hide();
         }
 
-        this._pill._textBox.ease({ opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-        this._pill._feedbackBox.opacity = 0;
-        this._pill._feedbackBox.show();
-        this._pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        pill._textBox.ease({ opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        pill._feedbackBox.opacity = 0;
+        pill._feedbackBox.show();
+        pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
 
         this._feedbackTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
             this._feedbackTimer = null;
-            if (this._pill && this._pill._feedbackBox) {
-                this._pill._feedbackBox.ease({
+            // The previous feedback may still be on another pill.
+            for (const pill of this._pills()) {
+                if (!pill._feedbackBox) continue;
+                pill._feedbackBox.ease({
                     opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: () => { this._pill._feedbackBox.hide(); }
+                    onStopped: () => { pill._feedbackBox.hide(); }
                 });
-                this._pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
             }
             return GLib.SOURCE_REMOVE;
         });

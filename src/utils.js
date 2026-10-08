@@ -129,6 +129,11 @@ function _refreshDockManager() {
     }
 }
 
+export function getDockManager() {
+    _refreshDockManager();
+    return _dtdDockManager;
+}
+
 function _applyDisable() {
     _refreshDockManager();
     if (!_dtdDockManager) return;

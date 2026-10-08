@@ -12,7 +12,7 @@ import { WaveformVisualizer } from './uiVisualizers.js';
 
 export const MusicPill = GObject.registerClass(
     class MusicPill extends St.Widget {
-        _init(controller) {
+        _init(controller, isMirror = false) {
             super._init({
                 style_class: 'music-pill-container',
                 reactive: false,
@@ -200,6 +200,7 @@ export const MusicPill = GObject.registerClass(
 
             this.connectObject('enter-event', () => {
                 this._isHovered = true;
+                this._controller._activePill = this;
                 if (this._titleScroll) this._titleScroll.setHoverMode(true);
                 if (this._artistScroll) this._artistScroll.setHoverMode(true);
                 let delay = this._settings.get_int('hover-delay');
@@ -309,7 +310,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::custom-vis-color', () => {
                 this._updateVisualizerColor();
-                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle) {
+                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle && this._controller._expandedPlayer._pill === this) {
                     this._controller._expandedPlayer.updateStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
                 }
             }, this);
@@ -342,6 +343,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::dock-position', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::position-mode', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::target-container', () => this._controller._queueInject(), this);
+            this._settings.connectObject('changed::dock-monitors', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::visualizer-style', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::border-radius', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
@@ -401,11 +403,14 @@ export const MusicPill = GObject.registerClass(
                 return GLib.SOURCE_CONTINUE;
             });
 
-            try {
-                this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
-                this._originalAccent = this._interfaceSettings.get_string('accent-color');
-            } catch (e) {
-                this._interfaceSettings = null; //for older gnomes
+            // A mirror created during playback would save the synced accent as the original.
+            if (!isMirror) {
+                try {
+                    this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
+                    this._originalAccent = this._interfaceSettings.get_string('accent-color');
+                } catch (e) {
+                    this._interfaceSettings = null; //for older gnomes
+                }
             }
 
             this.connect('destroy', this._cleanup.bind(this));
@@ -1476,7 +1481,8 @@ export const MusicPill = GObject.registerClass(
             }
             this._displayedColor = { r: safeDynR, g: safeDynG, b: safeDynB };
 
-            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
+            // Only the pill the popup is anchored to sets its colour.
+            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer._pill === this) {
                 if (this._controller._expandedPlayer.updateStyle) {
                     this._controller._expandedPlayer.updateStyle(safeDynR, safeDynG, safeDynB, alpha);
                 }

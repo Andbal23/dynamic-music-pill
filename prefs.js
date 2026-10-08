@@ -13,7 +13,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'scroll-text', 'scroll-on-hover-only', 'freeze-scroll-on-pause', 'show-album-art', 'enable-shadow', 'hide-default-player',
             'shadow-blur', 'shadow-opacity', 'pill-width', 'panel-pill-width',
             'pill-height', 'panel-pill-height', 'vertical-offset', 'horizontal-offset',
-            'position-mode', 'dock-position', 'target-container', 'enable-gamemode',
+            'position-mode', 'dock-position', 'target-container', 'dock-monitors', 'enable-gamemode',
             'visualizer-style', 'border-radius', 'enable-transparency', 'transparency-strength',
             'transparency-art', 'transparency-text', 'transparency-vis', 'invert-scroll-animation',
             'enable-scroll-controls', 'action-left-click', 'action-middle-click',
@@ -942,6 +942,20 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         });
         posGroup.add(targetRow);
 
+        const monitorsModel = new Gtk.StringList();
+        monitorsModel.append(_("Main Dock Only"));
+        monitorsModel.append(_("All Docks"));
+        monitorsModel.append(_("Secondary Docks Only"));
+
+        const monitorsRow = new Adw.ComboRow({
+            title: _('Multi-Monitor Docks'),
+            subtitle: _('Which docks show the pill when the dock is on all monitors'),
+            model: monitorsModel,
+            selected: settings.get_int('dock-monitors')
+        });
+        monitorsRow.connect('notify::selected', () => { settings.set_int('dock-monitors', monitorsRow.selected); });
+        posGroup.add(monitorsRow);
+
         const dynWidthRow = new Adw.ActionRow({ title: _('Dynamic Width'), subtitle: _('Auto-adjust pill width (slider acts as max width)') });
         const dynWidthToggle = new Gtk.Switch({ active: settings.get_boolean('pill-dynamic-width'), valign: Gtk.Align.CENTER });
         settings.bind('pill-dynamic-width', dynWidthToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
@@ -1796,6 +1810,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         window.add(aboutPage);
 
         function updateGroupVisibility(targetVal) {
+            monitorsRow.set_visible(targetVal === 0);
             if (targetVal === 0) {
                 dockDimGroup.set_visible(true);
                 panelDimGroup.set_visible(false);
