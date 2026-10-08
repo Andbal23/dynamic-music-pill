@@ -310,7 +310,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::custom-vis-color', () => {
                 this._updateVisualizerColor();
-                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle) {
+                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle && this._controller._expandedPlayer._pill === this) {
                     this._controller._expandedPlayer.updateStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
                 }
             }, this);
@@ -343,6 +343,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::dock-position', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::position-mode', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::target-container', () => this._controller._queueInject(), this);
+            this._settings.connectObject('changed::dock-monitors', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::visualizer-style', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::border-radius', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
@@ -1480,7 +1481,8 @@ export const MusicPill = GObject.registerClass(
             }
             this._displayedColor = { r: safeDynR, g: safeDynG, b: safeDynB };
 
-            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
+            // Only the pill the popup is anchored to sets its colour.
+            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer._pill === this) {
                 if (this._controller._expandedPlayer.updateStyle) {
                     this._controller._expandedPlayer.updateStyle(safeDynR, safeDynG, safeDynB, alpha);
                 }

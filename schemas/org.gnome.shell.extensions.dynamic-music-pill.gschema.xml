@@ -335,6 +335,10 @@
       <default>0</default>
       <range min="0" max="3"/>
     </key>
+    <key name="dock-monitors" type="i">
+      <default>0</default>
+      <range min="0" max="2"/>
+    </key>
     <key name="show-album-art" type="b">
       <default>true</default>
       <summary>Show Album Art</summary>

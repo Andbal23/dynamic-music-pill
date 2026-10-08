@@ -2095,7 +2095,10 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         animateResize() {
-            if (!this._box || !this._controller || !this._controller._pills().includes(this._pill)) return;
+            if (!this._box || !this._controller) return;
+            // The pill can be destroyed with its dock while the popup is open.
+            if (!this._controller._pills().includes(this._pill)) this._pill = this._controller._getAnchorPill();
+            if (!this._pill) return;
             if (this._currentSubPage) return;
 
             if (this._resizeDebounceId) {
@@ -2160,7 +2163,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 if (currentW > 0) this._box.set_width(currentW);
 
-                // The pill can be destroyed with its dock while the popup is open.
                 let pill = this._pill;
                 if (!this._controller._pills().includes(pill) || !pill.get_parent()) return GLib.SOURCE_REMOVE;
                 let [px, py] = pill.get_transformed_position();

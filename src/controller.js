@@ -12,7 +12,7 @@ import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 import { LyricsClient } from './LyricsClient.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { SharedVisualizerEngine } from './visualizerEngine.js';
-import { getDockContainer } from './dockIntegration.js';
+import { getDockContainer, getSecondaryDockContainers } from './dockIntegration.js';
 
 
 
@@ -160,10 +160,7 @@ export class MusicController {
     enable() {
         this._isShuttingDown = false;
         this._createPill();
-        // Mirrors need the dock module; the import can resolve before _doEnable() or after disable().
-        initDTDModule()?.then(() => {
-            if (this._watchdog) this._queueInject();
-        });
+        initDTDModule();
 
         global.display.connectObject('notify::focus-window', () => this._monitorGameMode(), this);
         this._settings.connectObject('changed::hide-default-player', () => this._updateDefaultPlayerVisibility(), this);
@@ -203,7 +200,7 @@ export class MusicController {
 
         this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
             this._monitorGameMode();
-            if (!this._pill || !this._pill.get_parent()) {
+            if (!this._pill || this._pills().some(p => !p.get_parent())) {
                 this._inject();
             }
             return GLib.SOURCE_CONTINUE;
@@ -652,9 +649,10 @@ export class MusicController {
 
         let target = this._settings ? this._settings.get_int('target-container') : 0;
         let container = null;
+        let docks = target === 0 ? this._dockContainers() : [];
 
         if (target === 0) {
-            container = getDockContainer();
+            container = docks[0];
         } else if (target === 1) container = Main.panel._leftBox;
         else if (target === 2) container = Main.panel._centerBox;
         else if (target === 3) container = Main.panel._rightBox;
@@ -674,6 +672,7 @@ export class MusicController {
         }
 
         if (target === 0 && this._currentDock !== container) {
+            this._currentDock?.disconnectObject(this);
             this._currentDock = container;
             container.connectObject('child-added', (c, actor) => {
                 if (actor !== this._pill && !this._isMovingItem) this._queueInject();
@@ -702,25 +701,36 @@ export class MusicController {
             this._setupDragFix(container);
         }
 
-        this._syncMirrorPills(target);
+        this._syncMirrorPills(docks.slice(1));
     }
 
-    _syncMirrorPills(target) {
-        let manager = target === 0 ? getDockManager() : null;
-        let docks = manager ? manager._allDocks.filter(d => d !== manager.mainDock) : [];
+    _dockContainers() {
+        let mode = this._settings.get_int('dock-monitors');
+        if (mode === 0) return [getDockContainer()];
 
-        for (const [dock, pill] of this._mirrorPills) {
-            if (!docks.includes(dock)) pill.destroy();
+        // The dock may be enabled after this extension; the import can also resolve after disable().
+        if (!getDockManager()) {
+            initDTDModule()?.then(() => {
+                if (this._watchdog && getDockManager()) this._queueInject();
+            });
+        }
+        let secondary = getSecondaryDockContainers();
+        if (mode === 2 && secondary.length > 0) return secondary;
+        return [getDockContainer(), ...secondary];
+    }
+
+    _syncMirrorPills(docks) {
+        for (const [container, pill] of this._mirrorPills) {
+            if (!docks.includes(container)) pill.destroy();
         }
 
         let created = false;
-        for (const dock of docks) {
-            let container = dock.dash._box;
-            let pill = this._mirrorPills.get(dock);
+        for (const container of docks) {
+            let pill = this._mirrorPills.get(container);
             if (!pill) {
                 pill = new MusicPill(this, true);
-                this._mirrorPills.set(dock, pill);
-                pill.connect('destroy', () => this._mirrorPills.delete(dock));
+                this._mirrorPills.set(container, pill);
+                pill.connect('destroy', () => this._mirrorPills.delete(container));
                 container.connectObject(
                     'child-added', (c, actor) => {
                         if (actor !== pill && !this._isMovingItem) this._queueInject();
@@ -1439,7 +1449,7 @@ export class MusicController {
             let target = this._settings ? this._settings.get_int('target-container') : 0;
             let container = null;
             if (target === 0) {
-                container = getDockContainer();
+                container = this._dockContainers()[0];
             } else if (target === 1) container = Main.panel._leftBox;
             else if (target === 2) container = Main.panel._centerBox;
             else if (target === 3) container = Main.panel._rightBox;
@@ -1448,6 +1458,8 @@ export class MusicController {
                 let moved = this._ensurePosition(container);
                 if (moved) {
                     this._pill._updateDimensions();
+                    // Let _inject() watch the new container and sync the other docks.
+                    this._queueInject();
                 }
             }
 
@@ -1850,29 +1862,13 @@ export class MusicController {
     previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
 
     _showPillFeedback(iconNameOrGicon, text, percent = null) {
+        let pill = this._getAnchorPill();
+        if (!pill || !pill._textWrapper) return;
+
         if (this._feedbackTimer) {
             GLib.Source.remove(this._feedbackTimer);
             this._feedbackTimer = null;
         }
-
-        for (const pill of this._pills()) this._showFeedbackOn(pill, iconNameOrGicon, text, percent);
-
-        this._feedbackTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
-            this._feedbackTimer = null;
-            for (const pill of this._pills()) {
-                if (!pill._feedbackBox) continue;
-                pill._feedbackBox.ease({
-                    opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: () => { pill._feedbackBox.hide(); }
-                });
-                pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-            }
-            return GLib.SOURCE_REMOVE;
-        });
-    }
-
-    _showFeedbackOn(pill, iconNameOrGicon, text, percent) {
-        if (!pill._textWrapper) return;
 
         if (!pill._feedbackBox) {
             pill._feedbackBox = new St.BoxLayout({
@@ -1945,6 +1941,20 @@ export class MusicController {
         pill._feedbackBox.opacity = 0;
         pill._feedbackBox.show();
         pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+
+        this._feedbackTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
+            this._feedbackTimer = null;
+            // The previous feedback may still be on another pill.
+            for (const pill of this._pills()) {
+                if (!pill._feedbackBox) continue;
+                pill._feedbackBox.ease({
+                    opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => { pill._feedbackBox.hide(); }
+                });
+                pill._textBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            }
+            return GLib.SOURCE_REMOVE;
+        });
     }
 
     _getAppStream(player = null) {
