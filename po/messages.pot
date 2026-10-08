@@ -852,6 +852,10 @@ msgstr ""
 msgid "Text Color"
 msgstr ""
 
+#: prefs.js:1086
+msgid "Visualizer Color"
+msgstr ""
+
 #: prefs.js:1096
 msgid "System & Reset"
 msgstr ""
