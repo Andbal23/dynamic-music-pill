@@ -155,10 +155,12 @@ export class MusicController {
         this._settings.connectObject('changed::hide-default-player', () => this._updateDefaultPlayerVisibility(), this);
         Main.uiGroup.connectObject(
             'child-added', (_group, actor) => {
-                if (actor._simpleTaskbarPanelBox === 'dock') this._queueInject();
+                if (actor._simpleTaskbarPanelBox === 'dock' && this._settings?.get_int('target-container') === 0)
+                    this._queueInject();
             },
             'child-removed', (_group, actor) => {
-                if (actor._simpleTaskbarPanelBox === 'dock') this._queueInject();
+                if (actor._simpleTaskbarPanelBox === 'dock' && this._settings?.get_int('target-container') === 0)
+                    this._queueInject();
             },
             this
         );

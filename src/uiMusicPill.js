@@ -359,7 +359,13 @@ export const MusicPill = GObject.registerClass(
                     this._allocTimer = null;
                     let parent = this.get_parent();
                     if (parent && !this._inPanel) {
-                        let side = parent.orientation === Clutter.Orientation.VERTICAL;
+                        let side = false;
+                        if ('orientation' in parent && parent.orientation !== undefined) {
+                            side = (parent.orientation === Clutter.Orientation.VERTICAL);
+                        } else {
+                            let [pw, ph] = parent.get_size();
+                            side = (pw > 0 && ph > 0 && pw < ph);
+                        }
                         if (this._isSidePanel !== side) {
                             this._updateDimensions();
                         }
@@ -605,7 +611,14 @@ export const MusicPill = GObject.registerClass(
             let parent = this.get_parent();
             let isSidePanel = false;
             if (parent && !this._inPanel) {
-                isSidePanel = parent.orientation === Clutter.Orientation.VERTICAL;
+                if ('orientation' in parent && parent.orientation !== undefined) {
+                    isSidePanel = (parent.orientation === Clutter.Orientation.VERTICAL);
+                } else {
+                    let [pw, ph] = parent.get_size();
+                    if (pw > 0 && ph > 0 && pw < ph) {
+                        isSidePanel = true;
+                    }
+                }
             }
             this._isSidePanel = isSidePanel;
 
