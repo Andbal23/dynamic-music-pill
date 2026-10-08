@@ -172,6 +172,10 @@
       <default>'255,255,255'</default>
       <summary>Custom Text Color (R,G,B)</summary>
     </key>
+    <key name="custom-vis-color" type="s">
+      <default>'255,255,255'</default>
+      <summary>Custom Visualizer Color (R,G,B)</summary>
+    </key>
     <key name="app-name-mapping" type="s">
       <default>''</default>
       <summary>Custom App Name Mapping</summary>

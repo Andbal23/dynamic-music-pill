@@ -870,6 +870,10 @@ msgstr "Háttérszín"
 msgid "Text Color"
 msgstr "Szövegszín"
 
+#: prefs.js:1086
+msgid "Visualizer Color"
+msgstr "Vizualizáció színe"
+
 #: prefs.js:1096
 msgid "System & Reset"
 msgstr "Rendszer és visszaállítás"
