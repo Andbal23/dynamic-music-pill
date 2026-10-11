@@ -856,6 +856,10 @@ msgstr "背景颜色"
 msgid "Text Color"
 msgstr "文字颜色"
 
+#: prefs.js:1086
+msgid "Visualizer Color"
+msgstr ""
+
 #: prefs.js:1096
 msgid "System & Reset"
 msgstr "系统与重置"
@@ -965,8 +969,8 @@ msgstr ""
 "1. 按 <b>Alt + F2</b>，输入 <b>lg</b>，然后按回车。\n"
 "2. 点击右上角的 <b>Windows（窗口）</b> 选项卡。\n"
 "3. 在列表中找到您的音乐播放器。\n"
-"4. 查看 <b>wmclass:</b> 或 <b>app:</b> 字段，那就是您的 App ID！<i>（去掉 "
-".desktop 部分）</i>\n"
+"4. 查看 <b>wmclass:</b> 或 <b>app:</b> 字段，那就是您的 App ID！<i>（去"
+"掉 .desktop 部分）</i>\n"
 "5. 按 Esc 关闭调试器。"
 
 #: prefs.js:1264
@@ -1253,6 +1257,82 @@ msgstr "自动（智能选择）"
 #: src/uiVisualizers.js:303
 msgid "Please install \"cava\" for real-time mode."
 msgstr "请安装 “cava” 以使用实时模式。"
+
+#: prefs.js:905
+msgid "Dynamic Blur (Blur my Shell)"
+msgstr ""
+
+#: prefs.js:906
+msgid ""
+"Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
+"rounded-blur."
+msgstr ""
+
+#: prefs.js:910
+msgid "Enable Blur for Pill"
+msgstr ""
+
+#: prefs.js:911
+msgid "Blur the background behind the music pill"
+msgstr ""
+
+#: prefs.js:920
+msgid "Enable Blur for Pop-up"
+msgstr ""
+
+#: prefs.js:921
+msgid "Blur the background behind the expanded player pop-up"
+msgstr ""
+
+#: prefs.js:930
+msgid "Tint Blur with Album Art Color"
+msgstr ""
+
+#: prefs.js:931
+msgid ""
+"Blend dynamic album colors over the blurred background instead of neutral "
+"frosted glass"
+msgstr ""
+
+#: prefs.js:940
+msgid "Blur my Shell Extension"
+msgstr ""
+
+#: prefs.js:941
+msgid "Recommended for native Wayland dynamic blur"
+msgstr ""
+
+#: prefs.js:953
+msgid "gnome-rounded-blur Library"
+msgstr ""
+
+#: prefs.js:954
+msgid "Installation guide for native rounded corners blur"
+msgstr ""
+
+#: prefs.js:945
+msgid "GitHub"
+msgstr ""
+
+#: prefs.js:958
+msgid "Guide"
+msgstr ""
+
+#: src/blurHelper.js:47
+msgid ""
+"For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
+"blur."
+msgstr ""
+
+#: src/blurHelper.js:49
+msgid ""
+"gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
+"blur."
+msgstr ""
+
+#: src/blurHelper.js:51
+msgid "Blur my Shell is recommended for dynamic blur integration."
+msgstr ""
 
 #~ msgid "Display active player icons at the top of the pop-up"
 #~ msgstr "在弹出菜单顶部显示活跃播放器图标"
