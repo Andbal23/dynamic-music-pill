@@ -9,6 +9,7 @@ import { getAverageColor, getClosestGnomeAccent } from './utils.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { CrossfadeArt, ScrollLabel, _addBtnPressAnim } from './uiWidgets.js';
 import { WaveformVisualizer } from './uiVisualizers.js';
+import { ActorBlurController, checkBlurRequirements } from './blurHelper.js';
 
 export const MusicPill = GObject.registerClass(
     class MusicPill extends St.Widget {
@@ -69,9 +70,9 @@ export const MusicPill = GObject.registerClass(
                 y_expand: false
             });
             this._body.add_child(this._artBin);
-            this._prevBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 20 }), reactive: true });
-            this._playPauseBtnTablet = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 20 }), reactive: true });
-            this._nextBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 20 }), reactive: true });
+            this._prevBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 20 }), reactive: true, can_focus: false });
+            this._playPauseBtnTablet = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 20 }), reactive: true, can_focus: false });
+            this._nextBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 20 }), reactive: true, can_focus: false });
 
             this._prevBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
             this._playPauseBtnTablet.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
@@ -121,6 +122,7 @@ export const MusicPill = GObject.registerClass(
             this._body.insert_child_at_index(this._tabletControls, 1);
 
             this._textWrapper = new St.Widget({
+                name: 'pill-text-wrapper',
                 layout_manager: new Clutter.BinLayout(),
                 x_expand: true, y_expand: true,
                 clip_to_allocation: true,
@@ -149,12 +151,65 @@ export const MusicPill = GObject.registerClass(
                 x_align: Clutter.ActorAlign.END
             });
             this._body.add_child(this._visBin);
+
+            this._blurBackdrop = new St.Widget({
+                name: 'pill-blur-backdrop',
+                reactive: false,
+                x_expand: false,
+                y_expand: false,
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.CENTER,
+                visible: false
+            });
+            this._blurBackdrop.set_pivot_point(0.5, 0.5);
+            this.add_child(this._blurBackdrop);
             this.add_child(this._body);
+
+            this._body.connectObject(
+                'notify::allocation', () => {
+                    if (this._blurBackdrop) {
+                        if (this._body.get_transition('width') || this._body.get_transition('height')) return;
+                        let [bw, bh] = this._body.get_size();
+                        if (bw > 0 && bh > 0 && (Math.abs(this._blurBackdrop.width - bw) > 1 || Math.abs(this._blurBackdrop.height - bh) > 1)) {
+                            this._blurBackdrop.set_size(bw, bh);
+                        }
+                    }
+                },
+                'notify::translation-x', () => {
+                    if (this._blurBackdrop) this._blurBackdrop.translation_x = this._body.translation_x;
+                },
+                'notify::translation-y', () => {
+                    if (this._blurBackdrop) this._blurBackdrop.translation_y = this._body.translation_y;
+                },
+                'notify::scale-x', () => {
+                    if (this._blurBackdrop) this._blurBackdrop.scale_x = this._body.scale_x;
+                },
+                'notify::scale-y', () => {
+                    if (this._blurBackdrop) this._blurBackdrop.scale_y = this._body.scale_y;
+                },
+                this
+            );
+
+            let [bw, bh] = this._body.get_size();
+            if (bw > 0 && bh > 0) {
+                this._blurBackdrop.set_size(bw, bh);
+            }
+
+            this._blurController = new ActorBlurController(this._blurBackdrop, () => this._radius || 28);
+            if (this._settings.get_boolean('enable-blur-pill')) {
+                if (checkBlurRequirements()) {
+                    this._blurBackdrop.visible = true;
+                    this._blurController.enable();
+                } else {
+                    this._settings.set_boolean('enable-blur-pill', false);
+                }
+            }
 
             // --- Clicks ---
             this.connectObject('button-press-event', () => {
                 if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_STOP;
             }, this);
 
@@ -163,11 +218,13 @@ export const MusicPill = GObject.registerClass(
                 if (type === Clutter.EventType.TOUCH_BEGIN) {
                     if (!this._body) return Clutter.EVENT_STOP;
                     this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     return Clutter.EVENT_STOP;
                 } else if (type === Clutter.EventType.TOUCH_END) {
                     if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
                     if (!this._body) return Clutter.EVENT_STOP;
                     this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
+                    if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
                     this._handleLeftClick();
                     return Clutter.EVENT_STOP;
                 }
@@ -178,6 +235,7 @@ export const MusicPill = GObject.registerClass(
                 if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
                 if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
+                if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
 
                 let button = event.get_button();
 
@@ -302,7 +360,13 @@ export const MusicPill = GObject.registerClass(
                 this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
             }, this);
             this._settings.connectObject('changed::hide-text', () => this._updateDimensions(), this);
-            this._settings.connectObject('changed::pill-dynamic-width', () => { this._updateDimensions(); if (this._isActiveState) this._body.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD }); }, this);
+            this._settings.connectObject('changed::pill-dynamic-width', () => {
+                this._updateDimensions();
+                if (this._isActiveState) {
+                    this._body.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    if (this._blurBackdrop) this._blurBackdrop.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                }
+            }, this);
             this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
             this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); this._updateVisualizerColor(); }, this);
             this._settings.connectObject('changed::custom-bg-color', () => this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b), this);
@@ -343,7 +407,29 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::position-mode', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::target-container', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::visualizer-style', () => this._updateDimensions(), this);
-            this._settings.connectObject('changed::border-radius', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+            this._settings.connectObject('changed::border-radius', () => {
+                this._updateDimensions();
+                if (this._blurController) this._blurController.updateRadius(this._radius);
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
+            this._settings.connectObject('changed::enable-blur-pill', () => {
+                let en = this._settings.get_boolean('enable-blur-pill');
+                if (en) {
+                    if (!checkBlurRequirements()) {
+                        this._settings.set_boolean('enable-blur-pill', false);
+                        return;
+                    }
+                    if (this._blurBackdrop) this._blurBackdrop.visible = true;
+                    if (this._blurController) this._blurController.enable();
+                } else {
+                    if (this._blurBackdrop) this._blurBackdrop.visible = false;
+                    if (this._blurController) this._blurController.disable();
+                }
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
+            this._settings.connectObject('changed::blur-blend-color', () => {
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
             this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::shadow-opacity', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::shadow-blur', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
@@ -408,7 +494,12 @@ export const MusicPill = GObject.registerClass(
                 this._interfaceSettings = null; //for older gnomes
             }
 
-            this.connect('destroy', this._cleanup.bind(this));
+            this.connect('destroy', () => this._cleanup());
+        }
+
+        destroy() {
+            this._cleanup();
+            super.destroy();
         }
 
         _cleanup() {
@@ -417,6 +508,8 @@ export const MusicPill = GObject.registerClass(
                     this._interfaceSettings.set_string('accent-color', this._originalAccent || 'blue');
                 } catch (e) { }
             }
+            if (this._settings) this._settings.disconnectObject(this);
+            this.disconnectObject(this);
             if (this._realVisibilityTimerId) { GLib.Source.remove(this._realVisibilityTimerId); this._realVisibilityTimerId = null; }
             if (this._allocTimer) { GLib.Source.remove(this._allocTimer); this._allocTimer = null; }
             if (this._colorAnimId) { GLib.Source.remove(this._colorAnimId); this._colorAnimId = null; }
@@ -425,6 +518,12 @@ export const MusicPill = GObject.registerClass(
             if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
             if (this._singleClickTimerId) { GLib.Source.remove(this._singleClickTimerId); this._singleClickTimerId = null; }
             if (this._idleDimId) { GLib.Source.remove(this._idleDimId); this._idleDimId = null; }
+            if (this._blurController) { this._blurController.destroy(); this._blurController = null; }
+            if (this._blurBackdrop) { this._blurBackdrop.destroy(); this._blurBackdrop = null; }
+            if (this._titleScroll) { this._titleScroll.destroy(); this._titleScroll = null; }
+            if (this._artistScroll) { this._artistScroll.destroy(); this._artistScroll = null; }
+            if (this._visualizer) { this._visualizer.destroy(); this._visualizer = null; }
+            if (this._artWidget) { this._artWidget.destroy(); this._artWidget = null; }
             if (this._cancellable) { this._cancellable.cancel(); this._cancellable = null; }
         }
         animateOutAndDestroy() {
@@ -505,6 +604,16 @@ export const MusicPill = GObject.registerClass(
             if (this._artistScroll) {
                 this._artistScroll.setGameMode(!isVisibleAndActive);
                 this._artistScroll.setPlayerPaused(!isPlaying);
+            }
+
+            if (this._blurController && this._settings.get_boolean('enable-blur-pill')) {
+                if (isVisibleAndActive && this.visible && this._isActiveState) {
+                    if (this._blurBackdrop) this._blurBackdrop.visible = true;
+                    this._blurController.enable();
+                } else {
+                    this._blurController.disable();
+                    if (this._blurBackdrop) this._blurBackdrop.visible = false;
+                }
             }
         }
 
@@ -628,8 +737,9 @@ export const MusicPill = GObject.registerClass(
                 }
             }
             this._isSidePanel = isSidePanel;
-
-            this.set_width(-1);
+            if (this.width !== -1) {
+                this.set_width(-1);
+            }
 
             let width, height, prefArtSize;
 
@@ -693,6 +803,10 @@ export const MusicPill = GObject.registerClass(
 
             this._body.translation_y = vOffset;
             this._body.translation_x = hOffset;
+            if (this._blurBackdrop) {
+                this._blurBackdrop.translation_y = vOffset;
+                this._blurBackdrop.translation_x = hOffset;
+            }
 
             if (shadowEnabled) {
                 this._shadowCSS = `box-shadow: 0px 2px ${shadowBlur}px rgba(0, 0, 0, ${shadowOpacity});`;
@@ -827,14 +941,20 @@ export const MusicPill = GObject.registerClass(
 
                 if (this._isActiveState && this._body.height > 0 && this._body.height !== targetHeight) {
                     this._body.ease({ height: targetHeight, width: targetWidth, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    if (this._blurBackdrop) this._blurBackdrop.ease({ height: targetHeight, width: targetWidth, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 } else {
                     this._body.set_height(targetHeight);
                     this._body.set_width(targetWidth);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.set_height(targetHeight);
+                        this._blurBackdrop.set_width(targetWidth);
+                    }
                 }
             } else {
                 if (this._settings.get_boolean('pill-dynamic-width') || hideText) {
                     let currentWidth = this._body.width;
                     this._body.remove_transition('width');
+                    if (this._blurBackdrop) this._blurBackdrop.remove_transition('width');
 
                     let elementsW = this._padX * 2;
                     let currentSideMargin = hideText ? 4 : this._settings.get_int('visualizer-padding');
@@ -878,9 +998,14 @@ export const MusicPill = GObject.registerClass(
 
                 if (this._isActiveState && this._body.width > 0 && this._body.width !== targetWidth) {
                     this._body.ease({ width: targetWidth, height: targetHeight, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    if (this._blurBackdrop) this._blurBackdrop.ease({ width: targetWidth, height: targetHeight, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 } else {
                     this._body.set_width(targetWidth);
                     this._body.set_height(targetHeight);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.set_width(targetWidth);
+                        this._blurBackdrop.set_height(targetHeight);
+                    }
                 }
             }
 
@@ -935,6 +1060,13 @@ export const MusicPill = GObject.registerClass(
                             duration: 300,
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD
                         });
+                        if (this._blurBackdrop) {
+                            this._blurBackdrop.ease({
+                                width: newTarget,
+                                duration: 300,
+                                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                            });
+                        }
                     }
                 }
 
@@ -960,6 +1092,16 @@ export const MusicPill = GObject.registerClass(
                     }
                 }
             });
+            if (this._blurBackdrop) {
+                this._blurBackdrop.ease({
+                    translation_x: offset, duration: 100, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: (isFinished) => {
+                        if (isFinished && this._blurBackdrop) {
+                            this._blurBackdrop.ease({ translation_x: 0, duration: 250, mode: Clutter.AnimationMode.EASE_OUT_BACK });
+                        }
+                    }
+                });
+            }
         }
 
         setLyric(lyricObj) {
@@ -1114,18 +1256,31 @@ export const MusicPill = GObject.registerClass(
                         let finalWidth = this._targetWidth;
                         let finalHeight = this._targetHeight;
 
-                        this.set_width(-1);
+                        if (this.width !== -1) {
+                            this.set_width(-1);
+                        }
                         if (this._isSidePanel) {
                             this._body.set_height(0);
                             this._body.set_width(finalWidth);
+                            if (this._blurBackdrop) {
+                                this._blurBackdrop.set_height(0);
+                                this._blurBackdrop.set_width(finalWidth);
+                            }
                         } else {
                             this._body.set_width(0);
                             this._body.set_height(finalHeight);
+                            if (this._blurBackdrop) {
+                                this._blurBackdrop.set_width(0);
+                                this._blurBackdrop.set_height(finalHeight);
+                            }
                         }
 
                         this.opacity = 0;
                         this.ease({ opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                         this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                        if (this._blurBackdrop) {
+                            this._blurBackdrop.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                        }
                     }
 
                     if (forceUpdate || artUrl !== this._lastArtUrl || titleChanged) {
@@ -1190,8 +1345,18 @@ export const MusicPill = GObject.registerClass(
                                 this._currentBusName = null;
                                 this.set_width(0);
                                 this.visible = false;
+                                if (this._blurController) this._blurController.disable();
+                                if (this._blurBackdrop) this._blurBackdrop.visible = false;
                             }
                         });
+                        if (this._blurBackdrop) {
+                            this._blurBackdrop.ease({
+                                width: targetW,
+                                height: targetH,
+                                duration: 500,
+                                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                            });
+                        }
 
                         this._visualizer.setPlaying(false);
                         this._hideGraceTimer = null;
@@ -1225,19 +1390,32 @@ export const MusicPill = GObject.registerClass(
                 let finalWidth = this._targetWidth;
                 let finalHeight = this._targetHeight;
 
-                this.set_width(-1);
+                if (this.width !== -1) {
+                    this.set_width(-1);
+                }
 
                 if (this._isSidePanel) {
                     this._body.set_height(0);
                     this._body.set_width(finalWidth);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.set_height(0);
+                        this._blurBackdrop.set_width(finalWidth);
+                    }
                 } else {
                     this._body.set_width(0);
                     this._body.set_height(finalHeight);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.set_width(0);
+                        this._blurBackdrop.set_height(finalHeight);
+                    }
                 }
 
                 this.opacity = 0;
                 this.ease({ opacity: 255, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                if (this._blurBackdrop) {
+                    this._blurBackdrop.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                }
             } else {
                 this._updateDimensions();
             }
@@ -1453,11 +1631,24 @@ export const MusicPill = GObject.registerClass(
             let safePadX = (typeof this._padX === 'number' && !isNaN(this._padX)) ? Math.floor(this._padX) : 14;
             let safeRadius = (typeof this._radius === 'number' && !isNaN(this._radius)) ? Math.floor(this._radius) : 28;
 
-            let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${alpha});`;
+            let isBlurActive = this._settings.get_boolean('enable-blur-pill');
+            let blurBlend = this._settings.get_boolean('blur-blend-color');
+
+            let bgStyle;
+            if (isBlurActive) {
+                if (blurBlend) {
+                    let blurAlpha = this._settings.get_boolean('enable-transparency') ? alpha : 0.40;
+                    bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${blurAlpha});`;
+                } else {
+                    bgStyle = `background-color: rgba(25, 25, 25, 0.45);`;
+                }
+            } else {
+                bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${alpha});`;
+            }
 
             let borderStyle = '';
-            if (this._settings.get_boolean('show-pill-border')) {
-                let borderOp = (typeof this._currentBorderOp === 'number') ? this._currentBorderOp : ((this._currentStatus === 'Playing') ? 0.2 : 0.1);
+            if (this._settings.get_boolean('show-pill-border') || isBlurActive) {
+                let borderOp = isBlurActive ? 0.22 : ((typeof this._currentBorderOp === 'number') ? this._currentBorderOp : ((this._currentStatus === 'Playing') ? 0.2 : 0.1));
                 borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255, 255, 255, ${borderOp});`;
             } else {
                 borderStyle = `border-width: 0px; border-color: transparent;`;
@@ -1466,13 +1657,27 @@ export const MusicPill = GObject.registerClass(
             let paddingStyle = `padding: ${safePadY}px ${safePadX}px;`;
 
             let radiusStyle = `border-radius: ${safeRadius}px;`;
-            let shadow = this._shadowCSS ? this._shadowCSS : 'box-shadow: none;';
+            let shadow = isBlurActive ? 'box-shadow: none;' : (this._shadowCSS ? this._shadowCSS : 'box-shadow: none;');
 
             let css = `${bgStyle} ${borderStyle} ${paddingStyle} ${radiusStyle} ${shadow}`;
 
             if (this._lastBodyCss !== css) {
                 this._lastBodyCss = css;
                 this._body.set_style(css);
+            }
+            if (this._blurBackdrop) {
+                let isVisibleAndActive = this._isActuallyVisible && !this._gameModeActive;
+                if (isBlurActive && isVisibleAndActive && this.visible && this._isActiveState) {
+                    this._blurBackdrop.visible = true;
+                    this._blurBackdrop.set_style(`border-radius: ${safeRadius}px; background-color: transparent;`);
+                    if (this._blurController) {
+                        this._blurController.enable();
+                        this._blurController.updateRadius(safeRadius);
+                    }
+                } else {
+                    this._blurBackdrop.visible = false;
+                    if (this._blurController) this._blurController.disable();
+                }
             }
             this._displayedColor = { r: safeDynR, g: safeDynG, b: safeDynB };
 

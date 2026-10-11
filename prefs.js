@@ -29,7 +29,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
             'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
             'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history',
-            'show-hours-format', 'popup-show-album-title'
+            'show-hours-format', 'popup-show-album-title',
+            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color'
         ];
 
         // =========================================
@@ -899,6 +900,172 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         transVisRow.add_suffix(transVisToggle);
         transGroup.add(transVisRow);
         stylePage.add(transGroup);
+
+        const isBmsInstalled = () => {
+            let userDir = GLib.build_filenamev([GLib.get_user_data_dir(), 'gnome-shell', 'extensions', 'blur-my-shell@aunetx']);
+            let sysDir = '/usr/share/gnome-shell/extensions/blur-my-shell@aunetx';
+            return GLib.file_test(userDir, GLib.FileTest.IS_DIR) || GLib.file_test(sysDir, GLib.FileTest.IS_DIR);
+        };
+
+        const isRoundedBlurInstalled = () => {
+            let paths = [
+                '/usr/lib/girepository-1.0/Blur-1.0.typelib',
+                '/usr/lib64/girepository-1.0/Blur-1.0.typelib',
+                '/usr/local/lib/girepository-1.0/Blur-1.0.typelib',
+                '/usr/lib/libblur-effect-1.0.so',
+                '/usr/lib64/libblur-effect-1.0.so',
+                '/usr/local/lib/libblur-effect-1.0.so'
+            ];
+            return paths.some(p => GLib.file_test(p, GLib.FileTest.EXISTS));
+        };
+
+        const checkPrefsBlurDeps = () => {
+            let bms = isBmsInstalled();
+            let round = isRoundedBlurInstalled();
+            if (!bms || !round) {
+                let missing = [];
+                if (!bms) missing.push('"Blur my Shell"');
+                if (!round) missing.push('"gnome-rounded-blur"');
+                let msg = _('Please install %s for dynamic blur.').replace('%s', missing.join(' ' + _('and') + ' '));
+                window.add_toast(new Adw.Toast({ title: msg }));
+                return false;
+            }
+            return true;
+        };
+
+        const hasBlurDeps = isBmsInstalled() && isRoundedBlurInstalled();
+
+        const blurGroup = new Adw.PreferencesGroup({
+            title: _('Dynamic Blur (Blur my Shell)'),
+            description: _('Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur.')
+        });
+
+        if (!hasBlurDeps) {
+            let missing = [];
+            if (!isBmsInstalled()) missing.push('"Blur my Shell"');
+            if (!isRoundedBlurInstalled()) missing.push('"gnome-rounded-blur"');
+            const blurNote = new Gtk.Label({
+                label: _("Note: Dynamic blur requires %s to be installed.").replace('%s', missing.join(' ' + _('and') + ' ')),
+                wrap: true,
+                xalign: 0,
+                css_classes: ['dim-label'],
+                margin_top: 6, margin_bottom: 6, margin_start: 12, margin_end: 12
+            });
+            blurGroup.add(blurNote);
+        }
+
+        const blurPillRow = new Adw.ActionRow({
+            title: _('Enable Blur for Pill'),
+            subtitle: _('Blur the background behind the music pill')
+        });
+        const blurPillToggle = new Gtk.Switch({
+            active: settings.get_boolean('enable-blur-pill'),
+            valign: Gtk.Align.CENTER
+        });
+        blurPillToggle.connect('state-set', (sw, state) => {
+            if (state && !checkPrefsBlurDeps()) {
+                return true;
+            }
+            return false;
+        });
+        settings.bind('enable-blur-pill', blurPillToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        blurPillRow.add_suffix(blurPillToggle);
+        blurGroup.add(blurPillRow);
+
+        const blurPopupRow = new Adw.ActionRow({
+            title: _('Enable Blur for Pop-up'),
+            subtitle: _('Blur the background behind the expanded player pop-up')
+        });
+        const blurPopupToggle = new Gtk.Switch({
+            active: settings.get_boolean('enable-blur-popup'),
+            valign: Gtk.Align.CENTER
+        });
+        blurPopupToggle.connect('state-set', (sw, state) => {
+            if (state && !checkPrefsBlurDeps()) {
+                return true;
+            }
+            return false;
+        });
+        settings.bind('enable-blur-popup', blurPopupToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        blurPopupRow.add_suffix(blurPopupToggle);
+        blurGroup.add(blurPopupRow);
+
+        const blurBlendRow = new Adw.ActionRow({
+            title: _('Tint Blur with Album Art Color'),
+            subtitle: _('Blend dynamic album colors over the blurred background instead of neutral frosted glass')
+        });
+        const blurBlendToggle = new Gtk.Switch({
+            active: settings.get_boolean('blur-blend-color'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('blur-blend-color', blurBlendToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        blurBlendRow.add_suffix(blurBlendToggle);
+        blurGroup.add(blurBlendRow);
+
+        const bmsLinkRow = new Adw.ActionRow({
+            title: _('Blur my Shell Extension'),
+            subtitle: _('Recommended for native Wayland dynamic blur')
+        });
+        const bmsBtn = new Gtk.Button({
+            label: _('GitHub'),
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat']
+        });
+        bmsBtn.connect('clicked', () => Gio.AppInfo.launch_default_for_uri('https://github.com/aunetx/blur-my-shell', null));
+        bmsLinkRow.add_suffix(bmsBtn);
+        blurGroup.add(bmsLinkRow);
+
+        const bmsGuideRow = new Adw.ActionRow({
+            title: _('gnome-rounded-blur Library'),
+            subtitle: _('Installation guide for native rounded corners blur')
+        });
+        const bmsGuideBtn = new Gtk.Button({
+            label: _('Guide'),
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat']
+        });
+        bmsGuideBtn.connect('clicked', () => Gio.AppInfo.launch_default_for_uri('https://github.com/aunetx/blur-my-shell/blob/master/scripts/GUIDE.md', null));
+        bmsGuideRow.add_suffix(bmsGuideBtn);
+        blurGroup.add(bmsGuideRow);
+
+        stylePage.add(blurGroup);
+
+        settings.connect('changed::enable-blur-pill', () => {
+            if (settings.get_boolean('enable-blur-pill')) {
+                if (!checkPrefsBlurDeps()) {
+                    settings.set_boolean('enable-blur-pill', false);
+                    return;
+                }
+                if (settings.get_boolean('enable-transparency')) {
+                    settings.set_boolean('enable-transparency', false);
+                }
+            }
+        });
+        settings.connect('changed::enable-blur-popup', () => {
+            if (settings.get_boolean('enable-blur-popup')) {
+                if (!checkPrefsBlurDeps()) {
+                    settings.set_boolean('enable-blur-popup', false);
+                    return;
+                }
+                if (settings.get_boolean('popup-follow-transparency')) {
+                    settings.set_boolean('popup-follow-transparency', false);
+                }
+            }
+        });
+        settings.connect('changed::enable-transparency', () => {
+            if (settings.get_boolean('enable-transparency')) {
+                if (settings.get_boolean('enable-blur-pill')) {
+                    settings.set_boolean('enable-blur-pill', false);
+                }
+            }
+        });
+        settings.connect('changed::popup-follow-transparency', () => {
+            if (settings.get_boolean('popup-follow-transparency')) {
+                if (settings.get_boolean('enable-blur-popup')) {
+                    settings.set_boolean('enable-blur-popup', false);
+                }
+            }
+        });
 
         const shadowGroup = new Adw.PreferencesGroup({ title: _('Main Pill Shadow') });
         const shadowRow = new Adw.ActionRow({ title: _('Enable Shadow') });

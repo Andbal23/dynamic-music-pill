@@ -1279,6 +1279,74 @@ msgstr "Auto (Okos választás)"
 msgid "Please install \"cava\" for real-time mode."
 msgstr "Kérlek, telepítsd a \"cava\" csomagot a valós idejű módhoz."
 
+#: prefs.js:905
+msgid "Dynamic Blur (Blur my Shell)"
+msgstr "Dinamikus homályosítás (Blur my Shell)"
+
+#: prefs.js:906
+msgid "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur."
+msgstr "Gauss-homályosítás alkalmazása a kapszula és a felugró ablak mögött a Blur my Shell vagy a gnome-rounded-blur segítségével."
+
+#: prefs.js:910
+msgid "Enable Blur for Pill"
+msgstr "Kapszula homályosításának bekapcsolása"
+
+#: prefs.js:911
+msgid "Blur the background behind the music pill"
+msgstr "A zenei kapszula mögötti háttér elhomályosítása"
+
+#: prefs.js:920
+msgid "Enable Blur for Pop-up"
+msgstr "Felugró ablak homályosításának bekapcsolása"
+
+#: prefs.js:921
+msgid "Blur the background behind the expanded player pop-up"
+msgstr "A lenyíló lejátszó ablak mögötti háttér elhomályosítása"
+
+#: prefs.js:930
+msgid "Tint Blur with Album Art Color"
+msgstr "Homályosítás színezése az albumborító színével"
+
+#: prefs.js:931
+msgid "Blend dynamic album colors over the blurred background instead of neutral frosted glass"
+msgstr "Dinamikus albumszínek keverése a homályosított háttérre a semleges matt üveg helyett"
+
+#: prefs.js:940
+msgid "Blur my Shell Extension"
+msgstr "Blur my Shell kiegészítő"
+
+#: prefs.js:941
+msgid "Recommended for native Wayland dynamic blur"
+msgstr "Ajánlott a natív Wayland dinamikus homályosításhoz"
+
+#: prefs.js:953
+msgid "gnome-rounded-blur Library"
+msgstr "gnome-rounded-blur könyvtár"
+
+#: prefs.js:954
+msgid "Installation guide for native rounded corners blur"
+msgstr "Telepítési útmutató a lekerekített sarkok natív homályosításához"
+
+#: prefs.js:945
+msgid "GitHub"
+msgstr "GitHub"
+
+#: prefs.js:958
+msgid "Guide"
+msgstr "Útmutató"
+
+#: src/blurHelper.js:47
+msgid "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-blur."
+msgstr "A legjobb lekerekített dinamikus homályosításhoz telepítsd a Blur my Shell és a gnome-rounded-blur csomagokat."
+
+#: src/blurHelper.js:49
+msgid "gnome-rounded-blur is recommended for smooth rounded corners with dynamic blur."
+msgstr "A gnome-rounded-blur ajánlott a sima lekerekített sarkokhoz dinamikus homályosítás esetén."
+
+#: src/blurHelper.js:51
+msgid "Blur my Shell is recommended for dynamic blur integration."
+msgstr "A Blur my Shell ajánlott a dinamikus homályosítás integrációjához."
+
 #~ msgid "Unmute"
 #~ msgstr "Némítás feloldása"
 

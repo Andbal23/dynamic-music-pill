@@ -16,7 +16,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 24px;
     padding: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    box-shadow: none !important;
     min-width: 320px;
 }
 
@@ -29,41 +29,75 @@
     width: 100px;
     height: 100px;
     border-radius: 50px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    border: none !important;
+    box-shadow: none !important;
 }
 
-.track-info-box {
-    spacing: 5px;
+.track-info-box,
+.track-info-box StWidget,
+.track-info-box StLabel {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .expanded-title {
     font-weight: 800;
     font-size: 13pt;
     color: white;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .expanded-artist {
     font-weight: 500;
     font-size: 10pt;
     color: rgba(255, 255, 255, 0.7);
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
-.tablet-skip-btn {
+.tablet-skip-btn,
+button.tablet-skip-btn {
     width: 32px;
     height: 32px;
     border-radius: 16px;
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
     margin: 0 4px;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
-.tablet-skip-btn:hover { background-color: rgba(255, 255, 255, 0.2); }
-.tablet-skip-btn:active { background-color: rgba(255, 255, 255, 0.05); }
+.tablet-skip-btn:hover,
+button.tablet-skip-btn:hover {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+.tablet-skip-btn:active,
+button.tablet-skip-btn:active {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+.tablet-skip-btn:focus,
+button.tablet-skip-btn:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
 
 .vinyl-container-square {
     width: 100px;
     height: 100px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .progress-container {
@@ -96,58 +130,340 @@
     spacing: 20px;
 }
 
+/* ========================================================
+   Buttons & Controls inside Music Pill Expanded & Global
+   ======================================================== */
+
+.music-pill-expanded .button,
+.music-pill-expanded button,
+.music-pill-expanded StButton {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background-image: none !important;
+}
+
+.music-pill-expanded .button:hover,
+.music-pill-expanded button:hover,
+.music-pill-expanded StButton:hover,
+.music-pill-expanded .button:focus,
+.music-pill-expanded button:focus,
+.music-pill-expanded StButton:focus,
+.music-pill-expanded .button:active,
+.music-pill-expanded button:active,
+.music-pill-expanded StButton:active {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background-image: none !important;
+}
+
+/* Primary control buttons (Play/Pause, Skip) */
+.music-pill-expanded .control-btn,
+.music-pill-expanded StButton.control-btn,
 .control-btn {
     width: 48px;
     height: 48px;
-    border-radius: 24px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
+    border-radius: 24px !important;
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .control-btn:hover,
+.music-pill-expanded StButton.control-btn:hover,
 .control-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 24px !important;
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .control-btn:active,
+.music-pill-expanded StButton.control-btn:active,
 .control-btn:active {
-    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 24px !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .control-btn:focus,
+.music-pill-expanded StButton.control-btn:focus,
+.control-btn:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
 
+/* Secondary control buttons (Shuffle, Repeat, Custom/SleepTimer) */
+.music-pill-expanded .control-btn-secondary,
+.music-pill-expanded StButton.control-btn-secondary,
 .control-btn-secondary {
     width: 36px;
     height: 36px;
-    border-radius: 18px;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: white;
+    border-radius: 18px !important;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    color: white !important;
     margin: 0 4px;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .control-btn-secondary:hover,
+.music-pill-expanded StButton.control-btn-secondary:hover,
 .control-btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 18px !important;
+    background-color: rgba(255, 255, 255, 0.20) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .control-btn-secondary:active,
+.music-pill-expanded StButton.control-btn-secondary:active,
 .control-btn-secondary:active {
-    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 18px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .control-btn-secondary:focus,
+.music-pill-expanded StButton.control-btn-secondary:focus,
+.control-btn-secondary:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Subpage back button */
+.music-pill-expanded .subpage-back-btn,
+.music-pill-expanded StButton.subpage-back-btn,
 .subpage-back-btn {
     width: 32px;
-    height: 28px;
+    height: 32px;
     min-width: 32px;
-    min-height: 28px;
-    border-radius: 14px;
-    padding: 4px 8px;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: white;
-    margin: 0;
+    min-height: 32px;
+    border-radius: 8px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .subpage-back-btn:hover,
+.music-pill-expanded StButton.subpage-back-btn:hover,
 .subpage-back-btn:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 8px !important;
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
+.music-pill-expanded .subpage-back-btn:active,
+.music-pill-expanded StButton.subpage-back-btn:active,
 .subpage-back-btn:active {
-    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 8px !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-back-btn:focus,
+.music-pill-expanded StButton.subpage-back-btn:focus,
+.subpage-back-btn:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Subpage action button (e.g. Mute All) */
+.music-pill-expanded .subpage-action-btn,
+.music-pill-expanded StButton.subpage-action-btn,
+.subpage-action-btn {
+    border-radius: 12px !important;
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-action-btn:hover,
+.music-pill-expanded StButton.subpage-action-btn:hover,
+.subpage-action-btn:hover {
+    border-radius: 12px !important;
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-action-btn:active,
+.music-pill-expanded StButton.subpage-action-btn:active,
+.subpage-action-btn:active {
+    border-radius: 12px !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-action-btn:focus,
+.music-pill-expanded StButton.subpage-action-btn:focus,
+.subpage-action-btn:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Subpage item button (devices, timer presets, history items) */
+.music-pill-expanded .subpage-item-btn,
+.music-pill-expanded StButton.subpage-item-btn,
+.subpage-item-btn {
+    border-radius: 10px !important;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-item-btn:hover,
+.music-pill-expanded StButton.subpage-item-btn:hover,
+.subpage-item-btn:hover {
+    border-radius: 10px !important;
+    background-color: rgba(255, 255, 255, 0.18) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-item-btn:active,
+.music-pill-expanded StButton.subpage-item-btn:active,
+.subpage-item-btn:active {
+    border-radius: 10px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-item-btn:focus,
+.music-pill-expanded StButton.subpage-item-btn:focus,
+.subpage-item-btn:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Subpage danger button (Clear History) */
+.music-pill-expanded .subpage-danger-btn,
+.music-pill-expanded StButton.subpage-danger-btn,
+.subpage-danger-btn {
+    border-radius: 12px !important;
+    background-color: rgba(210, 50, 50, 0.35) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-danger-btn:hover,
+.music-pill-expanded StButton.subpage-danger-btn:hover,
+.subpage-danger-btn:hover {
+    border-radius: 12px !important;
+    background-color: rgba(230, 60, 60, 0.50) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .subpage-danger-btn:active,
+.music-pill-expanded StButton.subpage-danger-btn:active,
+.subpage-danger-btn:active {
+    border-radius: 12px !important;
+    background-color: rgba(180, 40, 40, 0.30) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Player selector buttons */
+.music-pill-expanded .player-selector-btn,
+.music-pill-expanded StButton.player-selector-btn,
+.player-selector-btn {
+    border-radius: 12px !important;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .player-selector-btn:hover,
+.music-pill-expanded StButton.player-selector-btn:hover,
+.player-selector-btn:hover {
+    border-radius: 12px !important;
+    background-color: rgba(255, 255, 255, 0.18) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded .player-selector-btn:active,
+.music-pill-expanded StButton.player-selector-btn:active,
+.player-selector-btn:active {
+    border-radius: 12px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Hint label buttons */
+.hint-label-btn,
+button.hint-label-btn {
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0;
+}
+
+.hint-label-btn:hover,
+button.hint-label-btn:hover,
+.hint-label-btn:focus,
+button.hint-label-btn:focus,
+.hint-label-btn:active,
+button.hint-label-btn:active {
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.music-pill-expanded StScrollView {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.music-pill-expanded StScrollBar StBin#trough {
+    background-color: transparent !important;
+    border: none !important;
 }
 
 .art-widget {

@@ -1237,3 +1237,71 @@ msgstr ""
 #: src/uiVisualizers.js:303
 msgid "Please install \"cava\" for real-time mode."
 msgstr ""
+
+#: prefs.js:905
+msgid "Dynamic Blur (Blur my Shell)"
+msgstr ""
+
+#: prefs.js:906
+msgid "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur."
+msgstr ""
+
+#: prefs.js:910
+msgid "Enable Blur for Pill"
+msgstr ""
+
+#: prefs.js:911
+msgid "Blur the background behind the music pill"
+msgstr ""
+
+#: prefs.js:920
+msgid "Enable Blur for Pop-up"
+msgstr ""
+
+#: prefs.js:921
+msgid "Blur the background behind the expanded player pop-up"
+msgstr ""
+
+#: prefs.js:930
+msgid "Tint Blur with Album Art Color"
+msgstr ""
+
+#: prefs.js:931
+msgid "Blend dynamic album colors over the blurred background instead of neutral frosted glass"
+msgstr ""
+
+#: prefs.js:940
+msgid "Blur my Shell Extension"
+msgstr ""
+
+#: prefs.js:941
+msgid "Recommended for native Wayland dynamic blur"
+msgstr ""
+
+#: prefs.js:953
+msgid "gnome-rounded-blur Library"
+msgstr ""
+
+#: prefs.js:954
+msgid "Installation guide for native rounded corners blur"
+msgstr ""
+
+#: prefs.js:945
+msgid "GitHub"
+msgstr ""
+
+#: prefs.js:958
+msgid "Guide"
+msgstr ""
+
+#: src/blurHelper.js:47
+msgid "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-blur."
+msgstr ""
+
+#: src/blurHelper.js:49
+msgid "gnome-rounded-blur is recommended for smooth rounded corners with dynamic blur."
+msgstr ""
+
+#: src/blurHelper.js:51
+msgid "Blur my Shell is recommended for dynamic blur integration."
+msgstr ""

@@ -61,7 +61,12 @@ export const LyricsWidget = GObject.registerClass(
             this.connect('motion-event', this._onMotion.bind(this));
             this.connect('leave-event', this._onLeave.bind(this));
             this.connect('scroll-event', this._onScroll.bind(this));
-            this.connect('destroy', this._cleanup.bind(this));
+            this.connect('destroy', () => this._cleanup());
+        }
+
+        destroy() {
+            this._cleanup();
+            super.destroy();
         }
 
 
@@ -201,30 +206,35 @@ export const LyricsWidget = GObject.registerClass(
         _startAlphaAnim() {
             if (this._alphaTickId) return;
             this._alphaTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                let done = true;
-                for (let i = 0; i < this._lineAlpha.length; i++) {
-                    let diff = this._targetAlpha(i) - this._lineAlpha[i];
-                    if (Math.abs(diff) < 0.003) {
-                        this._lineAlpha[i] += diff;
-                    } else {
-                        this._lineAlpha[i] += diff * 0.15;
-                        done = false;
+                try {
+                    let done = true;
+                    for (let i = 0; i < this._lineAlpha.length; i++) {
+                        let diff = this._targetAlpha(i) - this._lineAlpha[i];
+                        if (Math.abs(diff) < 0.003) {
+                            this._lineAlpha[i] += diff;
+                        } else {
+                            this._lineAlpha[i] += diff * 0.15;
+                            done = false;
+                        }
                     }
-                }
 
-                for (let i = 0; i < this._lineScale.length; i++) {
-                    let diff = this._targetScale(i) - this._lineScale[i];
-                    if (Math.abs(diff) < 0.0015) {
-                        this._lineScale[i] += diff;
-                    } else {
-                        this._lineScale[i] += diff * 0.14;
-                        done = false;
+                    for (let i = 0; i < this._lineScale.length; i++) {
+                        let diff = this._targetScale(i) - this._lineScale[i];
+                        if (Math.abs(diff) < 0.0015) {
+                            this._lineScale[i] += diff;
+                        } else {
+                            this._lineScale[i] += diff * 0.14;
+                            done = false;
+                        }
                     }
-                }
 
-                this.queue_repaint();
-                if (done) { this._alphaTickId = null; return GLib.SOURCE_REMOVE; }
-                return GLib.SOURCE_CONTINUE;
+                    this.queue_repaint();
+                    if (done) { this._alphaTickId = null; return GLib.SOURCE_REMOVE; }
+                    return GLib.SOURCE_CONTINUE;
+                } catch (_) {
+                    this._alphaTickId = null;
+                    return GLib.SOURCE_REMOVE;
+                }
             });
         }
 
@@ -257,16 +267,21 @@ export const LyricsWidget = GObject.registerClass(
         _startScrollAnim() {
             if (this._scrollTickId) return;
             this._scrollTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                let diff = this._targetScrollOffset - this._scrollOffset;
-                if (Math.abs(diff) < 0.4) {
-                    this._scrollOffset = this._targetScrollOffset;
+                try {
+                    let diff = this._targetScrollOffset - this._scrollOffset;
+                    if (Math.abs(diff) < 0.4) {
+                        this._scrollOffset = this._targetScrollOffset;
+                        this.queue_repaint();
+                        this._scrollTickId = null;
+                        return GLib.SOURCE_REMOVE;
+                    }
+                    this._scrollOffset += diff * 0.22;
                     this.queue_repaint();
+                    return GLib.SOURCE_CONTINUE;
+                } catch (_) {
                     this._scrollTickId = null;
                     return GLib.SOURCE_REMOVE;
                 }
-                this._scrollOffset += diff * 0.22;
-                this.queue_repaint();
-                return GLib.SOURCE_CONTINUE;
             });
         }
 
@@ -348,51 +363,56 @@ export const LyricsWidget = GObject.registerClass(
         _startHoverAnim() {
             if (this._hoverTickId) return;
             this._hoverTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                let done = true;
+                try {
+                    let done = true;
 
-                let pillTargetAlpha = 0.0;
-                let pillTargetY = -1;
-                if (this._hoverIndex >= 0 && this._hoverIndex < this._geoms.length) {
-                    let g = this._geoms[this._hoverIndex];
-                    pillTargetY = g.y - this._scrollOffset;
-                }
+                    let pillTargetAlpha = 0.0;
+                    let pillTargetY = -1;
+                    if (this._hoverIndex >= 0 && this._hoverIndex < this._geoms.length) {
+                        let g = this._geoms[this._hoverIndex];
+                        pillTargetY = g.y - this._scrollOffset;
+                    }
 
-                let aDiff = pillTargetAlpha - this._hoverPillAlpha;
-                if (Math.abs(aDiff) < 0.003) {
-                    this._hoverPillAlpha = pillTargetAlpha;
-                } else {
-                    this._hoverPillAlpha += aDiff * 0.22;
-                    done = false;
-                }
-
-                if (pillTargetY >= 0) {
-                    if (this._hoverPillY < 0) {
-                        this._hoverPillY = pillTargetY;
+                    let aDiff = pillTargetAlpha - this._hoverPillAlpha;
+                    if (Math.abs(aDiff) < 0.003) {
+                        this._hoverPillAlpha = pillTargetAlpha;
                     } else {
-                        let yDiff = pillTargetY - this._hoverPillY;
-                        if (Math.abs(yDiff) < 0.4) {
+                        this._hoverPillAlpha += aDiff * 0.22;
+                        done = false;
+                    }
+
+                    if (pillTargetY >= 0) {
+                        if (this._hoverPillY < 0) {
                             this._hoverPillY = pillTargetY;
                         } else {
-                            this._hoverPillY += yDiff * 0.22;
+                            let yDiff = pillTargetY - this._hoverPillY;
+                            if (Math.abs(yDiff) < 0.4) {
+                                this._hoverPillY = pillTargetY;
+                            } else {
+                                this._hoverPillY += yDiff * 0.22;
+                                done = false;
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < this._hoverExtras.length; i++) {
+                        let target = (i === this._hoverIndex) ? 0.14 : 0.0;
+                        let diff = target - this._hoverExtras[i];
+                        if (Math.abs(diff) < 0.003) {
+                            this._hoverExtras[i] = target;
+                        } else {
+                            this._hoverExtras[i] += diff * 0.22;
                             done = false;
                         }
                     }
-                }
 
-                for (let i = 0; i < this._hoverExtras.length; i++) {
-                    let target = (i === this._hoverIndex) ? 0.14 : 0.0;
-                    let diff = target - this._hoverExtras[i];
-                    if (Math.abs(diff) < 0.003) {
-                        this._hoverExtras[i] = target;
-                    } else {
-                        this._hoverExtras[i] += diff * 0.22;
-                        done = false;
-                    }
+                    this.queue_repaint();
+                    if (done) { this._hoverTickId = null; return GLib.SOURCE_REMOVE; }
+                    return GLib.SOURCE_CONTINUE;
+                } catch (_) {
+                    this._hoverTickId = null;
+                    return GLib.SOURCE_REMOVE;
                 }
-
-                this.queue_repaint();
-                if (done) { this._hoverTickId = null; return GLib.SOURCE_REMOVE; }
-                return GLib.SOURCE_CONTINUE;
             });
         }
 
@@ -427,12 +447,20 @@ export const LyricsWidget = GObject.registerClass(
         _startPulseAnim() {
             if (this._pulseTickId) return;
             this._pulseTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 32, () => {
-                if (this._state !== 'loading') { this._pulseTickId = null; return GLib.SOURCE_REMOVE; }
-                this._pulseAlpha += this._pulseDir * 0.018;
-                if (this._pulseAlpha >= 0.70) { this._pulseAlpha = 0.70; this._pulseDir = -1; }
-                if (this._pulseAlpha <= 0.18) { this._pulseAlpha = 0.18; this._pulseDir = +1; }
-                this.queue_repaint();
-                return GLib.SOURCE_CONTINUE;
+                try {
+                    if (this._state !== 'loading') {
+                        this._pulseTickId = null;
+                        return GLib.SOURCE_REMOVE;
+                    }
+                    this._pulseAlpha += this._pulseDir * 0.018;
+                    if (this._pulseAlpha >= 0.70) { this._pulseAlpha = 0.70; this._pulseDir = -1; }
+                    if (this._pulseAlpha <= 0.18) { this._pulseAlpha = 0.18; this._pulseDir = +1; }
+                    this.queue_repaint();
+                    return GLib.SOURCE_CONTINUE;
+                } catch (_) {
+                    this._pulseTickId = null;
+                    return GLib.SOURCE_REMOVE;
+                }
             });
         }
 
@@ -458,8 +486,8 @@ export const LyricsWidget = GObject.registerClass(
 
             if (this._state !== 'lyrics') {
                 let msg;
-                if (this._state === 'loading') msg = '♫  Fetching lyrics…';
-                else if (this._state === 'error') msg = '⚠  Could not fetch lyrics';
+                if (this._state === 'loading') msg = 'Fetching lyrics…';
+                else if (this._state === 'error') msg = 'Could not fetch lyrics';
                 else msg = 'No lyrics found';
                 let layout = PangoCairo.create_layout(cr);
                 layout.set_alignment(Pango.Alignment.CENTER);

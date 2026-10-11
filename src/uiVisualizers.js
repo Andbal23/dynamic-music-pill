@@ -18,15 +18,32 @@ const CavaVisualizer = GObject.registerClass(
             this._prevHeights = new Array(this._barCount).fill(1);
             this._peakValues = new Array(this._barCount).fill(0);
             this._isSilent = true;
+            this._isPlaying = false;
 
             this._colorR = 1.0; this._colorG = 1.0; this._colorB = 1.0;
             this.set_width(this._barCount * 4);
 
             this.connect('repaint', this._onRepaint.bind(this));
-            this.connect('destroy', this._cleanup.bind(this));
+            this.connect('destroy', () => this._cleanup());
 
-            this._engine = SharedVisualizerEngine.get();
-            this._engineCallback = this._onEngineUpdate.bind(this);
+            let engine = SharedVisualizerEngine.get();
+            this._engine = engine;
+            let callback = (normalizedBars, isSilent) => {
+                if (!this._isPlaying) return;
+                let mapped = false;
+                try {
+                    mapped = this.mapped;
+                } catch (_e) {
+                    if (this._engine) {
+                        this._engine.setPlaying(callback, false);
+                        this._engine.unsubscribe(callback);
+                    }
+                    return;
+                }
+                if (!mapped) return;
+                this._onEngineUpdate(normalizedBars, isSilent);
+            };
+            this._engineCallback = callback;
             this._engine.subscribe(this._engineCallback);
         }
 
@@ -50,6 +67,7 @@ const CavaVisualizer = GObject.registerClass(
         }
 
         setPlaying(playing) {
+            this._isPlaying = playing;
             this._engine.setPlaying(this._engineCallback, playing);
             if (!playing) {
                 this._prevHeights.fill(1);
@@ -77,7 +95,15 @@ const CavaVisualizer = GObject.registerClass(
         }
 
         _onEngineUpdate(normalizedBars, isSilent) {
-            if (!this || (this.is_finalized && this.is_finalized()) || !this.mapped) return;
+            if (!this._isPlaying) {
+                return;
+            }
+
+            try {
+                if (!this.mapped) return;
+            } catch (_e) {
+                return;
+            }
 
             this._isSilent = isSilent;
             let myBars = this._resampleBars(normalizedBars, this._barCount);
@@ -142,8 +168,17 @@ const CavaVisualizer = GObject.registerClass(
             cr.$dispose();
         }
 
+        destroy() {
+            this._cleanup();
+            super.destroy();
+        }
+
         _cleanup() {
-            this._engine.unsubscribe(this._engineCallback);
+            if (this._engine && this._engineCallback) {
+                this._engine.setPlaying(this._engineCallback, false);
+                this._engine.unsubscribe(this._engineCallback);
+                this._engineCallback = null;
+            }
         }
     });
 
@@ -161,7 +196,6 @@ const SimulatedVisualizer = GObject.registerClass(
             this._timerId = null;
 
             this._updateBarCount();
-            this.connect('destroy', this._cleanup.bind(this));
         }
 
         _updateBarCount() {
@@ -171,7 +205,7 @@ const SimulatedVisualizer = GObject.registerClass(
             let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
 
             for (let i = 0; i < count; i++) {
-                let bar = new St.Widget({ style_class: 'visualizer-bar', y_expand: true, y_align: Clutter.ActorAlign.FILL });
+                let bar = new St.Widget({ name: 'simulated-visualizer-bar', style_class: 'visualizer-bar', y_expand: true, y_align: Clutter.ActorAlign.FILL });
                 bar.set_width(barWidth);
                 bar.set_pivot_point(0.5, this._mode === 2 ? 0.5 : 1.0);
                 this.add_child(bar);
@@ -180,11 +214,20 @@ const SimulatedVisualizer = GObject.registerClass(
             this._updateBarsCss();
         }
 
+        destroy() {
+            this._cleanup();
+            super.destroy();
+        }
+
         _cleanup() {
             if (this._timerId) {
                 GLib.Source.remove(this._timerId);
                 this._timerId = null;
             }
+            if (this._settings) {
+                this._settings.disconnectObject(this);
+            }
+            this.disconnectObject(this);
         }
 
         setMode(m) {
@@ -212,10 +255,12 @@ const SimulatedVisualizer = GObject.registerClass(
 
             if (playing && this._mode !== 0) {
                 this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                    if (!this || this.is_finalized && this.is_finalized() || !this.get_parent())
+                    try {
+                        if (!this.get_parent()) return GLib.SOURCE_REMOVE;
+                        if (!this.mapped) return GLib.SOURCE_CONTINUE;
+                    } catch (_e) {
                         return GLib.SOURCE_REMOVE;
-
-                    if (!this.mapped) return GLib.SOURCE_CONTINUE;
+                    }
                     let t = Date.now() / 250;
                     this._updateVisuals(t);
                     return GLib.SOURCE_CONTINUE;
@@ -268,6 +313,7 @@ export const WaveformVisualizer = GObject.registerClass(
             this._isPlaying = false;
 
             this.set_child(this._simulated);
+            this.connect('destroy', () => this._cleanup());
 
             if (this._isPopup) {
                 this._settings.connectObject('changed::popup-visualizer-bars', () => this._updateSize(), this);
@@ -280,6 +326,7 @@ export const WaveformVisualizer = GObject.registerClass(
             }
 
             this._updateSize();
+            this.connect('destroy', () => this._cleanup());
         }
 
         _updateSize() {
@@ -316,9 +363,9 @@ export const WaveformVisualizer = GObject.registerClass(
                 this._cava.setPlaying(this._isPlaying);
                 this._simulated.setPlaying(false);
             } else {
+                if (this._cava) this._cava.setPlaying(false);
                 if (this.get_child() !== this._simulated) {
                     this.set_child(this._simulated);
-                    if (this._cava) this._cava.setPlaying(false);
                 }
                 this._simulated.setMode(m);
                 this._simulated.setPlaying(this._isPlaying);
@@ -334,7 +381,32 @@ export const WaveformVisualizer = GObject.registerClass(
 
         setPlaying(playing) {
             this._isPlaying = playing;
-            if (this._mode === 3 && this._cava) this._cava.setPlaying(playing);
-            else this._simulated.setPlaying(playing);
+            if (this._mode === 3 && this._cava) {
+                this._cava.setPlaying(playing);
+                this._simulated.setPlaying(false);
+            } else {
+                if (this._cava) this._cava.setPlaying(false);
+                this._simulated.setPlaying(playing);
+            }
+        }
+
+        destroy() {
+            this._cleanup();
+            super.destroy();
+        }
+
+        _cleanup() {
+            if (this._settings) {
+                this._settings.disconnectObject(this);
+            }
+            this.disconnectObject(this);
+            if (this._simulated) {
+                this._simulated.destroy();
+                this._simulated = null;
+            }
+            if (this._cava) {
+                this._cava.destroy();
+                this._cava = null;
+            }
         }
     });

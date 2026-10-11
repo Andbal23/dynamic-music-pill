@@ -13,6 +13,7 @@ import { LyricsClient } from './LyricsClient.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { SharedVisualizerEngine } from './visualizerEngine.js';
 import { getDockContainer } from './dockIntegration.js';
+import { checkBlurRequirements } from './blurHelper.js';
 
 
 
@@ -224,6 +225,51 @@ export class MusicController {
                 if (player) this._fetchNetworkLyrics(player);
             }
         }, this);
+        this._settings.connectObject(
+            'changed::enable-blur-pill', () => {
+                if (this._settings.get_boolean('enable-blur-pill')) {
+                    if (!checkBlurRequirements()) {
+                        this._settings.set_boolean('enable-blur-pill', false);
+                        return;
+                    }
+                    if (this._settings.get_boolean('enable-transparency')) {
+                        this._settings.set_boolean('enable-transparency', false);
+                    }
+                }
+            },
+            'changed::enable-blur-popup', () => {
+                if (this._settings.get_boolean('enable-blur-popup')) {
+                    if (!checkBlurRequirements()) {
+                        this._settings.set_boolean('enable-blur-popup', false);
+                        return;
+                    }
+                    if (this._settings.get_boolean('enable-transparency')) {
+                        this._settings.set_boolean('enable-transparency', false);
+                    }
+                    if (this._settings.get_boolean('popup-follow-transparency')) {
+                        this._settings.set_boolean('popup-follow-transparency', false);
+                    }
+                }
+            },
+            'changed::enable-transparency', () => {
+                if (this._settings.get_boolean('enable-transparency')) {
+                    if (this._settings.get_boolean('enable-blur-pill')) {
+                        this._settings.set_boolean('enable-blur-pill', false);
+                    }
+                    if (this._settings.get_boolean('enable-blur-popup')) {
+                        this._settings.set_boolean('enable-blur-popup', false);
+                    }
+                }
+            },
+            'changed::popup-follow-transparency', () => {
+                if (this._settings.get_boolean('popup-follow-transparency')) {
+                    if (this._settings.get_boolean('enable-blur-popup')) {
+                        this._settings.set_boolean('enable-blur-popup', false);
+                    }
+                }
+            },
+            this
+        );
     }
 
     disable() {
@@ -482,7 +528,6 @@ export class MusicController {
         }
 
         this._playerMenu = new PlayerSelectorMenu(this);
-        this._playerMenu.connect('destroy', () => { this._playerMenu = null; });
         Main.layoutManager.addChrome(this._playerMenu);
         this._playerMenu.showMenu();
     }
@@ -498,12 +543,10 @@ export class MusicController {
     toggleMenu() {
         if (this._expandedPlayer) {
             this._expandedPlayer.hide();
-            this._expandedPlayer.connect('destroy', () => { this._expandedPlayer = null; });
             return;
         }
 
         this._expandedPlayer = new ExpandedPlayer(this);
-        this._expandedPlayer.connect('destroy', () => { this._expandedPlayer = null; });
         Main.layoutManager.addChrome(this._expandedPlayer);
 
         let player = this._getActivePlayer();
@@ -517,7 +560,6 @@ export class MusicController {
         this._expandedPlayer.updateStyle(c.r, c.g, c.b, this._pill._currentBgAlpha);
 
         let artUrl = this._pill._lastArtUrl;
-        this._expandedPlayer.showFor(player, artUrl);
 
         this._expandedPlayer._box.set_width(-1);
         let [minW, natW] = this._expandedPlayer._box.get_preferred_width(-1);
@@ -540,8 +582,9 @@ export class MusicController {
         }
 
         let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - startH - 15 : py + ph + 15;
-        this._expandedPlayer.setPosition(startX, startY);
+        this._expandedPlayer.setPosition(startX, startY, startW, startH);
 
+        this._expandedPlayer.showFor(player, artUrl);
         this._expandedPlayer.animateResize();
     }
 
@@ -1818,12 +1861,14 @@ export class MusicController {
             this._pill._feedbackLabel = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
 
             this._pill._feedbackSliderBg = new St.Widget({
+                name: 'pill-feedback-slider-bg',
                 y_align: Clutter.ActorAlign.CENTER,
                 style: 'border-radius: 4px;',
                 height: 6,
                 width: 80
             });
             this._pill._feedbackSliderFill = new St.Widget({
+                name: 'pill-feedback-slider-fill',
                 style: 'border-radius: 4px;',
                 height: 6,
                 width: 0

@@ -185,6 +185,99 @@ export function restoreDashToDockAutohide() {
     }
 }
 
+let stbDisableRequests = 0;
+let _stbAutohideDisabled = false;
+
+function _patchSimpleTaskbarController(panelCtrl) {
+    if (!panelCtrl) return;
+    if (!panelCtrl._origInteractionIsBlocked && panelCtrl._interactionIsBlocked) {
+        panelCtrl._origInteractionIsBlocked = panelCtrl._interactionIsBlocked.bind(panelCtrl);
+        panelCtrl._interactionIsBlocked = function(includePreviews) {
+            if (_stbAutohideDisabled) return true;
+            return panelCtrl._origInteractionIsBlocked(includePreviews);
+        };
+    }
+    try {
+        panelCtrl._autoHideController?.show(true);
+    } catch (_) {}
+}
+
+function _applySimpleTaskbarDisable() {
+    let ext = Main.extensionManager.lookup('simple-taskbar@sultech');
+    if (!ext || ext.state !== 1) return;
+
+    if (ext._panelInteractionIsBlocked && !ext._origPanelInteractionIsBlocked) {
+        ext._origPanelInteractionIsBlocked = ext._panelInteractionIsBlocked.bind(ext);
+        ext._panelInteractionIsBlocked = function(includePreviews) {
+            if (_stbAutohideDisabled) return true;
+            return ext._origPanelInteractionIsBlocked(includePreviews);
+        };
+    }
+    try {
+        ext._panelController?._autoHideController?.show(true);
+    } catch (_) {}
+
+    if (ext._dockPanelManager?._panels) {
+        for (const p of ext._dockPanelManager._panels) {
+            _patchSimpleTaskbarController(p);
+        }
+    }
+    if (ext._secondaryPanelManager?._panels) {
+        for (const p of ext._secondaryPanelManager._panels) {
+            _patchSimpleTaskbarController(p);
+        }
+    }
+}
+
+export function disableSimpleTaskbarAutohide() {
+    try {
+        stbDisableRequests++;
+        _stbAutohideDisabled = true;
+        _applySimpleTaskbarDisable();
+    } catch (e) {
+        console.debug('[Dynamic Music Pill] Simple Taskbar disable error: ' + e.message);
+    }
+}
+
+export function restoreSimpleTaskbarAutohide() {
+    try {
+        if (stbDisableRequests > 0) {
+            stbDisableRequests--;
+            if (stbDisableRequests === 0) {
+                _stbAutohideDisabled = false;
+                let ext = Main.extensionManager.lookup('simple-taskbar@sultech');
+                if (ext && ext.state === 1) {
+                    try {
+                        ext._panelController?._autoHideController?._scheduleHide?.();
+                    } catch (_) {}
+                    if (ext._dockPanelManager?._panels) {
+                        for (const p of ext._dockPanelManager._panels) {
+                            try { p._autoHideController?._scheduleHide?.(); } catch (_) {}
+                        }
+                    }
+                    if (ext._secondaryPanelManager?._panels) {
+                        for (const p of ext._secondaryPanelManager._panels) {
+                            try { p._autoHideController?._scheduleHide?.(); } catch (_) {}
+                        }
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.debug('[Dynamic Music Pill] Simple Taskbar restore error: ' + e.message);
+    }
+}
+
+export function disableDockAutohide() {
+    disableDashToDockAutohide();
+    disableSimpleTaskbarAutohide();
+}
+
+export function restoreDockAutohide() {
+    restoreDashToDockAutohide();
+    restoreSimpleTaskbarAutohide();
+}
+
 export function getPlayerIcon(proxy, busName) {
     let names = [];
     if (proxy && proxy._desktopEntry) {

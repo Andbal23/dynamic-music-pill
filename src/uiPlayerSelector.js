@@ -83,12 +83,19 @@ export const PlayerSelectorMenu = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this.connect('destroy', () => {
-                if (this._leaveHideTimeoutId) {
-                    GLib.Source.remove(this._leaveHideTimeoutId);
-                    this._leaveHideTimeoutId = null;
-                }
-            });
+            this.connect('destroy', () => this._cleanup());
+        }
+
+        destroy() {
+            this._cleanup();
+            super.destroy();
+        }
+
+        _cleanup() {
+            if (this._leaveHideTimeoutId) {
+                GLib.Source.remove(this._leaveHideTimeoutId);
+                this._leaveHideTimeoutId = null;
+            }
         }
 
         populate() {

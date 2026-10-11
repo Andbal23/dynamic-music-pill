@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import { formatTime, smartUnpack, disableDashToDockAutohide, restoreDashToDockAutohide, getPlayerIcon } from './utils.js';
+import { formatTime, smartUnpack, disableDockAutohide, restoreDockAutohide, disableDashToDockAutohide, restoreDashToDockAutohide, getPlayerIcon } from './utils.js';
 import { COPY_ICON_RESET_DELAY, COPY_ICON_FADE_IN_DURATION, COPY_ICON_FADE_OUT_DURATION, SUBPAGE_ANIM_IN_DURATION, SUBPAGE_ANIM_OUT_DURATION, SUBPAGE_BACK_BTN_WIDTH, SUBPAGE_HEADER_ICON_SIZE } from './constants.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
@@ -12,6 +12,7 @@ import { PixelSnappedBox, ScrollLabel, _addBtnPressAnim } from './uiWidgets.js';
 import { WaveformVisualizer } from './uiVisualizers.js';
 import { LyricsClient } from './LyricsClient.js';
 import { LyricsWidget } from './uiLyricsWidget.js';
+import { ActorBlurController, checkBlurRequirements } from './blurHelper.js';
 
 export const ExpandedPlayer = GObject.registerClass(
     class ExpandedPlayer extends St.Widget {
@@ -19,6 +20,7 @@ export const ExpandedPlayer = GObject.registerClass(
             let [bgW, bgH] = global.display.get_size();
 
             super._init({
+                name: 'music-pill-expanded-player',
                 width: bgW,
                 height: bgH,
                 reactive: true,
@@ -37,21 +39,24 @@ export const ExpandedPlayer = GObject.registerClass(
             this._lastPopupCss = null;
             this._isSpinning = false;
 
-            this._backgroundBtn = new St.Button({
-                style: 'background-color: transparent;',
+            this._backgroundBtn = new Clutter.Actor({
+                name: 'popup-modal-background',
                 reactive: true,
                 x_expand: true,
                 y_expand: true,
                 width: bgW,
                 height: bgH
             });
-            this._backgroundBtn.connectObject('clicked', () => { this.hide(); }, this);
             this._backgroundBtn.connectObject('touch-event', (actor, event) => {
                 if (event.type() === Clutter.EventType.TOUCH_END) { this.hide(); return Clutter.EVENT_STOP; }
                 return Clutter.EVENT_PROPAGATE;
             }, this);
             this._backgroundBtn.connectObject('button-release-event', (actor, event) => {
-                if (event.get_button() === 8) {
+                let btn = event.get_button();
+                if (btn === 1) {
+                    this.hide();
+                    return Clutter.EVENT_STOP;
+                } else if (btn === 8) {
                     if (this._currentSubPage) this._popPage();
                     else this.hide();
                     return Clutter.EVENT_STOP;
@@ -69,8 +74,10 @@ export const ExpandedPlayer = GObject.registerClass(
             this.add_child(this._backgroundBtn);
 
             this._box = new PixelSnappedBox({
+                name: 'popup-main-box',
                 style_class: 'music-pill-expanded',
-                reactive: true
+                reactive: true,
+                clip_to_allocation: false
             });
             this._box.layout_manager.orientation = Clutter.Orientation.VERTICAL;
             const _boxEventOverHint = (event) => {
@@ -118,7 +125,82 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
             this._currentSubPage = null;
+            this._blurBackdrop = new St.Widget({
+                name: 'popup-blur-backdrop',
+                reactive: false,
+                visible: false
+            });
+            this.add_child(this._blurBackdrop);
             this.add_child(this._box);
+
+            this._box.connectObject(
+                'notify::allocation', () => {
+                    this._syncBlurBackdropGeometry();
+                },
+                'notify::translation-x', () => {
+                    if (this._blurBackdrop && this._box) this._blurBackdrop.translation_x = this._box.translation_x;
+                },
+                'notify::translation-y', () => {
+                    if (this._blurBackdrop && this._box) this._blurBackdrop.translation_y = this._box.translation_y;
+                },
+                'notify::scale-x', () => {
+                    if (this._blurBackdrop && this._box) this._blurBackdrop.scale_x = this._box.scale_x;
+                },
+                'notify::scale-y', () => {
+                    if (this._blurBackdrop && this._box) this._blurBackdrop.scale_y = this._box.scale_y;
+                },
+                'notify::opacity', () => {
+                    if (this._blurBackdrop && this._box) this._blurBackdrop.opacity = this._box.opacity;
+                },
+                this
+            );
+
+            this._blurController = new ActorBlurController(this._blurBackdrop, () => {
+                let followRadius = this._settings.get_boolean('popup-follow-radius');
+                let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
+                return (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
+            });
+            if (this._settings.get_boolean('enable-blur-popup')) {
+                if (!checkBlurRequirements()) {
+                    this._settings.set_boolean('enable-blur-popup', false);
+                }
+            }
+
+            this._settings.connectObject(
+                'changed::enable-blur-popup', () => {
+                    let en = this._settings.get_boolean('enable-blur-popup');
+                    if (en) {
+                        if (!checkBlurRequirements()) {
+                            this._settings.set_boolean('enable-blur-popup', false);
+                            return;
+                        }
+                        if (this.visible) {
+                            if (this._blurBackdrop) this._blurBackdrop.show();
+                            if (this._blurController) this._blurController.enable();
+                        }
+                    } else {
+                        if (this._blurBackdrop) this._blurBackdrop.hide();
+                        if (this._blurController) this._blurController.disable();
+                    }
+                    if (this.visible && this._controller && this._controller._pill) {
+                        let c = this._controller._pill._displayedColor;
+                        this.updateStyle(c.r, c.g, c.b);
+                    }
+                },
+                'changed::blur-blend-color', () => {
+                    if (this.visible && this._controller && this._controller._pill) {
+                        let c = this._controller._pill._displayedColor;
+                        this.updateStyle(c.r, c.g, c.b);
+                    }
+                },
+                'changed::popup-follow-radius', () => {
+                    if (this._blurController) this._blurController.updateRadius();
+                },
+                'changed::border-radius', () => {
+                    if (this._blurController) this._blurController.updateRadius();
+                },
+                this
+            );
 
             this._mainPage = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true });
             this._box.add_child(this._mainPage);
@@ -157,10 +239,40 @@ export const ExpandedPlayer = GObject.registerClass(
                     this.updateContent(this._lastTrackTitle, '', artUrl, this._lastStatus);
                 }
             }, this);
+            this._settings.connectObject('changed::popup-show-vinyl', () => {
+                if (this.visible && this._player) {
+                    let artUrl = this._lastArtUrl || this._currentArtUrl;
+                    this.updateContent(this._lastTrackTitle, '', artUrl, this._lastStatus);
+                    this.animateResize();
+                }
+            }, this);
+            this._settings.connectObject('changed::popup-show-visualizer', () => {
+                if (this.visible) {
+                    let visStyle = this._settings.get_int('visualizer-style');
+                    let showVis = this._settings.get_boolean('popup-show-visualizer') && visStyle !== 0;
+                    this._visBin.visible = showVis;
+                    this._visualizer.visible = showVis;
+                    this._visualizer.setMode(visStyle);
+                    this._visualizer.setPlaying(this._lastStatus === 'Playing');
+                    this.animateResize();
+                }
+            }, this);
+            this._settings.connectObject('changed::visualizer-style', () => {
+                if (this.visible) {
+                    let visStyle = this._settings.get_int('visualizer-style');
+                    let showVis = this._settings.get_boolean('popup-show-visualizer') && visStyle !== 0;
+                    this._visBin.visible = showVis;
+                    this._visualizer.visible = showVis;
+                    this._visualizer.setMode(visStyle);
+                    this._visualizer.setPlaying(this._lastStatus === 'Playing');
+                    this.animateResize();
+                }
+            }, this);
 
-            let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', orientation: Clutter.Orientation.HORIZONTAL, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
+            let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', orientation: Clutter.Orientation.HORIZONTAL, y_align: Clutter.ActorAlign.CENTER, x_expand: true, clip_to_allocation: true });
 
             this._vinyl = new St.Widget({
+                name: 'popup-vinyl',
                 style_class: 'vinyl-container',
                 layout_manager: new Clutter.BinLayout(),
                 width: 100,
@@ -184,11 +296,11 @@ export const ExpandedPlayer = GObject.registerClass(
             this._vinyl.reactive = true;
 
             this._vinylBin.connectObject('enter-event', () => {
-                this._vinyl.ease({ opacity: 175, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                this._vinyl.ease({ scale_x: 0.96, scale_y: 0.96, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_PROPAGATE;
             }, this);
             this._vinylBin.connectObject('leave-event', () => {
-                this._vinyl.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                this._vinyl.ease({ scale_x: 1.0, scale_y: 1.0, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_PROPAGATE;
             }, this);
             this._vinylBin.connectObject('button-release-event', (actor, event) => {
@@ -206,7 +318,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            let infoBox = new PixelSnappedBox({
+            this._infoBox = new PixelSnappedBox({
                 style_class: 'track-info-box',
                 y_align: Clutter.ActorAlign.CENTER,
                 x_align: Clutter.ActorAlign.CENTER,
@@ -214,7 +326,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 clip_to_allocation: true,
                 style: 'min-width: 0px; margin-left: 15px;'
             });
-            infoBox.layout_manager.orientation = Clutter.Orientation.VERTICAL;
+            this._infoBox.layout_manager.orientation = Clutter.Orientation.VERTICAL;
 
             this._titleLabel = new ScrollLabel('expanded-title', this._settings);
             this._titleLabel.setForceScroll(true);
@@ -230,10 +342,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 y_align: Clutter.ActorAlign.CENTER
             });
 
-            infoBox.add_child(this._titleLabel);
-            infoBox.add_child(this._artistLabel);
+            this._infoBox.add_child(this._titleLabel);
+            this._infoBox.add_child(this._artistLabel);
 
-            topRow.add_child(infoBox);
+            topRow.add_child(this._infoBox);
             topRow.add_child(this._visBin);
 
             this._centerContent.add_child(topRow);
@@ -257,6 +369,7 @@ export const ExpandedPlayer = GObject.registerClass(
             });
 
             this._sliderBin = new St.Widget({
+                name: 'popup-slider-bin',
                 style_class: 'progress-slider-bg',
                 x_expand: true,
                 reactive: true,
@@ -264,7 +377,10 @@ export const ExpandedPlayer = GObject.registerClass(
             });
             this._sliderBin.set_style('margin: 0; padding: 0;');
 
-            this._sliderFill = new St.Widget({ style_class: 'progress-slider-fill' });
+            this._sliderFill = new St.Widget({
+                name: 'popup-slider-fill',
+                style_class: 'progress-slider-fill'
+            });
             this._sliderFill.set_position(0, 0);
             this._sliderBin.add_child(this._sliderFill);
 
@@ -290,29 +406,29 @@ export const ExpandedPlayer = GObject.registerClass(
             let controlsRow = new PixelSnappedBox({ style_class: 'controls-row', orientation: Clutter.Orientation.HORIZONTAL, x_align: Clutter.ActorAlign.CENTER, reactive: true });
 
             this._shuffleIcon = new St.Icon({ icon_name: 'media-playlist-shuffle-symbolic', icon_size: 16 });
-            this._shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: true });
+            this._shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: false });
             _addBtnPressAnim(this._shuffleBtn);
             this._shuffleBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.toggleShuffle(); return Clutter.EVENT_STOP; }, this);
             this._shuffleBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.toggleShuffle(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
 
-            this._prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
+            this._prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 24 }), reactive: true, can_focus: false });
             _addBtnPressAnim(this._prevBtn);
             this._prevBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.previous(); return Clutter.EVENT_STOP; }, this);
             this._prevBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.previous(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
 
             this._playPauseIcon = new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 24 });
-            this._playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: true });
+            this._playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: false });
             _addBtnPressAnim(this._playPauseBtn);
             this._playPauseBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.togglePlayback(); return Clutter.EVENT_STOP; }, this);
             this._playPauseBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.togglePlayback(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
 
-            this._nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 24 }), reactive: true, can_focus: true });
+            this._nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 24 }), reactive: true, can_focus: false });
             _addBtnPressAnim(this._nextBtn);
             this._nextBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.next(); return Clutter.EVENT_STOP; }, this);
             this._nextBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.next(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
 
             this._repeatIcon = new St.Icon({ icon_name: 'media-playlist-repeat-symbolic', icon_size: 16 });
-            this._repeatBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._repeatIcon, reactive: true, can_focus: true });
+            this._repeatBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._repeatIcon, reactive: true, can_focus: false });
             _addBtnPressAnim(this._repeatBtn);
             this._repeatBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.toggleLoop(); return Clutter.EVENT_STOP; }, this);
             this._repeatBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.toggleLoop(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
@@ -321,7 +437,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 style_class: 'control-btn-secondary',
                 child: new St.Icon({ icon_name: 'view-more-symbolic', icon_size: 16 }),
                 reactive: true,
-                can_focus: true,
+                can_focus: false,
                 visible: false
             });
             _addBtnPressAnim(this._customBtn1);
@@ -329,7 +445,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 style_class: 'control-btn-secondary',
                 child: new St.Icon({ icon_name: 'view-more-symbolic', icon_size: 16 }),
                 reactive: true,
-                can_focus: true,
+                can_focus: false,
                 visible: false
             });
             _addBtnPressAnim(this._customBtn2);
@@ -417,6 +533,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 }),
                 x_expand: true,
                 reactive: true,
+                can_focus: false,
+                style_class: 'hint-label-btn',
                 style: 'border: none; background-color: transparent; padding: 0; min-width: 0;',
                 y_align: Clutter.ActorAlign.CENTER
             });
@@ -424,14 +542,14 @@ export const ExpandedPlayer = GObject.registerClass(
                 child: new St.Icon({ icon_name: 'preferences-system-symbolic', icon_size: 18 }),
                 style_class: 'control-btn-secondary',
                 reactive: true,
-                can_focus: true,
+                can_focus: false,
                 y_align: Clutter.ActorAlign.CENTER
             });
             this._firstHintCloseBtn = new St.Button({
                 child: new St.Icon({ icon_name: 'window-close-symbolic', icon_size: 16 }),
                 style_class: 'control-btn-secondary',
                 reactive: true,
-                can_focus: true,
+                can_focus: false,
                 y_align: Clutter.ActorAlign.CENTER
             });
             _addBtnPressAnim(this._firstHintSettingsBtn);
@@ -502,7 +620,46 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this.connect('destroy', this._cleanup.bind(this));
+            this.connect('destroy', () => this._cleanup());
+        }
+
+        destroy() {
+            this._cleanup();
+            super.destroy();
+        }
+
+        vfunc_allocate(box) {
+            this.set_allocation(box);
+            if (this._backgroundBtn && this._backgroundBtn.visible) {
+                let bgBox = new Clutter.ActorBox();
+                bgBox.init_rect(0, 0, Math.max(1, Math.round(box.get_width())), Math.max(1, Math.round(box.get_height())));
+                this._backgroundBtn.allocate(bgBox);
+            }
+            if (this._box && this._box.visible) {
+                let bx = Math.round(this._box.x);
+                let by = Math.round(this._box.y);
+                let bw = Math.max(1, Math.round(this._box.width > 0 ? this._box.width : this._box.get_preferred_width(-1)[1]));
+                let bh;
+                if (this._box.get_transition('height') || (this._currentSubPage && this._box.height > 0)) {
+                    bh = Math.max(1, Math.round(this._box.height));
+                } else {
+                    let [, natH] = this._box.get_preferred_height(bw);
+                    bh = Math.max(1, Math.round(natH));
+                }
+                let boxActorBox = new Clutter.ActorBox();
+                boxActorBox.init_rect(bx, by, bw, bh);
+                this._box.allocate(boxActorBox);
+
+                if (this._blurBackdrop && this._blurBackdrop.visible) {
+                    let blurBox = new Clutter.ActorBox();
+                    let blurW = Math.max(1, Math.round(this._blurBackdrop.width > 0 ? this._blurBackdrop.width : bw));
+                    let blurH = Math.max(1, Math.round(this._blurBackdrop.height > 0 ? this._blurBackdrop.height : bh));
+                    let blurX = Math.round(this._blurBackdrop.x);
+                    let blurY = Math.round(this._blurBackdrop.y);
+                    blurBox.init_rect(blurX, blurY, blurW, blurH);
+                    this._blurBackdrop.allocate(blurBox);
+                }
+            }
         }
 
         _updatePlayerSelector() {
@@ -558,8 +715,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 let autoBtn = new St.Button({
                     child: autoIcon,
                     reactive: true,
-                    can_focus: true,
+                    can_focus: false,
                     track_hover: true,
+                    style_class: 'player-selector-btn',
                     style: `border-radius: 12px; padding: 8px; background-color: ${currentSelected === '' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
                 });
 
@@ -599,8 +757,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 let btn = new St.Button({
                     child: icon,
                     reactive: true,
-                    can_focus: true,
+                    can_focus: false,
                     track_hover: true,
+                    style_class: 'player-selector-btn',
                     style: `border-radius: 12px; padding: 8px; background-color: ${isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
                 });
 
@@ -630,8 +789,39 @@ export const ExpandedPlayer = GObject.registerClass(
             }
         }
 
-        setPosition(x, y) {
-            if (this._box) this._box.set_position(x, y);
+        _syncBlurBackdropGeometry(targetX, targetY, targetW, targetH, force = false) {
+            if (!this._blurBackdrop || !this._box) return;
+            if (!force && (this._box.get_transition('width') || this._box.get_transition('x') || this._box.get_transition('y'))) {
+                return;
+            }
+            let bx = (typeof targetX === 'number') ? Math.round(targetX) : Math.round(this._box.x);
+            let by = (typeof targetY === 'number') ? Math.round(targetY) : Math.round(this._box.y);
+            let bw = (typeof targetW === 'number') ? Math.round(targetW) : Math.round(this._box.width);
+            let bh = (typeof targetH === 'number') ? Math.round(targetH) : Math.round(this._box.height);
+            if (bw > 0 && bh > 0) {
+                if (this._blurBackdrop.x !== bx || this._blurBackdrop.y !== by) {
+                    this._blurBackdrop.set_position(bx, by);
+                }
+                if (this._blurBackdrop.width !== bw || this._blurBackdrop.height !== bh) {
+                    this._blurBackdrop.set_size(bw, bh);
+                }
+            }
+        }
+
+        setPosition(x, y, w, h) {
+            let sx = Math.round(x);
+            let sy = Math.round(y);
+            if (this._box) this._box.set_position(sx, sy);
+            if (this._blurBackdrop) this._blurBackdrop.set_position(sx, sy);
+            if (typeof w === 'number' && typeof h === 'number' && w > 0 && h > 0) {
+                let sw = Math.round(w);
+                let sh = Math.round(h);
+                if (this._box) {
+                    this._box.set_width(sw);
+                    this._box.set_height(-1);
+                }
+                if (this._blurBackdrop) this._blurBackdrop.set_size(sw, sh);
+            }
         }
 
         setPlayer(player) {
@@ -646,6 +836,8 @@ export const ExpandedPlayer = GObject.registerClass(
             let useShadow = this._settings.get_boolean('popup-enable-shadow');
             let followTrans = this._settings.get_boolean('popup-follow-transparency');
             let followRadius = this._settings.get_boolean('popup-follow-radius');
+            let isBlurActive = this._settings.get_boolean('enable-blur-popup');
+            let blurBlend = this._settings.get_boolean('blur-blend-color');
 
             let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
             let radius = (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
@@ -653,7 +845,13 @@ export const ExpandedPlayer = GObject.registerClass(
             let finalAlpha = 0.95;
             let enableTrans = this._settings.get_boolean('enable-transparency');
 
-            if (followTrans) {
+            if (isBlurActive) {
+                if (blurBlend) {
+                    finalAlpha = 0.45;
+                } else {
+                    finalAlpha = 0.50;
+                }
+            } else if (followTrans) {
                 if (enableTrans) {
                     finalAlpha = this._settings.get_int('transparency-strength') / 100.0;
                 } else {
@@ -667,19 +865,24 @@ export const ExpandedPlayer = GObject.registerClass(
 
             let parseChan = (v, def) => { let n = parseInt(v); return isNaN(n) ? def : n; };
 
-            if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
-                let customBg = this._settings.get_string('custom-bg-color').split(',');
-                safeR = parseChan(customBg[0], 40);
-                safeG = parseChan(customBg[1], 40);
-                safeB = parseChan(customBg[2], 40);
+            if (!isBlurActive || blurBlend) {
+                if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
+                    let customBg = this._settings.get_string('custom-bg-color').split(',');
+                    safeR = parseChan(customBg[0], 40);
+                    safeG = parseChan(customBg[1], 40);
+                    safeB = parseChan(customBg[2], 40);
+                }
+            } else {
+                safeR = 25;
+                safeG = 25;
+                safeB = 25;
             }
 
             let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${finalAlpha});`;
 
-            let shadowOp = Math.min(0.5, finalAlpha);
-            let shadowStyle = useShadow ? `box-shadow: 0px 8px 30px rgba(0,0,0,${shadowOp});` : 'box-shadow: none;';
+            let shadowStyle = 'box-shadow: none;';
 
-            let borderOp = Math.min(0.1, finalAlpha * 0.2);
+            let borderOp = isBlurActive ? 0.22 : Math.min(0.1, finalAlpha * 0.2);
             let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255,255,255,${borderOp});`;
 
             let minWLimit = this._computeMinControlsWidth();
@@ -690,9 +893,21 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._box.set_style(css);
             }
 
-            if (this._vinylBin) this._vinylBin.opacity = 255;
-            if (this._titleLabel) this._titleLabel.opacity = 255;
-            if (this._artistLabel) this._artistLabel.opacity = 255;
+            if (this._blurBackdrop) {
+                if (isBlurActive) {
+                    this._blurBackdrop.show();
+                    this._blurBackdrop.set_style(`border-radius: ${radius}px; background-color: transparent;`);
+                    if (this._blurController) {
+                        this._blurController.enable();
+                        this._blurController.updateRadius(radius);
+                    }
+                    this._syncBlurBackdropGeometry();
+                } else {
+                    this._blurBackdrop.hide();
+                    if (this._blurController) this._blurController.disable();
+                }
+            }
+
             if (this._visualizer) {
                 if (this._settings.get_boolean('use-custom-colors')) {
                     let customVis = this._settings.get_string('custom-vis-color').split(',');
@@ -701,7 +916,22 @@ export const ExpandedPlayer = GObject.registerClass(
                     let vb = parseChan(customVis[2], 255);
                     this._visualizer.setColor({ r: vr, g: vg, b: vb, exact: true });
                 } else {
-                    this._visualizer.setColor({ r: safeR, g: safeG, b: safeB });
+                    let rawR = (typeof r === 'number' && !isNaN(r)) ? Math.floor(r) : null;
+                    let rawG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : null;
+                    let rawB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : null;
+
+                    if (rawR !== null && rawG !== null && rawB !== null) {
+                        let br = (rawR * 299 + rawG * 587 + rawB * 114) / 1000;
+                        if (br < 160) {
+                            let boost = 160 - br;
+                            rawR = Math.min(255, rawR + boost);
+                            rawG = Math.min(255, rawG + boost);
+                            rawB = Math.min(255, rawB + boost);
+                        }
+                        this._visualizer.setColor({ r: rawR, g: rawG, b: rawB, exact: true });
+                    } else {
+                        this._visualizer.setColor({ r: 255, g: 255, b: 255, exact: true });
+                    }
                 }
             }
 
@@ -746,18 +976,11 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._titleLabel) this._titleLabel.setPlayerPaused(isPaused);
             if (this._artistLabel) this._artistLabel.setPlayerPaused(isPaused);
 
-            if (this._titleLabel && this._titleLabel._text !== title) {
-                this._titleLabel.setText(title || _('Unknown Title'), false);
-            }
-
             let displayArtist = artist || _('Unknown Artist');
             if (this._settings.get_boolean('popup-show-album-title') && this._player) {
                 let m = this._player.Metadata;
                 let album = m ? smartUnpack(m['xesam:album']) : null;
                 if (album) displayArtist = `${displayArtist}  •  ${album}`;
-            }
-            if (this._artistLabel && this._artistLabel._text !== displayArtist) {
-                this._artistLabel.setText(displayArtist, false);
             }
 
             let trackChanged = (this._lastArtUrl !== artUrl || this._lastTrackTitle !== title);
@@ -786,117 +1009,97 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             }
 
-            let showVinyl = this._settings.get_boolean('popup-show-vinyl');
-            if (!showVinyl || !artUrl) {
-                if (this._artVisibilityTimer) {
-                    GLib.Source.remove(this._artVisibilityTimer);
-                    this._artVisibilityTimer = null;
-                }
-                this._vinylBin.hide();
-                this._vinyl.hide();
-                this._stopVinyl();
-                this._currentArtUrl = null;
+            let isLiveTrackChange = trackChanged && this.visible && !this._isOpening;
 
-                if (this._titleLabel && this._titleLabel.get_parent()) {
-                    let infoBox = this._titleLabel.get_parent();
-                    infoBox.x_expand = false;
-                    infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
+            if (this._textFadeTimerId) {
+                GLib.Source.remove(this._textFadeTimerId);
+                this._textFadeTimerId = null;
+            }
+            if (this._resizeFinishTimerId) {
+                GLib.Source.remove(this._resizeFinishTimerId);
+                this._resizeFinishTimerId = null;
+            }
 
-                    let topRow = infoBox.get_parent();
-                    if (topRow) {
-                        topRow.x_align = Clutter.ActorAlign.CENTER;
-                    }
-                }
-            } else {
-                if (this._artVisibilityTimer) {
-                    GLib.Source.remove(this._artVisibilityTimer);
-                    this._artVisibilityTimer = null;
-                }
-                this._vinylBin.show();
-                this._vinyl.show();
+            let artWillChange = (artUrl && artUrl !== this._currentArtUrl);
 
-                if (this._titleLabel && this._titleLabel.get_parent()) {
-                    let infoBox = this._titleLabel.get_parent();
-                    infoBox.x_expand = true;
-                    infoBox.set_style('min-width: 0px; margin-left: 15px; margin-right: 0px;');
-
-                    let topRow = infoBox.get_parent();
-                    if (topRow) {
-                        topRow.x_align = Clutter.ActorAlign.FILL;
-                    }
+            const fadeInContent = () => {
+                if (this._resizeFinishTimerId) {
+                    GLib.Source.remove(this._resizeFinishTimerId);
+                    this._resizeFinishTimerId = null;
                 }
 
-                let isSquare = this._settings.get_boolean('popup-vinyl-square');
-                let hasShadow = this._settings.get_boolean('popup-vinyl-shadow');
-                let radius = isSquare ? 12 : 50;
-                let newClass = isSquare ? 'vinyl-container-square' : 'vinyl-container';
-
-                if (this._vinyl.get_style_class_name() !== newClass) {
-                    this._vinyl.set_style_class_name(newClass);
-                }
-
-                let shadowCss = hasShadow ? 'box-shadow: 0 4px 15px rgba(0,0,0,0.6);' : 'box-shadow: none;';
-                if (this._vinyl._lastShadowCss !== shadowCss) {
-                    this._vinyl._lastShadowCss = shadowCss;
-                    this._vinyl.set_style(shadowCss);
-                }
-
-                let children = this._vinyl.get_children();
-                if (trackChanged || children.length === 0) {
-                    this._currentArtUrl = artUrl;
-                    if (children.length === 0 || children[children.length - 1]._bgUrl !== artUrl) {
-                        let bg = `url("${artUrl}")`;
-                        let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
-
-                        children.forEach(c => c.remove_all_transitions());
-
-                        let newLayer = new St.Widget({
-                            style: style,
-                            width: 100,
-                            height: 100,
-                            x_expand: true,
-                            y_expand: true,
-                            opacity: children.length > 0 ? 0 : 255
+                if (this._infoBox) {
+                    this._infoBox.remove_all_transitions();
+                    if (isLiveTrackChange) {
+                        this._infoBox.opacity = 0;
+                        this._infoBox.ease({
+                            opacity: 255,
+                            duration: 150,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
                         });
-                        newLayer._bgUrl = artUrl;
-
-                        this._vinyl.add_child(newLayer);
-
-                        if (this._vinyl.get_children().length > 1) {
-                            newLayer.ease({
-                                opacity: 255,
-                                duration: 1800,
-                                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                                onStopped: (isFinished) => {
-                                    if (!isFinished) return;
-
-                                    newLayer.opacity = 255;
-
-                                    let currentChildren = this._vinyl.get_children();
-                                    let myIndex = currentChildren.indexOf(newLayer);
-                                    if (myIndex > 0) {
-                                        for (let i = 0; i < myIndex; i++) {
-                                            let oldLayer = currentChildren[i];
-                                            oldLayer.ease({
-                                                opacity: 0,
-                                                duration: 300,
-                                                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                                                onStopped: () => oldLayer.destroy()
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }
+                    } else {
+                        this._infoBox.opacity = 255;
                     }
-                } else {
-                    this._vinyl.get_children().forEach(c => {
-                        let layerUrl = c._bgUrl || artUrl;
-                        let bg = `url("${layerUrl}")`;
-                        let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
-                        c.set_style(style);
+                }
+            };
+
+            const applyContentAndResize = () => {
+                if (this._titleLabel && this._titleLabel._text !== title) {
+                    this._titleLabel.setText(title || _('Unknown Title'), false);
+                }
+                if (this._artistLabel && this._artistLabel._text !== displayArtist) {
+                    this._artistLabel.setText(displayArtist, false);
+                }
+                this._setCoverArt(artUrl);
+
+                if (isLiveTrackChange) {
+                    if (this._infoBox) this._infoBox.opacity = 0;
+
+                    this._resizeFinishTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 260, () => {
+                        this._resizeFinishTimerId = null;
+                        fadeInContent();
+                        return GLib.SOURCE_REMOVE;
                     });
                 }
+
+                if (this.visible) {
+                    this.animateResize(true, () => {
+                        fadeInContent();
+                    });
+                } else {
+                    fadeInContent();
+                }
+            };
+
+            if (isLiveTrackChange && this._infoBox) {
+                let applied = false;
+                const safeApply = () => {
+                    if (applied) return;
+                    applied = true;
+                    if (this._textFadeTimerId) {
+                        GLib.Source.remove(this._textFadeTimerId);
+                        this._textFadeTimerId = null;
+                    }
+                    applyContentAndResize();
+                };
+
+                this._textFadeTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
+                    this._textFadeTimerId = null;
+                    safeApply();
+                    return GLib.SOURCE_REMOVE;
+                });
+
+                this._infoBox.remove_all_transitions();
+                this._infoBox.ease({
+                    opacity: 0,
+                    duration: 60,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: (isFinished) => {
+                        if (isFinished) safeApply();
+                    }
+                });
+            } else {
+                applyContentAndResize();
             }
 
             if (status === 'Playing') {
@@ -913,10 +1116,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             }
             this._lastStatus = status;
-
-            if (this.visible && trackChanged) {
-                this.animateResize();
-            }
 
             let caps = this._controller.getPlayerCapabilities();
             this._lastCaps = caps;
@@ -1009,6 +1208,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
             this._savedBoxHeight = this._box.height;
             this._box.set_height(this._savedBoxHeight);
+            if (this._blurBackdrop) {
+                this._blurBackdrop.set_height(this._savedBoxHeight);
+            }
 
             if (this._mainPage) this._mainPage.hide();
 
@@ -1017,14 +1219,16 @@ export const ExpandedPlayer = GObject.registerClass(
             let pillCol = (this._controller._pill && this._controller._pill._displayedColor)
                 ? this._controller._pill._displayedColor : { r: 255, g: 255, b: 255 };
 
+            let pageStyle = 'padding: 2px 4px 4px 4px; margin: 0; background-color: transparent; border: none; box-shadow: none;';
+
             let page = new St.BoxLayout({
                 orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: true,
-                clip_to_allocation: true,
-                style: `padding: 2px 8px 8px 8px; margin: 4px; border-radius: 20px; background-color: rgba(${pillCol.r},${pillCol.g},${pillCol.b},0.07);`
+                clip_to_allocation: false,
+                style: pageStyle
             });
             this._currentSubPage = page;
-            page.translation_x = 32;
-            page.opacity = 0;
+            page.opacity = 255;
+            page.translation_x = 16;
 
             let headerWrapper = new St.BoxLayout({
                 orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: false,
@@ -1038,7 +1242,7 @@ export const ExpandedPlayer = GObject.registerClass(
             });
 
             let backBtn = new St.Button({
-                reactive: true, can_focus: true,
+                reactive: true, can_focus: false,
                 style_class: 'subpage-back-btn',
                 child: new St.Icon({ icon_name: 'go-previous-symbolic', icon_size: 14 }),
                 y_align: Clutter.ActorAlign.CENTER
@@ -1071,13 +1275,19 @@ export const ExpandedPlayer = GObject.registerClass(
             });
             header.add_child(titleBin);
 
-
-            let mirrorSpacer = new St.Widget({ reactive: false, y_align: Clutter.ActorAlign.CENTER, width: SUBPAGE_BACK_BTN_WIDTH });
+            let mirrorSpacer = new St.Widget({
+                name: 'subpage-mirror-spacer',
+                reactive: false,
+                y_align: Clutter.ActorAlign.CENTER,
+                width: SUBPAGE_BACK_BTN_WIDTH
+            });
             header.add_child(mirrorSpacer);
 
             headerWrapper.add_child(header);
             headerWrapper.add_child(new St.Widget({
-                x_expand: true, height: 1,
+                name: 'subpage-header-line',
+                x_expand: true,
+                height: 1,
                 style: 'background-color: rgba(255,255,255,0.13);'
             }));
             page.add_child(headerWrapper);
@@ -1087,7 +1297,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 reactive: true,
                 hscrollbar_policy: St.PolicyType.NEVER,
                 vscrollbar_policy: St.PolicyType.AUTOMATIC,
-                overlay_scrollbars: false
+                overlay_scrollbars: true,
+                style: 'background-color: transparent; border: none; box-shadow: none;'
             });
             let contentBox = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true, style: 'spacing: 10px;' });
             contentScroll.set_child(contentBox);
@@ -1096,14 +1307,10 @@ export const ExpandedPlayer = GObject.registerClass(
             buildFn(contentBox, tc, ta, page);
             this._box.add_child(page);
 
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                if (page.get_parent() && page === this._currentSubPage) {
-                    page.ease({
-                        translation_x: 0, opacity: 255,
-                        duration: SUBPAGE_ANIM_IN_DURATION, mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                    });
-                }
-                return false;
+            page.ease({
+                translation_x: 0,
+                duration: 160,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
             });
         }
 
@@ -1112,14 +1319,26 @@ export const ExpandedPlayer = GObject.registerClass(
             let p = this._currentSubPage;
             this._currentSubPage = null;
             p.ease({
-                translation_x: 32, opacity: 0,
-                duration: SUBPAGE_ANIM_OUT_DURATION, mode: Clutter.AnimationMode.EASE_IN_QUAD,
+                translation_x: 16,
+                duration: 120,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => {
                     if (p.get_parent()) p.get_parent().remove_child(p);
                     p.destroy();
                     if (this._mainPage) this._mainPage.show();
                     this._box.set_height(-1);
                     if (this._sliderFill) this._sliderFill.set_width(-1);
+                    let [, natH] = this._box.get_preferred_height(this._box.width > 0 ? this._box.width : -1);
+                    let targetH = natH > 0 ? natH : (this._savedBoxHeight > 0 ? this._savedBoxHeight : this._box.height);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.remove_all_transitions();
+                        if (targetH > 0) this._blurBackdrop.set_height(targetH);
+                        if (this._settings.get_boolean('enable-blur-popup')) {
+                            this._blurBackdrop.show();
+                            this._blurBackdrop.opacity = 255;
+                            if (this._blurController) this._blurController.enable();
+                        }
+                    }
                     this.animateResize();
                 }
             });
@@ -1130,6 +1349,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
             this._savedBoxHeight = this._box.height;
             this._box.set_height(this._savedBoxHeight);
+            if (this._blurBackdrop) {
+                this._blurBackdrop.set_height(this._savedBoxHeight);
+            }
             if (this._mainPage) this._mainPage.hide();
 
             let pillCol = (this._controller._pill && this._controller._pill._displayedColor)
@@ -1144,17 +1366,19 @@ export const ExpandedPlayer = GObject.registerClass(
             let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
             let dynRadius = (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
 
+            let pageStyle = 'background-color: transparent; border: none; box-shadow: none;';
+
             let page = new St.Widget({
+                name: 'subpage-wrapper',
                 layout_manager: new Clutter.BinLayout(),
                 x_expand: true,
                 y_expand: true,
-                clip_to_allocation: true,
-                style: `border-radius: 20px;
-                        background-color: rgba(${pillCol.r},${pillCol.g},${pillCol.b},0.07);`
+                clip_to_allocation: false,
+                style: pageStyle
             });
             this._currentSubPage = page;
-            page.translation_x = 28;
-            page.opacity = 0;
+            page.opacity = 255;
+            page.translation_x = 16;
 
             const seekCb = (timeMs) => {
                 if (!this._player) return;
@@ -1191,26 +1415,16 @@ export const ExpandedPlayer = GObject.registerClass(
             lyricsWidget.setTextColor(fgR, fgG, fgB);
             page.add_child(lyricsWidget);
 
-            const _backBtnStyle = (hover, disableAnim = false) =>
-                `width: 32px; height: 32px;` +
-                `margin: 8px;` +
-                `padding: 0px;` +
-                `border-radius: 8px;` +
-                `background-color: rgba(${btnRgb}, ${hover ? 0.30 : 0.15});` +
-                `border: 1px solid rgba(${btnRgb}, ${hover ? 0.20 : 0.10});` +
-                (disableAnim ? `transition-duration: 0ms;` : `transition-duration: 140ms;`);
-
             let backIcon = new St.Icon({ icon_name: 'go-previous-symbolic', icon_size: 16, style: `color: ${iconClr};` });
             backIcon.set_x_align(Clutter.ActorAlign.CENTER);
             backIcon.set_y_align(Clutter.ActorAlign.CENTER);
 
             let backBtn = new St.Button({
                 reactive: true,
-                can_focus: true,
+                can_focus: false,
                 child: backIcon,
-                style: _backBtnStyle(false)
+                style_class: 'subpage-back-btn'
             });
-
 
             let backBtnWrapper = new St.Bin({
                 x_expand: true,
@@ -1220,16 +1434,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 child: backBtn
             });
 
-            backBtn.connect('notify::hover', () => {
-                if (!backBtn.get_parent() || page !== this._currentSubPage) return;
-                backBtn.set_style(_backBtnStyle(backBtn.hover));
-            });
-
             _addBtnPressAnim(backBtn);
             backBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, page);
 
             const _doBack = () => {
-                backBtn.set_style(_backBtnStyle(false, true));
                 this._popPage();
             };
 
@@ -1244,15 +1452,10 @@ export const ExpandedPlayer = GObject.registerClass(
             this._lyricsWidget = lyricsWidget;
             this._box.add_child(page);
 
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                if (page.get_parent() && page === this._currentSubPage) {
-                    page.ease({
-                        translation_x: 0, opacity: 255,
-                        duration: SUBPAGE_ANIM_IN_DURATION,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                    });
-                }
-                return false;
+            page.ease({
+                translation_x: 0,
+                duration: 160,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD
             });
 
             if (!this._lyricsClient) this._lyricsClient = new LyricsClient();
@@ -1407,8 +1610,20 @@ export const ExpandedPlayer = GObject.registerClass(
 
                     let frac0 = stream.is_muted ? 0 : Math.min(1, stream.volume / maxVol);
                     let sliderRow = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 10px;', x_expand: true });
-                    let sliderBg = new St.Widget({ style: `background-color:rgba(128,128,128,0.25);border-radius:5px;`, x_expand: true, y_align: Clutter.ActorAlign.CENTER, reactive: true, height: 10 });
-                    let sliderFill = new St.Widget({ style: `background-color:${tc};border-radius:5px;`, height: 10, reactive: false });
+                    let sliderBg = new St.Widget({
+                        name: 'subpage-slider-bg',
+                        style: `background-color:rgba(128,128,128,0.25);border-radius:5px;`,
+                        x_expand: true,
+                        y_align: Clutter.ActorAlign.CENTER,
+                        reactive: true,
+                        height: 10
+                    });
+                    let sliderFill = new St.Widget({
+                        name: 'subpage-slider-fill',
+                        style: `background-color:${tc};border-radius:5px;`,
+                        height: 10,
+                        reactive: false
+                    });
                     sliderFill.set_position(0, 0);
                     sliderBg.add_child(sliderFill);
                     let volLabel = new St.Label({ text: `${Math.round(frac0 * 100)}%`, style: `color:${tc};min-width:38px;text-align:right;`, y_align: Clutter.ActorAlign.CENTER });
@@ -1483,8 +1698,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let muteAllBtn = new St.Button({
                     label: _('Toggle Mute All'),
-                    reactive: true, can_focus: true, x_expand: true,
-                    style: `border-radius:12px;padding:9px 12px;margin-top:4px;background-color:rgba(128,128,128,0.18);color:${tc};`
+                    reactive: true, can_focus: false, x_expand: true,
+                    style_class: 'subpage-action-btn',
+                    style: `padding:9px 12px;margin-top:4px;color:${tc};`
                 });
                 _addBtnPressAnim(muteAllBtn);
                 const doMuteAll = () => {
@@ -1515,7 +1731,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 const mkBtn = (icon, fwd) => {
                     let btn = new St.Button({
                         child: new St.Icon({ icon_name: icon, icon_size: 28, style: `color:${tc};opacity:${caps.canSeek ? 1 : 0.35};` }),
-                        reactive: caps.canSeek, can_focus: true, x_expand: true,
+                        reactive: caps.canSeek, can_focus: false, x_expand: true,
+                        style_class: 'subpage-action-btn',
                         style: `border-radius:14px;padding:12px 10px;background-color:rgba(255,255,255,0.1);`
                     });
                     _addBtnPressAnim(btn);
@@ -1546,7 +1763,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     row.add_child(new St.Icon({ icon_name: isDef ? 'audio-speakers-symbolic' : 'audio-card-symbolic', icon_size: 18, style: `color:${tc};` }));
                     row.add_child(new St.Label({ text: desc, y_align: Clutter.ActorAlign.CENTER, style: `color:${tc};`, x_expand: true }));
                     if (isDef) row.add_child(new St.Icon({ icon_name: 'object-select-symbolic', icon_size: 14, style: `color:${tc};` }));
-                    let btn = new St.Button({ child: row, x_expand: true, reactive: true, can_focus: true, style: `border-radius:12px;padding:10px 12px;margin-bottom:4px;background-color:${isDef ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'};` });
+                    let btn = new St.Button({ child: row, x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: `border-radius:12px;padding:10px 12px;margin-bottom:4px;background-color:${isDef ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'};` });
                     _addBtnPressAnim(btn);
                     const doIt = () => { mixer.set_default_sink(sink); this._popPage(); };
                     btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
@@ -1564,7 +1781,7 @@ export const ExpandedPlayer = GObject.registerClass(
             let title = isActive ? (_('Sleep Timer') + ' (' + Math.ceil(remaining / 60) + ' ' + _('min left') + ')') : _('Sleep Timer');
             this._pushPage(title, 'alarm-symbolic', (contentBox, tc, ta, subpage) => {
                 if (isActive) {
-                    let cancelBtn = new St.Button({ label: _('Cancel Timer'), x_expand: true, reactive: true, can_focus: true, style: 'border-radius:12px;padding:9px 12px;margin-bottom:8px;background-color:rgba(210,50,50,0.35);color:' + tc + ';' });
+                    let cancelBtn = new St.Button({ label: _('Cancel Timer'), x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn subpage-danger-btn', style: 'border-radius:12px;padding:9px 12px;margin-bottom:8px;background-color:rgba(210,50,50,0.35);color:' + tc + ';' });
                     _addBtnPressAnim(cancelBtn);
                     const doCancel = () => { ctrl.cancelSleepTimer(); this._updateCustomButtons(); this._popPage(); };
                     cancelBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
@@ -1577,7 +1794,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
                     presets.slice(s, e).forEach(min => {
                         let btnLabel = new St.Label({ text: min + 'm', y_align: Clutter.ActorAlign.CENTER, style: 'color:' + tc + ';' });
-                        let btn = new St.Button({ child: btnLabel, reactive: true, can_focus: true, style: 'border-radius:12px;padding:8px 12px;min-width:42px;background-color:rgba(255,255,255,0.1);' });
+                        let btn = new St.Button({ child: btnLabel, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: 'border-radius:12px;padding:8px 12px;min-width:42px;background-color:rgba(255,255,255,0.1);' });
                         _addBtnPressAnim(btn);
                         const doTimer = (m, b, lbl) => {
                             lbl.text = '\u2713';
@@ -1627,8 +1844,9 @@ export const ExpandedPlayer = GObject.registerClass(
                         }
                         btnBox.add_child(btnLabel);
                         let btn = new St.Button({
-                            child: btnBox, can_focus: true,
+                            child: btnBox, can_focus: false,
                             reactive: caps.canChangeRate,
+                            style_class: 'subpage-action-btn',
                             style: 'border-radius:12px;padding:8px 14px;min-width:42px;background-color:' + (isAct ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.08)') + ';opacity:' + (caps.canChangeRate ? 1 : 0.35) + ';'
                         });
                         _addBtnPressAnim(btn);
@@ -1686,7 +1904,12 @@ export const ExpandedPlayer = GObject.registerClass(
                         : 'background-color:rgba(128,128,128,0.10);';
 
                     let innerRow = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 10px;', x_expand: true });
-                    let thumb = new St.Widget({ width: 38, height: 38, style: track.artUrl ? ('background-image:url("' + track.artUrl + '");background-size:cover;border-radius:6px;') : 'background-color:rgba(128,128,128,0.2);border-radius:6px;' });
+                    let thumb = new St.Widget({
+                        name: 'history-item-thumb',
+                        width: 38,
+                        height: 38,
+                        style: track.artUrl ? ('background-image:url("' + track.artUrl + '");background-size:cover;border-radius:6px;') : 'background-color:rgba(128,128,128,0.2);border-radius:6px;'
+                    });
                     innerRow.add_child(thumb);
 
                     let infoBox = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true, style: 'spacing:1px;', y_align: Clutter.ActorAlign.CENTER });
@@ -1703,7 +1926,8 @@ export const ExpandedPlayer = GObject.registerClass(
                     innerRow.add_child(rightCol);
 
                     let rowBtn = new St.Button({
-                        child: innerRow, x_expand: true, reactive: true, can_focus: true,
+                        child: innerRow, x_expand: true, reactive: true, can_focus: false,
+                        style_class: 'subpage-action-btn',
                         style: rowBg + ' border-radius:10px; padding:8px 10px; margin-bottom:4px;'
                     });
                     _addBtnPressAnim(rowBtn);
@@ -1745,7 +1969,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 });
 
                 let clearBtn = new St.Button({
-                    label: _('Clear History'), x_expand: true, reactive: true, can_focus: true,
+                    label: _('Clear History'), x_expand: true, reactive: true, can_focus: false,
+                    style_class: 'subpage-action-btn subpage-danger-btn',
                     style: 'border-radius:12px;padding:9px 12px;margin-top:6px;background-color:rgba(210,50,50,0.35);color:' + tc + ';'
                 });
                 _addBtnPressAnim(clearBtn);
@@ -1762,14 +1987,30 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         showFor(player, artUrl) {
-            disableDashToDockAutohide();
+            disableDockAutohide();
             this.setPlayer(player);
             this._isOpening = true;
             this._isHiding = false;
             this.visible = true;
-            this.opacity = 0;
+            this.opacity = 255;
+            if (this._settings.get_boolean('enable-blur-popup')) {
+                if (this._blurBackdrop) {
+                    if (this._box && (this._blurBackdrop.width <= 0 || this._blurBackdrop.height <= 0)) {
+                        let bw = this._box.width > 0 ? this._box.width : 0;
+                        let bh = this._box.height > 0 ? this._box.height : 0;
+                        if (bw > 0 && bh > 0) this._blurBackdrop.set_size(bw, bh);
+                    }
+                    this._blurBackdrop.show();
+                }
+                if (this._blurController) this._blurController.enable();
+            }
+            if (this._box) {
+                this._box.opacity = 255;
+                if (this._blurBackdrop) this._blurBackdrop.opacity = 255;
+                this._box.translation_y = -8;
+                this._box.ease({ translation_y: 0, duration: 180, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+            }
             this.grab_key_focus();
-            this.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
 
             let status = player.PlaybackStatus;
             let m = player.Metadata;
@@ -1796,6 +2037,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._startTimer();
             let visStyle = this._settings.get_int('visualizer-style');
             this._visualizer.setMode(visStyle);
+            this._visualizer.setPlaying(status === 'Playing');
 
             let showVis = this._settings.get_boolean('popup-show-visualizer') && visStyle !== 0;
             this._visBin.visible = showVis;
@@ -1830,25 +2072,46 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (this._mainPage) this._mainPage.show();
             }
 
-            restoreDashToDockAutohide()
+            restoreDockAutohide();
             this._stopTimer();
             this._stopVinyl();
+            if (this._visualizer) this._visualizer.setPlaying(false);
             if (this._controller._pill) this._controller._pill._setPopupOpen(false);
-            this.ease({
-                opacity: 0,
-                duration: 200,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: (isFinished) => {
-                    if (!isFinished) return;
-                    this.visible = false;
-                    if (this._controller) {
-                        this._controller.closeMenu();
+            if (this._box) {
+                this._box.ease({
+                    translation_y: -6,
+                    duration: 150,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: (isFinished) => {
+                        if (!isFinished || !this._box) return;
+                        try {
+                            this.visible = false;
+                            this._isHiding = false;
+                            if (this._blurController) this._blurController.disable();
+                            if (this._blurBackdrop) this._blurBackdrop.hide();
+                            if (this._controller) {
+                                this._controller.closeMenu();
+                            }
+                        } catch (e) {}
                     }
-                }
-            });
+                });
+            } else {
+                this.visible = false;
+                this._isHiding = false;
+                if (this._controller) this._controller.closeMenu();
+            }
         }
 
         _cleanup() {
+            if (this._settings) {
+                this._settings.disconnectObject(this);
+            }
+            this.disconnectObject(this);
+            if (this._box) this._box.remove_all_transitions();
+            if (this._blurBackdrop) this._blurBackdrop.remove_all_transitions();
+            if (this._infoBox) this._infoBox.remove_all_transitions();
+            if (this._textFadeTimerId) { GLib.Source.remove(this._textFadeTimerId); this._textFadeTimerId = null; }
+            if (this._resizeFinishTimerId) { GLib.Source.remove(this._resizeFinishTimerId); this._resizeFinishTimerId = null; }
             if (this._updateTimer) { GLib.Source.remove(this._updateTimer); this._updateTimer = null; }
             if (this._resizeDebounceId) { GLib.Source.remove(this._resizeDebounceId); this._resizeDebounceId = null; }
             if (this._leaveHideTimeoutId) { GLib.Source.remove(this._leaveHideTimeoutId); this._leaveHideTimeoutId = null; }
@@ -1857,6 +2120,18 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._lyricsTimerId) { GLib.Source.remove(this._lyricsTimerId); this._lyricsTimerId = null; }
             if (this._lyricsClient) { this._lyricsClient.destroy(); this._lyricsClient = null; }
             this._lyricsWidget = null;
+            if (this._visualizer) {
+                this._visualizer.destroy();
+                this._visualizer = null;
+            }
+            if (this._blurController) {
+                this._blurController.destroy();
+                this._blurController = null;
+            }
+            if (this._blurBackdrop) {
+                this._blurBackdrop.destroy();
+                this._blurBackdrop = null;
+            }
         }
 
         _startTimer() {
@@ -2012,6 +2287,156 @@ export const ExpandedPlayer = GObject.registerClass(
             }
         }
 
+        _setCoverArt(artUrl) {
+            if (!this._vinyl) return;
+
+            let showVinyl = this._settings.get_boolean('popup-show-vinyl');
+            if (!showVinyl) {
+                if (this._artVisibilityTimer) {
+                    GLib.Source.remove(this._artVisibilityTimer);
+                    this._artVisibilityTimer = null;
+                }
+                this._vinylBin.hide();
+                this._vinyl.hide();
+                this._stopVinyl();
+                this._currentArtUrl = null;
+                if (this._infoBox) {
+                    this._infoBox.x_expand = false;
+                    this._infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
+                    let tr = this._infoBox.get_parent();
+                    if (tr) tr.x_align = Clutter.ActorAlign.CENTER;
+                }
+                return;
+            }
+
+            if (!artUrl) {
+                if (!this._artVisibilityTimer && !this._currentArtUrl) {
+                    this._vinylBin.hide();
+                    this._vinyl.hide();
+                    this._stopVinyl();
+                } else if (!this._artVisibilityTimer && this._currentArtUrl) {
+                    this._artVisibilityTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 400, () => {
+                        this._artVisibilityTimer = null;
+                        this._currentArtUrl = null;
+                        this._vinylBin.hide();
+                        this._vinyl.hide();
+                        this._stopVinyl();
+                        if (this._infoBox) {
+                            this._infoBox.x_expand = false;
+                            this._infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
+                            let tr = this._infoBox.get_parent();
+                            if (tr) tr.x_align = Clutter.ActorAlign.CENTER;
+                        }
+                        return GLib.SOURCE_REMOVE;
+                    });
+                }
+                return;
+            }
+
+            if (this._artVisibilityTimer) {
+                GLib.Source.remove(this._artVisibilityTimer);
+                this._artVisibilityTimer = null;
+            }
+
+            this._vinylBin.show();
+            this._vinyl.show();
+
+            if (this._infoBox) {
+                this._infoBox.x_expand = true;
+                this._infoBox.set_style('min-width: 0px; margin-left: 15px; margin-right: 0px;');
+                let tr = this._infoBox.get_parent();
+                if (tr) tr.x_align = Clutter.ActorAlign.FILL;
+            }
+
+            let isSquare = this._settings.get_boolean('popup-vinyl-square');
+            let radius = isSquare ? 12 : 50;
+            let newClass = isSquare ? 'vinyl-container-square' : 'vinyl-container';
+
+            if (this._vinyl.get_style_class_name() !== newClass) {
+                this._vinyl.set_style_class_name(newClass);
+            }
+
+            let shadowCss = 'box-shadow: none;';
+            if (this._vinyl._lastShadowCss !== shadowCss) {
+                this._vinyl._lastShadowCss = shadowCss;
+                this._vinyl.set_style(shadowCss);
+            }
+
+            let children = this._vinyl.get_children();
+            let topLayer = (children.length > 0) ? children[children.length - 1] : null;
+
+            if (topLayer && topLayer._bgUrl === artUrl) {
+                this._currentArtUrl = artUrl;
+                children.forEach(c => {
+                    let bgU = c._bgUrl ? `background-image: url("${c._bgUrl}"); ` : '';
+                    c.set_style(`${bgU}background-size: cover; border-radius: ${radius}px;`);
+                });
+                return;
+            }
+
+            this._currentArtUrl = artUrl;
+            let bg = `url("${artUrl}")`;
+            let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
+
+            this._vinyl.opacity = 255;
+
+            let shouldCrossfade = (children.length > 0 && this.visible && !this._isOpening);
+
+            if (shouldCrossfade) {
+                children.forEach(c => c.remove_all_transitions());
+
+                let newLayer = new St.Widget({
+                    name: 'popup-cover-layer',
+                    style: style,
+                    width: 100,
+                    height: 100,
+                    x_expand: true,
+                    y_expand: true,
+                    opacity: 0
+                });
+                newLayer._bgUrl = artUrl;
+                this._vinyl.add_child(newLayer);
+
+                newLayer.ease({
+                    opacity: 255,
+                    duration: 1800,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: (isFinished) => {
+                        if (!isFinished || !this._vinyl) return;
+                        newLayer.opacity = 255;
+                        let currentChildren = this._vinyl.get_children();
+                        let myIndex = currentChildren.indexOf(newLayer);
+                        if (myIndex > 0) {
+                            for (let i = 0; i < myIndex; i++) {
+                                let oldLayer = currentChildren[i];
+                                oldLayer.ease({
+                                    opacity: 0,
+                                    duration: 300,
+                                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                                    onStopped: () => {
+                                        if (oldLayer.get_parent()) oldLayer.destroy();
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            } else {
+                this._vinyl.destroy_all_children();
+                let newLayer = new St.Widget({
+                    name: 'popup-cover-layer',
+                    style: style,
+                    width: 100,
+                    height: 100,
+                    x_expand: true,
+                    y_expand: true,
+                    opacity: 255
+                });
+                newLayer._bgUrl = artUrl;
+                this._vinyl.add_child(newLayer);
+            }
+        }
+
         _startVinyl() {
             if (!this._vinyl || !this._settings.get_boolean('popup-vinyl-rotate')) return;
             if (this._settings.get_boolean('popup-vinyl-square')) return;
@@ -2068,13 +2493,17 @@ export const ExpandedPlayer = GObject.registerClass(
 
 
         _computeMinControlsWidth() {
-            const controlsRow = this._mainPage
-                ? this._mainPage.get_children().find(c => c.style_class === 'controls-row')
-                : null;
+            let controlsRow = null;
+            if (this._centerContent) {
+                controlsRow = this._centerContent.get_children().find(c => c.style_class === 'controls-row');
+            }
+            if (!controlsRow && this._mainPage) {
+                controlsRow = this._mainPage.get_children().find(c => c.style_class === 'controls-row');
+            }
 
             if (controlsRow) {
                 let [, natW] = controlsRow.get_preferred_width(-1);
-                if (natW > 0) return natW + 40;
+                if (natW > 0) return Math.ceil(natW) + 40;
             }
 
             const SEC = 36, PRI = 48, GAP = 8;
@@ -2093,28 +2522,40 @@ export const ExpandedPlayer = GObject.registerClass(
             return widthSum + (visCount - 1) * GAP + 40;
         }
 
-        animateResize() {
-            if (!this._box || !this._controller || !this._controller._pill) return;
-            if (this._currentSubPage) return;
+        animateResize(immediate = false, onFinished = null) {
+            if (!this._box || !this._controller || !this._controller._pill) {
+                if (onFinished) onFinished();
+                return;
+            }
+            if (this._currentSubPage) {
+                if (onFinished) onFinished();
+                return;
+            }
 
             if (this._resizeDebounceId) {
                 GLib.Source.remove(this._resizeDebounceId);
                 this._resizeDebounceId = null;
             }
 
-            this._resizeDebounceId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            const executeResize = () => {
                 this._resizeDebounceId = null;
-                if (!this._box) return GLib.SOURCE_REMOVE;
+                if (!this._box) {
+                    if (onFinished) onFinished();
+                    return GLib.SOURCE_REMOVE;
+                }
 
-                let currentW = this._box.width;
+                let currentW = Math.round(this._box.width);
+                let currentH = Math.round(this._box.height);
                 let currentX = Math.round(this._box.x);
                 let currentY = Math.round(this._box.y);
 
                 this._box.set_width(-1);
+                this._box.set_height(-1);
                 let [minW, natW] = this._box.get_preferred_width(-1);
                 natW = Math.ceil(natW);
                 let [minH, natH] = this._box.get_preferred_height(natW);
                 natH = Math.ceil(natH);
+                if (currentW > 0) this._box.set_width(currentW);
 
                 let baseMinW = this._computeMinControlsWidth();
 
@@ -2154,18 +2595,24 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._initialWidthSet = true;
                 }
 
-                if (currentW > 0 && Math.abs(menuW - currentW) < 20) {
+                if (currentW > 0 && Math.abs(menuW - currentW) < 2) {
                     menuW = currentW;
                 }
                 if (currentW > 0) this._box.set_width(currentW);
 
                 let pill = this._controller._pill;
-                if (!pill || !pill.get_parent()) return GLib.SOURCE_REMOVE;
+                if (!pill || !pill.get_parent()) {
+                    if (onFinished) onFinished();
+                    return GLib.SOURCE_REMOVE;
+                }
                 let [px, py] = pill.get_transformed_position();
                 let [pw, ph] = pill.get_transformed_size();
                 let monitor = Main.layoutManager.findMonitorForActor(pill);
 
-                if (!monitor) return GLib.SOURCE_REMOVE;
+                if (!monitor) {
+                    if (onFinished) onFinished();
+                    return GLib.SOURCE_REMOVE;
+                }
 
                 px = Math.round(px); py = Math.round(py);
                 pw = Math.round(pw); ph = Math.round(ph);
@@ -2203,31 +2650,80 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let isCurrentlySafe = (currentX >= monitor.x + 10 && (currentX + menuW) <= (monitor.x + monitor.width - 10));
 
-                if (isCurrentlySafe && Math.abs(targetX - currentX) < 40) targetX = currentX;
-                if (isCurrentlySafe && Math.abs(targetY - currentY) < 40) targetY = currentY;
+                if (menuW === currentW) {
+                    if (isCurrentlySafe && Math.abs(targetX - currentX) < 2) targetX = currentX;
+                    if (isCurrentlySafe && Math.abs(targetY - currentY) < 2) targetY = currentY;
+                }
 
-                if (currentW === menuW && currentX === targetX && currentY === targetY) {
+                let backdropNeedSync = this._blurBackdrop && (
+                    this._blurBackdrop.width !== menuW ||
+                    this._blurBackdrop.height !== menuH ||
+                    this._blurBackdrop.x !== targetX ||
+                    this._blurBackdrop.y !== targetY
+                );
+
+                if (currentW === menuW && currentH === menuH && currentX === targetX && currentY === targetY) {
                     this._isOpening = false;
+                    if (backdropNeedSync) {
+                        this._syncBlurBackdropGeometry(targetX, targetY, menuW, menuH, true);
+                    }
+                    if (onFinished) onFinished();
                     return GLib.SOURCE_REMOVE;
                 }
 
                 if (this._isOpening) {
                     this._box.set_position(targetX, targetY);
                     this._box.set_width(menuW);
+                    this._box.set_height(-1);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.set_position(targetX, targetY);
+                        this._blurBackdrop.set_size(menuW, menuH);
+                    }
                     this._isOpening = false;
+                    if (onFinished) onFinished();
                     return GLib.SOURCE_REMOVE;
                 }
+
+                let finishCalled = false;
+                const callFinish = () => {
+                    if (finishCalled) return;
+                    finishCalled = true;
+                    if (onFinished) onFinished();
+                };
 
                 this._box.remove_all_transitions();
                 this._box.ease({
                     width: menuW,
+                    height: menuH,
                     x: targetX,
                     y: targetY,
-                    duration: 300,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                    duration: 180,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => {
+                        this._box.set_height(-1);
+                        this._syncBlurBackdropGeometry(targetX, targetY, menuW, menuH, true);
+                        callFinish();
+                    }
                 });
+                if (this._blurBackdrop) {
+                    this._blurBackdrop.remove_all_transitions();
+                    this._blurBackdrop.ease({
+                        width: menuW,
+                        height: menuH,
+                        x: targetX,
+                        y: targetY,
+                        duration: 180,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                    });
+                }
 
                 return GLib.SOURCE_REMOVE;
-            });
+            };
+
+            if (immediate) {
+                executeResize();
+            } else {
+                this._resizeDebounceId = GLib.idle_add(GLib.PRIORITY_DEFAULT, executeResize);
+            }
         }
     });

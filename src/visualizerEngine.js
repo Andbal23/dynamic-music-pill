@@ -36,8 +36,9 @@ export class SharedVisualizerEngine {
     }
 
     unsubscribe(callback) {
-        this._subscribers.delete(callback);
-        this._evaluatePlayback();
+        if (this._subscribers.delete(callback)) {
+            this._evaluatePlayback();
+        }
     }
 
     setPlaying(callback, playing) {
@@ -185,8 +186,20 @@ export class SharedVisualizerEngine {
     }
 
     _broadcast(data, isSilent) {
+        let deadCallbacks = null;
         for (let cb of this._subscribers.keys()) {
-            cb(data, isSilent);
+            try {
+                cb(data, isSilent);
+            } catch (_e) {
+                if (!deadCallbacks) deadCallbacks = [];
+                deadCallbacks.push(cb);
+            }
+        }
+        if (deadCallbacks) {
+            for (let cb of deadCallbacks) {
+                this._subscribers.delete(cb);
+            }
+            this._evaluatePlayback();
         }
     }
 

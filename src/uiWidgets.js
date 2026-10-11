@@ -5,21 +5,19 @@ import Pango from 'gi://Pango';
 import St from 'gi://St';
 import { TextFadeEffect } from './uiEffects.js';
 
-const PixelSnappedBox = GObject.registerClass(
-    class PixelSnappedBox extends St.BoxLayout {
-        vfunc_allocate(box) {
-            box.x1 = Math.round(box.x1);
-            box.y1 = Math.round(box.y1);
-            box.x2 = Math.round(box.x2);
-            box.y2 = Math.round(box.y2);
-            super.vfunc_allocate(box);
-        }
-    });
+const PixelSnappedBox = St.BoxLayout;
 
 export const CrossfadeArt = GObject.registerClass(
     class CrossfadeArt extends St.Widget {
         _init() {
-            super._init({ layout_manager: new Clutter.BinLayout(), style_class: 'art-widget', clip_to_allocation: false, x_expand: false, y_expand: false });
+            super._init({
+                name: 'pill-crossfade-art',
+                layout_manager: new Clutter.BinLayout(),
+                style_class: 'art-widget',
+                clip_to_allocation: false,
+                x_expand: false,
+                y_expand: false
+            });
             this._radius = 10;
             this._shadowCSS = 'box-shadow: none;';
         }
@@ -40,7 +38,7 @@ export const CrossfadeArt = GObject.registerClass(
             let safeR = (typeof this._radius === 'number' && !isNaN(this._radius)) ? this._radius : 10;
             let hasArt = (this._currentUrl && this._currentUrl.length > 0);
             let activeShadow = hasArt ? this._shadowCSS : 'box-shadow: none;';
-            let bgColor = hasArt ? 'background-color: #000000;' : 'background-color: transparent;';
+            let bgColor = 'background-color: transparent;';
             this.set_style(`border-radius: ${safeR}px; ${bgColor} ${activeShadow}`);
         }
 
@@ -70,7 +68,12 @@ export const CrossfadeArt = GObject.registerClass(
 
             this.get_children().forEach(c => c.remove_all_transitions());
 
-            let newLayer = new St.Widget({ x_expand: true, y_expand: true, opacity: 0 });
+            let newLayer = new St.Widget({
+                name: 'pill-cover-layer',
+                x_expand: true,
+                y_expand: true,
+                opacity: 0
+            });
             newLayer._bgUrl = newUrl;
 
             this.add_child(newLayer);
@@ -129,7 +132,10 @@ export const ScrollLabel = GObject.registerClass(
             this._label2.clutter_text.line_wrap = false;
 
             this._container.add_child(this._label1);
-            this._separator = new St.Widget({ width: 30 });
+            this._separator = new St.Widget({
+                name: 'scroll-label-separator',
+                width: 30
+            });
             this._container.add_child(this._separator);
             this._container.add_child(this._label2);
 
@@ -152,7 +158,7 @@ export const ScrollLabel = GObject.registerClass(
                 });
             }, this);
 
-            this.connect('destroy', this._cleanup.bind(this));
+            this.connect('destroy', () => this._cleanup());
         }
 
         vfunc_get_preferred_width(forHeight) {
@@ -169,7 +175,7 @@ export const ScrollLabel = GObject.registerClass(
         }
 
         _setFadeOutEffect(enableLeft = true, enableRight = true, animate = false) {
-            if (!this._label1) return;
+            if (!this._label1 || !TextFadeEffect.isSupported()) return;
 
             let fontDesc = this._label1.get_theme_node().get_font();
             let fadeWidth = (fontDesc.get_size() / Pango.SCALE) + 4;
@@ -194,8 +200,17 @@ export const ScrollLabel = GObject.registerClass(
             }
         }
 
+        destroy() {
+            this._cleanup();
+            super.destroy();
+        }
+
         _cleanup() {
             this._stopAnimation();
+            if (this._settings) {
+                this._settings.disconnectObject(this);
+            }
+            this.disconnectObject(this);
             if (this._fadeEffect) {
                 if (this._fadeEffectAttached) this.remove_effect(this._fadeEffect);
                 this._fadeEffect = null;
@@ -301,9 +316,11 @@ export const ScrollLabel = GObject.registerClass(
                     this._container.x_align = Clutter.ActorAlign.CENTER;
                     this._label2.hide();
                     this._separator.hide();
+                    this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                 } else if (!needsScroll) {
                     this._stopAnimation(true);
                     this._container.x_align = Clutter.ActorAlign.CENTER;
+                    this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                 }
 
                 return GLib.SOURCE_REMOVE;
@@ -339,8 +356,8 @@ export const ScrollLabel = GObject.registerClass(
             let isLyric = (lyricTime > 0);
             let lyricFadeEnabled = this._settings ? this._settings.get_boolean('lyric-fade-enable') : false;
 
-            if (!isLyric || (isLyric && lyricFadeEnabled)) {
-                let duration = (isLyric && this._settings) ? this._settings.get_int('lyric-fade-duration') : 300;
+            if (isLyric && lyricFadeEnabled) {
+                let duration = (this._settings) ? this._settings.get_int('lyric-fade-duration') : 300;
                 this._label1.opacity = 0;
                 this._label1.ease({
                     opacity: 255,
@@ -397,10 +414,13 @@ export const ScrollLabel = GObject.registerClass(
                     if (!this._hoverOnly || this._hovered || this._forceScroll) {
                         this._startInfiniteScroll(textWidth);
                     }
+                } else {
+                    this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                 }
             } else {
                 this._stopAnimation(true);
                 this._container.x_align = Clutter.ActorAlign.CENTER;
+                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             }
         }
 
