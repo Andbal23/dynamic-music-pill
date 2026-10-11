@@ -1315,3 +1315,23 @@ msgstr ""
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
 msgstr ""
+
+#: prefs.js:1112
+msgid "Main Dock Only"
+msgstr ""
+
+#: prefs.js:1113
+msgid "All Docks"
+msgstr ""
+
+#: prefs.js:1114
+msgid "Secondary Docks Only"
+msgstr ""
+
+#: prefs.js:1117
+msgid "Multi-Monitor Docks"
+msgstr ""
+
+#: prefs.js:1118
+msgid "Which docks show the pill when the dock is on all monitors"
+msgstr ""

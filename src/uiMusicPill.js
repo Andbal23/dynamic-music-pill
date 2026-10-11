@@ -13,7 +13,7 @@ import { ActorBlurController, checkBlurRequirements } from './blurHelper.js';
 
 export const MusicPill = GObject.registerClass(
     class MusicPill extends St.Widget {
-        _init(controller) {
+        _init(controller, isMirror = false) {
             super._init({
                 style_class: 'music-pill-container',
                 reactive: false,
@@ -207,6 +207,7 @@ export const MusicPill = GObject.registerClass(
 
             // --- Clicks ---
             this.connectObject('button-press-event', () => {
+                this._controller._activePill = this;
                 if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
@@ -214,6 +215,7 @@ export const MusicPill = GObject.registerClass(
             }, this);
 
             this.connectObject('touch-event', (actor, event) => {
+                this._controller._activePill = this;
                 let type = event.type();
                 if (type === Clutter.EventType.TOUCH_BEGIN) {
                     if (!this._body) return Clutter.EVENT_STOP;
@@ -232,6 +234,7 @@ export const MusicPill = GObject.registerClass(
             }, this);
 
             this.connectObject('button-release-event', (actor, event) => {
+                this._controller._activePill = this;
                 if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
                 if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
@@ -258,6 +261,7 @@ export const MusicPill = GObject.registerClass(
 
             this.connectObject('enter-event', () => {
                 this._isHovered = true;
+                this._controller._activePill = this;
                 if (this._titleScroll) this._titleScroll.setHoverMode(true);
                 if (this._artistScroll) this._artistScroll.setHoverMode(true);
                 let delay = this._settings.get_int('hover-delay');
@@ -373,7 +377,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::custom-vis-color', () => {
                 this._updateVisualizerColor();
-                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle) {
+                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle && this._controller._expandedPlayer._pill === this) {
                     this._controller._expandedPlayer.updateStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
                 }
             }, this);
@@ -406,6 +410,7 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::dock-position', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::position-mode', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::target-container', () => this._controller._queueInject(), this);
+            this._settings.connectObject('changed::dock-monitors', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::visualizer-style', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::border-radius', () => {
                 this._updateDimensions();
@@ -487,11 +492,13 @@ export const MusicPill = GObject.registerClass(
                 return GLib.SOURCE_CONTINUE;
             });
 
-            try {
-                this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
-                this._originalAccent = this._interfaceSettings.get_string('accent-color');
-            } catch (e) {
-                this._interfaceSettings = null; //for older gnomes
+            if (!isMirror) {
+                try {
+                    this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
+                    this._originalAccent = this._interfaceSettings.get_string('accent-color');
+                } catch (e) {
+                    this._interfaceSettings = null; //for older gnomes
+                }
             }
 
             this.connect('destroy', () => this._cleanup());
@@ -1681,7 +1688,7 @@ export const MusicPill = GObject.registerClass(
             }
             this._displayedColor = { r: safeDynR, g: safeDynG, b: safeDynB };
 
-            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible) {
+            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer._pill === this) {
                 if (this._controller._expandedPlayer.updateStyle) {
                     this._controller._expandedPlayer.updateStyle(safeDynR, safeDynG, safeDynB, alpha);
                 }

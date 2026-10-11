@@ -350,6 +350,12 @@
       <default>0</default>
       <range min="0" max="3"/>
     </key>
+    <key name="dock-monitors" type="i">
+      <default>0</default>
+      <range min="0" max="2"/>
+      <summary>Multi-Monitor Docks</summary>
+      <description>Which docks show the pill when the dock is on multiple monitors</description>
+    </key>
     <key name="show-album-art" type="b">
       <default>true</default>
       <summary>Show Album Art</summary>

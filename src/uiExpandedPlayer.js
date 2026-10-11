@@ -16,7 +16,7 @@ import { ActorBlurController, checkBlurRequirements } from './blurHelper.js';
 
 export const ExpandedPlayer = GObject.registerClass(
     class ExpandedPlayer extends St.Widget {
-        _init(controller) {
+        _init(controller, pill = null) {
             let [bgW, bgH] = global.display.get_size();
 
             super._init({
@@ -30,6 +30,7 @@ export const ExpandedPlayer = GObject.registerClass(
             });
 
             this._controller = controller;
+            this._pill = pill || controller._pill;
             this._settings = controller._settings;
             this._player = null;
             this._updateTimer = null;
@@ -2044,7 +2045,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._visualizer.visible = showVis;
 
             if (showVis && this._settings.get_boolean('popup-hide-pill-visualizer')) {
-                if (this._controller._pill) this._controller._pill._setPopupOpen(true);
+                if (this._pill) this._pill._setPopupOpen(true);
             }
 
             this._updateCustomButtons();
@@ -2076,7 +2077,9 @@ export const ExpandedPlayer = GObject.registerClass(
             this._stopTimer();
             this._stopVinyl();
             if (this._visualizer) this._visualizer.setPlaying(false);
-            if (this._controller._pill) this._controller._pill._setPopupOpen(false);
+            if (this._pill && this._controller && (!this._controller._pills || this._controller._pills().includes(this._pill))) {
+                this._pill._setPopupOpen(false);
+            }
             if (this._box) {
                 this._box.ease({
                     translation_y: -6,
@@ -2523,7 +2526,14 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         animateResize(immediate = false, onFinished = null) {
-            if (!this._box || !this._controller || !this._controller._pill) {
+            if (!this._box || !this._controller) {
+                if (onFinished) onFinished();
+                return;
+            }
+            if (!this._pill || (this._controller._pills && !this._controller._pills().includes(this._pill))) {
+                this._pill = this._controller._getAnchorPill ? this._controller._getAnchorPill() : this._controller._pill;
+            }
+            if (!this._pill) {
                 if (onFinished) onFinished();
                 return;
             }
@@ -2600,8 +2610,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 if (currentW > 0) this._box.set_width(currentW);
 
-                let pill = this._controller._pill;
-                if (!pill || !pill.get_parent()) {
+                let pill = this._pill;
+                if (!pill || (this._controller._pills && !this._controller._pills().includes(pill)) || !pill.get_parent()) {
                     if (onFinished) onFinished();
                     return GLib.SOURCE_REMOVE;
                 }

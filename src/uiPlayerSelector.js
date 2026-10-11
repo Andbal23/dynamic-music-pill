@@ -243,7 +243,11 @@ export const PlayerSelectorMenu = GObject.registerClass(
             this.grab_key_focus();
             this.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
 
-            let pill = this._controller._pill;
+            let pill = this._controller._getAnchorPill ? this._controller._getAnchorPill() : this._controller._pill;
+            if (!pill || !pill.get_parent()) {
+                this.hide();
+                return;
+            }
             let [px, py] = pill.get_transformed_position();
             let [pw, ph] = pill.get_transformed_size();
             let monitor = Main.layoutManager.findMonitorForActor(pill);

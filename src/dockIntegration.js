@@ -1,4 +1,5 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { getDockManager } from './utils.js';
 
 export function getDockContainer() {
     const dockBox = Main.uiGroup.get_children().find(actor =>
@@ -13,4 +14,28 @@ export function getDockContainer() {
 
     const dock = Main.panel.statusArea['dash-to-dock'] || Main.panel.statusArea['ubuntu-dock'];
     return (dock && dock._box) ? dock._box : (Main.overview.dash?._box || null);
+}
+
+export function getSecondaryDockContainers() {
+    try {
+        const boxes = Main.uiGroup.get_children()
+            .filter(actor =>
+                actor._simpleTaskbarPanelBox === 'dock' &&
+                actor._simpleTaskbarMonitorIndex !== Main.layoutManager.primaryIndex
+            )
+            .map(dockBox => dockBox.get_children().find(actor => actor.get_name?.() === 'panel')?.centerBox)
+            .filter(Boolean);
+        if (boxes.length > 0)
+            return boxes;
+
+        const manager = getDockManager();
+        if (!manager || !Array.isArray(manager._allDocks)) return [];
+        return manager._allDocks
+            .filter(dock => dock && dock !== manager.mainDock)
+            .map(dock => dock?.dash?._box)
+            .filter(Boolean);
+    } catch (e) {
+        console.debug('[Dynamic Music Pill] getSecondaryDockContainers error: ' + e.message);
+        return [];
+    }
 }

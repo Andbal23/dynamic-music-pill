@@ -1347,6 +1347,26 @@ msgstr "A gnome-rounded-blur ajánlott a sima lekerekített sarkokhoz dinamikus 
 msgid "Blur my Shell is recommended for dynamic blur integration."
 msgstr "A Blur my Shell ajánlott a dinamikus homályosítás integrációjához."
 
+#: prefs.js:1112
+msgid "Main Dock Only"
+msgstr "Csak az elsődleges dokk"
+
+#: prefs.js:1113
+msgid "All Docks"
+msgstr "Minden dokk"
+
+#: prefs.js:1114
+msgid "Secondary Docks Only"
+msgstr "Csak a másodlagos dokkok"
+
+#: prefs.js:1117
+msgid "Multi-Monitor Docks"
+msgstr "Többmonitoros dokkok"
+
+#: prefs.js:1118
+msgid "Which docks show the pill when the dock is on all monitors"
+msgstr "Melyik dokkok mutassák a kapszulát, ha a dokk minden monitoron megjelenik"
+
 #~ msgid "Unmute"
 #~ msgstr "Némítás feloldása"
 
