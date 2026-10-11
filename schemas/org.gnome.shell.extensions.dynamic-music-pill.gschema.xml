@@ -299,6 +299,11 @@
       <summary>Tint Blur with Album Color</summary>
       <description>Blend dynamic album art color over the blurred background.</description>
     </key>
+    <key name="enable-scroll-animation" type="b">
+      <default>true</default>
+      <summary>Enable Scroll Animation</summary>
+      <description>Play a jump animation on the pill when scrolling</description>
+    </key>
     <key name="invert-scroll-animation" type="b">
       <default>false</default>
       <summary>Invert Scroll Animation</summary>

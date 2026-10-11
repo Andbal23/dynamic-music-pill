@@ -15,7 +15,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'pill-height', 'panel-pill-height', 'vertical-offset', 'horizontal-offset',
             'position-mode', 'dock-position', 'target-container', 'dock-monitors', 'enable-gamemode',
             'visualizer-style', 'border-radius', 'enable-transparency', 'transparency-strength',
-            'transparency-art', 'transparency-text', 'transparency-vis', 'invert-scroll-animation',
+            'transparency-art', 'transparency-text', 'transparency-vis', 'enable-scroll-animation', 'invert-scroll-animation',
             'enable-scroll-controls', 'action-left-click', 'action-middle-click',
             'action-right-click', 'action-double-click', 'dock-art-size', 'panel-art-size',
             'popup-enable-shadow', 'popup-follow-transparency', 'popup-follow-radius',
@@ -199,6 +199,19 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         updateVolTargetSensitivity();
         genGroup.add(volTargetRow);
 
+        // Scroll Animation
+        const scrollAnimRow = new Adw.ActionRow({
+            title: _('Scroll Animation'),
+            subtitle: _('Animate the pill with a jump effect when scrolling')
+        });
+        const scrollAnimToggle = new Gtk.Switch({
+            active: settings.get_boolean('enable-scroll-animation'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('enable-scroll-animation', scrollAnimToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        scrollAnimRow.add_suffix(scrollAnimToggle);
+        genGroup.add(scrollAnimRow);
+
         // Invert Scroll
         const invertRow = new Adw.ActionRow({
             title: _('Invert Scroll Animation'),
@@ -212,6 +225,16 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         invertRow.add_suffix(invertToggle);
         genGroup.add(invertRow);
 
+        const updateScrollAnimSensitivity = () => {
+            let scrollEnabled = settings.get_boolean('enable-scroll-controls');
+            let animEnabled = settings.get_boolean('enable-scroll-animation');
+            scrollAnimRow.sensitive = scrollEnabled;
+            invertRow.sensitive = scrollEnabled && animEnabled;
+        };
+        settings.connect('changed::enable-scroll-controls', updateScrollAnimSensitivity);
+        settings.connect('changed::enable-scroll-animation', updateScrollAnimSensitivity);
+        updateScrollAnimSensitivity();
+
         const invertDirRow = new Adw.ActionRow({
             title: _('Invert Scroll Direction'),
             subtitle: _('Swap up/down scrolling for track and volume actions')
@@ -221,6 +244,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             valign: Gtk.Align.CENTER
         });
         settings.bind('invert-scroll-direction', invertDirToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('enable-scroll-controls', invertDirRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
         invertDirRow.add_suffix(invertDirToggle);
         genGroup.add(invertDirRow);
 

@@ -106,7 +106,15 @@ msgstr "Görgetett hangerő forrása"
 msgid "Choose which sound source to control when scrolling volume"
 msgstr "Válaszd ki, melyik hangforrás módosuljon a Pill-en történő görgetéskor"
 
-#: prefs.js:203
+#: prefs.js:204
+msgid "Scroll Animation"
+msgstr "Görgetési animáció"
+
+#: prefs.js:205
+msgid "Animate the pill with a jump effect when scrolling"
+msgstr "Ugró effektus animálása a pillen görgetéskor"
+
+#: prefs.js:217
 msgid "Invert Scroll Animation"
 msgstr "Görgetési animáció megfordítása"
 

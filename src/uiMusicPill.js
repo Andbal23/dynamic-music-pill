@@ -333,17 +333,18 @@ export const MusicPill = GObject.registerClass(
                         if (now - this._lastScrollTime < delayLimit) return Clutter.EVENT_STOP;
                         this._lastScrollTime = now;
 
+                        let enableAnim = this._settings.get_boolean('enable-scroll-animation');
                         let invert = this._settings.get_boolean('invert-scroll-animation');
                         let offset = 12;
 
                         if (shouldNext) {
-                            this._animateSlide(invert ? -offset : offset);
+                            if (enableAnim) this._animateSlide(invert ? -offset : offset);
                             if (action === 'volume') this._controller.changeVolume(true);
                             else if (action === 'player') this._controller.switchPlayer(true);
                             else if (action === 'seek') this._controller.seekStep(true);
                             else this._controller.next();
                         } else {
-                            this._animateSlide(invert ? offset : -offset);
+                            if (enableAnim) this._animateSlide(invert ? offset : -offset);
                             if (action === 'volume') this._controller.changeVolume(false);
                             else if (action === 'player') this._controller.switchPlayer(false);
                             else if (action === 'seek') this._controller.seekStep(false);
@@ -384,6 +385,12 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::tablet-mode', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::pill-controls-position', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::scroll-action', () => { this._scrollDelta = 0; }, this);
+            this._settings.connectObject('changed::enable-scroll-animation', () => {
+                if (!this._settings.get_boolean('enable-scroll-animation')) {
+                    if (this._body) this._body.translation_x = 0;
+                    if (this._blurBackdrop) this._blurBackdrop.translation_x = 0;
+                }
+            }, this);
             this._settings.connectObject('changed::enable-transparency', () => this._updateTransparencyConfig(), this);
             this._settings.connectObject('changed::transparency-strength', () => this._updateTransparencyConfig(), this);
             this._settings.connectObject('changed::transparency-art', () => this._updateTransparencyConfig(), this);
@@ -1090,7 +1097,7 @@ export const MusicPill = GObject.registerClass(
         }
 
         _animateSlide(offset) {
-            if (!this._body) return;
+            if (!this._body || !this._settings.get_boolean('enable-scroll-animation')) return;
             this._body.ease({
                 translation_x: offset, duration: 100, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: (isFinished) => {

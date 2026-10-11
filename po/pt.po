@@ -103,7 +103,15 @@ msgstr ""
 msgid "Choose which sound source to control when scrolling volume"
 msgstr ""
 
-#: prefs.js:203
+#: prefs.js:204
+msgid "Scroll Animation"
+msgstr ""
+
+#: prefs.js:205
+msgid "Animate the pill with a jump effect when scrolling"
+msgstr ""
+
+#: prefs.js:217
 msgid "Invert Scroll Animation"
 msgstr "Inverter Animação de Rolagem"
 
