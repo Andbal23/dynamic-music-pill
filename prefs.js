@@ -30,7 +30,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
             'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history',
             'show-hours-format', 'popup-show-album-title',
-            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color'
+            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color', 'blur-sigma'
         ];
 
         // =========================================
@@ -1025,6 +1025,14 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         settings.bind('blur-blend-color', blurBlendToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
         blurBlendRow.add_suffix(blurBlendToggle);
         blurGroup.add(blurBlendRow);
+
+        const blurSigmaRow = new Adw.SpinRow({
+            title: _('Blur Radius (Sigma)'),
+            subtitle: _('Strength of the Gaussian blur effect'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 100, step_increment: 2 })
+        });
+        settings.bind('blur-sigma', blurSigmaRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        blurGroup.add(blurSigmaRow);
 
         const bmsLinkRow = new Adw.ActionRow({
             title: _('Blur my Shell Extension'),

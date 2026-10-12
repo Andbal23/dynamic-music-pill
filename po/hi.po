@@ -1344,6 +1344,14 @@ msgstr ""
 msgid "Which docks show the pill when the dock is on all monitors"
 msgstr ""
 
+#: prefs.js:1030
+msgid "Blur Radius (Sigma)"
+msgstr ""
+
+#: prefs.js:1031
+msgid "Strength of the Gaussian blur effect"
+msgstr ""
+
 #~ msgid "Change Tracks or Volume using scroll wheel or touchpad"
 #~ msgstr "स्क्रॉल व्हील या टचपैड से ट्रैक या वॉल्यूम बदलें"
 

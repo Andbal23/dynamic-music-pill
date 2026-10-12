@@ -1370,3 +1370,11 @@ msgstr ""
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
 msgstr ""
+
+#: prefs.js:1030
+msgid "Blur Radius (Sigma)"
+msgstr ""
+
+#: prefs.js:1031
+msgid "Strength of the Gaussian blur effect"
+msgstr ""

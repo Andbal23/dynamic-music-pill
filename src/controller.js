@@ -475,12 +475,6 @@ export class MusicController {
         let player = this._getActivePlayer();
         if (!player) return;
 
-        this._connection.call(
-            player._busName, '/org/mpris/MediaPlayer2', 'org.mpris.MediaPlayer2', 'Raise',
-            null, null, Gio.DBusCallFlags.NONE, -1, null,
-            (conn, res) => { try { conn.call_finish(res); } catch (e) { } }
-        );
-
         let appSystem = Shell.AppSystem.get_default();
         let runningApps = appSystem.get_running();
 
@@ -495,47 +489,88 @@ export class MusicController {
         let customTarget = customMapping[fullBusId] || customMapping[rawBus] || customMapping[identity] || null;
         if (customTarget === 'enter_app_id_here') customTarget = null;
 
+        let matchedApp = null;
+
         for (let app of runningApps) {
             let appId = app.get_id().toLowerCase();
             let appName = app.get_name().toLowerCase();
-            let isMatch = false;
 
             if (customTarget && (appId.includes(customTarget) || appName.includes(customTarget))) {
-                isMatch = true;
+                matchedApp = app;
+                break;
             } else if (!customTarget && desktopEntry && appId.includes(desktopEntry)) {
-                isMatch = true;
+                matchedApp = app;
+                break;
             } else if (!customTarget && identity && appName === identity) {
-                isMatch = true;
+                matchedApp = app;
+                break;
             } else if (!customTarget && appId.includes(fullBusId)) {
-                isMatch = true;
+                matchedApp = app;
+                break;
             }
+        }
 
-            if (isMatch) {
-                let windows = app.get_windows();
-                if (windows && windows.length > 0) {
-                    if (Main.activateWindow) Main.activateWindow(windows[0]);
-                    else windows[0].activate(global.get_current_time());
-                    return;
+        if (!matchedApp) {
+            for (let app of runningApps) {
+                let appId = app.get_id().toLowerCase();
+                let appName = app.get_name().toLowerCase();
+
+                if (appId.includes(rawBus) || appName.includes(rawBus)) {
+                    matchedApp = app;
+                    break;
                 }
-                app.activate();
+            }
+        }
+
+        let windows = matchedApp ? matchedApp.get_windows() : [];
+        if (!windows || windows.length === 0) {
+            let searchTerms = [customTarget, desktopEntry, fullBusId, identity, rawBus].filter(Boolean);
+            windows = global.get_window_actors()
+                .map(a => a.meta_window)
+                .filter(w => {
+                    if (!w || w.is_override_redirect()) return false;
+                    let wmClass = (w.get_wm_class() || '').toLowerCase();
+                    let wmInstance = (w.get_wm_class_instance() || '').toLowerCase();
+                    let gtkId = (w.get_gtk_application_id?.() || '').toLowerCase();
+                    let sandboxId = (w.get_sandboxed_app_id?.() || '').toLowerCase();
+                    return searchTerms.some(t =>
+                        wmClass.includes(t) || wmInstance.includes(t) ||
+                        gtkId.includes(t) || sandboxId.includes(t)
+                    );
+                });
+        }
+
+        if (windows && windows.length > 0) {
+            let activeWs = global.workspace_manager?.get_active_workspace?.();
+            let focusWin = global.display.get_focus_window();
+            let winToMinimize = windows.find(w =>
+                !w.minimized &&
+                (!activeWs || w.get_workspace() === activeWs || w.is_on_all_workspaces()) &&
+                (w.has_focus() || focusWin === w || (focusWin === null && this._lastRaisedWindow === w))
+            );
+
+            if (winToMinimize) {
+                this._lastRaisedWindow = null;
+                winToMinimize.minimize();
                 return;
             }
         }
 
-        for (let app of runningApps) {
-            let appId = app.get_id().toLowerCase();
-            let appName = app.get_name().toLowerCase();
+        this._connection.call(
+            player._busName, '/org/mpris/MediaPlayer2', 'org.mpris.MediaPlayer2', 'Raise',
+            null, null, Gio.DBusCallFlags.NONE, -1, null,
+            (conn, res) => { try { conn.call_finish(res); } catch (e) { } }
+        );
 
-            if (appId.includes(rawBus) || appName.includes(rawBus)) {
-                let windows = app.get_windows();
-                if (windows && windows.length > 0) {
-                    if (Main.activateWindow) Main.activateWindow(windows[0]);
-                    else windows[0].activate(global.get_current_time());
-                    return;
-                }
-                app.activate();
-                return;
-            }
+        if (windows && windows.length > 0) {
+            this._lastRaisedWindow = windows[0];
+            if (Main.activateWindow) Main.activateWindow(windows[0]);
+            else windows[0].activate(global.get_current_time());
+            return;
+        }
+
+        if (matchedApp) {
+            matchedApp.activate();
         }
     }
 
@@ -560,53 +595,28 @@ export class MusicController {
 
     toggleMenu() {
         if (this._expandedPlayer) {
-            this._expandedPlayer.hide();
-            return;
+            if (this._expandedPlayer._isHiding) {
+                this.closeMenu();
+            } else {
+                this._expandedPlayer.hide();
+                return;
+            }
         }
 
         let pill = this._getAnchorPill();
         if (!pill) return;
 
-        this._expandedPlayer = new ExpandedPlayer(this, pill);
-        Main.layoutManager.addChrome(this._expandedPlayer);
-
         let player = this._getActivePlayer();
         if (!player) return;
 
-        let [px, py] = pill.get_transformed_position();
-        let [pw, ph] = pill.get_transformed_size();
-        let monitor = Main.layoutManager.findMonitorForActor(pill);
+        this._expandedPlayer = new ExpandedPlayer(this, pill);
+        Main.layoutManager.addChrome(this._expandedPlayer);
 
         let c = pill._displayedColor;
         this._expandedPlayer.updateStyle(c.r, c.g, c.b, pill._currentBgAlpha);
 
         let artUrl = pill._lastArtUrl;
-
-        this._expandedPlayer._box.set_width(-1);
-        let [minW, natW] = this._expandedPlayer._box.get_preferred_width(-1);
-        let [minH, natH] = this._expandedPlayer._box.get_preferred_height(natW);
-
-        let minWLimit = this._expandedPlayer._computeMinControlsWidth();
-        let startW;
-        if (this._settings.get_boolean('popup-use-custom-width')) {
-            startW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
-        } else {
-            startW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
-        }
-
-        let startH = natH > 0 ? natH : 260;
-
-        let startX = px + (pw / 2) - (startW / 2);
-        if (monitor) {
-            if (startX < monitor.x + 10) startX = monitor.x + 10;
-            else if (startX + startW > monitor.x + monitor.width - 10) startX = monitor.x + monitor.width - startW - 10;
-        }
-
-        let startY = (monitor && py > monitor.y + (monitor.height / 2)) ? py - startH - 15 : py + ph + 15;
-        this._expandedPlayer.setPosition(startX, startY, startW, startH);
-
         this._expandedPlayer.showFor(player, artUrl);
-        this._expandedPlayer.animateResize();
     }
 
     closeMenu() {

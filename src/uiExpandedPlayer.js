@@ -139,28 +139,46 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._syncBlurBackdropGeometry();
                 },
                 'notify::translation-x', () => {
-                    if (this._blurBackdrop && this._box) this._blurBackdrop.translation_x = this._box.translation_x;
+                    if (this._blurBackdrop && this._box) {
+                        this._blurBackdrop.translation_x = this._box.translation_x;
+                        if (this._blurController) this._blurController.invalidate();
+                    }
                 },
                 'notify::translation-y', () => {
-                    if (this._blurBackdrop && this._box) this._blurBackdrop.translation_y = this._box.translation_y;
+                    if (this._blurBackdrop && this._box) {
+                        this._blurBackdrop.translation_y = this._box.translation_y;
+                        if (this._blurController) this._blurController.invalidate();
+                    }
                 },
                 'notify::scale-x', () => {
-                    if (this._blurBackdrop && this._box) this._blurBackdrop.scale_x = this._box.scale_x;
+                    if (this._blurBackdrop && this._box) {
+                        this._blurBackdrop.scale_x = this._box.scale_x;
+                        if (this._blurController) this._blurController.invalidate();
+                    }
                 },
                 'notify::scale-y', () => {
-                    if (this._blurBackdrop && this._box) this._blurBackdrop.scale_y = this._box.scale_y;
+                    if (this._blurBackdrop && this._box) {
+                        this._blurBackdrop.scale_y = this._box.scale_y;
+                        if (this._blurController) this._blurController.invalidate();
+                    }
                 },
                 'notify::opacity', () => {
-                    if (this._blurBackdrop && this._box) this._blurBackdrop.opacity = this._box.opacity;
+                    if (this._blurController && this._box) {
+                        this._blurController.setOpacityFactor(this._box.opacity / 255.0);
+                    }
                 },
                 this
             );
 
-            this._blurController = new ActorBlurController(this._blurBackdrop, () => {
-                let followRadius = this._settings.get_boolean('popup-follow-radius');
-                let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
-                return (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
-            });
+            this._blurController = new ActorBlurController(
+                this._blurBackdrop,
+                () => {
+                    let followRadius = this._settings.get_boolean('popup-follow-radius');
+                    let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
+                    return (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
+                },
+                () => this._settings.get_int('blur-sigma')
+            );
             if (this._settings.get_boolean('enable-blur-popup')) {
                 if (!checkBlurRequirements()) {
                     this._settings.set_boolean('enable-blur-popup', false);
@@ -176,8 +194,14 @@ export const ExpandedPlayer = GObject.registerClass(
                             return;
                         }
                         if (this.visible) {
-                            if (this._blurBackdrop) this._blurBackdrop.show();
-                            if (this._blurController) this._blurController.enable();
+                            if (this._blurBackdrop) {
+                                this._blurBackdrop.opacity = 255;
+                                this._blurBackdrop.show();
+                            }
+                            if (this._blurController) {
+                                this._blurController.setOpacityFactor(this._box ? this._box.opacity / 255.0 : 1.0);
+                                this._blurController.enable();
+                            }
                         }
                     } else {
                         if (this._blurBackdrop) this._blurBackdrop.hide();
@@ -193,6 +217,9 @@ export const ExpandedPlayer = GObject.registerClass(
                         let c = this._controller._pill._displayedColor;
                         this.updateStyle(c.r, c.g, c.b);
                     }
+                },
+                'changed::blur-sigma', () => {
+                    if (this._blurController) this._blurController.updateSigma(this._settings.get_int('blur-sigma'));
                 },
                 'changed::popup-follow-radius', () => {
                     if (this._blurController) this._blurController.updateRadius();
@@ -641,7 +668,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 let by = Math.round(this._box.y);
                 let bw = Math.max(1, Math.round(this._box.width > 0 ? this._box.width : this._box.get_preferred_width(-1)[1]));
                 let bh;
-                if (this._box.get_transition('height') || (this._currentSubPage && this._box.height > 0)) {
+                if (this._box.get_transition('height') || (this._currentSubPage && this._box.height > 0) || (this._box.height > 0 && (this._isOpening || this._isHiding || this._box.get_transition('scale-x')))) {
                     bh = Math.max(1, Math.round(this._box.height));
                 } else {
                     let [, natH] = this._box.get_preferred_height(bw);
@@ -653,11 +680,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 if (this._blurBackdrop && this._blurBackdrop.visible) {
                     let blurBox = new Clutter.ActorBox();
-                    let blurW = Math.max(1, Math.round(this._blurBackdrop.width > 0 ? this._blurBackdrop.width : bw));
-                    let blurH = Math.max(1, Math.round(this._blurBackdrop.height > 0 ? this._blurBackdrop.height : bh));
-                    let blurX = Math.round(this._blurBackdrop.x);
-                    let blurY = Math.round(this._blurBackdrop.y);
-                    blurBox.init_rect(blurX, blurY, blurW, blurH);
+                    blurBox.init_rect(bx, by, bw, bh);
                     this._blurBackdrop.allocate(blurBox);
                 }
             }
@@ -896,13 +919,19 @@ export const ExpandedPlayer = GObject.registerClass(
 
             if (this._blurBackdrop) {
                 if (isBlurActive) {
-                    this._blurBackdrop.show();
                     this._blurBackdrop.set_style(`border-radius: ${radius}px; background-color: transparent;`);
-                    if (this._blurController) {
-                        this._blurController.enable();
+                    if (this.visible && !this._isOpening) {
+                        this._blurBackdrop.opacity = 255;
+                        this._blurBackdrop.show();
+                        if (this._blurController) {
+                            this._blurController.enable();
+                            this._blurController.updateRadius(radius);
+                            this._blurController.updateSigma();
+                        }
+                        this._syncBlurBackdropGeometry();
+                    } else if (this._blurController) {
                         this._blurController.updateRadius(radius);
                     }
-                    this._syncBlurBackdropGeometry();
                 } else {
                     this._blurBackdrop.hide();
                     if (this._blurController) this._blurController.disable();
@@ -1010,99 +1039,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             }
 
-            let isLiveTrackChange = trackChanged && this.visible && !this._isOpening;
-
-            if (this._textFadeTimerId) {
-                GLib.Source.remove(this._textFadeTimerId);
-                this._textFadeTimerId = null;
-            }
-            if (this._resizeFinishTimerId) {
-                GLib.Source.remove(this._resizeFinishTimerId);
-                this._resizeFinishTimerId = null;
-            }
-
-            let artWillChange = (artUrl && artUrl !== this._currentArtUrl);
-
-            const fadeInContent = () => {
-                if (this._resizeFinishTimerId) {
-                    GLib.Source.remove(this._resizeFinishTimerId);
-                    this._resizeFinishTimerId = null;
-                }
-
-                if (this._infoBox) {
-                    this._infoBox.remove_all_transitions();
-                    if (isLiveTrackChange) {
-                        this._infoBox.opacity = 0;
-                        this._infoBox.ease({
-                            opacity: 255,
-                            duration: 150,
-                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                        });
-                    } else {
-                        this._infoBox.opacity = 255;
-                    }
-                }
-            };
-
-            const applyContentAndResize = () => {
-                if (this._titleLabel && this._titleLabel._text !== title) {
-                    this._titleLabel.setText(title || _('Unknown Title'), false);
-                }
-                if (this._artistLabel && this._artistLabel._text !== displayArtist) {
-                    this._artistLabel.setText(displayArtist, false);
-                }
-                this._setCoverArt(artUrl);
-
-                if (isLiveTrackChange) {
-                    if (this._infoBox) this._infoBox.opacity = 0;
-
-                    this._resizeFinishTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 260, () => {
-                        this._resizeFinishTimerId = null;
-                        fadeInContent();
-                        return GLib.SOURCE_REMOVE;
-                    });
-                }
-
-                if (this.visible) {
-                    this.animateResize(true, () => {
-                        fadeInContent();
-                    });
-                } else {
-                    fadeInContent();
-                }
-            };
-
-            if (isLiveTrackChange && this._infoBox) {
-                let applied = false;
-                const safeApply = () => {
-                    if (applied) return;
-                    applied = true;
-                    if (this._textFadeTimerId) {
-                        GLib.Source.remove(this._textFadeTimerId);
-                        this._textFadeTimerId = null;
-                    }
-                    applyContentAndResize();
-                };
-
-                this._textFadeTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
-                    this._textFadeTimerId = null;
-                    safeApply();
-                    return GLib.SOURCE_REMOVE;
-                });
-
-                this._infoBox.remove_all_transitions();
-                this._infoBox.ease({
-                    opacity: 0,
-                    duration: 60,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: (isFinished) => {
-                        if (isFinished) safeApply();
-                    }
-                });
-            } else {
-                applyContentAndResize();
-            }
-
             if (status === 'Playing') {
                 this._playPauseIcon.icon_name = 'media-playback-pause-symbolic';
                 if (this._visualizer) this._visualizer.setPlaying(true);
@@ -1170,6 +1106,97 @@ export const ExpandedPlayer = GObject.registerClass(
 
             this._updateCustomButtons();
             this._updatePlayerSelector();
+
+            let isLiveTrackChange = trackChanged && this.visible && !this._isOpening;
+
+            if (this._textFadeTimerId) {
+                GLib.Source.remove(this._textFadeTimerId);
+                this._textFadeTimerId = null;
+            }
+            if (this._resizeFinishTimerId) {
+                GLib.Source.remove(this._resizeFinishTimerId);
+                this._resizeFinishTimerId = null;
+            }
+
+            const fadeInContent = () => {
+                if (this._resizeFinishTimerId) {
+                    GLib.Source.remove(this._resizeFinishTimerId);
+                    this._resizeFinishTimerId = null;
+                }
+
+                if (this._infoBox) {
+                    this._infoBox.remove_all_transitions();
+                    if (isLiveTrackChange) {
+                        this._infoBox.opacity = 0;
+                        this._infoBox.ease({
+                            opacity: 255,
+                            duration: 150,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                        });
+                    } else {
+                        this._infoBox.opacity = 255;
+                    }
+                }
+            };
+
+            const applyContentAndResize = () => {
+                if (this._titleLabel && this._titleLabel._text !== title) {
+                    this._titleLabel.setText(title || _('Unknown Title'), false);
+                }
+                if (this._artistLabel && this._artistLabel._text !== displayArtist) {
+                    this._artistLabel.setText(displayArtist, false);
+                }
+                this._setCoverArt(artUrl);
+
+                if (isLiveTrackChange) {
+                    if (this._infoBox) this._infoBox.opacity = 0;
+
+                    this._resizeFinishTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 260, () => {
+                        this._resizeFinishTimerId = null;
+                        fadeInContent();
+                        return GLib.SOURCE_REMOVE;
+                    });
+                }
+
+                if (this.visible && !this._isOpening) {
+                    this.animateResize(true, () => {
+                        fadeInContent();
+                    });
+                } else {
+                    fadeInContent();
+                }
+            };
+
+            if (isLiveTrackChange && this._infoBox) {
+                let applied = false;
+                const safeApply = () => {
+                    if (applied) return;
+                    applied = true;
+                    if (this._textFadeTimerId) {
+                        GLib.Source.remove(this._textFadeTimerId);
+                        this._textFadeTimerId = null;
+                    }
+                    applyContentAndResize();
+                };
+
+                this._textFadeTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
+                    this._textFadeTimerId = null;
+                    safeApply();
+                    return GLib.SOURCE_REMOVE;
+                });
+
+                this._infoBox.remove_all_transitions();
+                this._infoBox.ease({
+                    opacity: 0,
+                    duration: 60,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: (isFinished) => {
+                        if (isFinished) safeApply();
+                    }
+                });
+            } else {
+                applyContentAndResize();
+            }
         }
 
 
@@ -1992,26 +2019,6 @@ export const ExpandedPlayer = GObject.registerClass(
             this.setPlayer(player);
             this._isOpening = true;
             this._isHiding = false;
-            this.visible = true;
-            this.opacity = 255;
-            if (this._settings.get_boolean('enable-blur-popup')) {
-                if (this._blurBackdrop) {
-                    if (this._box && (this._blurBackdrop.width <= 0 || this._blurBackdrop.height <= 0)) {
-                        let bw = this._box.width > 0 ? this._box.width : 0;
-                        let bh = this._box.height > 0 ? this._box.height : 0;
-                        if (bw > 0 && bh > 0) this._blurBackdrop.set_size(bw, bh);
-                    }
-                    this._blurBackdrop.show();
-                }
-                if (this._blurController) this._blurController.enable();
-            }
-            if (this._box) {
-                this._box.opacity = 255;
-                if (this._blurBackdrop) this._blurBackdrop.opacity = 255;
-                this._box.translation_y = -8;
-                this._box.ease({ translation_y: 0, duration: 180, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-            }
-            this.grab_key_focus();
 
             let status = player.PlaybackStatus;
             let m = player.Metadata;
@@ -2019,23 +2026,6 @@ export const ExpandedPlayer = GObject.registerClass(
             let artist = m ? smartUnpack(m['xesam:artist']) : null;
             if (Array.isArray(artist)) artist = artist.join(', ');
 
-            this.updateContent(title, artist, artUrl, status);
-
-            this._controller._connection.call(
-                player._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Get',
-                new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
-                null, Gio.DBusCallFlags.NONE, -1, null,
-                (conn, res) => {
-                    let result = conn.call_finish(res);
-                    let val = smartUnpack(result.deep_unpack()[0]);
-                    if (typeof val === 'number' && val >= 0) {
-                        player._lastPosition = val;
-                        player._lastPositionTime = Date.now();
-                    }
-                }
-            );
-
-            this._startTimer();
             let visStyle = this._settings.get_int('visualizer-style');
             this._visualizer.setMode(visStyle);
             this._visualizer.setPlaying(status === 'Playing');
@@ -2048,29 +2038,110 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (this._pill) this._pill._setPopupOpen(true);
             }
 
-            this._updateCustomButtons();
-
             if (this._settings.get_boolean('has-seen-first-hint')) {
                 this._firstHintBox.hide();
             } else {
                 this._firstHintBox.show();
             }
+
+            this.updateContent(title, artist, artUrl, status);
+
+            this.visible = true;
+            this.opacity = 255;
+            if (this._box) this._box.opacity = 0;
+
+            this._startTimer();
+
+            // Synchronously compute final dimensions, position, and directional pivot before first frame
+            this.animateResize(true);
+
+            let startTx = this._openOffsetX || 0;
+            let startTy = this._openOffsetY || 12;
+
+            if (this._settings.get_boolean('enable-blur-popup')) {
+                if (this._blurBackdrop) {
+                    this._blurBackdrop.remove_all_transitions();
+                    this._blurBackdrop.opacity = 255;
+                    this._blurBackdrop.scale_x = 0.88;
+                    this._blurBackdrop.scale_y = 0.88;
+                    this._blurBackdrop.translation_x = startTx;
+                    this._blurBackdrop.translation_y = startTy;
+                    this._blurBackdrop.show();
+                }
+                if (this._blurController) {
+                    this._blurController.setOpacityFactor(0);
+                    this._blurController.enable();
+                    this._blurController.updateRadius();
+                }
+            }
+
+            if (this._box) {
+                this._box.remove_all_transitions();
+                this._box.opacity = 0;
+                this._box.scale_x = 0.88;
+                this._box.scale_y = 0.88;
+                this._box.translation_x = startTx;
+                this._box.translation_y = startTy;
+
+                this._box.ease({
+                    opacity: 255,
+                    scale_x: 1.0,
+                    scale_y: 1.0,
+                    translation_x: 0,
+                    translation_y: 0,
+                    duration: 230,
+                    mode: Clutter.AnimationMode.EASE_OUT_EXPO,
+                    onStopped: () => {
+                        if (this._blurController) this._blurController.setOpacityFactor(1.0);
+                        if (this._box && !this._isHiding && !this._currentSubPage) {
+                            this._box.set_height(-1);
+                        }
+                    }
+                });
+
+                if (this._blurBackdrop && this._blurBackdrop.visible) {
+                    this._blurBackdrop.ease({
+                        scale_x: 1.0,
+                        scale_y: 1.0,
+                        translation_x: 0,
+                        translation_y: 0,
+                        duration: 230,
+                        mode: Clutter.AnimationMode.EASE_OUT_EXPO
+                    });
+                }
+            }
+
+            this.grab_key_focus();
+
+            this._controller._connection.call(
+                player._busName, '/org/mpris/MediaPlayer2', 'org.freedesktop.DBus.Properties', 'Get',
+                new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
+                null, Gio.DBusCallFlags.NONE, -1, null,
+                (conn, res) => {
+                    try {
+                        let result = conn.call_finish(res);
+                        let val = smartUnpack(result.deep_unpack()[0]);
+                        if (typeof val === 'number' && val >= 0) {
+                            player._lastPosition = val;
+                            player._lastPositionTime = Date.now();
+                        }
+                    } catch (_) {}
+                }
+            );
         }
 
         hide() {
-
             if (this._isHiding) return;
             this._isHiding = true;
+            this._isOpening = false;
 
             if (this._leaveHideTimeoutId) {
                 GLib.Source.remove(this._leaveHideTimeoutId);
                 this._leaveHideTimeoutId = null;
             }
-
-            if (this._currentSubPage) {
-                this._currentSubPage.destroy();
-                this._currentSubPage = null;
-                if (this._mainPage) this._mainPage.show();
+            if (this._resizeDebounceId) {
+                GLib.Source.remove(this._resizeDebounceId);
+                this._resizeDebounceId = null;
             }
 
             restoreDockAutohide();
@@ -2081,12 +2152,32 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._pill._setPopupOpen(false);
             }
             if (this._box) {
+                let closeTx = Math.round((this._openOffsetX || 0) * 0.8);
+                let closeTy = Math.round((this._openOffsetY || 12) * 0.8);
+
+                this._box.remove_all_transitions();
+                if (this._blurBackdrop && this._blurBackdrop.visible) {
+                    this._blurBackdrop.remove_all_transitions();
+                    this._blurBackdrop.ease({
+                        scale_x: 0.90,
+                        scale_y: 0.90,
+                        translation_x: closeTx,
+                        translation_y: closeTy,
+                        duration: 170,
+                        mode: Clutter.AnimationMode.EASE_OUT_CUBIC
+                    });
+                }
+
                 this._box.ease({
-                    translation_y: -6,
-                    duration: 150,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: (isFinished) => {
-                        if (!isFinished || !this._box) return;
+                    opacity: 0,
+                    scale_x: 0.90,
+                    scale_y: 0.90,
+                    translation_x: closeTx,
+                    translation_y: closeTy,
+                    duration: 170,
+                    mode: Clutter.AnimationMode.EASE_OUT_CUBIC,
+                    onStopped: () => {
+                        if (!this._box) return;
                         try {
                             this.visible = false;
                             this._isHiding = false;
@@ -2563,9 +2654,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._box.set_height(-1);
                 let [minW, natW] = this._box.get_preferred_width(-1);
                 natW = Math.ceil(natW);
-                let [minH, natH] = this._box.get_preferred_height(natW);
-                natH = Math.ceil(natH);
-                if (currentW > 0) this._box.set_width(currentW);
 
                 let baseMinW = this._computeMinControlsWidth();
 
@@ -2597,9 +2685,6 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 menuW = Math.round(menuW);
 
-                let menuH = Math.round(natH > 0 ? natH : 260);
-                if (menuH % 2 !== 0) menuH++;
-
                 if (!this._initialWidthSet) {
                     currentW = menuW;
                     this._initialWidthSet = true;
@@ -2608,6 +2693,12 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (currentW > 0 && Math.abs(menuW - currentW) < 2) {
                     menuW = currentW;
                 }
+
+                let [minH, natH] = this._box.get_preferred_height(menuW);
+                natH = Math.ceil(natH);
+                let menuH = Math.round(natH > 0 ? natH : 260);
+                if (menuH % 2 !== 0) menuH++;
+
                 if (currentW > 0) this._box.set_width(currentW);
 
                 let pill = this._pill;
@@ -2628,6 +2719,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 pw = Math.round(pw); ph = Math.round(ph);
 
                 let targetX, targetY;
+                let pivX = 0.5, pivY = 0.0;
+                this._openOffsetX = 0;
+                this._openOffsetY = -10;
 
                 if (pill._isSidePanel) {
                     let isLeftEdge = (px < monitor.x + (monitor.width / 2));
@@ -2638,9 +2732,15 @@ export const ExpandedPlayer = GObject.registerClass(
 
                     if (isLeftEdge) {
                         targetX = Math.round(px + pw + 15);
+                        pivX = 0.0;
+                        this._openOffsetX = -10;
                     } else {
                         targetX = Math.round(px - menuW - 15);
+                        pivX = 1.0;
+                        this._openOffsetX = 10;
                     }
+                    this._openOffsetY = 0;
+                    pivY = menuH > 0 ? Math.max(0.08, Math.min(0.92, ((py + ph / 2) - targetY) / menuH)) : 0.5;
 
                     if (targetX < monitor.x + 10) targetX = monitor.x + 10;
                     if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
@@ -2653,9 +2753,19 @@ export const ExpandedPlayer = GObject.registerClass(
                     let isTopEdge = (py < monitor.y + (monitor.height / 2));
                     if (isTopEdge) {
                         targetY = Math.round(py + ph + 15);
+                        pivY = 0.0;
+                        this._openOffsetY = -10;
                     } else {
                         targetY = Math.round(py - menuH - 15);
+                        pivY = 1.0;
+                        this._openOffsetY = 10;
                     }
+                    pivX = menuW > 0 ? Math.max(0.08, Math.min(0.92, ((px + pw / 2) - targetX) / menuW)) : 0.5;
+                }
+
+                this._box.set_pivot_point(pivX, pivY);
+                if (this._blurBackdrop) {
+                    this._blurBackdrop.set_pivot_point(pivX, pivY);
                 }
 
                 let isCurrentlySafe = (currentX >= monitor.x + 10 && (currentX + menuW) <= (monitor.x + monitor.width - 10));
@@ -2672,8 +2782,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._blurBackdrop.y !== targetY
                 );
 
-                if (currentW === menuW && currentH === menuH && currentX === targetX && currentY === targetY) {
-                    this._isOpening = false;
+                if (!this._isOpening && currentW === menuW && currentH === menuH && currentX === targetX && currentY === targetY) {
                     if (backdropNeedSync) {
                         this._syncBlurBackdropGeometry(targetX, targetY, menuW, menuH, true);
                     }
@@ -2683,8 +2792,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 if (this._isOpening) {
                     this._box.set_position(targetX, targetY);
-                    this._box.set_width(menuW);
-                    this._box.set_height(-1);
+                    this._box.set_size(menuW, menuH);
                     if (this._blurBackdrop) {
                         this._blurBackdrop.set_position(targetX, targetY);
                         this._blurBackdrop.set_size(menuW, menuH);
@@ -2701,7 +2809,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     if (onFinished) onFinished();
                 };
 
-                this._box.remove_all_transitions();
+                ['width', 'height', 'x', 'y'].forEach(prop => this._box.remove_transition(prop));
                 this._box.ease({
                     width: menuW,
                     height: menuH,
@@ -2716,7 +2824,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     }
                 });
                 if (this._blurBackdrop) {
-                    this._blurBackdrop.remove_all_transitions();
+                    ['width', 'height', 'x', 'y'].forEach(prop => this._blurBackdrop.remove_transition(prop));
                     this._blurBackdrop.ease({
                         width: menuW,
                         height: menuH,

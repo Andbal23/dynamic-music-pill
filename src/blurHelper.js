@@ -85,9 +85,11 @@ const PaintCallbackEffect = GObject.registerClass(
 );
 
 export class ActorBlurController {
-    constructor(actor, getRadius) {
+    constructor(actor, getRadius, getSigma = null) {
         this._actor = actor;
         this._getRadius = getRadius;
+        this._getSigma = getSigma;
+        this._opacityFactor = 1.0;
         this._effect = null;
         this._paintCallback = null;
         this._enabled = false;
@@ -128,6 +130,16 @@ export class ActorBlurController {
         }
     }
 
+    _computeScaledSigma(customSigma) {
+        let raw = (typeof customSigma === 'number' && !isNaN(customSigma))
+            ? customSigma
+            : (this._getSigma ? this._getSigma() : 30);
+        let sigma = (typeof raw === 'number' && !isNaN(raw)) ? Math.max(0, raw) : 30;
+        let scale = this._getScaleFactor();
+        if (sigma <= 0 || this._opacityFactor <= 0.01) return 0;
+        return Math.max(1, Math.round(sigma * this._opacityFactor * scale));
+    }
+
     updateRadius(newRadius) {
         if (!this._enabled || !this._effect) return;
         let r = (typeof newRadius === 'number') ? newRadius : (this._getRadius ? this._getRadius() : 0);
@@ -138,6 +150,31 @@ export class ActorBlurController {
             } catch (_) {
                 try { this._effect['corner-radius'] = r * scale; } catch (__) {}
             }
+        }
+    }
+
+    updateSigma(newSigma) {
+        if (!this._enabled || !this._effect) return;
+        let targetRadius = this._computeScaledSigma(newSigma);
+        try {
+            this._effect.radius = targetRadius;
+        } catch (_) {}
+    }
+
+    setOpacityFactor(factor) {
+        let clamped = Math.min(1.0, Math.max(0.0, (typeof factor === 'number' && !isNaN(factor)) ? factor : 1.0));
+        if (Math.abs(this._opacityFactor - clamped) < 0.005 && clamped !== 0.0 && clamped !== 1.0) return;
+        this._opacityFactor = clamped;
+        if (!this._enabled || !this._effect) return;
+        let targetRadius = this._computeScaledSigma();
+        try {
+            this._effect.radius = targetRadius;
+        } catch (_) {}
+    }
+
+    invalidate() {
+        if (this._enabled && this._effect && typeof this._effect.queue_repaint === 'function') {
+            try { this._effect.queue_repaint(); } catch (_) {}
         }
     }
 
@@ -153,12 +190,13 @@ export class ActorBlurController {
 
         let radius = (this._getRadius ? this._getRadius() : 24) || 0;
         let scale = this._getScaleFactor();
+        let blurRadius = this._computeScaledSigma();
 
         try {
             let EffectClass = BlurOrShell.BlurEffect;
             if (EffectClass) {
                 let mode = BlurOrShell.BlurMode ? BlurOrShell.BlurMode.BACKGROUND : 1;
-                this._effect = new EffectClass({ mode: mode, radius: 30 * scale });
+                this._effect = new EffectClass({ mode: mode, radius: blurRadius });
                 if ('corner-radius' in this._effect || 'corner_radius' in this._effect) {
                     try {
                         this._effect.corner_radius = radius * scale;
@@ -184,11 +222,24 @@ export class ActorBlurController {
             let skipping = 0;
             this._paintCallback = new PaintCallbackEffect();
             this._paintCallback.set_callback(() => {
-                if (skipping > 0) {
-                    skipping--;
-                    return;
+                let isAnimating = this._opacityFactor < 1.0 || Boolean(
+                    this._actor && (
+                        this._actor.get_transition('translation-y') ||
+                        this._actor.get_transition('translation-x') ||
+                        this._actor.get_transition('scale-x') ||
+                        this._actor.get_transition('width') ||
+                        this._actor.get_transition('height')
+                    )
+                );
+                if (!isAnimating) {
+                    if (skipping > 0) {
+                        skipping--;
+                        return;
+                    }
+                    skipping = 2;
+                } else {
+                    skipping = 0;
                 }
-                skipping = 2;
                 if (this._effect && typeof this._effect.queue_repaint === 'function') {
                     this._effect.queue_repaint();
                 }
@@ -206,7 +257,7 @@ export class ActorBlurController {
                         if (this._effect) {
                             let s = this._getScaleFactor();
                             let curR = (this._getRadius ? this._getRadius() : 24) || 0;
-                            this._effect.radius = 30 * s;
+                            this._effect.radius = this._computeScaledSigma();
                             if ('corner-radius' in this._effect || 'corner_radius' in this._effect) {
                                 try { this._effect.corner_radius = curR * s; } catch (_) {}
                             }

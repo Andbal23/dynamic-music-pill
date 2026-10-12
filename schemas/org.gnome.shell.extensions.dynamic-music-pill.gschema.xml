@@ -299,6 +299,12 @@
       <summary>Tint Blur with Album Color</summary>
       <description>Blend dynamic album art color over the blurred background.</description>
     </key>
+    <key name="blur-sigma" type="i">
+      <default>30</default>
+      <range min="0" max="100"/>
+      <summary>Blur Radius (Sigma)</summary>
+      <description>Strength of the Gaussian blur effect behind the pill and pop-up.</description>
+    </key>
     <key name="enable-scroll-animation" type="b">
       <default>true</default>
       <summary>Enable Scroll Animation</summary>

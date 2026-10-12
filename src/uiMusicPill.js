@@ -195,7 +195,11 @@ export const MusicPill = GObject.registerClass(
                 this._blurBackdrop.set_size(bw, bh);
             }
 
-            this._blurController = new ActorBlurController(this._blurBackdrop, () => this._radius || 28);
+            this._blurController = new ActorBlurController(
+                this._blurBackdrop,
+                () => this._radius || 28,
+                () => this._settings.get_int('blur-sigma')
+            );
             if (this._settings.get_boolean('enable-blur-pill')) {
                 if (checkBlurRequirements()) {
                     this._blurBackdrop.visible = true;
@@ -441,6 +445,9 @@ export const MusicPill = GObject.registerClass(
             }, this);
             this._settings.connectObject('changed::blur-blend-color', () => {
                 this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
+            this._settings.connectObject('changed::blur-sigma', () => {
+                if (this._blurController) this._blurController.updateSigma(this._settings.get_int('blur-sigma'));
             }, this);
             this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::shadow-opacity', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
