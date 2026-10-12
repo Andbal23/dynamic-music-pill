@@ -203,41 +203,84 @@ function parseLyricsInput(input) {
   return { lines, hasWordLevel };
 }
 
-class BetterLyricsProvider {
+class AppleMusicProvider {
   constructor(session) {
-    this.name = "BetterLyrics";
+    this.name = "Apple Music";
     this._session = session;
   }
 
   async fetchLyrics(title, artist, album, duration) {
     if (!title?.trim()) return null;
     const cleaned = cleanTitle(title);
-    const queryTitle = cleaned || title;
-    const queryArtist = artist || "";
+    const query = `${cleaned || title} ${artist || ""}`.trim();
 
-    const url = `https://lyrics-api.boidu.dev/getLyrics?s=${encodeURIComponent(queryTitle)}&a=${encodeURIComponent(queryArtist)}&d=${Math.round(duration || 0)}`;
+    // 1. Direct Apple Music TTML search via lrc.red
     try {
-      let msg = Soup.Message.new("GET", url);
-      if (!msg) return null;
-      msg.request_headers.append("User-Agent", "BetterLyrics/1.0");
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
-      if (msg.status_code !== Soup.Status.OK) return null;
-      const text = decode(bytes.get_data());
-
-      const parsed = parseLyricsInput(text);
-      if (parsed.lines && parsed.lines.length > 0) {
-        return {
-          payload: text,
-          parsed,
-          provider: this.name,
-          isSynced: true,
-          hasWordLevel: parsed.hasWordLevel,
-        };
+      const searchUrl = `https://lrc.red/api/v1?q=${encodeURIComponent(query)}`;
+      let msg = Soup.Message.new("GET", searchUrl);
+      if (msg) {
+        msg.request_headers.append("User-Agent", "BetterLyrics/1.0");
+        const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
+        if (msg.status_code === Soup.Status.OK) {
+          const json = JSON.parse(decode(bytes.get_data()));
+          const results = json?.results;
+          if (Array.isArray(results) && results.length > 0) {
+            let bestItem = results.find(r => r.timing_type === "word") || results[0];
+            if (bestItem && bestItem.lyricsUrl) {
+              let ttmlMsg = Soup.Message.new("GET", bestItem.lyricsUrl);
+              if (ttmlMsg) {
+                ttmlMsg.request_headers.append("User-Agent", "BetterLyrics/1.0");
+                const ttmlBytes = await this._session.send_and_read_async(ttmlMsg, GLib.PRIORITY_DEFAULT, null);
+                if (ttmlMsg.status_code === Soup.Status.OK) {
+                  const ttmlText = decode(ttmlBytes.get_data());
+                  const parsed = parseTTML(ttmlText);
+                  if (parsed.lines && parsed.lines.length > 0) {
+                    return {
+                      payload: ttmlText,
+                      parsed,
+                      provider: this.name,
+                      isSynced: true,
+                      hasWordLevel: parsed.hasWordLevel,
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-      return null;
-    } catch (_) {
-      return null;
+    } catch (e) {
+      console.debug(`[LyricsClient] Apple Music lrc.red error: ${e.message}`);
     }
+
+    // 2. Secondary fallback via boidu
+    try {
+      const queryTitle = cleaned || title;
+      const queryArtist = artist || "";
+      const url = `https://lyrics-api.boidu.dev/getLyrics?s=${encodeURIComponent(queryTitle)}&a=${encodeURIComponent(queryArtist)}&d=${Math.round(duration || 0)}`;
+      let bMsg = Soup.Message.new("GET", url);
+      if (bMsg) {
+        bMsg.request_headers.append("User-Agent", "BetterLyrics/1.0");
+        const bytes = await this._session.send_and_read_async(bMsg, GLib.PRIORITY_DEFAULT, null);
+        if (bMsg.status_code === Soup.Status.OK) {
+          const text = decode(bytes.get_data());
+          const parsed = parseLyricsInput(text);
+          if (parsed.lines && parsed.lines.length > 0) {
+            return {
+              payload: text,
+              parsed,
+              provider: this.name,
+              isSynced: true,
+              hasWordLevel: parsed.hasWordLevel,
+            };
+          }
+        }
+      }
+    } catch (e) {
+      console.debug(`[LyricsClient] Apple Music boidu error: ${e.message}`);
+    }
+
+    return null;
   }
 }
 
@@ -406,76 +449,6 @@ class LrclibProvider {
   }
 }
 
-class NeteaseProvider {
-  constructor(session) {
-    this.name = "NetEase";
-    this._session = session;
-  }
-
-  async fetchLyrics(title, artist, album, duration) {
-    if (!title?.trim()) return null;
-    const cleaned = cleanTitle(title);
-    const query = `${artist || ''} ${cleaned || title}`.trim();
-
-    try {
-      const searchUrl = `https://music.163.com/api/search/get/web?s=${encodeURIComponent(query)}&type=1&offset=0&total=true&limit=5`;
-      let msg = Soup.Message.new("GET", searchUrl);
-      if (!msg) return null;
-      msg.request_headers.append("User-Agent", USER_AGENT);
-      msg.request_headers.append("Referer", "https://music.163.com");
-
-      const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
-      if (msg.status_code !== Soup.Status.OK) return null;
-      const data = JSON.parse(decode(bytes.get_data()));
-
-      const songs = data?.result?.songs;
-      if (!Array.isArray(songs) || songs.length === 0) return null;
-
-      let bestSong = songs[0];
-      if (duration && duration > 0) {
-        let bestDiff = Infinity;
-        for (const song of songs) {
-          const songDurSec = (song.duration || 0) / 1000;
-          const diff = Math.abs(songDurSec - duration);
-          if (diff < bestDiff) {
-            bestDiff = diff;
-            bestSong = song;
-          }
-        }
-        if (bestDiff > 10) return null;
-      }
-
-      const lyricUrl = `https://music.163.com/api/song/lyric?os=pc&id=${bestSong.id}&lv=-1&kv=-1&tv=-1`;
-      let lyricMsg = Soup.Message.new("GET", lyricUrl);
-      if (!lyricMsg) return null;
-      lyricMsg.request_headers.append("User-Agent", USER_AGENT);
-      lyricMsg.request_headers.append("Referer", "https://music.163.com");
-
-      const lyricBytes = await this._session.send_and_read_async(lyricMsg, GLib.PRIORITY_DEFAULT, null);
-      if (lyricMsg.status_code !== Soup.Status.OK) return null;
-      const lyricData = JSON.parse(decode(lyricBytes.get_data()));
-
-      const kLrcString = lyricData?.klyric?.lyric;
-      const lrcString = lyricData?.lrc?.lyric;
-
-      if (kLrcString && kLrcString.includes("[")) {
-        const parsed = parseLyricsInput(kLrcString);
-        return { payload: kLrcString, parsed, isSynced: true, provider: this.name };
-      } else if (lrcString && lrcString.includes("[")) {
-        const parsed = parseLyricsInput(lrcString);
-        return { payload: lrcString, parsed, isSynced: true, provider: this.name };
-      } else if (lrcString && lrcString.trim()) {
-        const parsed = parseLyricsInput(lrcString);
-        return { payload: lrcString, parsed, isSynced: false, provider: this.name };
-      }
-      return null;
-    } catch (e) {
-      console.debug(`[LyricsClient] NetEase fetch error: ${e.message}`);
-      return null;
-    }
-  }
-}
-
 export class LyricsClient {
   constructor() {
     Gio._promisify(
@@ -483,12 +456,11 @@ export class LyricsClient {
       "send_and_read_async",
       "send_and_read_finish",
     );
-    this._session = new Soup.Session({ user_agent: USER_AGENT });
+    this._session = new Soup.Session({ user_agent: USER_AGENT, timeout: 5 });
     this._providers = [
-      new BetterLyricsProvider(this._session),
+      new AppleMusicProvider(this._session),
       new BiniLyricsProvider(this._session),
       new LrclibProvider(this._session),
-      new NeteaseProvider(this._session),
     ];
   }
 
@@ -522,27 +494,31 @@ export class LyricsClient {
     }
 
     // TIER 1 (TOP PRIORITY): word-level (karaoke word-by-word) lyrics
-    for (const item of parsedResults) {
-      if (item.type === 'word-level') {
-        return {
-          lines: item.lines,
-          provider: item.provider,
-          type: 'word-level',
-          isSynced: true,
-        };
-      }
+    // Apple Music is prioritized first
+    const wordLevelItems = parsedResults.filter(item => item.type === 'word-level');
+    if (wordLevelItems.length > 0) {
+      const amItem = wordLevelItems.find(item => item.provider === 'Apple Music');
+      const chosen = amItem || wordLevelItems[0];
+      return {
+        lines: chosen.lines,
+        provider: chosen.provider,
+        type: 'word-level',
+        isSynced: true,
+      };
     }
 
     // TIER 2: synced (line-by-line LRC) lyrics
-    for (const item of parsedResults) {
-      if (item.type === 'synced') {
-        return {
-          lines: item.lines,
-          provider: item.provider,
-          type: 'synced',
-          isSynced: true,
-        };
-      }
+    // Apple Music is prioritized first
+    const syncedItems = parsedResults.filter(item => item.type === 'synced');
+    if (syncedItems.length > 0) {
+      const amItem = syncedItems.find(item => item.provider === 'Apple Music');
+      const chosen = amItem || syncedItems[0];
+      return {
+        lines: chosen.lines,
+        provider: chosen.provider,
+        type: 'synced',
+        isSynced: true,
+      };
     }
 
     // TIER 3: plain text fallback
