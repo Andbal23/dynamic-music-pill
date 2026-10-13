@@ -1321,13 +1321,13 @@ msgstr "Genişletilmiş oynatıcı açılır menüsünün arka planını bulanı
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "Bulanıklığı Albüm Kapağı Rengiyle Renklendir"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "Nötr buzlu cam yerine bulanık arka plan üzerinde dinamik albüm renklerini harmanla"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1347,7 +1347,7 @@ msgstr "Yerel yuvarlatılmış köşeleri bulanıklaştırma için kurulum rehbe
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
@@ -1365,39 +1365,47 @@ msgstr ""
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "Dinamik bulanıklıkla pürüzsüz yuvarlatılmış köşeler için gnome-rounded-blur önerilir."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "Dinamik bulanıklık entegrasyonu için Blur my Shell önerilir."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "Yalnızca Ana Dock"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "Tüm Dock'lar"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "Yalnızca İkincil Dock'lar"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "Çoklu Monitör Dock'ları"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "Dock tüm monitörlerdeyken kapsülün hangi dock'larda gösterileceği"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "Bulanıklık Yarıçapı (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "Gauss bulanıklık efektinin gücü"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Açık Mod"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Dinamik arka planlar için açık pastel renk paleti ve koyu metin/simgeler kullan"
 
 #~ msgid "Unmute"
 #~ msgstr "Sesi aç"

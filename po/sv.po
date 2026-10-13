@@ -1252,107 +1252,115 @@ msgstr ""
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "Dynamisk oskärpa (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Använd gaussisk oskärpa bakom pillret och popup-fönstret med Blur my Shell eller gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "Aktivera oskärpa för piller"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "Gör bakgrunden bakom musikpillret oskarp"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "Aktivera oskärpa för popup"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "Gör bakgrunden bakom den expanderade spelaren oskarp"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "Färga oskärpa med skivomslagets färg"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "Blanda dynamiska albumfärger över den oskarpa bakgrunden istället för neutralt frostat glas"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Tillägget Blur my Shell"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Rekommenderas för inbyggd dynamisk oskärpa i Wayland"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "Biblioteket gnome-rounded-blur"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "Installationsguide för inbyggd oskärpa med rundade hörn"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "Guide"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "För bästa rundade dynamiska oskärpa, installera Blur my Shell och gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "gnome-rounded-blur rekommenderas för mjuka rundade hörn med dynamisk oskärpa."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "Blur my Shell rekommenderas för integrering av dynamisk oskärpa."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "Endast huvud-docka"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "Alla dockor"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "Endast sekundära dockor"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "Dockor på flera skärmar"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "Vilka dockor som visar pillret när dockan finns på alla skärmar"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "Oskärperadie (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "Styrka på den gaussiska oskärpeeffekten"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Ljust läge"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Använd en ljus pastellpalett för dynamiska bakgrunder samt mörk text och mörka ikoner"
 
 #~ msgid "Change Tracks or Volume using scroll wheel or touchpad"
 #~ msgstr "Byt låt eller justera volym med rullhjul eller pekplatta"

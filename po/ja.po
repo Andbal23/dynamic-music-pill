@@ -1251,104 +1251,112 @@ msgstr ""
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "動的ブラー (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Blur my Shell または gnome-rounded-blur を使用して、ピルとポップアップの背後にガウスぼかしを適用します。"
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "ピルのブラーを有効化"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "ミュージックピルの背後の背景をぼかす"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "ポップアップのブラーを有効化"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "展開されたプレーヤーポップアップの背後の背景をぼかす"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "アルバムアートの色でブラーを着色"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "無彩色のすりガラスの代わりに、ぼかした背景に動的なアルバムカラーをブレンドします"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Blur my Shell 拡張機能"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Wayland ネイティブの動的ブラーに推奨"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "gnome-rounded-blur ライブラリ"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "ネイティブ角丸ブラーのインストールガイド"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "ガイド"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "最適な角丸動的ブラーのために、Blur my Shell と gnome-rounded-blur をインストールしてください。"
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "動的ブラーで滑らかな角丸を得るには gnome-rounded-blur が推奨されます。"
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "動的ブラーの統合には Blur my Shell が推奨されます。"
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "メインドックのみ"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "すべてのドック"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "セカンダリドックのみ"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "マルチモニタードック"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "ドックがすべてのモニターに表示されている場合にどのドックにピルを表示するか"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "ブラー半径 (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "ガウスぼかし効果の強さ"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "ライトモード"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "動的な背景に明るいパステルパレットを使用し、暗いテキストとアイコンを使用します"

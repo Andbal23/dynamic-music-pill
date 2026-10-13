@@ -7,7 +7,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { getAverageColor, getClosestGnomeAccent } from './utils.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
-import { CrossfadeArt, ScrollLabel, _addBtnPressAnim } from './uiWidgets.js';
+import { CrossfadeArt, ScrollLabel, PillTextWrapper, _addBtnPressAnim } from './uiWidgets.js';
 import { WaveformVisualizer } from './uiVisualizers.js';
 import { ActorBlurController, checkBlurRequirements } from './blurHelper.js';
 
@@ -44,8 +44,10 @@ export const MusicPill = GObject.registerClass(
 
             this._currentBusName = null;
             this._lyricObj = null;
-            this._displayedColor = { r: 40, g: 40, b: 40 };
-            this._targetColor = { r: 40, g: 40, b: 40 };
+            let initLight = this._settings.get_boolean('light-mode');
+            let initChannel = initLight ? 242 : 40;
+            this._displayedColor = { r: initChannel, g: initChannel, b: initLight ? 245 : 40 };
+            this._targetColor = { r: initChannel, g: initChannel, b: initLight ? 245 : 40 };
             this._colorAnimId = null;
             this._hideGraceTimer = null;
 
@@ -121,7 +123,7 @@ export const MusicPill = GObject.registerClass(
             // Position 0 (before text) is the default — insert after _artBin
             this._body.insert_child_at_index(this._tabletControls, 1);
 
-            this._textWrapper = new St.Widget({
+            this._textWrapper = new PillTextWrapper({
                 name: 'pill-text-wrapper',
                 layout_manager: new Clutter.BinLayout(),
                 x_expand: true, y_expand: true,
@@ -377,6 +379,15 @@ export const MusicPill = GObject.registerClass(
                 }
             }, this);
             this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
+            this._settings.connectObject('changed::light-mode', () => {
+                if (!this._lastArtUrl) {
+                    let isLight = this._settings.get_boolean('light-mode');
+                    this._targetColor = isLight ? { r: 242, g: 242, b: 245 } : { r: 40, g: 40, b: 40 };
+                }
+                this._startColorTransition();
+                this._updateDimensions();
+                this._updateVisualizerColor();
+            }, this);
             this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); this._updateVisualizerColor(); }, this);
             this._settings.connectObject('changed::custom-bg-color', () => this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b), this);
             this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
@@ -919,8 +930,18 @@ export const MusicPill = GObject.registerClass(
                 }
             }
 
-            let customTextStr = this._settings.get_boolean('use-custom-colors') ? `rgb(${this._settings.get_string('custom-text-color')})` : 'white';
-            let customTextAlpha = this._settings.get_boolean('use-custom-colors') ? `rgba(${this._settings.get_string('custom-text-color')}, 0.7)` : 'rgba(255,255,255,0.7)';
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let customTextStr = this._settings.get_boolean('use-custom-colors')
+                ? `rgb(${this._settings.get_string('custom-text-color')})`
+                : (isLightMode ? 'rgb(28, 28, 30)' : 'white');
+            let customTextAlpha = this._settings.get_boolean('use-custom-colors')
+                ? `rgba(${this._settings.get_string('custom-text-color')}, 0.7)`
+                : (isLightMode ? 'rgba(28, 28, 30, 0.7)' : 'rgba(255,255,255,0.7)');
+
+            let tabletIconCss = `color: ${customTextStr};`;
+            if (this._prevBtn && this._prevBtn.get_child()) this._prevBtn.get_child().set_style(tabletIconCss);
+            if (this._playPauseBtnTablet && this._playPauseBtnTablet.get_child()) this._playPauseBtnTablet.get_child().set_style(tabletIconCss);
+            if (this._nextBtn && this._nextBtn.get_child()) this._nextBtn.get_child().set_style(tabletIconCss);
 
             let borderOffset = this._settings.get_boolean('show-pill-border') ? 2 : 0;
             let effectiveHeight = height - borderOffset;
@@ -1242,7 +1263,8 @@ export const MusicPill = GObject.registerClass(
                     tempTitle = _('No Media');
                     tempArtist = _('Waiting for playback...');
 
-                    this._targetColor = { r: 40, g: 40, b: 40 };
+                    let isLight = this._settings.get_boolean('light-mode');
+                    this._targetColor = isLight ? { r: 242, g: 242, b: 245 } : { r: 40, g: 40, b: 40 };
                     this._updateVisualizerColor();
                     this._lastArtUrl = null;
 
@@ -1587,6 +1609,12 @@ export const MusicPill = GObject.registerClass(
                 let g = parseChan(visColorStr[1], 255);
                 let b = parseChan(visColorStr[2], 255);
                 this._visualizer.setColor({ r, g, b, exact: true });
+            } else if (this._settings.get_boolean('light-mode')) {
+                let base = (this._lastArtUrl && this._targetColor) ? this._targetColor : { r: 65, g: 65, b: 70 };
+                let r = Math.max(25, Math.min(135, Math.floor(base.r * 0.55)));
+                let g = Math.max(25, Math.min(135, Math.floor(base.g * 0.55)));
+                let b = Math.max(25, Math.min(135, Math.floor(base.b * 0.55)));
+                this._visualizer.setColor({ r, g, b, exact: true });
             } else {
                 this._visualizer.setColor(this._targetColor || { r: 40, g: 40, b: 40 });
             }
@@ -1594,11 +1622,28 @@ export const MusicPill = GObject.registerClass(
 
         _startColorTransition() {
             if (this._colorAnimId) { GLib.Source.remove(this._colorAnimId); this._colorAnimId = null; }
-            let base = this._targetColor;
-            let factor = (this._currentStatus === 'Playing') ? 0.6 : 0.4;
-            let targetR = Math.floor(base.r * factor);
-            let targetG = Math.floor(base.g * factor);
-            let targetB = Math.floor(base.b * factor);
+            let base = this._targetColor || { r: 40, g: 40, b: 40 };
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let targetR, targetG, targetB;
+            if (isLightMode) {
+                if (!this._lastArtUrl) {
+                    let c = (this._currentStatus === 'Playing') ? 242 : 234;
+                    targetR = c;
+                    targetG = c;
+                    targetB = Math.min(255, c + 3);
+                } else {
+                    let artWeight = (this._currentStatus === 'Playing') ? 0.28 : 0.18;
+                    let whiteBase = (this._currentStatus === 'Playing') ? 248 : 238;
+                    targetR = Math.min(255, Math.floor(whiteBase * (1 - artWeight) + base.r * artWeight));
+                    targetG = Math.min(255, Math.floor(whiteBase * (1 - artWeight) + base.g * artWeight));
+                    targetB = Math.min(255, Math.floor(whiteBase * (1 - artWeight) + base.b * artWeight));
+                }
+            } else {
+                let factor = (this._currentStatus === 'Playing') ? 0.6 : 0.4;
+                targetR = Math.floor(base.r * factor);
+                targetG = Math.floor(base.g * factor);
+                targetB = Math.floor(base.b * factor);
+            }
 
             let targetBorderOp = (this._currentStatus === 'Playing') ? 0.2 : 0.1;
             let startBorderOp = (typeof this._currentBorderOp === 'number') ? this._currentBorderOp : targetBorderOp;
@@ -1628,10 +1673,12 @@ export const MusicPill = GObject.registerClass(
 
         _applyStyle(r, g, b) {
             let dynR = r, dynG = g, dynB = b;
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let defChan = isLightMode ? 242 : 40;
 
-            let safeDynR = (typeof dynR === 'number' && !isNaN(dynR)) ? Math.floor(dynR) : 40;
-            let safeDynG = (typeof dynG === 'number' && !isNaN(dynG)) ? Math.floor(dynG) : 40;
-            let safeDynB = (typeof dynB === 'number' && !isNaN(dynB)) ? Math.floor(dynB) : 40;
+            let safeDynR = (typeof dynR === 'number' && !isNaN(dynR)) ? Math.floor(dynR) : defChan;
+            let safeDynG = (typeof dynG === 'number' && !isNaN(dynG)) ? Math.floor(dynG) : defChan;
+            let safeDynB = (typeof dynB === 'number' && !isNaN(dynB)) ? Math.floor(dynB) : (isLightMode ? 245 : 40);
 
             if (this._settings.get_boolean('use-custom-colors')) {
                 let customBg = this._settings.get_string('custom-bg-color').split(',');
@@ -1644,9 +1691,9 @@ export const MusicPill = GObject.registerClass(
 
             let alpha = (typeof this._currentBgAlpha === 'number' && !isNaN(this._currentBgAlpha)) ? this._currentBgAlpha : 1.0;
 
-            let safeR = (typeof r === 'number' && !isNaN(r)) ? Math.floor(r) : 40;
-            let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : 40;
-            let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : 40;
+            let safeR = (typeof r === 'number' && !isNaN(r)) ? Math.floor(r) : defChan;
+            let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : defChan;
+            let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : (isLightMode ? 245 : 40);
 
             let safePadY = (typeof this._padY === 'number' && !isNaN(this._padY)) ? Math.floor(this._padY) : 6;
             let safePadX = (typeof this._padX === 'number' && !isNaN(this._padX)) ? Math.floor(this._padX) : 14;
@@ -1658,10 +1705,12 @@ export const MusicPill = GObject.registerClass(
             let bgStyle;
             if (isBlurActive) {
                 if (blurBlend) {
-                    let blurAlpha = this._settings.get_boolean('enable-transparency') ? alpha : 0.40;
+                    let blurAlpha = this._settings.get_boolean('enable-transparency') ? alpha : (isLightMode ? 0.55 : 0.40);
                     bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${blurAlpha});`;
                 } else {
-                    bgStyle = `background-color: rgba(25, 25, 25, 0.45);`;
+                    bgStyle = isLightMode
+                        ? `background-color: rgba(242, 242, 245, 0.62);`
+                        : `background-color: rgba(25, 25, 25, 0.45);`;
                 }
             } else {
                 bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${alpha});`;
@@ -1669,8 +1718,12 @@ export const MusicPill = GObject.registerClass(
 
             let borderStyle = '';
             if (this._settings.get_boolean('show-pill-border') || isBlurActive) {
-                let borderOp = isBlurActive ? 0.22 : ((typeof this._currentBorderOp === 'number') ? this._currentBorderOp : ((this._currentStatus === 'Playing') ? 0.2 : 0.1));
-                borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255, 255, 255, ${borderOp});`;
+                let borderOp = isBlurActive ? (isLightMode ? 0.45 : 0.22) : ((typeof this._currentBorderOp === 'number') ? this._currentBorderOp : ((this._currentStatus === 'Playing') ? 0.2 : 0.1));
+                let borderRgb = (isLightMode && !isBlurActive && !this._settings.get_boolean('use-custom-colors')) ? '0, 0, 0' : '255, 255, 255';
+                if (isLightMode && !isBlurActive && !this._settings.get_boolean('use-custom-colors')) {
+                    borderOp = Math.min(0.14, borderOp * 0.7);
+                }
+                borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(${borderRgb}, ${borderOp});`;
             } else {
                 borderStyle = `border-width: 0px; border-color: transparent;`;
             }

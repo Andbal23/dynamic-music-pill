@@ -540,6 +540,11 @@ export const ExpandedPlayer = GObject.registerClass(
             this._settings.connectObject('changed::enable-custom-buttons', () => this._updateCustomButtons(), this);
             this._settings.connectObject('changed::custom-button-1', () => this._updateCustomButtons(), this);
             this._settings.connectObject('changed::custom-button-2', () => this._updateCustomButtons(), this);
+            this._settings.connectObject('changed::light-mode', () => {
+                let c = (this._pill && this._pill._displayedColor) ? this._pill._displayedColor : null;
+                this.updateStyle(c ? c.r : undefined, c ? c.g : undefined, c ? c.b : undefined);
+                this._updatePlayerSelector();
+            }, this);
 
             this._centerContent.add_child(controlsRow);
 
@@ -733,16 +738,21 @@ export const ExpandedPlayer = GObject.registerClass(
             }
 
             let currentSelected = this._settings.get_string('selected-player-bus');
+            let { tc, isLight } = this._getPageColors();
+            let selBg = isLight ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.2)';
+            let hovBg = isLight ? 'rgba(0,0,0,0.09)' : 'rgba(255,255,255,0.15)';
+            let normBg = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+            let iconStyle = `color: ${tc};`;
 
             if (!this._settings.get_boolean('hide-auto-smart-selection')) {
-                let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 20 });
+                let autoIcon = new St.Icon({ icon_name: 'emblem-system-symbolic', icon_size: 20, style: iconStyle });
                 let autoBtn = new St.Button({
                     child: autoIcon,
                     reactive: true,
                     can_focus: false,
                     track_hover: true,
                     style_class: 'player-selector-btn',
-                    style: `border-radius: 12px; padding: 8px; background-color: ${currentSelected === '' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
+                    style: `border-radius: 12px; padding: 8px; background-color: ${currentSelected === '' ? selBg : normBg}; transition-duration: 150ms;`
                 });
 
                 const selectAuto = () => {
@@ -764,7 +774,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }, this);
                 autoBtn.connect('notify::hover', () => {
                     if (this._settings.get_string('selected-player-bus') === '') return;
-                    autoBtn.set_style(`border-radius: 12px; padding: 8px; background-color: ${autoBtn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+                    autoBtn.set_style(`border-radius: 12px; padding: 8px; background-color: ${autoBtn.hover ? hovBg : normBg}; transition-duration: 150ms;`);
                 });
                 this._playerSelectorBox.add_child(autoBtn);
             }
@@ -775,7 +785,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 let icon = new St.Icon({
                     gicon: proxy._gicon || getPlayerIcon(proxy, busName),
                     fallback_icon_name: 'audio-x-generic-symbolic',
-                    icon_size: 20
+                    icon_size: 20,
+                    style: iconStyle
                 });
 
                 let btn = new St.Button({
@@ -784,7 +795,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     can_focus: false,
                     track_hover: true,
                     style_class: 'player-selector-btn',
-                    style: `border-radius: 12px; padding: 8px; background-color: ${isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
+                    style: `border-radius: 12px; padding: 8px; background-color: ${isSelected ? selBg : normBg}; transition-duration: 150ms;`
                 });
 
                 const selectPlayer = (bus) => {
@@ -806,7 +817,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }, this);
                 btn.connect('notify::hover', () => {
                     if (this._settings.get_string('selected-player-bus') === busName) return;
-                    btn.set_style(`border-radius: 12px; padding: 8px; background-color: ${btn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+                    btn.set_style(`border-radius: 12px; padding: 8px; background-color: ${btn.hover ? hovBg : normBg}; transition-duration: 150ms;`);
                 });
 
                 this._playerSelectorBox.add_child(btn);
@@ -862,6 +873,8 @@ export const ExpandedPlayer = GObject.registerClass(
             let followRadius = this._settings.get_boolean('popup-follow-radius');
             let isBlurActive = this._settings.get_boolean('enable-blur-popup');
             let blurBlend = this._settings.get_boolean('blur-blend-color');
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let defChan = isLightMode ? 242 : 40;
 
             let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
             let radius = (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
@@ -871,9 +884,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
             if (isBlurActive) {
                 if (blurBlend) {
-                    finalAlpha = 0.45;
+                    finalAlpha = isLightMode ? 0.58 : 0.45;
                 } else {
-                    finalAlpha = 0.50;
+                    finalAlpha = isLightMode ? 0.65 : 0.50;
                 }
             } else if (followTrans) {
                 if (enableTrans) {
@@ -883,9 +896,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             }
 
-            let safeR = (typeof r === 'number' && !isNaN(r)) ? Math.floor(r) : 40;
-            let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : 40;
-            let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : 40;
+            let safeR = (typeof r === 'number' && !isNaN(r)) ? Math.floor(r) : defChan;
+            let safeG = (typeof g === 'number' && !isNaN(g)) ? Math.floor(g) : defChan;
+            let safeB = (typeof b === 'number' && !isNaN(b)) ? Math.floor(b) : (isLightMode ? 245 : 40);
 
             let parseChan = (v, def) => { let n = parseInt(v); return isNaN(n) ? def : n; };
 
@@ -897,17 +910,20 @@ export const ExpandedPlayer = GObject.registerClass(
                     safeB = parseChan(customBg[2], 40);
                 }
             } else {
-                safeR = 25;
-                safeG = 25;
-                safeB = 25;
+                safeR = isLightMode ? 242 : 25;
+                safeG = isLightMode ? 242 : 25;
+                safeB = isLightMode ? 245 : 25;
             }
 
             let bgStyle = `background-color: rgba(${safeR}, ${safeG}, ${safeB}, ${finalAlpha});`;
 
             let shadowStyle = 'box-shadow: none;';
 
-            let borderOp = isBlurActive ? 0.22 : Math.min(0.1, finalAlpha * 0.2);
-            let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(255,255,255,${borderOp});`;
+            let brightness = (safeR * 299 + safeG * 587 + safeB * 114) / 1000;
+            let isLightBg = brightness > 160;
+            let borderRgb = (isLightBg && !isBlurActive) ? '0,0,0' : '255,255,255';
+            let borderOp = isBlurActive ? (isLightBg ? 0.45 : 0.22) : (isLightBg ? 0.12 : Math.min(0.1, finalAlpha * 0.2));
+            let borderStyle = `border-width: 1px; border-style: solid; border-color: rgba(${borderRgb},${borderOp});`;
 
             let minWLimit = this._computeMinControlsWidth();
             let css = `${bgStyle} ${borderStyle} border-radius: ${radius}px; padding: 20px; ${shadowStyle} min-width: ${minWLimit}px; max-width: 600px;`;
@@ -952,7 +968,13 @@ export const ExpandedPlayer = GObject.registerClass(
 
                     if (rawR !== null && rawG !== null && rawB !== null) {
                         let br = (rawR * 299 + rawG * 587 + rawB * 114) / 1000;
-                        if (br < 160) {
+                        if (isLightBg) {
+                            if (br > 130) {
+                                rawR = Math.max(25, Math.floor(rawR * 0.45));
+                                rawG = Math.max(25, Math.floor(rawG * 0.45));
+                                rawB = Math.max(25, Math.floor(rawB * 0.45));
+                            }
+                        } else if (br < 160) {
                             let boost = 160 - br;
                             rawR = Math.min(255, rawR + boost);
                             rawG = Math.min(255, rawG + boost);
@@ -960,7 +982,8 @@ export const ExpandedPlayer = GObject.registerClass(
                         }
                         this._visualizer.setColor({ r: rawR, g: rawG, b: rawB, exact: true });
                     } else {
-                        this._visualizer.setColor({ r: 255, g: 255, b: 255, exact: true });
+                        let defVis = isLightBg ? 45 : 255;
+                        this._visualizer.setColor({ r: defVis, g: defVis, b: defVis, exact: true });
                     }
                 }
             }
@@ -972,11 +995,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 fgR = parseChan(customTextStr[0], 255);
                 fgG = parseChan(customTextStr[1], 255);
                 fgB = parseChan(customTextStr[2], 255);
-            } else {
-                let brightness = (safeR * 299 + safeG * 587 + safeB * 114) / 1000;
-                if (brightness > 160) {
-                    fgR = 30; fgG = 30; fgB = 30;
-                }
+            } else if (isLightBg) {
+                fgR = 28; fgG = 28; fgB = 30;
             }
 
             let textColor = `rgb(${fgR}, ${fgG}, ${fgB})`;
@@ -998,6 +1018,21 @@ export const ExpandedPlayer = GObject.registerClass(
 
             if (this._sliderFill) this._sliderFill.set_style(`background-color: ${textColor};`);
             if (this._sliderBin) this._sliderBin.set_style(`background-color: rgba(${fgR}, ${fgG}, ${fgB}, 0.2);`);
+
+            if (this._firstHintBox) {
+                let hintBg = isLightBg ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)';
+                this._firstHintBox.set_style(`spacing: 8px; margin-top: 12px; padding: 8px 10px; border-radius: 10px; background-color: ${hintBg};`);
+                if (this._firstHintLabelBtn && this._firstHintLabelBtn.get_child()) {
+                    this._firstHintLabelBtn.get_child().set_style(`font-size: 9pt; color: rgba(${fgR}, ${fgG}, ${fgB}, 0.85);`);
+                }
+                if (this._firstHintSettingsBtn) this._firstHintSettingsBtn.set_style(iconCss);
+                if (this._firstHintCloseBtn) this._firstHintCloseBtn.set_style(iconCss);
+            }
+
+            if (this._lastPopupLightBg !== isLightBg) {
+                this._lastPopupLightBg = isLightBg;
+                this._updatePlayerSelector();
+            }
 
         }
 
@@ -1036,6 +1071,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (this._totalTimeLabel) {
                     this._totalTimeLabel.text = '0:00';
                     this._totalTimeLabel.set_width(-1);
+                }
+                if (this._lyricsWidget && this._currentSubPage) {
+                    this._loadLyricsForCurrentTrack(this._currentSubPage, this._lyricsWidget);
                 }
             }
 
@@ -1218,13 +1256,49 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _getPageColors() {
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let isBlurActive = this._settings.get_boolean('enable-blur-popup');
+            let blurBlend = this._settings.get_boolean('blur-blend-color');
+            let defChan = isLightMode ? 242 : 30;
             let col = (this._controller._pill && this._controller._pill._displayedColor)
                 ? this._controller._pill._displayedColor
-                : { r: 30, g: 30, b: 30 };
-            let br = (col.r * 299 + col.g * 587 + col.b * 114) / 1000;
+                : { r: defChan, g: defChan, b: isLightMode ? 245 : 30 };
+
+            let r = col.r, g = col.g, b = col.b;
+            if (!isBlurActive || blurBlend) {
+                if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
+                    let customBg = this._settings.get_string('custom-bg-color').split(',');
+                    r = parseInt(customBg[0]) || 40;
+                    g = parseInt(customBg[1]) || 40;
+                    b = parseInt(customBg[2]) || 40;
+                }
+            } else {
+                r = isLightMode ? 242 : 25;
+                g = isLightMode ? 242 : 25;
+                b = isLightMode ? 245 : 25;
+            }
+
+            let br = (r * 299 + g * 587 + b * 114) / 1000;
+            let isLight = br > 160;
+            if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
+                let customTextStr = this._settings.get_string('custom-text-color').split(',');
+                let tr = parseInt(customTextStr[0]) || 255;
+                let tg = parseInt(customTextStr[1]) || 255;
+                let tb = parseInt(customTextStr[2]) || 255;
+                return {
+                    tc: `rgb(${tr},${tg},${tb})`,
+                    ta: `rgba(${tr},${tg},${tb},0.6)`,
+                    isLight,
+                    fgR: tr, fgG: tg, fgB: tb,
+                };
+            }
             return {
-                tc: br > 160 ? 'rgb(30,30,30)' : 'rgb(255,255,255)',
-                ta: br > 160 ? 'rgba(30,30,30,0.6)' : 'rgba(255,255,255,0.6)',
+                tc: isLight ? 'rgb(28,28,30)' : 'rgb(255,255,255)',
+                ta: isLight ? 'rgba(28,28,30,0.6)' : 'rgba(255,255,255,0.6)',
+                isLight,
+                fgR: isLight ? 28 : 255,
+                fgG: isLight ? 28 : 255,
+                fgB: isLight ? 30 : 255,
             };
         }
 
@@ -1242,10 +1316,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
             if (this._mainPage) this._mainPage.hide();
 
-            let { tc, ta } = this._getPageColors();
-
-            let pillCol = (this._controller._pill && this._controller._pill._displayedColor)
-                ? this._controller._pill._displayedColor : { r: 255, g: 255, b: 255 };
+            let { tc, ta, isLight } = this._getPageColors();
 
             let pageStyle = 'padding: 2px 4px 4px 4px; margin: 0; background-color: transparent; border: none; box-shadow: none;';
 
@@ -1272,7 +1343,7 @@ export const ExpandedPlayer = GObject.registerClass(
             let backBtn = new St.Button({
                 reactive: true, can_focus: false,
                 style_class: 'subpage-back-btn',
-                child: new St.Icon({ icon_name: 'go-previous-symbolic', icon_size: 14 }),
+                child: new St.Icon({ icon_name: 'go-previous-symbolic', icon_size: 14, style: `color: ${tc};` }),
                 y_align: Clutter.ActorAlign.CENTER
             });
             _addBtnPressAnim(backBtn);
@@ -1316,7 +1387,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 name: 'subpage-header-line',
                 x_expand: true,
                 height: 1,
-                style: 'background-color: rgba(255,255,255,0.13);'
+                style: `background-color: ${isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.13)'};`
             }));
             page.add_child(headerWrapper);
 
@@ -1382,13 +1453,8 @@ export const ExpandedPlayer = GObject.registerClass(
             }
             if (this._mainPage) this._mainPage.hide();
 
-            let pillCol = (this._controller._pill && this._controller._pill._displayedColor)
-                ? this._controller._pill._displayedColor : { r: 40, g: 40, b: 40 };
-
-            let brightness = (pillCol.r * 299 + pillCol.g * 587 + pillCol.b * 114) / 1000;
-            let isDark = brightness <= 160;
-            let btnRgb = isDark ? '255,255,255' : '0,0,0';
-            let iconClr = isDark ? 'rgba(255,255,255,0.92)' : 'rgba(30,30,30,0.92)';
+            let { tc, isLight, fgR, fgG, fgB } = this._getPageColors();
+            let iconClr = tc;
 
             let followRadius = this._settings.get_boolean('popup-follow-radius');
             let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
@@ -1437,9 +1503,6 @@ export const ExpandedPlayer = GObject.registerClass(
             lyricsWidget.x_expand = true;
             lyricsWidget.y_expand = true;
 
-            let fgR = isDark ? 255 : 30;
-            let fgG = isDark ? 255 : 30;
-            let fgB = isDark ? 255 : 30;
             lyricsWidget.setTextColor(fgR, fgG, fgB);
             page.add_child(lyricsWidget);
 
@@ -1486,38 +1549,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD
             });
 
-            if (!this._lyricsClient) this._lyricsClient = new LyricsClient();
-
-            if (this._player) {
-                let m = this._player.Metadata;
-                if (m) {
-                    let fetchTitle = smartUnpack(m['xesam:title']) || '';
-                    let fetchArtist = smartUnpack(m['xesam:artist']) || '';
-                    if (Array.isArray(fetchArtist)) fetchArtist = fetchArtist.join(', ');
-                    let fetchAlbum = smartUnpack(m['xesam:album']) || '';
-                    let lengthMicro = smartUnpack(m['mpris:length']) || 0;
-                    let durationSec = Math.round(lengthMicro / 1_000_000);
-
-                    this._lyricsClient.getLyrics(
-                        fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings
-                    ).then(result => {
-                        if (page !== this._currentSubPage || !page.get_parent()) return;
-                        if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
-                        let lines = Array.isArray(result) ? result : (result ? result.lines : null);
-                        let provider = result?.provider || null;
-                        if (lines && lines.length > 0) {
-                            lyricsWidget.setLyrics(lines, provider);
-                            lyricsWidget.updatePosition(this._getCurrentPositionMs());
-                        } else {
-                            lyricsWidget.showEmpty();
-                        }
-                    }).catch(() => {
-                        if (page === this._currentSubPage && page.get_parent())
-                            if (!lyricsWidget.is_finalized || !lyricsWidget.is_finalized())
-                                lyricsWidget.showError();
-                    });
-                }
-            }
+            this._loadLyricsForCurrentTrack(page, lyricsWidget);
 
             this._lyricsTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
                 if (page !== this._currentSubPage || !page.get_parent()) {
@@ -1535,6 +1567,72 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._lyricsTimerId = null;
                 }
                 this._lyricsWidget = null;
+            });
+        }
+
+        _loadLyricsForCurrentTrack(page, lyricsWidget) {
+            if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
+            lyricsWidget.showLoading();
+
+            if (!this._lyricsClient) {
+                this._lyricsClient = (this._controller && this._controller._lyricsClient)
+                    ? this._controller._lyricsClient
+                    : new LyricsClient();
+            }
+
+            if (!this._player) {
+                lyricsWidget.showEmpty();
+                return;
+            }
+
+            let m = this._player.Metadata;
+            if (!m) {
+                lyricsWidget.showEmpty();
+                return;
+            }
+
+            let metaObj = m instanceof GLib.Variant ? m.deep_unpack() : m;
+            let fetchTitle = smartUnpack(metaObj['xesam:title']) || '';
+            let fetchArtist = smartUnpack(metaObj['xesam:artist']) || '';
+            if (Array.isArray(fetchArtist)) fetchArtist = fetchArtist.join(', ');
+            fetchArtist = fetchArtist ? fetchArtist.trim() : '';
+            let fetchAlbum = smartUnpack(metaObj['xesam:album']) || '';
+            let lengthMicro = smartUnpack(metaObj['mpris:length']) || 0;
+            let durationSec = lengthMicro > 0 ? Math.round(lengthMicro / 1_000_000) : 0;
+
+            let trackKey = `${fetchTitle}||${fetchArtist}`;
+            if (this._controller &&
+                this._controller._fetchedTrackKey === trackKey &&
+                Array.isArray(this._controller._fetchedLyricsData) &&
+                this._controller._fetchedLyricsData.length > 0) {
+                lyricsWidget.setLyrics(this._controller._fetchedLyricsData, this._controller._fetchedLyricsProvider);
+                lyricsWidget.updatePosition(this._getCurrentPositionMs());
+                return;
+            }
+
+            this._lyricsClient.getLyrics(
+                fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings
+            ).then(result => {
+                if (page !== this._currentSubPage || !page.get_parent()) return;
+                if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
+                let lines = Array.isArray(result) ? result : (result ? result.lines : null);
+                let provider = result?.provider || null;
+                if (lines && lines.length > 0) {
+                    if (this._controller && this._controller._fetchedTrackKey === trackKey && !this._controller._fetchedLyricsData) {
+                        this._controller._fetchedLyricsData = lines;
+                        this._controller._fetchedLyricsProvider = provider || 'LRCLib';
+                        this._controller._startLyricsTimer();
+                        this._controller._onLyricsTick();
+                    }
+                    lyricsWidget.setLyrics(lines, provider);
+                    lyricsWidget.updatePosition(this._getCurrentPositionMs());
+                } else {
+                    lyricsWidget.showEmpty();
+                }
+            }).catch(() => {
+                if (page === this._currentSubPage && page.get_parent())
+                    if (!lyricsWidget.is_finalized || !lyricsWidget.is_finalized())
+                        lyricsWidget.showError();
             });
         }
 
@@ -1747,6 +1845,8 @@ export const ExpandedPlayer = GObject.registerClass(
 
         _showSeekStepPopup() {
             this._pushPage(_('Seek'), 'media-seek-forward-symbolic', (contentBox, tc, ta, subpage) => {
+                let { isLight } = this._getPageColors();
+                let btnBg = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.1)';
                 let caps = this._controller.getPlayerCapabilities();
                 if (!caps.canSeek) {
                     contentBox.add_child(new St.Label({
@@ -1761,7 +1861,7 @@ export const ExpandedPlayer = GObject.registerClass(
                         child: new St.Icon({ icon_name: icon, icon_size: 28, style: `color:${tc};opacity:${caps.canSeek ? 1 : 0.35};` }),
                         reactive: caps.canSeek, can_focus: false, x_expand: true,
                         style_class: 'subpage-action-btn',
-                        style: `border-radius:14px;padding:12px 10px;background-color:rgba(255,255,255,0.1);`
+                        style: `border-radius:14px;padding:12px 10px;background-color:${btnBg};`
                     });
                     _addBtnPressAnim(btn);
                     const doIt = () => { this._controller.seekStep(fwd); this._popPage(); };
@@ -1778,6 +1878,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
         _showOutputPopup() {
             this._pushPage(_('Audio Output'), 'audio-card-symbolic', (contentBox, tc, ta, subpage) => {
+                let { isLight } = this._getPageColors();
+                let defBg = isLight ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.18)';
+                let normBg = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.07)';
                 let mixer = getMixerControl();
                 if (!mixer) { contentBox.add_child(new St.Label({ text: _('Audio control unavailable'), style: `color:${ta};` })); return; }
                 let defaultSink = mixer.get_default_sink();
@@ -1791,7 +1894,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     row.add_child(new St.Icon({ icon_name: isDef ? 'audio-speakers-symbolic' : 'audio-card-symbolic', icon_size: 18, style: `color:${tc};` }));
                     row.add_child(new St.Label({ text: desc, y_align: Clutter.ActorAlign.CENTER, style: `color:${tc};`, x_expand: true }));
                     if (isDef) row.add_child(new St.Icon({ icon_name: 'object-select-symbolic', icon_size: 14, style: `color:${tc};` }));
-                    let btn = new St.Button({ child: row, x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: `border-radius:12px;padding:10px 12px;margin-bottom:4px;background-color:${isDef ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'};` });
+                    let btn = new St.Button({ child: row, x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: `border-radius:12px;padding:10px 12px;margin-bottom:4px;background-color:${isDef ? defBg : normBg};` });
                     _addBtnPressAnim(btn);
                     const doIt = () => { mixer.set_default_sink(sink); this._popPage(); };
                     btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
@@ -1808,6 +1911,9 @@ export const ExpandedPlayer = GObject.registerClass(
             let remaining = ctrl.getSleepTimerRemaining();
             let title = isActive ? (_('Sleep Timer') + ' (' + Math.ceil(remaining / 60) + ' ' + _('min left') + ')') : _('Sleep Timer');
             this._pushPage(title, 'alarm-symbolic', (contentBox, tc, ta, subpage) => {
+                let { isLight } = this._getPageColors();
+                let btnBg = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.1)';
+                let actBg = isLight ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.38)';
                 if (isActive) {
                     let cancelBtn = new St.Button({ label: _('Cancel Timer'), x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn subpage-danger-btn', style: 'border-radius:12px;padding:9px 12px;margin-bottom:8px;background-color:rgba(210,50,50,0.35);color:' + tc + ';' });
                     _addBtnPressAnim(cancelBtn);
@@ -1822,11 +1928,11 @@ export const ExpandedPlayer = GObject.registerClass(
                     let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
                     presets.slice(s, e).forEach(min => {
                         let btnLabel = new St.Label({ text: min + 'm', y_align: Clutter.ActorAlign.CENTER, style: 'color:' + tc + ';' });
-                        let btn = new St.Button({ child: btnLabel, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: 'border-radius:12px;padding:8px 12px;min-width:42px;background-color:rgba(255,255,255,0.1);' });
+                        let btn = new St.Button({ child: btnLabel, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: `border-radius:12px;padding:8px 12px;min-width:42px;background-color:${btnBg};` });
                         _addBtnPressAnim(btn);
                         const doTimer = (m, b, lbl) => {
                             lbl.text = '\u2713';
-                            b.set_style('border-radius:12px;padding:8px 12px;min-width:42px;background-color:rgba(255,255,255,0.38);');
+                            b.set_style(`border-radius:12px;padding:8px 12px;min-width:42px;background-color:${actBg};`);
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
                                 if (this.is_finalized && this.is_finalized()) return GLib.SOURCE_REMOVE;
                                 ctrl.startSleepTimer(m);
@@ -1848,6 +1954,10 @@ export const ExpandedPlayer = GObject.registerClass(
 
         _showSpeedPopup() {
             this._pushPage(_('Playback Speed'), 'power-profile-performance-symbolic', (contentBox, tc, ta, subpage) => {
+                let { isLight } = this._getPageColors();
+                let actBtnBg = isLight ? 'rgba(0,0,0,0.16)' : 'rgba(255,255,255,0.28)';
+                let normBtnBg = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)';
+                let flashBtnBg = isLight ? 'rgba(0,0,0,0.24)' : 'rgba(255,255,255,0.38)';
                 let caps = this._controller.getPlayerCapabilities();
                 let rates = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
                 let currentRate = this._controller.getPlaybackRate();
@@ -1875,12 +1985,12 @@ export const ExpandedPlayer = GObject.registerClass(
                             child: btnBox, can_focus: false,
                             reactive: caps.canChangeRate,
                             style_class: 'subpage-action-btn',
-                            style: 'border-radius:12px;padding:8px 14px;min-width:42px;background-color:' + (isAct ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.08)') + ';opacity:' + (caps.canChangeRate ? 1 : 0.35) + ';'
+                            style: 'border-radius:12px;padding:8px 14px;min-width:42px;background-color:' + (isAct ? actBtnBg : normBtnBg) + ';opacity:' + (caps.canChangeRate ? 1 : 0.35) + ';'
                         });
                         _addBtnPressAnim(btn);
                         const doRate = (r, b, lbl) => {
                             lbl.text = '\u2713';
-                            b.set_style('border-radius:12px;padding:8px 14px;min-width:42px;background-color:rgba(255,255,255,0.38);');
+                            b.set_style(`border-radius:12px;padding:8px 14px;min-width:42px;background-color:${flashBtnBg};`);
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
                                 if (this.is_finalized && this.is_finalized()) return GLib.SOURCE_REMOVE;
                                 this._controller.setPlaybackRate(r);
@@ -2212,7 +2322,12 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._artVisibilityTimer) { GLib.Source.remove(this._artVisibilityTimer); this._artVisibilityTimer = null; }
             if (this._currentSubPage) { this._currentSubPage.destroy(); this._currentSubPage = null; }
             if (this._lyricsTimerId) { GLib.Source.remove(this._lyricsTimerId); this._lyricsTimerId = null; }
-            if (this._lyricsClient) { this._lyricsClient.destroy(); this._lyricsClient = null; }
+            if (this._lyricsClient) {
+                if (!this._controller || this._lyricsClient !== this._controller._lyricsClient) {
+                    this._lyricsClient.destroy();
+                }
+                this._lyricsClient = null;
+            }
             this._lyricsWidget = null;
             if (this._visualizer) {
                 this._visualizer.destroy();

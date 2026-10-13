@@ -30,7 +30,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
             'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history',
             'show-hours-format', 'popup-show-album-title',
-            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color', 'blur-sigma'
+            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color', 'blur-sigma', 'light-mode'
         ];
 
         // =========================================
@@ -1252,6 +1252,18 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         panelDimGroup.add(panelHeightRow);
         posGroup.add(panelDimGroup);
         const colorGroup = new Adw.PreferencesGroup({ title: _('Custom Colors') });
+
+        const lightModeRow = new Adw.ActionRow({
+            title: _('Light Mode'),
+            subtitle: _('Use a bright pastel palette for dynamic backgrounds and dark text/icons')
+        });
+        const lightModeToggle = new Gtk.Switch({
+            active: settings.get_boolean('light-mode'),
+            valign: Gtk.Align.CENTER
+        });
+        settings.bind('light-mode', lightModeToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+        lightModeRow.add_suffix(lightModeToggle);
+        colorGroup.add(lightModeRow);
 
         const syncAccentRow = new Adw.ActionRow({
             title: _('Sync GNOME Accent Color'),

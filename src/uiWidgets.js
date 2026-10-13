@@ -540,4 +540,16 @@ export function _addBtnPressAnim(btn) {
     }, btn);
 }
 
+export const PillTextWrapper = GObject.registerClass(
+    class PillTextWrapper extends St.Widget {
+        vfunc_get_preferred_width(forHeight) {
+            let textBox = this.get_first_child();
+            if (textBox) {
+                let [, natW] = textBox.get_preferred_width(forHeight);
+                return [0, Math.max(0, natW)];
+            }
+            return [0, 0];
+        }
+    });
+
 export { PixelSnappedBox };

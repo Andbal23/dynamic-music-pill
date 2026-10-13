@@ -1295,107 +1295,115 @@ msgstr "È necessario installare \"cava\" per la modalità in tempo reale."
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "Sfocatura dinamica (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Applica la sfocatura gaussiana dietro la pillola e il pop-up usando Blur my Shell o gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "Abilita sfocatura per la pillola"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "Sfoca lo sfondo dietro la pillola musicale"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "Abilita sfocatura per il pop-up"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "Sfoca lo sfondo dietro il pop-up del lettore espanso"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "Colora la sfocatura con il colore della copertina"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "Fondi i colori dinamici dell'album sullo sfondo sfocato invece del vetro satinato neutro"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Estensione Blur my Shell"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Consigliata per la sfocatura dinamica nativa su Wayland"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "Libreria gnome-rounded-blur"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "Guida di installazione per la sfocatura nativa con angoli arrotondati"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "Guida"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "Per la migliore sfocatura dinamica arrotondata, installa Blur my Shell e gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "gnome-rounded-blur è consigliato per angoli arrotondati uniformi con sfocatura dinamica."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "Blur my Shell è consigliato per l'integrazione della sfocatura dinamica."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "Solo dock principale"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "Tutti i dock"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "Solo dock secondari"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "Dock multi-monitor"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "Quali dock mostrano la pillola quando il dock è su tutti i monitor"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "Raggio di sfocatura (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "Intensità dell'effetto di sfocatura gaussiana"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Modalità chiara"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Usa una palette pastello chiara per gli sfondi dinamici e testo/icone scure"
 
 #~ msgid "Unmute"
 #~ msgstr "Attiva audio"

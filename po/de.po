@@ -1315,107 +1315,115 @@ msgstr "Bitte installieren Sie „cava” für den Echtzeitmodus."
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "Dynamische Unschärfe (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Gaußsche Unschärfe hinter der Pille und dem Pop-up mit Blur my Shell oder gnome-rounded-blur anwenden."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "Unschärfe für Pille aktivieren"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "Den Hintergrund hinter der Musikpille weichzeichnen"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "Unschärfe für Pop-up aktivieren"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "Den Hintergrund hinter dem erweiterten Player-Pop-up weichzeichnen"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "Unschärfe mit Albumcover-Farbe einfärben"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "Dynamische Albumfarben über den unscharfen Hintergrund mischen statt neutralem Milchglas"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Blur my Shell-Erweiterung"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Empfohlen für native dynamische Unschärfe unter Wayland"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "gnome-rounded-blur-Bibliothek"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "Installationsanleitung für native Unschärfe mit abgerundeten Ecken"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "Anleitung"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "Für die beste abgerundete dynamische Unschärfe installieren Sie Blur my Shell und gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "gnome-rounded-blur wird für glatte abgerundete Ecken bei dynamischer Unschärfe empfohlen."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "Blur my Shell wird für die Integration der dynamischen Unschärfe empfohlen."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "Nur Hauptdock"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "Alle Docks"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "Nur sekundäre Docks"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "Multi-Monitor-Docks"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "Welche Docks die Pille anzeigen, wenn das Dock auf allen Monitoren sichtbar ist"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "Unschärferadius (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "Stärke des Gaußschen Unschärfeeffekts"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Heller Modus"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Helle Pastellfarben für dynamische Hintergründe sowie dunklen Text und dunkle Symbole verwenden"
 
 #~ msgid "Unmute"
 #~ msgstr "Stummschalten rückgängig"

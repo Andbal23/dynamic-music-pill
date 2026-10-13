@@ -193,42 +193,60 @@ export function restoreDashToDockAutohide() {
 let stbDisableRequests = 0;
 let _stbAutohideDisabled = false;
 
+function _patchSimpleTaskbarAutoHide(autoHideCtrl) {
+    if (!autoHideCtrl) return;
+    if (!autoHideCtrl._dmpOrigIsBlockedCallback && typeof autoHideCtrl._isBlockedCallback === 'function') {
+        const origCb = autoHideCtrl._isBlockedCallback.bind(autoHideCtrl);
+        autoHideCtrl._dmpOrigIsBlockedCallback = origCb;
+        autoHideCtrl._isBlockedCallback = function() {
+            if (_stbAutohideDisabled) return true;
+            return origCb();
+        };
+    }
+    try {
+        autoHideCtrl._clearHideTimeout?.();
+        autoHideCtrl.show?.(true);
+    } catch (_) {}
+}
+
 function _patchSimpleTaskbarController(panelCtrl) {
     if (!panelCtrl) return;
-    if (!panelCtrl._origInteractionIsBlocked && panelCtrl._interactionIsBlocked) {
+    if (!panelCtrl._origInteractionIsBlocked && typeof panelCtrl._interactionIsBlocked === 'function') {
         panelCtrl._origInteractionIsBlocked = panelCtrl._interactionIsBlocked.bind(panelCtrl);
         panelCtrl._interactionIsBlocked = function(includePreviews) {
             if (_stbAutohideDisabled) return true;
             return panelCtrl._origInteractionIsBlocked(includePreviews);
         };
     }
-    try {
-        panelCtrl._autoHideController?.show(true);
-    } catch (_) {}
+    _patchSimpleTaskbarAutoHide(panelCtrl._autoHideController);
+}
+
+function _getSimpleTaskbarInstance() {
+    let ext = Main.extensionManager.lookup('simple-taskbar@sultech');
+    if (!ext || ext.state !== 1) return null;
+    return ext.stateObj || ext;
 }
 
 function _applySimpleTaskbarDisable() {
-    let ext = Main.extensionManager.lookup('simple-taskbar@sultech');
-    if (!ext || ext.state !== 1) return;
+    let inst = _getSimpleTaskbarInstance();
+    if (!inst) return;
 
-    if (ext._panelInteractionIsBlocked && !ext._origPanelInteractionIsBlocked) {
-        ext._origPanelInteractionIsBlocked = ext._panelInteractionIsBlocked.bind(ext);
-        ext._panelInteractionIsBlocked = function(includePreviews) {
+    if (typeof inst._panelInteractionIsBlocked === 'function' && !inst._origPanelInteractionIsBlocked) {
+        inst._origPanelInteractionIsBlocked = inst._panelInteractionIsBlocked.bind(inst);
+        inst._panelInteractionIsBlocked = function(includePreviews) {
             if (_stbAutohideDisabled) return true;
-            return ext._origPanelInteractionIsBlocked(includePreviews);
+            return inst._origPanelInteractionIsBlocked(includePreviews);
         };
     }
-    try {
-        ext._panelController?._autoHideController?.show(true);
-    } catch (_) {}
+    _patchSimpleTaskbarAutoHide(inst._panelController?._autoHideController);
 
-    if (ext._dockPanelManager?._panels) {
-        for (const p of ext._dockPanelManager._panels) {
+    if (inst._dockPanelManager?._panels) {
+        for (const p of inst._dockPanelManager._panels) {
             _patchSimpleTaskbarController(p);
         }
     }
-    if (ext._secondaryPanelManager?._panels) {
-        for (const p of ext._secondaryPanelManager._panels) {
+    if (inst._secondaryPanelManager?._panels) {
+        for (const p of inst._secondaryPanelManager._panels) {
             _patchSimpleTaskbarController(p);
         }
     }
@@ -250,19 +268,24 @@ export function restoreSimpleTaskbarAutohide() {
             stbDisableRequests--;
             if (stbDisableRequests === 0) {
                 _stbAutohideDisabled = false;
-                let ext = Main.extensionManager.lookup('simple-taskbar@sultech');
-                if (ext && ext.state === 1) {
-                    try {
-                        ext._panelController?._autoHideController?._scheduleHide?.();
-                    } catch (_) {}
-                    if (ext._dockPanelManager?._panels) {
-                        for (const p of ext._dockPanelManager._panels) {
-                            try { p._autoHideController?._scheduleHide?.(); } catch (_) {}
+                let inst = _getSimpleTaskbarInstance();
+                if (inst) {
+                    const restoreCtrl = (ah) => {
+                        if (!ah) return;
+                        try {
+                            ah.setMenuOpen?.(false);
+                            ah._scheduleHide?.();
+                        } catch (_) {}
+                    };
+                    restoreCtrl(inst._panelController?._autoHideController);
+                    if (inst._dockPanelManager?._panels) {
+                        for (const p of inst._dockPanelManager._panels) {
+                            restoreCtrl(p?._autoHideController);
                         }
                     }
-                    if (ext._secondaryPanelManager?._panels) {
-                        for (const p of ext._secondaryPanelManager._panels) {
-                            try { p._autoHideController?._scheduleHide?.(); } catch (_) {}
+                    if (inst._secondaryPanelManager?._panels) {
+                        for (const p of inst._secondaryPanelManager._panels) {
+                            restoreCtrl(p?._autoHideController);
                         }
                     }
                 }

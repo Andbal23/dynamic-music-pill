@@ -1250,104 +1250,112 @@ msgstr ""
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "Dynamische vervaging (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Pas Gaussiaanse vervaging toe achter de pil en pop-up met Blur my Shell of gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "Vervaging voor pil inschakelen"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "Vervaag de achtergrond achter de muziekpil"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "Vervaging voor pop-up inschakelen"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "Vervaag de achtergrond achter de uitgeklapte speler-pop-up"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "Vervaging kleuren met albumhoeskleur"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "Meng dynamische albumkleuren over de vervaagde achtergrond in plaats van neutraal matglas"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Blur my Shell-extensie"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Aanbevolen voor native dynamische vervaging op Wayland"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "gnome-rounded-blur-bibliotheek"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "Installatiehandleiding voor native vervaging met afgeronde hoeken"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "Handleiding"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "Installeer Blur my Shell en gnome-rounded-blur voor de beste afgeronde dynamische vervaging."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "gnome-rounded-blur wordt aanbevolen voor vloeiende afgeronde hoeken met dynamische vervaging."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "Blur my Shell wordt aanbevolen voor integratie van dynamische vervaging."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "Alleen hoofddock"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "Alle docks"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "Alleen secundaire docks"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "Multi-monitor-docks"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "Welke docks de pil tonen wanneer het dock op alle schermen staat"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "Vervagingsstraal (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "Sterkte van het Gaussiaanse vervagingseffect"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Lichte modus"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Gebruik een helder pastelpalet voor dynamische achtergronden en donkere tekst/pictogrammen"

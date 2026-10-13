@@ -3,7 +3,7 @@ import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import { disableDashToDockAutohide, restoreDashToDockAutohide, getPlayerIcon } from './utils.js';
+import { disableDockAutohide, restoreDockAutohide, getPlayerIcon } from './utils.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { _addBtnPressAnim } from './uiWidgets.js';
 
@@ -101,8 +101,10 @@ export const PlayerSelectorMenu = GObject.registerClass(
         populate() {
             this._box.destroy_all_children();
 
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let defChan = isLightMode ? 242 : 40;
             let pill = this._controller._pill;
-            let c = pill ? pill._displayedColor : { r: 40, g: 40, b: 40 };
+            let c = pill ? pill._displayedColor : { r: defChan, g: defChan, b: isLightMode ? 245 : 40 };
             let r = c.r, g = c.g, b = c.b;
 
             if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-bg')) {
@@ -112,17 +114,20 @@ export const PlayerSelectorMenu = GObject.registerClass(
                 b = parseInt(customBg[2]) || 40;
             }
 
+            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            let isLightBg = brightness > 160;
+            let selBg = isLightBg ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.2)';
+            let hovBg = isLightBg ? 'rgba(0,0,0,0.09)' : 'rgba(255,255,255,0.15)';
+            let normBg = isLightBg ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+
             let textColorStyle = '';
             if (this._settings.get_boolean('use-custom-colors') && this._settings.get_boolean('popup-follow-custom-text')) {
                 let customTextStr = this._settings.get_string('custom-text-color');
                 textColorStyle = `color: rgb(${customTextStr});`;
+            } else if (isLightBg) {
+                textColorStyle = `color: rgb(28, 28, 30);`;
             } else {
-                let brightness = (r * 299 + g * 587 + b * 114) / 1000;
-                if (brightness > 160) {
-                    textColorStyle = `color: rgb(30, 30, 30);`;
-                } else {
-                    textColorStyle = `color: rgb(255, 255, 255);`;
-                }
+                textColorStyle = `color: rgb(255, 255, 255);`;
             }
 
             let titleLabel = new St.Label({
@@ -148,7 +153,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
                     can_focus: true,
                     track_hover: true,
                     x_expand: true,
-                    style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${currentSelected === '' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
+                    style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${currentSelected === '' ? selBg : normBg}; transition-duration: 150ms;`
                 });
                 _addBtnPressAnim(autoBtn);
 
@@ -170,7 +175,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
 
                 autoBtn.connectObject('notify::hover', () => {
                     if (this._settings.get_string('selected-player-bus') === '') return;
-                    autoBtn.set_style(`margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${autoBtn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+                    autoBtn.set_style(`margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${autoBtn.hover ? hovBg : normBg}; transition-duration: 150ms;`);
                 }, this);
 
                 this._box.add_child(autoBtn);
@@ -201,7 +206,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
                     can_focus: true,
                     track_hover: true,
                     x_expand: true,
-                    style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`
+                    style: `margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${isSelected ? selBg : normBg}; transition-duration: 150ms;`
                 });
                 _addBtnPressAnim(btn);
 
@@ -228,7 +233,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
 
                 btn.connect('notify::hover', () => {
                     if (this._settings.get_string('selected-player-bus') === busName) return;
-                    btn.set_style(`margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${btn.hover ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}; transition-duration: 150ms;`);
+                    btn.set_style(`margin-bottom: 8px; border-radius: 12px; padding: 10px; background-color: ${btn.hover ? hovBg : normBg}; transition-duration: 150ms;`);
                 });
 
                 this._box.add_child(btn);
@@ -236,7 +241,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
         }
 
         showMenu() {
-            disableDashToDockAutohide();
+            disableDockAutohide();
             this.populate();
             this.visible = true;
             this.opacity = 0;
@@ -252,7 +257,9 @@ export const PlayerSelectorMenu = GObject.registerClass(
             let [pw, ph] = pill.get_transformed_size();
             let monitor = Main.layoutManager.findMonitorForActor(pill);
 
-            let c = pill._displayedColor;
+            let isLightMode = this._settings.get_boolean('light-mode');
+            let defChan = isLightMode ? 242 : 40;
+            let c = pill._displayedColor || { r: defChan, g: defChan, b: isLightMode ? 245 : 40 };
             let bgAlpha = pill._currentBgAlpha || 0.95;
 
             let r = c.r, g = c.g, b = c.b;
@@ -311,7 +318,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
 
         hide() {
             if (this._isHiding) return;
-            restoreDashToDockAutohide();
+            restoreDockAutohide();
 
             if (this._leaveHideTimeoutId) {
                 GLib.Source.remove(this._leaveHideTimeoutId);

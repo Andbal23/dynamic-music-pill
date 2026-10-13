@@ -1291,104 +1291,112 @@ msgstr "Vui lòng cài đặt \"cava\" để bật chế độ thời gian thự
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "Làm mờ động (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Áp dụng làm mờ Gaussian phía sau viên thuốc và cửa sổ bật lên bằng Blur my Shell hoặc gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "Bật làm mờ cho viên thuốc"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "Làm mờ nền phía sau viên thuốc nhạc"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "Bật làm mờ cho cửa sổ bật lên"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "Làm mờ nền phía sau trình phát mở rộng"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "Pha màu làm mờ theo màu bìa album"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "Pha trộn màu sắc động của album lên nền mờ thay vì kính mờ trung tính"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Tiện ích mở rộng Blur my Shell"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Được khuyên dùng cho hiệu ứng làm mờ động gốc trên Wayland"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "Thư viện gnome-rounded-blur"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "Hướng dẫn cài đặt làm mờ góc bo tròn gốc"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "Hướng dẫn"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "Để có hiệu ứng làm mờ động bo góc tốt nhất, hãy cài đặt Blur my Shell và gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "gnome-rounded-blur được khuyên dùng để có góc bo tròn mượt mà với làm mờ động."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "Blur my Shell được khuyên dùng để tích hợp làm mờ động."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "Chỉ thanh dock chính"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "Tất cả thanh dock"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "Chỉ thanh dock phụ"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "Thanh dock đa màn hình"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "Thanh dock nào hiển thị viên thuốc khi dock xuất hiện trên tất cả màn hình"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "Bán kính làm mờ (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "Cường độ của hiệu ứng làm mờ Gaussian"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Chế độ sáng"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Sử dụng bảng màu pastel sáng cho nền động cùng chữ và biểu tượng tối màu"

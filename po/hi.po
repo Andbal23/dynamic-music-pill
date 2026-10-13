@@ -1250,107 +1250,115 @@ msgstr ""
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "डायनामिक ब्लर (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Blur my Shell या gnome-rounded-blur का उपयोग करके पिल और पॉप-अप के पीछे गॉसियन ब्लर लागू करें।"
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "पिल के लिए ब्लर सक्षम करें"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "म्यूज़िक पिल के पीछे की पृष्ठभूमि को धुंधला करें"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "पॉप-अप के लिए ब्लर सक्षम करें"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "विस्तारित प्लेयर पॉप-अप के पीछे की पृष्ठभूमि को धुंधला करें"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "एल्बम आर्ट के रंग से ब्लर को रंगें"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "तटस्थ फ्रॉस्टेड ग्लास के बजाय धुंधली पृष्ठभूमि पर गतिशील एल्बम रंग मिलाएं"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Blur my Shell एक्सटेंशन"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "नेटिव Wayland डायनामिक ब्लर के लिए अनुशंसित"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "gnome-rounded-blur लाइब्रेरी"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "नेटिव गोल कोनों वाले ब्लर के लिए इंस्टॉलेशन गाइड"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "गाइड"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "सर्वोत्तम गोल डायनामिक ब्लर के लिए Blur my Shell और gnome-rounded-blur इंस्टॉल करें।"
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "डायनामिक ब्लर के साथ चिकने गोल कोनों के लिए gnome-rounded-blur अनुशंसित है।"
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "डायनामिक ब्लर एकीकरण के लिए Blur my Shell अनुशंसित है।"
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "केवल मुख्य डॉक"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "सभी डॉक"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "केवल द्वितीयक डॉक"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "मल्टी-मॉनिटर डॉक"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "जब डॉक सभी मॉनिटरों पर हो तो कौन से डॉक पिल दिखाएं"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "ब्लर त्रिज्या (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "गॉसियन ब्लर प्रभाव की तीव्रता"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "लाइट मोड"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "गतिशील पृष्ठभूमि के लिए हल्का पेस्टल पैलेट और गहरे टेक्स्ट/आइकन का उपयोग करें"
 
 #~ msgid "Change Tracks or Volume using scroll wheel or touchpad"
 #~ msgstr "स्क्रॉल व्हील या टचपैड से ट्रैक या वॉल्यूम बदलें"
