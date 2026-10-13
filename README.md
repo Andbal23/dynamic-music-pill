@@ -1,24 +1,35 @@
-> [!NOTE]
-> **Help Wanted: README & Visuals Redesign**  
-> We are currently refreshing the README layout, showcase video, and screenshots. If you would like to help with design, recordings, or copy, join the effort in [#176](https://github.com/Andbal23/dynamic-music-pill/issues/176)!
-
-<p align="center">
-  <img src="screenshots/banner.svg" alt="Dynamic Music Pill" width="100%">
-</p>
-
-A dynamic, elegant, and highly customizable music widget for GNOME Shell. It brings a pill-shaped media controller with a live audio visualizer directly to your Dash or Panel, complete with a rich Pop-Up Menu.
-
----
-
 <div align="center">
 
-![Gnome Extensions Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal) ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2051-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
-[![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/stargazers) [![Watchers](https://img.shields.io/github/watchers/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/watchers) [![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
+<img src="screenshots/banner.svg" alt="Dynamic Music Pill Banner" width="100%">
+
+# Dynamic Music Pill
+
+Adaptive media controller, audio visualizer, and synchronized lyrics widget for GNOME Shell.
+
+<p align="center">
+  <a href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/">
+    <img src="https://img.shields.io/badge/Install%20on-GNOME%20Extensions-blue?style=for-the-badge&logo=gnome&logoColor=white" alt="Install on GNOME Extensions">
+  </a>
+</p>
+
+[![Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal?style=flat-square&color=38bdf8)](https://extensions.gnome.org/extension/9334/dynamic-music-pill/)
+[![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2051-a855f7?style=flat-square&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/9334/dynamic-music-pill/)
+[![Help Wanted](https://img.shields.io/badge/Help%20Wanted-%23176%20Redesign-brightgreen?style=flat-square)](https://github.com/Andbal23/dynamic-music-pill/issues/176)
+[![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
+[![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=flat-square&color=eab308)](https://github.com/Andbal23/dynamic-music-pill/stargazers)
+[![License: GPL-3.0](https://img.shields.io/github/license/Andbal23/dynamic-music-pill?style=flat-square&color=10b981)](LICENSE)
+
+</div>
+
+> [!NOTE]
+> **Help Wanted: README & Visuals Redesign**  
+> We are currently refreshing our README layout, demo video, and screenshots. If you have an eye for design or want to contribute assets, check out [#176](https://github.com/Andbal23/dynamic-music-pill/issues/176)!
+
+---
 
 
 </div>
 
----
 <div align="center">
   <a align="center" href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/">
     <img alt="Get it on GNOME Extensions" height="150" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true"/>
