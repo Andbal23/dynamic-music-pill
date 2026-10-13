@@ -1,3 +1,7 @@
+> [!NOTE]
+> **Help Wanted: README & Visuals Redesign**  
+> We are currently refreshing the README layout, showcase video, and screenshots. If you would like to help with design, recordings, or copy, join the effort in [#176](https://github.com/Andbal23/dynamic-music-pill/issues/176)!
+
 <p align="center">
   <img src="screenshots/banner.svg" alt="Dynamic Music Pill" width="100%">
 </p>
