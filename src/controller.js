@@ -3,6 +3,7 @@ import GLib from 'gi://GLib';
 import Soup from 'gi://Soup';
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
+import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
@@ -1294,15 +1295,16 @@ export class MusicController {
 
         if (Array.isArray(artist)) artist = artist.join(', ');
         if (!title || !title.trim()) return;
-        if (!artist || !artist.trim()) return;
+        artist = artist ? artist.trim() : '';
+        if (!artist && !/\s+[-–—]\s+/.test(title)) return;
 
-        let durationSec = length > 0 ? length / 1000000 : 0;
-        if (durationSec <= 0) return;
-
+        let durationSec = length > 0 ? Math.round(length / 1000000) : 0;
         let trackKey = `${title}||${artist}`;
 
         this._fetchedTrackKey = trackKey;
+        this._fetchedTrackDuration = durationSec;
         this._fetchedLyricsData = null;
+        this._fetchingLyrics = true;
         this._lastLyricIndex = -1;
 
         try {
@@ -1330,6 +1332,10 @@ export class MusicController {
             console.debug(`[DynamicMusicPill] Network lyrics fetch error: ${e}`);
             this._fetchedLyricsData = null;
             this._fetchedLyricsProvider = null;
+        } finally {
+            if (this._fetchedTrackKey === trackKey) {
+                this._fetchingLyrics = false;
+            }
         }
     }
 
@@ -1799,10 +1805,20 @@ export class MusicController {
                     let currentTitle = metaObj2 ? smartUnpack(metaObj2['xesam:title']) : null;
                     let currentArtist = metaObj2 ? smartUnpack(metaObj2['xesam:artist']) : null;
                     if (Array.isArray(currentArtist)) currentArtist = currentArtist.join(', ');
+                    currentArtist = currentArtist ? currentArtist.trim() : '';
+                    let currentLength = metaObj2 ? (smartUnpack(metaObj2['mpris:length']) || 0) : 0;
+                    let currentDurationSec = currentLength > 0 ? Math.round(currentLength / 1000000) : 0;
 
                     let currentTrackKey = `${currentTitle}||${currentArtist}`;
+                    let durationJustArrived = (
+                        this._fetchedTrackKey === currentTrackKey &&
+                        !this._fetchedLyricsData &&
+                        !this._fetchingLyrics &&
+                        currentDurationSec > 0 &&
+                        (!this._fetchedTrackDuration || this._fetchedTrackDuration <= 0)
+                    );
 
-                    if (currentTitle && this._fetchedTrackKey !== currentTrackKey) {
+                    if (currentTitle && (this._fetchedTrackKey !== currentTrackKey || durationJustArrived)) {
                         this._pills().forEach(p => p.setLyric(null));
                         this._fetchNetworkLyrics(active);
                     } else if (this._fetchedLyricsData && active.PlaybackStatus === 'Playing') {
@@ -1932,6 +1948,51 @@ export class MusicController {
     next() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.NextRemote(); }
     previous() { this._lastActionTime = Date.now(); let p = this._getActivePlayer(); if (p) p.PreviousRemote(); }
 
+    _getPillFeedbackAvailWidth(pill) {
+        let allocW = 0;
+        if (pill._textWrapper && pill._textWrapper.has_allocation()) {
+            let box = pill._textWrapper.get_allocation_box();
+            allocW = Math.floor(box.x2 - box.x1);
+        }
+        if (pill._textBox && pill._textBox.has_allocation()) {
+            let tBox = pill._textBox.get_allocation_box();
+            let tW = Math.floor(tBox.x2 - tBox.x1);
+            if (tW > 0) allocW = (allocW > 0) ? Math.min(allocW, tW) : tW;
+        }
+
+        let calcW = 0;
+        if (pill._body) {
+            let bodyW = pill._targetWidth || 0;
+            if (bodyW <= 0 && pill._body.has_allocation()) {
+                let bBox = pill._body.get_allocation_box();
+                bodyW = Math.floor(bBox.x2 - bBox.x1);
+            }
+            if (bodyW > 0) {
+                let usedW = (pill._padX || 14) * 2 + 6; // body padding + textWrapper margins (2+4)
+                if (this._settings.get_boolean('show-pill-border')) usedW += 2;
+                let visPad = this._settings.get_int('visualizer-padding');
+                if (pill._artBin && pill._artBin.visible) {
+                    let aBox = pill._artBin.has_allocation() ? pill._artBin.get_allocation_box() : null;
+                    let aW = aBox ? Math.floor(aBox.x2 - aBox.x1) : (pill._artBin.width || 0);
+                    let aMargin = (pill._visBin && pill._visBin.visible) ? visPad : ((bodyW < 180) ? 4 : 8);
+                    usedW += aW + aMargin;
+                }
+                if (pill._tabletControls && pill._tabletControls.visible && pill._tabletControls.has_allocation()) {
+                    let tBox = pill._tabletControls.get_allocation_box();
+                    usedW += Math.floor(tBox.x2 - tBox.x1) + 6;
+                }
+                if (pill._visBin && pill._visBin.visible && pill._visBin.has_allocation()) {
+                    let vBox = pill._visBin.get_allocation_box();
+                    usedW += Math.floor(vBox.x2 - vBox.x1) + visPad;
+                }
+                calcW = Math.max(24, Math.floor(bodyW - usedW));
+            }
+        }
+
+        if (allocW > 0 && calcW > 0) return Math.min(allocW, calcW);
+        return allocW > 0 ? allocW : (calcW > 0 ? calcW : 80);
+    }
+
     _showPillFeedback(iconNameOrGicon, text, percent = null) {
         let pill = this._getAnchorPill();
         if (!pill || !pill._textWrapper) return;
@@ -1941,6 +2002,15 @@ export class MusicController {
             this._feedbackTimer = null;
         }
 
+        let wasFeedbackActive = !!(pill._feedbackBox && pill._feedbackBox.visible && pill._feedbackBox.opacity >= 200);
+        let freshAvailW = this._getPillFeedbackAvailWidth(pill);
+        if (!wasFeedbackActive || !pill._cachedFeedbackAvailW) {
+            pill._cachedFeedbackAvailW = freshAvailW;
+        } else if (freshAvailW > 0) {
+            pill._cachedFeedbackAvailW = Math.min(pill._cachedFeedbackAvailW, freshAvailW);
+        }
+        let availW = pill._cachedFeedbackAvailW || freshAvailW;
+
         if (!pill._feedbackBox) {
             pill._feedbackBox = new St.BoxLayout({
                 orientation: Clutter.Orientation.HORIZONTAL,
@@ -1949,12 +2019,15 @@ export class MusicController {
                 style: 'spacing: 8px;'
             });
 
-            pill._feedbackIcon = new St.Icon({ icon_size: 16 });
+            pill._feedbackIcon = new St.Icon({ icon_size: 16, y_align: Clutter.ActorAlign.CENTER });
             pill._feedbackLabel = new St.Label({ y_align: Clutter.ActorAlign.CENTER });
+            pill._feedbackLabel.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            pill._feedbackLabel.clutter_text.line_wrap = false;
 
             pill._feedbackSliderBg = new St.Widget({
                 name: 'pill-feedback-slider-bg',
                 y_align: Clutter.ActorAlign.CENTER,
+                clip_to_allocation: true,
                 style: 'border-radius: 4px;',
                 height: 6,
                 width: 80
@@ -1974,16 +2047,28 @@ export class MusicController {
             pill._textWrapper.add_child(pill._feedbackBox);
         }
 
-        let c = pill._displayedColor || { r: 40, g: 40, b: 40 };
+        if (!pill._feedbackBox.visible) {
+            pill._feedbackBox.opacity = 0;
+            pill._feedbackBox.show();
+        }
+
+        let isLightMode = this._settings.get_boolean('light-mode');
+        let defChan = isLightMode ? 242 : 40;
+        let c = pill._displayedColor || { r: defChan, g: defChan, b: isLightMode ? 245 : 40 };
         let brightness = (c.r * 299 + c.g * 587 + c.b * 114) / 1000;
         let isLight = brightness > 160;
-        let color = isLight ? 'rgb(30, 30, 30)' : 'rgb(255, 255, 255)';
-        let bgTrack = isLight ? 'rgba(30, 30, 30, 0.2)' : 'rgba(255, 255, 255, 0.2)';
+        let color = isLight ? 'rgb(28, 28, 30)' : 'rgb(255, 255, 255)';
+        let bgTrack = isLight ? 'rgba(28, 28, 30, 0.22)' : 'rgba(255, 255, 255, 0.22)';
+        if (this._settings.get_boolean('use-custom-colors')) {
+            let customText = this._settings.get_string('custom-text-color');
+            color = `rgb(${customText})`;
+            bgTrack = `rgba(${customText}, 0.25)`;
+        }
 
         if (typeof iconNameOrGicon === 'string') {
-            pill._feedbackIcon.icon_name = iconNameOrGicon;
             pill._feedbackIcon.gicon = null;
             pill._feedbackIcon.fallback_icon_name = 'audio-x-generic-symbolic';
+            pill._feedbackIcon.icon_name = iconNameOrGicon;
         } else {
             pill._feedbackIcon.icon_name = null;
             pill._feedbackIcon.fallback_icon_name = null;
@@ -1991,33 +2076,125 @@ export class MusicController {
         }
         pill._feedbackIcon.set_style(`color: ${color};`);
 
-        pill._feedbackLabel.text = text;
-        pill._feedbackLabel.set_style(`font-size: 10.5pt; font-weight: bold; color: ${color};`);
-
         if (percent !== null) {
-            pill._feedbackSliderBg.show();
-            pill._feedbackSliderBg.set_style(`background-color: ${bgTrack}; border-radius: 4px;`);
-            pill._feedbackSliderFill.set_style(`background-color: ${color}; border-radius: 4px;`);
+            let pctClamped = Math.max(0, Math.min(1, percent));
 
-            pill._feedbackSliderFill.ease({
-                width: Math.max(0, percent * 80),
-                duration: 100,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD
-            });
+            let spacing = 8;
+            let iconSize = 16;
+            let fontSize = '10pt';
+            let showIcon = true;
+            let showSlider = true;
 
-            pill._feedbackLabel.text = `${Math.round(percent * 100)}%`;
+            if (availW > 0 && availW < 135) {
+                if (availW >= 92) {
+                    spacing = 5;
+                    iconSize = 14;
+                    fontSize = '8.5pt';
+                } else if (availW >= 72) {
+                    spacing = 4;
+                    iconSize = 12;
+                    fontSize = '8pt';
+                } else if (availW >= 48) {
+                    spacing = 4;
+                    showIcon = false;
+                    fontSize = '8pt';
+                } else {
+                    spacing = 2;
+                    showIcon = false;
+                    showSlider = false;
+                    fontSize = '8pt';
+                }
+            }
+
+            pill._feedbackLabel.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            pill._feedbackLabel.clutter_text.line_wrap = false;
+            pill._feedbackLabel.set_style(`font-size: ${fontSize}; font-weight: bold; color: ${color};`);
+            pill._feedbackLabel.set_width(-1);
+            pill._feedbackLabel.text = '100%';
+            let [, maxLabelNatW] = pill._feedbackLabel.get_preferred_width(-1);
+            let minLabelW = (fontSize === '10pt') ? 34 : (fontSize === '8.5pt' ? 28 : 25);
+            let labelW = Math.max(minLabelW, Math.ceil(maxLabelNatW) + 2);
+            pill._feedbackLabel.text = `${Math.round(pctClamped * 100)}%`;
+            pill._feedbackLabel.set_width(labelW);
+
+            let iconReserve = showIcon ? (iconSize + spacing) : 0;
+            let maxSliderW = (availW > 0)
+                ? (availW - iconReserve - labelW - (showSlider ? spacing : 0) - 2)
+                : 80;
+
+            if (showSlider && maxSliderW < 16 && showIcon) {
+                showIcon = false;
+                iconReserve = 0;
+                maxSliderW = availW - labelW - spacing - 2;
+            }
+            if (showSlider && maxSliderW < 12) {
+                showSlider = false;
+            }
+
+            pill._feedbackBox.set_style(`spacing: ${spacing}px;`);
+            pill._feedbackIcon.visible = showIcon;
+            if (showIcon) {
+                pill._feedbackIcon.icon_size = iconSize;
+                pill._feedbackIcon.set_width(iconSize);
+            }
+
+            if (showSlider) {
+                let sliderW = Math.min(80, Math.max(12, maxSliderW));
+                let targetFillW = Math.max(0, Math.round(pctClamped * sliderW));
+
+                pill._feedbackSliderBg.set_width(sliderW);
+                pill._feedbackSliderBg.show();
+                pill._feedbackSliderBg.set_style(`background-color: ${bgTrack}; border-radius: 4px;`);
+                pill._feedbackSliderFill.set_style(`background-color: ${color}; border-radius: 4px;`);
+
+                pill._feedbackSliderFill.remove_all_transitions();
+                if (pill._feedbackSliderFill.width > sliderW) {
+                    pill._feedbackSliderFill.set_width(targetFillW);
+                } else {
+                    pill._feedbackSliderFill.ease({
+                        width: targetFillW,
+                        duration: 80,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                    });
+                }
+            } else {
+                pill._feedbackSliderBg.hide();
+            }
         } else {
             pill._feedbackSliderBg.hide();
+            let compactText = (availW > 0 && availW < 95);
+            let spacing = compactText ? 5 : 8;
+            let showIcon = !(availW > 0 && availW < 55);
+            let iconSize = compactText ? 14 : 16;
+            pill._feedbackBox.set_style(`spacing: ${spacing}px;`);
+            pill._feedbackIcon.visible = showIcon;
+            if (showIcon) {
+                pill._feedbackIcon.icon_size = iconSize;
+                pill._feedbackIcon.set_width(iconSize);
+            }
+            pill._feedbackLabel.set_width(-1);
+            pill._feedbackLabel.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+            let maxTextW = (availW > 0) ? Math.max(24, availW - (showIcon ? (iconSize + spacing) : 0) - 2) : 200;
+            pill._feedbackLabel.text = text;
+            pill._feedbackLabel.set_style(`font-size: ${compactText ? '8.5pt' : '10pt'}; font-weight: bold; color: ${color}; max-width: ${maxTextW}px;`);
         }
 
         pill._textBox.ease({ opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-        pill._feedbackBox.opacity = 0;
-        pill._feedbackBox.show();
-        pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        if (!wasFeedbackActive) {
+            pill._feedbackBox.remove_all_transitions();
+            pill._feedbackBox.opacity = 0;
+            pill._feedbackBox.show();
+            pill._feedbackBox.ease({ opacity: 255, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        } else {
+            pill._feedbackBox.remove_all_transitions();
+            pill._feedbackBox.opacity = 255;
+            pill._feedbackBox.show();
+        }
 
         this._feedbackTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
             this._feedbackTimer = null;
             for (const p of this._pills()) {
+                p._cachedFeedbackAvailW = 0;
                 if (!p._feedbackBox) continue;
                 p._feedbackBox.ease({
                     opacity: 0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD,

@@ -160,6 +160,11 @@
       <summary>Show Shuffle and Loop buttons</summary>
     </key>
 
+    <key name="light-mode" type="b">
+      <default>false</default>
+      <summary>Light Mode</summary>
+      <description>Use a bright pastel palette for dynamic backgrounds and dark text/icons.</description>
+    </key>
     <key name="use-custom-colors" type="b">
       <default>false</default>
       <summary>Use Custom Colors</summary>

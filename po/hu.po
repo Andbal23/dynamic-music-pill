@@ -1383,6 +1383,14 @@ msgstr "Homályosítás sugara (Sigma)"
 msgid "Strength of the Gaussian blur effect"
 msgstr "A Gauss-homályosítás erőssége"
 
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "Világos mód"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "Világos pasztell színvilág használata a dinamikus hátterekhez, sötét szöveggel és ikonokkal"
+
 #~ msgid "Unmute"
 #~ msgstr "Némítás feloldása"
 

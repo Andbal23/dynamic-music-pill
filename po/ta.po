@@ -1287,104 +1287,112 @@ msgstr "நிகழ்நேர பயன்முறைக்கு \"cava\" �
 
 #: prefs.js:905
 msgid "Dynamic Blur (Blur my Shell)"
-msgstr ""
+msgstr "இயங்கு மங்கல் (Blur my Shell)"
 
 #: prefs.js:906
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr ""
+msgstr "Blur my Shell அல்லது gnome-rounded-blur பயன்படுத்தி மாத்திரை மற்றும் பாப்-அப் பின்னால் காசியன் மங்கலைப் பயன்படுத்து."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr ""
+msgstr "மாத்திரைக்கு மங்கலை இயக்கு"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr ""
+msgstr "இசை மாத்திரையின் பின்புலத்தை மங்கலாக்கு"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr ""
+msgstr "பாப்-அப்பிற்கு மங்கலை இயக்கு"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr ""
+msgstr "விரிவாக்கப்பட்ட பிளேயர் பாப்-அப்பின் பின்புலத்தை மங்கலாக்கு"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr ""
+msgstr "ஆல்பம் படத்தின் நிறத்தால் மங்கலை நிறமூட்டு"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr ""
+msgstr "சாதாரண உறைந்த கண்ணாடிக்குப் பதிலாக மங்கலான பின்புலத்தில் இயங்கு ஆல்பம் நிறங்களைக் கலக்கவும்"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
-msgstr ""
+msgstr "Blur my Shell நீட்சி"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr ""
+msgstr "Wayland இயங்கு மங்கலுக்குப் பரிந்துரைக்கப்படுகிறது"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
-msgstr ""
+msgstr "gnome-rounded-blur நூலகம்"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr ""
+msgstr "வளைந்த முனை மங்கலுக்கான நிறுவல் வழிகாட்டி"
 
 #: prefs.js:945
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: prefs.js:958
 msgid "Guide"
-msgstr ""
+msgstr "வழிகாட்டி"
 
 #: src/blurHelper.js:47
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr ""
+msgstr "சிறந்த வளைந்த இயங்கு மங்கலுக்கு Blur my Shell மற்றும் gnome-rounded-blur ஆகியவற்றை நிறுவவும்."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr ""
+msgstr "இயங்கு மங்கலுடன் மென்மையான வளைந்த முனைகளுக்கு gnome-rounded-blur பரிந்துரைக்கப்படுகிறது."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr ""
+msgstr "இயங்கு மங்கல் ஒருங்கிணைப்புக்கு Blur my Shell பரிந்துரைக்கப்படுகிறது."
 
 #: prefs.js:1112
 msgid "Main Dock Only"
-msgstr ""
+msgstr "முதன்மை டாக் மட்டும்"
 
 #: prefs.js:1113
 msgid "All Docks"
-msgstr ""
+msgstr "அனைத்து டாக்குகளும்"
 
 #: prefs.js:1114
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "இரண்டாம் நிலை டாக்குகள் மட்டும்"
 
 #: prefs.js:1117
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "பல-திரை டாக்குகள்"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "அனைத்துத் திரைகளிலும் டாக் இருக்கும்போது எந்த டாக்குகளில் மாத்திரையைக் காட்ட வேண்டும்"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr ""
+msgstr "மங்கல் ஆரம் (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
-msgstr ""
+msgstr "காசியன் மங்கல் விளைவின் வலிமை"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "வெளிச்ச பயன்முறை"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "இயங்கு பின்புலங்களுக்கு வெளிர் வண்ணங்களையும் அடர் நிற எழுத்து/படவுருக்களையும் பயன்படுத்து"
