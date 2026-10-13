@@ -1815,9 +1815,27 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const changelog = [
             {
+                version: "1.5.0",
+                subtitle: "Dynamic Blur, Light Mode, Multi-Monitor & Simple Taskbar Support, Lyrics & UI Fixes",
+                expanded: true,
+                notes: "New Features:\n" +
+                    "• Dynamic Gaussian Blur: Native Wayland blur behind the pill and pop-up via Blur my Shell & gnome-rounded-blur, with adjustable Blur Radius (Sigma) and Album Art Color tinting.\n" +
+                    "• Light Mode (#173): Bright pastel dynamic palette and frosted light glass with dark text and icons.\n" +
+                    "• Multi-Monitor Docks (#171) & Simple Taskbar Support (#172): Choose whether the pill appears on Main, All, or Secondary docks, plus full support for Simple Taskbar (simple-taskbar@sultech) dock placement.\n" +
+                    "• Custom Visualizer Color (#159): Independent custom color picker for the audio visualizer bars.\n" +
+                    "• Apple Music Lyrics Provider (#174): Replaced NetEase with Apple Music word-level karaoke provider and improved Firefox / YouTube / YouTube Music lyrics search & fallbacks.\n" +
+                    "• Scroll Animation Toggle & Player Minimize Toggle: Option to toggle the scroll jump animation, and clicking 'Open Player App' now toggles minimize/restore when the player is already focused.\n\n" +
+                    "Bug Fixes:\n" +
+                    "• Eliminated pop-up open/close flicker and added smooth directional pivot animations.\n" +
+                    "• Fixed volume scroll feedback bar overflowing or jittering between 99% and 100% on short pills.\n" +
+                    "• Fixed dock/taskbar autohide while the expanded player pop-up or player selector is open, and hardened dock integration with safe fallback orientation.\n\n" +
+                    "Translations:\n" +
+                    "• Updated and compiled translations across all 18 supported languages (#170, #175)."
+            },
+            {
                 version: "1.4.0",
                 subtitle: "GNOME 51 support",
-                expanded: true,
+                expanded: false,
                 notes: "New Features:\n" +
                     "• GNOME 51 support\n" +
                     "• Updated translations for all supported languages via Weblate."
