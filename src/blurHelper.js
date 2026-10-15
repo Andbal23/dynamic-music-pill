@@ -7,26 +7,47 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 let BlurModule = null;
+let SUPPORTS_CORNER_RADIUS = false;
+
 try {
-    BlurModule = (await import('gi://Blur')).default ?? (await import('gi://Blur'));
-} catch (e) {
+    let mod = null;
+    try {
+        mod = (await import('gi://Blur')).default ?? (await import('gi://Blur'));
+    } catch (_) {
+        mod = null;
+    }
+
+    if (mod) {
+        try {
+            if (mod.BlurEffect && typeof mod.BlurEffect === 'function' && mod.BlurEffect.$gtype) {
+                BlurModule = mod;
+                if (typeof mod.BlurEffect.list_properties === 'function') {
+                    let props = mod.BlurEffect.list_properties();
+                    if (props && props.some(p => p.name === 'corner-radius' || p.name === 'corner_radius')) {
+                        SUPPORTS_CORNER_RADIUS = true;
+                    }
+                }
+            }
+        } catch (err) {
+            console.debug(`[Dynamic Music Pill] Incompatible or broken gi://Blur library: ${err.message}`);
+            BlurModule = null;
+        }
+    }
+} catch (outerErr) {
+    console.debug(`[Dynamic Music Pill] Failed to load gi://Blur: ${outerErr.message}`);
     BlurModule = null;
 }
 
-function isUsableBlurModule(ns) {
-    if (!ns || !ns.BlurEffect) return false;
-    try {
-        if (typeof ns.BlurEffect !== 'function' || !ns.BlurEffect.$gtype) return false;
-        return true;
-    } catch (_) {
-        return false;
-    }
-}
+const BlurOrShell = BlurModule ?? Shell;
 
-const BlurOrShell = isUsableBlurModule(BlurModule) ? BlurModule : Shell;
-const SUPPORTS_CORNER_RADIUS = Boolean(
-    BlurOrShell?.BlurEffect?.list_properties()?.some(p => p.name === 'corner-radius' || p.name === 'corner_radius')
-);
+if (!SUPPORTS_CORNER_RADIUS) {
+    try {
+        let props = Shell.BlurEffect?.list_properties?.();
+        if (props && props.some(p => p.name === 'corner-radius' || p.name === 'corner_radius')) {
+            SUPPORTS_CORNER_RADIUS = true;
+        }
+    } catch (_) {}
+}
 
 let BmsDynamicPipelineClass = null;
 
@@ -69,8 +90,8 @@ export function isBmsUnifiedInstalled() {
     return false;
 }
 
-export async function initBlurBackend() {
-    if (BmsDynamicPipelineClass) return BmsDynamicPipelineClass;
+export async function initBlurBackend(force = false) {
+    if (!force && BmsDynamicPipelineClass) return BmsDynamicPipelineClass;
     let bmsDir = getBmsDirectory();
     let dynPath = findBmsDynamicPipelinePath(bmsDir);
     if (dynPath) {
@@ -84,6 +105,7 @@ export async function initBlurBackend() {
             console.debug(`[Dynamic Music Pill] Failed to import BMS DynamicPipeline: ${e.message}`);
         }
     }
+    BmsDynamicPipelineClass = null;
     return null;
 }
 
@@ -191,10 +213,11 @@ export class ActorBlurController {
                 'extension-state-changed', (_mgr, ext) => {
                     if (ext && ext.uuid === 'blur-my-shell@aunetx') {
                         if (ext.state === 1) {
-                            initBlurBackend().then(() => {
+                            initBlurBackend(true).then(() => {
                                 if (this._enabled) this._refreshEffect();
                             }).catch(() => {});
                         } else {
+                            BmsDynamicPipelineClass = null;
                             if (this._enabled) this._refreshEffect();
                         }
                     }
