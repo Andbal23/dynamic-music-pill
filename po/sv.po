@@ -1362,6 +1362,34 @@ msgstr "Ljust läge"
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
 msgstr "Använd en ljus pastellpalett för dynamiska bakgrunder samt mörk text och mörka ikoner"
 
+#: prefs.js:996
+msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
+msgstr ""
+
+#: prefs.js:1071
+msgid "Follow Blur my Shell Pipelines"
+msgstr ""
+
+#: prefs.js:1072
+msgid "Use the blur pipelines and effects configured in Blur my Shell"
+msgstr ""
+
+#: prefs.js:1086
+msgid "Controlled by Blur my Shell pipeline"
+msgstr ""
+
+#: prefs.js:1098
+msgid "Native Dual Kawase blur backend active (v76+)"
+msgstr ""
+
+#: src/blurHelper.js:137
+msgid "Please install \"Blur my Shell\" for dynamic blur."
+msgstr ""
+
+#: src/blurHelper.js:139
+msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgstr ""
+
 #~ msgid "Change Tracks or Volume using scroll wheel or touchpad"
 #~ msgstr "Byt låt eller justera volym med rullhjul eller pekplatta"
 

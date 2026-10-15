@@ -134,32 +134,30 @@ export const ExpandedPlayer = GObject.registerClass(
             this.add_child(this._blurBackdrop);
             this.add_child(this._box);
 
+            this._blurBackdrop.add_constraint(new Clutter.BindConstraint({
+                source: this._box,
+                coordinate: Clutter.BindCoordinate.ALL,
+            }));
+
             this._box.connectObject(
-                'notify::allocation', () => {
-                    this._syncBlurBackdropGeometry();
-                },
                 'notify::translation-x', () => {
                     if (this._blurBackdrop && this._box) {
                         this._blurBackdrop.translation_x = this._box.translation_x;
-                        if (this._blurController) this._blurController.invalidate();
                     }
                 },
                 'notify::translation-y', () => {
                     if (this._blurBackdrop && this._box) {
                         this._blurBackdrop.translation_y = this._box.translation_y;
-                        if (this._blurController) this._blurController.invalidate();
                     }
                 },
                 'notify::scale-x', () => {
                     if (this._blurBackdrop && this._box) {
                         this._blurBackdrop.scale_x = this._box.scale_x;
-                        if (this._blurController) this._blurController.invalidate();
                     }
                 },
                 'notify::scale-y', () => {
                     if (this._blurBackdrop && this._box) {
                         this._blurBackdrop.scale_y = this._box.scale_y;
-                        if (this._blurController) this._blurController.invalidate();
                     }
                 },
                 'notify::opacity', () => {
@@ -177,7 +175,9 @@ export const ExpandedPlayer = GObject.registerClass(
                     let rawRadius = followRadius ? this._settings.get_int('border-radius') : 24;
                     return (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
                 },
-                () => this._settings.get_int('blur-sigma')
+                () => this._settings.get_int('blur-sigma'),
+                'popup',
+                () => this._settings.get_boolean('bms-follow-pipeline')
             );
             if (this._settings.get_boolean('enable-blur-popup')) {
                 if (!checkBlurRequirements()) {
@@ -220,6 +220,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 },
                 'changed::blur-sigma', () => {
                     if (this._blurController) this._blurController.updateSigma(this._settings.get_int('blur-sigma'));
+                },
+                'changed::bms-follow-pipeline', () => {
+                    if (this._blurController) this._blurController._refreshEffect();
                 },
                 'changed::popup-follow-radius', () => {
                     if (this._blurController) this._blurController.updateRadius();
@@ -517,7 +520,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 _makeCustomBtnHandler(() => this._settings.get_string('custom-button-2'), false), this);
             this._customBtn2.connectObject('touch-event',
                 _makeCustomBtnTouchHandler(() => this._settings.get_string('custom-button-2'), false), this);
-
 
             controlsRow.add_child(this._shuffleBtn);
             controlsRow.add_child(this._customBtn1);
@@ -826,7 +828,16 @@ export const ExpandedPlayer = GObject.registerClass(
 
         _syncBlurBackdropGeometry(targetX, targetY, targetW, targetH, force = false) {
             if (!this._blurBackdrop || !this._box) return;
-            if (!force && (this._box.get_transition('width') || this._box.get_transition('x') || this._box.get_transition('y'))) {
+            if (!force && (
+                this._box.get_transition('width') ||
+                this._box.get_transition('height') ||
+                this._box.get_transition('x') ||
+                this._box.get_transition('y') ||
+                this._blurBackdrop.get_transition('width') ||
+                this._blurBackdrop.get_transition('height') ||
+                this._blurBackdrop.get_transition('x') ||
+                this._blurBackdrop.get_transition('y')
+            )) {
                 return;
             }
             let bx = (typeof targetX === 'number') ? Math.round(targetX) : Math.round(this._box.x);
@@ -1197,7 +1208,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
 
                 if (this.visible && !this._isOpening) {
-                    this.animateResize(true, () => {
+                    this.animateResize(false, () => {
                         fadeInContent();
                     });
                 } else {
@@ -1431,7 +1442,6 @@ export const ExpandedPlayer = GObject.registerClass(
                     let targetH = natH > 0 ? natH : (this._savedBoxHeight > 0 ? this._savedBoxHeight : this._box.height);
                     if (this._blurBackdrop) {
                         this._blurBackdrop.remove_all_transitions();
-                        if (targetH > 0) this._blurBackdrop.set_height(targetH);
                         if (this._settings.get_boolean('enable-blur-popup')) {
                             this._blurBackdrop.show();
                             this._blurBackdrop.opacity = 255;
@@ -2129,6 +2139,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this.setPlayer(player);
             this._isOpening = true;
             this._isHiding = false;
+            this._initialWidthSet = false;
 
             let status = player.PlaybackStatus;
             let m = player.Metadata;
@@ -2244,6 +2255,7 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._isHiding) return;
             this._isHiding = true;
             this._isOpening = false;
+            this._initialWidthSet = false;
 
             if (this._leaveHideTimeoutId) {
                 GLib.Source.remove(this._leaveHideTimeoutId);
@@ -2715,7 +2727,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (natW > 0) return Math.ceil(natW) + 40;
             }
 
-            const SEC = 36, PRI = 48, GAP = 8;
+            const SEC = 36, PRI = 48, GAP = 20;
             let visCount = 3;
             let widthSum = PRI * 3;
 
@@ -2765,23 +2777,18 @@ export const ExpandedPlayer = GObject.registerClass(
                 let currentX = Math.round(this._box.x);
                 let currentY = Math.round(this._box.y);
 
-                this._box.set_width(-1);
-                this._box.set_height(-1);
-                let [minW, natW] = this._box.get_preferred_width(-1);
-                natW = Math.ceil(natW);
-
                 let baseMinW = this._computeMinControlsWidth();
 
+                let actualVisW = 0;
                 if (this._settings.get_boolean('popup-show-visualizer') && this._settings.get_int('visualizer-style') !== 0) {
                     let bCount = this._settings.get_int('popup-visualizer-bars') || 10;
                     let bWidth = this._settings.get_int('popup-visualizer-bar-width') || 2;
-                    let actualVisW = bCount * (bWidth + 2) - 2;
+                    actualVisW = bCount * (bWidth + 2) - 2;
 
                     if (this._visBin) {
                         this._visBin.set_width(-1);
                         this._visBin.show();
                     }
-                    baseMinW += actualVisW;
                 } else {
                     if (this._visBin) {
                         this._visBin.hide();
@@ -2789,13 +2796,42 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 if (this._vinylBin) this._vinylBin.set_width(100);
 
-                let minWLimit = baseMinW;
-                let menuW;
+                let titleW = (this._titleLabel && this._titleLabel.visible) ? (this._titleLabel.getNaturalTextWidth ? this._titleLabel.getNaturalTextWidth() : (this._titleLabel.get_preferred_width(-1)[1] || 0)) : 0;
+                let artistW = (this._artistLabel && this._artistLabel.visible) ? (this._artistLabel.getNaturalTextWidth ? this._artistLabel.getNaturalTextWidth() : (this._artistLabel.get_preferred_width(-1)[1] || 0)) : 0;
+                let textW = Math.max(titleW, artistW);
 
+                let showVinyl = this._settings.get_boolean('popup-show-vinyl') && this._vinylBin && this._vinylBin.visible;
+                let vinylW = showVinyl ? 130 : 0;
+                let visW = (actualVisW > 0) ? (actualVisW + 15) : 0;
+
+                // 16px safety breathing room so text never gets truncated with ... due to rounding
+                let topRowW = vinylW + textW + visW + 16;
+                let minWLimit = Math.max(baseMinW, 320);
+
+                if (this._playerSelectorBox && this._playerSelectorBox.visible && this._playerSelectorBox.get_parent() === this._middleRow) {
+                    let selW = (this._playerSelectorBox.get_preferred_width(-1)[1] || 0) + 12;
+                    topRowW += selW;
+                    minWLimit += selW;
+                }
+
+                let pill = this._pill;
+                if (!pill || (this._controller._pills && !this._controller._pills().includes(pill)) || !pill.get_parent()) {
+                    if (onFinished) onFinished();
+                    return GLib.SOURCE_REMOVE;
+                }
+                let monitor = Main.layoutManager.findMonitorForActor(pill);
+
+                let maxWLimit = 600;
+                if (monitor) {
+                    maxWLimit = Math.min(600, monitor.width - 20);
+                }
+
+                let desiredW = topRowW + 40;
+                let menuW;
                 if (this._settings.get_boolean('popup-use-custom-width')) {
                     menuW = Math.max(this._settings.get_int('popup-custom-width'), minWLimit);
                 } else {
-                    menuW = Math.min(Math.max(natW > 0 ? natW : minWLimit, minWLimit), 600);
+                    menuW = Math.min(Math.max(desiredW, minWLimit), maxWLimit);
                 }
 
                 menuW = Math.round(menuW);
@@ -2803,9 +2839,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (!this._initialWidthSet) {
                     currentW = menuW;
                     this._initialWidthSet = true;
-                }
-
-                if (currentW > 0 && Math.abs(menuW - currentW) < 2) {
+                } else if (!this._isOpening && currentW > 0 && Math.abs(menuW - currentW) < 3) {
                     menuW = currentW;
                 }
 
@@ -2816,19 +2850,8 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 if (currentW > 0) this._box.set_width(currentW);
 
-                let pill = this._pill;
-                if (!pill || (this._controller._pills && !this._controller._pills().includes(pill)) || !pill.get_parent()) {
-                    if (onFinished) onFinished();
-                    return GLib.SOURCE_REMOVE;
-                }
                 let [px, py] = pill.get_transformed_position();
                 let [pw, ph] = pill.get_transformed_size();
-                let monitor = Main.layoutManager.findMonitorForActor(pill);
-
-                if (!monitor) {
-                    if (onFinished) onFinished();
-                    return GLib.SOURCE_REMOVE;
-                }
 
                 px = Math.round(px); py = Math.round(py);
                 pw = Math.round(pw); ph = Math.round(ph);
@@ -2861,7 +2884,19 @@ export const ExpandedPlayer = GObject.registerClass(
                     if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
 
                 } else {
-                    targetX = Math.round(px + (pw / 2) - (menuW / 2));
+                    let pillCenterX = px + (pw / 2);
+                    let anchorCenterX = pillCenterX;
+
+                    // When already open and live resizing, anchor to current popup center
+                    // to prevent jitter while the dock/pill underneath animates its width.
+                    if (!this._isOpening && currentW > 0 && currentX > 0) {
+                        let curCenter = currentX + (currentW / 2);
+                        if (Math.abs(curCenter - pillCenterX) < 120) {
+                            anchorCenterX = curCenter;
+                        }
+                    }
+
+                    targetX = Math.round(anchorCenterX - (menuW / 2));
                     if (targetX < monitor.x + 10) targetX = monitor.x + 10;
                     else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
 
@@ -2875,7 +2910,7 @@ export const ExpandedPlayer = GObject.registerClass(
                         pivY = 1.0;
                         this._openOffsetY = 10;
                     }
-                    pivX = menuW > 0 ? Math.max(0.08, Math.min(0.92, ((px + pw / 2) - targetX) / menuW)) : 0.5;
+                    pivX = menuW > 0 ? Math.max(0.08, Math.min(0.92, (anchorCenterX - targetX) / menuW)) : 0.5;
                 }
 
                 this._box.set_pivot_point(pivX, pivY);
@@ -2886,21 +2921,11 @@ export const ExpandedPlayer = GObject.registerClass(
                 let isCurrentlySafe = (currentX >= monitor.x + 10 && (currentX + menuW) <= (monitor.x + monitor.width - 10));
 
                 if (menuW === currentW) {
-                    if (isCurrentlySafe && Math.abs(targetX - currentX) < 2) targetX = currentX;
-                    if (isCurrentlySafe && Math.abs(targetY - currentY) < 2) targetY = currentY;
+                    if (isCurrentlySafe && Math.abs(targetX - currentX) < 16) targetX = currentX;
+                    if (isCurrentlySafe && Math.abs(targetY - currentY) < 16) targetY = currentY;
                 }
 
-                let backdropNeedSync = this._blurBackdrop && (
-                    this._blurBackdrop.width !== menuW ||
-                    this._blurBackdrop.height !== menuH ||
-                    this._blurBackdrop.x !== targetX ||
-                    this._blurBackdrop.y !== targetY
-                );
-
                 if (!this._isOpening && currentW === menuW && currentH === menuH && currentX === targetX && currentY === targetY) {
-                    if (backdropNeedSync) {
-                        this._syncBlurBackdropGeometry(targetX, targetY, menuW, menuH, true);
-                    }
                     if (onFinished) onFinished();
                     return GLib.SOURCE_REMOVE;
                 }
@@ -2908,10 +2933,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (this._isOpening) {
                     this._box.set_position(targetX, targetY);
                     this._box.set_size(menuW, menuH);
-                    if (this._blurBackdrop) {
-                        this._blurBackdrop.set_position(targetX, targetY);
-                        this._blurBackdrop.set_size(menuW, menuH);
-                    }
                     this._isOpening = false;
                     if (onFinished) onFinished();
                     return GLib.SOURCE_REMOVE;
@@ -2934,21 +2955,9 @@ export const ExpandedPlayer = GObject.registerClass(
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: () => {
                         this._box.set_height(-1);
-                        this._syncBlurBackdropGeometry(targetX, targetY, menuW, menuH, true);
                         callFinish();
                     }
                 });
-                if (this._blurBackdrop) {
-                    ['width', 'height', 'x', 'y'].forEach(prop => this._blurBackdrop.remove_transition(prop));
-                    this._blurBackdrop.ease({
-                        width: menuW,
-                        height: menuH,
-                        x: targetX,
-                        y: targetY,
-                        duration: 180,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                    });
-                }
 
                 return GLib.SOURCE_REMOVE;
             };

@@ -30,7 +30,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
             'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history',
             'show-hours-format', 'popup-show-album-title',
-            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color', 'blur-sigma', 'light-mode'
+            'enable-blur-pill', 'enable-blur-popup', 'blur-blend-color', 'blur-sigma', 'light-mode',
+            'bms-follow-pipeline'
         ];
 
         // =========================================
@@ -925,10 +926,36 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         transGroup.add(transVisRow);
         stylePage.add(transGroup);
 
-        const isBmsInstalled = () => {
+        const getBmsDir = () => {
             let userDir = GLib.build_filenamev([GLib.get_user_data_dir(), 'gnome-shell', 'extensions', 'blur-my-shell@aunetx']);
+            if (GLib.file_test(userDir, GLib.FileTest.IS_DIR)) return userDir;
             let sysDir = '/usr/share/gnome-shell/extensions/blur-my-shell@aunetx';
-            return GLib.file_test(userDir, GLib.FileTest.IS_DIR) || GLib.file_test(sysDir, GLib.FileTest.IS_DIR);
+            if (GLib.file_test(sysDir, GLib.FileTest.IS_DIR)) return sysDir;
+            return null;
+        };
+
+        const isBmsInstalled = () => getBmsDir() !== null;
+
+        const isBmsUnified = () => {
+            let dir = getBmsDir();
+            if (!dir) return false;
+            let p1 = GLib.build_filenamev([dir, 'render', 'dynamic_surface.js']);
+            let p2 = GLib.build_filenamev([dir, 'src', 'render', 'dynamic_surface.js']);
+            let p3 = GLib.build_filenamev([dir, 'effects', 'blur', 'dual_kawase_blur.js']);
+            let p4 = GLib.build_filenamev([dir, 'src', 'effects', 'blur', 'dual_kawase_blur.js']);
+            if (GLib.file_test(p1, GLib.FileTest.EXISTS) || GLib.file_test(p2, GLib.FileTest.EXISTS) ||
+                GLib.file_test(p3, GLib.FileTest.EXISTS) || GLib.file_test(p4, GLib.FileTest.EXISTS)) return true;
+            let metaFile = GLib.build_filenamev([dir, 'metadata.json']);
+            if (GLib.file_test(metaFile, GLib.FileTest.EXISTS)) {
+                try {
+                    let [ok, contents] = GLib.file_get_contents(metaFile);
+                    if (ok) {
+                        let meta = JSON.parse(new TextDecoder().decode(contents));
+                        if (meta && typeof meta.version === 'number' && meta.version >= 76) return true;
+                    }
+                } catch (_) {}
+            }
+            return false;
         };
 
         const isRoundedBlurInstalled = () => {
@@ -945,6 +972,10 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const checkPrefsBlurDeps = () => {
             let bms = isBmsInstalled();
+            let unified = isBmsUnified();
+            if (unified) {
+                return true;
+            }
             let round = isRoundedBlurInstalled();
             if (!bms || !round) {
                 let missing = [];
@@ -957,17 +988,19 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             return true;
         };
 
-        const hasBlurDeps = isBmsInstalled() && isRoundedBlurInstalled();
+        const hasBlurDeps = isBmsUnified() || (isBmsInstalled() && isRoundedBlurInstalled());
 
         const blurGroup = new Adw.PreferencesGroup({
             title: _('Dynamic Blur (Blur my Shell)'),
-            description: _('Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur.')
+            description: isBmsUnified()
+                ? _('Apply native Dual Kawase Gaussian blur behind the pill and pop-up.')
+                : _('Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur.')
         });
 
         if (!hasBlurDeps) {
             let missing = [];
             if (!isBmsInstalled()) missing.push('"Blur my Shell"');
-            if (!isRoundedBlurInstalled()) missing.push('"gnome-rounded-blur"');
+            if (!isRoundedBlurInstalled() && !isBmsUnified()) missing.push('"gnome-rounded-blur"');
             const blurNote = new Gtk.Label({
                 label: _("Note: Dynamic blur requires %s to be installed.").replace('%s', missing.join(' ' + _('and') + ' ')),
                 wrap: true,
@@ -1032,11 +1065,38 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             adjustment: new Gtk.Adjustment({ lower: 0, upper: 100, step_increment: 2 })
         });
         settings.bind('blur-sigma', blurSigmaRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+
+        if (isBmsUnified()) {
+            const bmsFollowRow = new Adw.ActionRow({
+                title: _('Follow Blur my Shell Pipelines'),
+                subtitle: _('Use the blur pipelines and effects configured in Blur my Shell')
+            });
+            const bmsFollowToggle = new Gtk.Switch({
+                active: settings.get_boolean('bms-follow-pipeline'),
+                valign: Gtk.Align.CENTER
+            });
+            settings.bind('bms-follow-pipeline', bmsFollowToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+            bmsFollowRow.add_suffix(bmsFollowToggle);
+            blurGroup.add(bmsFollowRow);
+
+            const updateSigmaRowState = () => {
+                let follow = settings.get_boolean('bms-follow-pipeline');
+                blurSigmaRow.sensitive = !follow;
+                blurSigmaRow.subtitle = follow
+                    ? _('Controlled by Blur my Shell pipeline')
+                    : _('Strength of the Gaussian blur effect');
+            };
+            updateSigmaRowState();
+            settings.connect('changed::bms-follow-pipeline', updateSigmaRowState);
+        }
+
         blurGroup.add(blurSigmaRow);
 
         const bmsLinkRow = new Adw.ActionRow({
             title: _('Blur my Shell Extension'),
-            subtitle: _('Recommended for native Wayland dynamic blur')
+            subtitle: isBmsUnified()
+                ? _('Native Dual Kawase blur backend active (v76+)')
+                : _('Recommended for native Wayland dynamic blur')
         });
         const bmsBtn = new Gtk.Button({
             label: _('GitHub'),
@@ -1047,18 +1107,20 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         bmsLinkRow.add_suffix(bmsBtn);
         blurGroup.add(bmsLinkRow);
 
-        const bmsGuideRow = new Adw.ActionRow({
-            title: _('gnome-rounded-blur Library'),
-            subtitle: _('Installation guide for native rounded corners blur')
-        });
-        const bmsGuideBtn = new Gtk.Button({
-            label: _('Guide'),
-            valign: Gtk.Align.CENTER,
-            css_classes: ['flat']
-        });
-        bmsGuideBtn.connect('clicked', () => Gio.AppInfo.launch_default_for_uri('https://github.com/aunetx/blur-my-shell/blob/master/scripts/GUIDE.md', null));
-        bmsGuideRow.add_suffix(bmsGuideBtn);
-        blurGroup.add(bmsGuideRow);
+        if (!isBmsUnified()) {
+            const bmsGuideRow = new Adw.ActionRow({
+                title: _('gnome-rounded-blur Library'),
+                subtitle: _('Installation guide for native rounded corners blur')
+            });
+            const bmsGuideBtn = new Gtk.Button({
+                label: _('Guide'),
+                valign: Gtk.Align.CENTER,
+                css_classes: ['flat']
+            });
+            bmsGuideBtn.connect('clicked', () => Gio.AppInfo.launch_default_for_uri('https://github.com/aunetx/blur-my-shell/blob/master/scripts/GUIDE.md', null));
+            bmsGuideRow.add_suffix(bmsGuideBtn);
+            blurGroup.add(bmsGuideRow);
+        }
 
         stylePage.add(blurGroup);
 
@@ -1815,9 +1877,21 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         const changelog = [
             {
+                version: "1.5.1",
+                subtitle: "Blur my Shell v76+ Pipeline Integration, Allocation Fix & Smooth Text Fade",
+                expanded: true,
+                notes: "Improvements & Fixes:\n" +
+                    "• Blur my Shell v76+ Native Pipeline Integration: Full native support for Blur my Shell's modern Dual Kawase DynamicPipeline backend — no gnome-rounded-blur dependency required on modern BMS versions.\n" +
+                    "• Multi-Tier Blur Fallbacks: Automatic seamless 3-tier fallback architecture (BMS Dynamic Pipeline -> BMS + gnome-rounded-blur -> graceful fallback).\n" +
+                    "• Pipeline Following Option: New toggle to inherit Blur my Shell's exact configured blur pipelines, effects, and brightness for the panel pill and pop-up.\n" +
+                    "• Fixed Stage View Allocation Log Warnings: Eliminated 'needs an allocation' log warnings during track transitions and pop-up open/close animations.\n" +
+                    "• Smoother Text Fade on Track Skip: Restored and tuned the song title & artist fade transition on track changes with a refined 600ms animation.\n" +
+                    "• Pop-up Stability & Skip Positioning Fix: Eliminated jitter, tremble, and unwanted horizontal repositioning when skipping tracks directly from the expanded pop-up player."
+            },
+            {
                 version: "1.5.0",
                 subtitle: "Dynamic Blur, Light Mode, Multi-Monitor & Simple Taskbar Support, Lyrics & UI Fixes",
-                expanded: true,
+                expanded: false,
                 notes: "New Features:\n" +
                     "• Dynamic Gaussian Blur: Native Wayland blur behind the pill and pop-up via Blur my Shell & gnome-rounded-blur, with adjustable Blur Radius (Sigma) and Album Art Color tinting.\n" +
                     "• Light Mode (#173): Bright pastel dynamic palette and frosted light glass with dark text and icons.\n" +

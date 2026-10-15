@@ -167,16 +167,12 @@ export const MusicPill = GObject.registerClass(
             this.add_child(this._blurBackdrop);
             this.add_child(this._body);
 
+            this._blurBackdrop.add_constraint(new Clutter.BindConstraint({
+                source: this._body,
+                coordinate: Clutter.BindCoordinate.ALL,
+            }));
+
             this._body.connectObject(
-                'notify::allocation', () => {
-                    if (this._blurBackdrop) {
-                        if (this._body.get_transition('width') || this._body.get_transition('height')) return;
-                        let [bw, bh] = this._body.get_size();
-                        if (bw > 0 && bh > 0 && (Math.abs(this._blurBackdrop.width - bw) > 1 || Math.abs(this._blurBackdrop.height - bh) > 1)) {
-                            this._blurBackdrop.set_size(bw, bh);
-                        }
-                    }
-                },
                 'notify::translation-x', () => {
                     if (this._blurBackdrop) this._blurBackdrop.translation_x = this._body.translation_x;
                 },
@@ -192,15 +188,12 @@ export const MusicPill = GObject.registerClass(
                 this
             );
 
-            let [bw, bh] = this._body.get_size();
-            if (bw > 0 && bh > 0) {
-                this._blurBackdrop.set_size(bw, bh);
-            }
-
             this._blurController = new ActorBlurController(
                 this._blurBackdrop,
                 () => this._radius || 28,
-                () => this._settings.get_int('blur-sigma')
+                () => this._settings.get_int('blur-sigma'),
+                'panel',
+                () => this._settings.get_boolean('bms-follow-pipeline')
             );
             if (this._settings.get_boolean('enable-blur-pill')) {
                 if (checkBlurRequirements()) {
@@ -459,6 +452,9 @@ export const MusicPill = GObject.registerClass(
             }, this);
             this._settings.connectObject('changed::blur-sigma', () => {
                 if (this._blurController) this._blurController.updateSigma(this._settings.get_int('blur-sigma'));
+            }, this);
+            this._settings.connectObject('changed::bms-follow-pipeline', () => {
+                if (this._blurController) this._blurController._refreshEffect();
             }, this);
             this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::shadow-opacity', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);

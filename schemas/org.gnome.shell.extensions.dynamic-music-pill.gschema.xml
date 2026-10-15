@@ -310,6 +310,11 @@
       <summary>Blur Radius (Sigma)</summary>
       <description>Strength of the Gaussian blur effect behind the pill and pop-up.</description>
     </key>
+    <key name="bms-follow-pipeline" type="b">
+      <default>true</default>
+      <summary>Follow Blur my Shell Pipelines</summary>
+      <description>Use the blur pipelines configured in Blur my Shell for the panel pill and pop-up.</description>
+    </key>
     <key name="enable-scroll-animation" type="b">
       <default>true</default>
       <summary>Enable Scroll Animation</summary>

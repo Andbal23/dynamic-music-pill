@@ -124,9 +124,9 @@ export const ScrollLabel = GObject.registerClass(
             this._container.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
             this.add_child(this._container);
 
-            this._label1 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER });
+            this._label1 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
             this._label2 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER });
-            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             this._label1.clutter_text.line_wrap = false;
             this._label2.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
             this._label2.clutter_text.line_wrap = false;
@@ -163,10 +163,32 @@ export const ScrollLabel = GObject.registerClass(
 
         vfunc_get_preferred_width(forHeight) {
             if (this._label1) {
-                let [minW, natW] = this._label1.get_preferred_width(forHeight);
+                let natW = this.getNaturalTextWidth();
                 return [0, natW];
             }
             return super.vfunc_get_preferred_width(forHeight);
+        }
+
+        getNaturalTextWidth() {
+            if (!this._label1 || !this._label1.clutter_text) return 0;
+            let ct = this._label1.clutter_text;
+            let prevMode = ct.ellipsize;
+            if (prevMode !== Pango.EllipsizeMode.NONE) {
+                ct.ellipsize = Pango.EllipsizeMode.NONE;
+            }
+            let natW = 0;
+            try {
+                let layout = ct.get_layout();
+                if (layout) {
+                    let [pixelW] = layout.get_pixel_size();
+                    natW = pixelW;
+                }
+            } catch (_) {}
+            let [, prefW] = this._label1.get_preferred_width(-1);
+            if (prevMode !== Pango.EllipsizeMode.NONE) {
+                ct.ellipsize = prevMode;
+            }
+            return Math.ceil(Math.max(natW, prefW || 0));
         }
 
         setLabelStyle(css) {
@@ -301,26 +323,31 @@ export const ScrollLabel = GObject.registerClass(
                 let boxWidth = this.get_allocation_box().get_width();
                 if (boxWidth <= 1) return GLib.SOURCE_REMOVE;
 
-                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
-                let textWidth = this._label1.get_preferred_width(-1)[1];
-
-                let needsScroll = (textWidth > boxWidth + 5) && (this._settings.get_boolean('scroll-text') || this._lyricTime > 0);
+                let textWidth = this.getNaturalTextWidth();
+                let overflows = textWidth > boxWidth + 2;
+                let needsScroll = overflows && (this._settings.get_boolean('scroll-text') || this._lyricTime > 0);
                 let isScrolling = (this._scrollTimer != null) || this._isScrolling;
 
                 if (needsScroll && !isScrolling) {
                     this._container.x_align = Clutter.ActorAlign.START;
                     if (this._lyricTime > 0) this._startLyricScroll(textWidth);
                     else if (!this._hoverOnly || this._hovered || this._forceScroll) this._startInfiniteScroll(textWidth);
+                    else {
+                        this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+                        this._label1.x_expand = true;
+                    }
                 } else if (!needsScroll && isScrolling) {
                     this._stopAnimation(true);
-                    this._container.x_align = Clutter.ActorAlign.CENTER;
+                    this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
                     this._label2.hide();
                     this._separator.hide();
                     this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+                    this._label1.x_expand = true;
                 } else if (!needsScroll) {
                     this._stopAnimation(true);
-                    this._container.x_align = Clutter.ActorAlign.CENTER;
+                    this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
                     this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+                    this._label1.x_expand = true;
                 }
 
                 return GLib.SOURCE_REMOVE;
@@ -350,14 +377,15 @@ export const ScrollLabel = GObject.registerClass(
             this._label2.text = this._text;
             this._label2.hide();
             this._separator.hide();
-            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+            this._label1.x_expand = true;
 
             this._label1.remove_transition('opacity');
             let isLyric = (lyricTime > 0);
             let lyricFadeEnabled = this._settings ? this._settings.get_boolean('lyric-fade-enable') : false;
 
-            if (isLyric && lyricFadeEnabled) {
-                let duration = (this._settings) ? this._settings.get_int('lyric-fade-duration') : 300;
+            if (!isLyric || (isLyric && lyricFadeEnabled)) {
+                let duration = (isLyric && this._settings) ? this._settings.get_int('lyric-fade-duration') : 600;
                 this._label1.opacity = 0;
                 this._label1.ease({
                     opacity: 255,
@@ -366,10 +394,6 @@ export const ScrollLabel = GObject.registerClass(
                 });
             } else {
                 this._label1.opacity = 255;
-            }
-
-            if (!this._settings.get_boolean('scroll-text') && !this._lyricTime) {
-                return;
             }
 
             // Don't schedule scroll measurement while paused
@@ -396,6 +420,10 @@ export const ScrollLabel = GObject.registerClass(
             this._container.remove_all_transitions();
             if (resetPosition) this._container.translation_x = 0;
             if (this._scrollTimer) { GLib.Source.remove(this._scrollTimer); this._scrollTimer = null; }
+            if (this._label1) {
+                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+                this._label1.x_expand = true;
+            }
         }
 
         _checkOverflow() {
@@ -403,24 +431,25 @@ export const ScrollLabel = GObject.registerClass(
             let boxWidth = this.get_allocation_box().get_width();
             if (boxWidth <= 1) return;
 
-            let textWidth = this._label1.get_preferred_width(-1)[1];
-            let needsScroll = textWidth > boxWidth + 5;
+            let textWidth = this.getNaturalTextWidth();
+            let overflows = textWidth > boxWidth + 2;
+            let needsScroll = overflows && (this._settings.get_boolean('scroll-text') || this._lyricTime > 0);
 
             if (needsScroll) {
                 this._container.x_align = Clutter.ActorAlign.START;
                 if (this._lyricTime > 0) {
                     this._startLyricScroll(textWidth);
-                } else if (this._settings.get_boolean('scroll-text')) {
-                    if (!this._hoverOnly || this._hovered || this._forceScroll) {
-                        this._startInfiniteScroll(textWidth);
-                    }
+                } else if (!this._hoverOnly || this._hovered || this._forceScroll) {
+                    this._startInfiniteScroll(textWidth);
                 } else {
                     this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+                    this._label1.x_expand = true;
                 }
             } else {
                 this._stopAnimation(true);
-                this._container.x_align = Clutter.ActorAlign.CENTER;
+                this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+                this._label1.x_expand = true;
             }
         }
 
@@ -429,6 +458,10 @@ export const ScrollLabel = GObject.registerClass(
             this._isScrolling = true;
             this._label2.show();
             this._separator.show();
+            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            this._label2.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            this._label1.x_expand = false;
+            this._label2.x_expand = false;
             const distance = textWidth + 30;
             const duration = (distance / 30) * 1000;
 
@@ -479,6 +512,8 @@ export const ScrollLabel = GObject.registerClass(
             this._isScrolling = true;
             this._label2.hide();
             this._separator.hide();
+            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            this._label1.x_expand = false;
 
             let boxWidth = this.get_allocation_box().get_width();
             const distance = textWidth - boxWidth;
