@@ -1426,6 +1426,58 @@ msgstr ""
 msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
 msgstr ""
 
+#: prefs.js:954
+msgid "Controls"
+msgstr ""
+
+#: prefs.js:1037
+msgid "Scroll Controls"
+msgstr ""
+
+#: prefs.js:1111
+msgid "On-Pill Buttons (Tablet Mode)"
+msgstr ""
+
+#: prefs.js:1146
+msgid "Lyrics"
+msgstr ""
+
+#: prefs.js:1153
+msgid "Interactive Pop-up Lyrics"
+msgstr ""
+
+#: prefs.js:1154
+msgid "💡 Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgstr ""
+
+#: prefs.js:1162
+msgid "Lyrics & Karaoke"
+msgstr ""
+
+#: prefs.js:1163
+msgid "Real-time synchronized lyrics with multi-provider karaoke support."
+msgstr ""
+
+#: prefs.js:1339
+msgid "Please install %s for dynamic blur."
+msgstr ""
+
+#: prefs.js:1339
+msgid "and"
+msgstr ""
+
+#: prefs.js:1358
+msgid "Note: Dynamic blur requires %s to be installed."
+msgstr ""
+
+#: prefs.js:1599
+msgid "Audio Visualizers"
+msgstr ""
+
+#: prefs.js:1682
+msgid "Enable audio visualizer bars inside the expanded player"
+msgstr ""
+
 #~ msgid "Unmute"
 #~ msgstr "Aktifkan suara"
 
