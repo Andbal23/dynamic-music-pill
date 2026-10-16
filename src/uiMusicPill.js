@@ -714,7 +714,7 @@ export const MusicPill = GObject.registerClass(
                         }
                     } catch (_) {
                         targetHopY = this._isSidePanel ? 0 : 12;
-                        targetHopX = this._isSidePanel ? 12 : 0;
+                        targetHopX = this._isSidePanel ? 14 : 0;
                     }
                     this._visBin.ease({
                         opacity: 0,
@@ -731,6 +731,7 @@ export const MusicPill = GObject.registerClass(
                             this._visBin.translation_y = 0;
                             this._visBin.scale_x = 1.0;
                             this._visBin.scale_y = 1.0;
+                            this._visBin.opacity = 0;
                             this._updateDimensions();
                         }
                     });
@@ -739,6 +740,14 @@ export const MusicPill = GObject.registerClass(
             } else {
                 let hidePillVis = this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
                 this._visAnimatingHide = false;
+                if (this._titleScroll) {
+                    this._titleScroll.setPendingScrollStop(false);
+                    this._titleScroll.ignoreResizeFor(400);
+                }
+                if (this._artistScroll) {
+                    this._artistScroll.setPendingScrollStop(false);
+                    this._artistScroll.ignoreResizeFor(400);
+                }
                 this._updateDimensions();
                 if (hidePillVis && this._visBin && this._visBin.visible) {
                     let targetHopY = 12;
@@ -758,9 +767,9 @@ export const MusicPill = GObject.registerClass(
                         }
                     } catch (_) {
                         targetHopY = this._isSidePanel ? 0 : 12;
-                        targetHopX = this._isSidePanel ? 12 : 0;
+                        targetHopX = this._isSidePanel ? 14 : 0;
                     }
-                    let targetOp = (this._settings.get_boolean('enable-transparency') && this._settings.get_boolean('transparent-visualizer'))
+                    let targetOp = (this._settings.get_boolean('enable-transparency') && this._settings.get_boolean('transparency-vis'))
                         ? Math.round(this._settings.get_int('transparency-level') * 2.55) : 255;
                     this._visBin.remove_all_transitions();
                     this._visBin.set_pivot_point(0.5, 0.5);
@@ -932,9 +941,9 @@ export const MusicPill = GObject.registerClass(
             }
 
             let artRadius = Math.max(4, this._radius - (isSidePanel ? this._padX : this._padY));
-            let maxArtHeight = (isSidePanel ? width : height) - (2 * (isSidePanel ? this._padX : this._padY));
-            if (maxArtHeight < 10) maxArtHeight = 10;
-            let finalArtSize = Math.min(prefArtSize, maxArtHeight);
+            let maxArtDim = height - (2 * (isSidePanel ? this._padX : this._padY));
+            if (maxArtDim < 10) maxArtDim = 10;
+            let finalArtSize = Math.min(prefArtSize, maxArtDim);
 
             this._artWidget.set_width(finalArtSize);
             this._artWidget.set_height(finalArtSize);
@@ -944,7 +953,8 @@ export const MusicPill = GObject.registerClass(
             this._artWidget.setRadius(artRadius);
             this._artWidget.setShadowStyle(this._shadowCSS);
             this._visualizer.setMode(visStyle);
-            this._visualizer.setHeightClamped(maxArtHeight);
+            this._visualizer.setHeightClamped(maxArtDim);
+            this._visualizer.setSidePanel(isSidePanel, finalArtSize);
 
             let tabletSetting = 0;
             try {
@@ -977,14 +987,14 @@ export const MusicPill = GObject.registerClass(
             }
 
             let forceHideVis = this._isPopupOpen && !this._visAnimatingHide && this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
-
-            if (this._currentStatus === 'Stopped' && (!this._origTitle || this._origTitle === _('No Media') || this._origTitle === 'No Media')) {
-                forceHideVis = true;
-            }
-
             let isDynamic = this._settings.get_boolean('pill-dynamic-width');
 
-            if ((width < 220 && !hideText && !isDynamic) || visStyle === 0 || forceHideVis) {
+            let permanentHideVis = ((width < 220 && !hideText && !isDynamic) || visStyle === 0);
+            if (this._currentStatus === 'Stopped' && (!this._origTitle || this._origTitle === _('No Media') || this._origTitle === 'No Media')) {
+                permanentHideVis = true;
+            }
+
+            if (permanentHideVis) {
                 this._visBin.hide();
                 this._visBin.set_width(0);
                 this._visBin.set_height(0);
@@ -1006,13 +1016,35 @@ export const MusicPill = GObject.registerClass(
                     this._visBin.set_style(`margin-top: ${sideMargin}px; margin-left: 0px;`);
                     this._visBin.set_height(-1);
                     this._visBin.set_width(finalArtSize);
+                    this._visBin.x_align = Clutter.ActorAlign.CENTER;
+                    this._artBin.x_align = Clutter.ActorAlign.CENTER;
+                    if (this._tabletControls) this._tabletControls.x_align = Clutter.ActorAlign.CENTER;
                     this._artBin.set_style(`margin-bottom: ${sideMargin}px; margin-right: 0px;`);
                 } else {
                     this._visBin.set_style(`margin-left: ${sideMargin}px; margin-top: 0px;`);
                     this._visBin.set_width(-1);
                     this._visBin.set_height(-1);
+                    this._visBin.x_align = Clutter.ActorAlign.END;
+                    this._artBin.x_align = Clutter.ActorAlign.START;
                     this._artBin.set_style(`margin-right: ${sideMargin}px; margin-bottom: 0px;`);
                 }
+
+                if (forceHideVis) {
+                    this._visBin.opacity = 0;
+                    this._visBin.reactive = false;
+                } else if (!this._visAnimatingHide && !this._visBin.get_transition('opacity')) {
+                    let hidePillVis = this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
+                    if (!hidePillVis || !this._isPopupOpen) {
+                        let targetOp = (this._settings.get_boolean('enable-transparency') && this._settings.get_boolean('transparency-vis'))
+                            ? Math.round(this._settings.get_int('transparency-level') * 2.55) : 255;
+                        this._visBin.opacity = targetOp;
+                    }
+                }
+            }
+
+            if (!this._visAnimatingHide && this._visBin && !this._visBin.get_transition('translation_x')) {
+                this._visBin.translation_x = 0;
+                this._visBin.translation_y = 0;
             }
 
             let isLightMode = this._settings.get_boolean('light-mode');
@@ -1067,6 +1099,8 @@ export const MusicPill = GObject.registerClass(
                 this._targetWidth = targetWidth;
 
                 if (this._isActiveState && this._body.height > 0 && this._body.height !== targetHeight) {
+                    if (this._titleScroll) this._titleScroll.ignoreResizeFor(450);
+                    if (this._artistScroll) this._artistScroll.ignoreResizeFor(450);
                     this._body.ease({ height: targetHeight, width: targetWidth, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     if (this._blurBackdrop) this._blurBackdrop.ease({ height: targetHeight, width: targetWidth, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 } else {
@@ -1087,7 +1121,7 @@ export const MusicPill = GObject.registerClass(
                     let currentSideMargin = hideText ? 4 : this._settings.get_int('visualizer-padding');
 
                     if (this._artBin.visible) {
-                        let isVisHidden = ((width < 220 && !hideText) || visStyle === 0 || forceHideVis);
+                        let isVisHidden = permanentHideVis;
                         let artM = 0;
                         if (isVisHidden) {
                             artM = hideText ? 0 : ((!tabletSetting || this._gameModeActive) ? ((width < 180) ? 4 : 8) : 2);
@@ -1124,6 +1158,8 @@ export const MusicPill = GObject.registerClass(
                 this._targetHeight = targetHeight;
 
                 if (this._isActiveState && this._body.width > 0 && this._body.width !== targetWidth) {
+                    if (this._titleScroll) this._titleScroll.ignoreResizeFor(450);
+                    if (this._artistScroll) this._artistScroll.ignoreResizeFor(450);
                     this._body.ease({ width: targetWidth, height: targetHeight, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     if (this._blurBackdrop) this._blurBackdrop.ease({ width: targetWidth, height: targetHeight, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 } else {
@@ -1181,6 +1217,8 @@ export const MusicPill = GObject.registerClass(
                     }
 
                     if (Math.abs(newTarget - this._targetWidth) > 10) {
+                        if (this._titleScroll) this._titleScroll.ignoreResizeFor(350);
+                        if (this._artistScroll) this._artistScroll.ignoreResizeFor(350);
                         this._targetWidth = newTarget;
                         this._body.ease({
                             width: newTarget,

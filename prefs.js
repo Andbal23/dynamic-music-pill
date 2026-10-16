@@ -32,9 +32,22 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
+        version: '1.5.2',
+        subtitle: 'Vertical Dock Visualizer Fix, Text Center Snap Fix & Weblate Translations',
+        expanded: true,
+        notes: 'Improvements & Bug Fixes:\n' +
+            '• Visualizer Clipping & Centering in Vertical Docks: Visualizer bars now dynamically adjust bar width, gap, and horizontal alignment in left/right side docks, eliminating clipping.\n' +
+            '• CAVA Frequency Resampling Refinements: Enhanced frequency distribution with combined average + peak resampling and high-frequency perceptual compensation for dynamic, full-spectrum bar activity.\n' +
+            '• Text Alignment & Squeezing Fix on Pop-up Close: Kept pill visualizer space reserved during pop-up open state, eliminating layout squish and premature text jumping between start and center.\n' +
+            '• Text Fade & Scrolling Polish: Preserved continuous edge fade effects during scrolling and eliminated temporary ellipsis flash when resuming playback.\n' +
+            '• Album Art Clamping: Clamped maximum album art dimensions in side docks to prevent layout overflows.\n\n' +
+            'Translations:\n' +
+            '• Updated translations from Hosted Weblate, including 100% Brazilian Portuguese (#178).',
+    },
+    {
         version: '1.5.1',
         subtitle: 'Blur my Shell v76+ Pipeline Integration, Allocation Fix & Smooth Text Fade',
-        expanded: true,
+        expanded: false,
         notes: 'Improvements & Fixes:\n' +
             '• Blur my Shell v76+ Native Pipeline Integration: Full native support for Blur my Shell\'s modern Dual Kawase DynamicPipeline backend — no gnome-rounded-blur dependency required on modern BMS versions.\n' +
             '• Multi-Tier Blur Fallbacks: Automatic seamless 3-tier fallback architecture (BMS Dynamic Pipeline -> BMS + gnome-rounded-blur -> graceful fallback).\n' +
@@ -2274,7 +2287,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             title: _('Support the Project'),
         });
 
-        const versionName = this.metadata?.['version-name'] || '1.5.1';
+        const versionName = this.metadata?.['version-name'] || '1.5.2';
         const infoRow = new Adw.ActionRow({
             title: this.metadata?.name || 'Dynamic Music Pill',
             subtitle: `v${versionName} • GNOME Shell Extension`,

@@ -47,12 +47,52 @@ const CavaVisualizer = GObject.registerClass(
             this._engine.subscribe(this._engineCallback);
         }
 
+        setSidePanel(isSidePanel, maxWidth) {
+            this._isSidePanel = isSidePanel;
+            this._maxWidth = maxWidth;
+            this._updateBarCount();
+        }
+
         _updateBarCount() {
-            this._barCount = this._isPopup ? (this._settings.get_int('popup-visualizer-bars') || 10) : (this._settings.get_int('visualizer-bars') || 10);
-            let bw = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
+            let desiredBars = this._isPopup ? (this._settings.get_int('popup-visualizer-bars') || 10) : (this._settings.get_int('visualizer-bars') || 10);
+            let desiredBw = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
+            let gap = 2;
+            let barCount = desiredBars;
+            let bw = desiredBw;
+
+            if (this._isSidePanel && this._maxWidth && !this._isPopup) {
+                let availW = Math.max(10, Math.floor(this._maxWidth));
+                if (barCount * (bw + gap) - gap > availW) {
+                    if (bw > 2 && barCount * (2 + gap) - gap <= availW) {
+                        bw = 2;
+                    } else if (barCount * (bw + 1) - 1 <= availW) {
+                        gap = 1;
+                    } else if (barCount * (2 + 1) - 1 <= availW) {
+                        bw = 2;
+                        gap = 1;
+                    } else if (barCount * (1 + 1) - 1 <= availW) {
+                        bw = 1;
+                        gap = 1;
+                    } else {
+                        bw = 1;
+                        gap = 1;
+                        barCount = Math.max(3, Math.floor((availW + gap) / (bw + gap)));
+                    }
+                }
+            }
+
+            this._barCount = barCount;
+            this._barWidth = bw;
+            this._gap = gap;
             this._prevHeights = new Array(this._barCount).fill(1);
             this._peakValues = new Array(this._barCount).fill(0);
-            this.set_width(this._barCount * (bw + 2) - 2);
+
+            let naturalWidth = this._barCount * (bw + gap) - gap;
+            if (this._isSidePanel && this._maxWidth && !this._isPopup) {
+                this.set_width(Math.max(naturalWidth, Math.floor(this._maxWidth)));
+            } else {
+                this.set_width(naturalWidth);
+            }
         }
 
         setColor(c, isExact = false) {
@@ -85,11 +125,17 @@ const CavaVisualizer = GObject.registerClass(
             for (let i = 0; i < targetCount; i++) {
                 let start = Math.floor(i * ratio);
                 let end = Math.floor((i + 1) * ratio);
-                let sum = 0, count = 0;
+                let sum = 0, maxVal = 0, count = 0;
                 for (let j = start; j < end && j < rawData.length; j++) {
-                    sum += rawData[j]; count++;
+                    let v = rawData[j];
+                    sum += v;
+                    if (v > maxVal) maxVal = v;
+                    count++;
                 }
-                result[i] = count > 0 ? (sum / count) : 0;
+                let avg = count > 0 ? (sum / count) : 0;
+                let blended = avg * 0.65 + maxVal * 0.35;
+                let trebleBoost = 1.0 + (i / Math.max(1, targetCount - 1)) * 0.6;
+                result[i] = Math.min(1.0, blended * trebleBoost);
             }
             return result;
         }
@@ -109,7 +155,7 @@ const CavaVisualizer = GObject.registerClass(
             let myBars = this._resampleBars(normalizedBars, this._barCount);
 
             let totalHeight = this.get_height() || 24;
-            let maxHalfHeight = totalHeight / 2;
+            let maxHalfHeight = Math.max(1, Math.floor((totalHeight - 4) / 2));
 
             for (let i = 0; i < this._barCount; i++) {
                 let norm = myBars[i];
@@ -141,13 +187,15 @@ const CavaVisualizer = GObject.registerClass(
             cr.setOperator(Cairo.Operator.CLEAR);
             cr.paint();
             cr.setOperator(Cairo.Operator.OVER);
-            let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
-            let gap = 2;
-            let offsetX = 0;
+            let barWidth = this._barWidth || (this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2));
+            let gap = this._gap !== undefined ? this._gap : 2;
+            let totalBarsWidth = this._barCount * (barWidth + gap) - gap;
+            let offsetX = Math.max(0, Math.floor((width - totalBarsWidth) / 2));
             let centerY = Math.floor(height / 2);
+            let maxHalfHeight = Math.max(1, Math.floor((height - 4) / 2));
 
             for (let i = 0; i < this._barCount; i++) {
-                let halfHeight = Math.max(1, this._prevHeights[i]);
+                let halfHeight = Math.min(maxHalfHeight, Math.max(1, this._prevHeights[i]));
                 let x = offsetX + i * (barWidth + gap);
                 let edgeFade = 1 - (Math.abs(i - (this._barCount - 1) / 2) / ((this._barCount - 1) / 2)) * 0.35;
                 let barAlpha = this._isSilent ? 0.3 * edgeFade : 1.0 * edgeFade;
@@ -157,7 +205,7 @@ const CavaVisualizer = GObject.registerClass(
                 cr.fill();
 
                 if (!this._isSilent) {
-                    let peak = Math.max(1, this._peakValues[i]);
+                    let peak = Math.min(maxHalfHeight + 1, Math.max(1, this._peakValues[i]));
                     cr.setSourceRGBA(this._colorR, this._colorG, this._colorB, barAlpha * 0.55);
                     cr.rectangle(x, centerY - peak - 1, barWidth, 1);
                     cr.fill();
@@ -198,11 +246,43 @@ const SimulatedVisualizer = GObject.registerClass(
             this._updateBarCount();
         }
 
+        setSidePanel(isSidePanel, maxWidth) {
+            this._isSidePanel = isSidePanel;
+            this._maxWidth = maxWidth;
+            this.x_align = isSidePanel ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.END;
+            this._updateBarCount();
+        }
+
         _updateBarCount() {
             this.destroy_all_children();
             this._bars = [];
             let count = this._isPopup ? (this._settings.get_int('popup-visualizer-bars') || 10) : (this._settings.get_int('visualizer-bars') || 4);
             let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
+            let gap = 2;
+
+            if (this._isSidePanel && this._maxWidth && !this._isPopup) {
+                let availW = Math.max(10, Math.floor(this._maxWidth));
+                if (count * (barWidth + gap) - gap > availW) {
+                    if (barWidth > 2 && count * (2 + gap) - gap <= availW) {
+                        barWidth = 2;
+                    } else if (count * (barWidth + 1) - 1 <= availW) {
+                        gap = 1;
+                    } else if (count * (2 + 1) - 1 <= availW) {
+                        barWidth = 2;
+                        gap = 1;
+                    } else if (count * (1 + 1) - 1 <= availW) {
+                        barWidth = 1;
+                        gap = 1;
+                    } else {
+                        barWidth = 1;
+                        gap = 1;
+                        count = Math.max(3, Math.floor((availW + gap) / (barWidth + gap)));
+                    }
+                }
+            }
+
+            this.set_style(`spacing: ${gap}px;`);
+            this._barWidth = barWidth;
 
             for (let i = 0; i < count; i++) {
                 let bar = new St.Widget({ name: 'simulated-visualizer-bar', style_class: 'visualizer-bar', y_expand: true, y_align: Clutter.ActorAlign.FILL });
@@ -272,7 +352,7 @@ const SimulatedVisualizer = GObject.registerClass(
 
         _updateBarsCss() {
             let opacity = this._isPlaying ? 1.0 : 0.4;
-            let barWidth = this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2);
+            let barWidth = this._barWidth || (this._isPopup ? (this._settings.get_int('popup-visualizer-bar-width') || 2) : (this._settings.get_int('visualizer-bar-width') || 2));
             let bRad = barWidth >= 4 ? 2 : (barWidth > 1 ? 1 : 0);
             let css = `background-color: rgba(${this._color}, ${opacity}); border-radius: ${bRad}px;`;
             this._bars.forEach(bar => { bar.set_style(css); });
@@ -329,6 +409,19 @@ export const WaveformVisualizer = GObject.registerClass(
             this.connect('destroy', () => this._cleanup());
         }
 
+        setSidePanel(isSidePanel, maxWidth) {
+            this._isSidePanel = isSidePanel;
+            this._maxWidth = maxWidth;
+            this.x_align = isSidePanel ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.END;
+            if (this._simulated) {
+                this._simulated.setSidePanel(isSidePanel, maxWidth);
+            }
+            if (this._cava) {
+                this._cava.setSidePanel(isSidePanel, maxWidth);
+            }
+            this._updateSize();
+        }
+
         _updateSize() {
             let h = this._isPopup ? (this._settings.get_int('popup-visualizer-height') || 80) : (this._settings.get_int('visualizer-height') || 24);
             if (this._maxHeight && !this._isPopup) h = Math.min(h, this._maxHeight);
@@ -358,6 +451,9 @@ export const WaveformVisualizer = GObject.registerClass(
                 if (!this._cava) {
                     this._cava = new CavaVisualizer(this._settings, this._isPopup);
                     if (this._lastColor) this._cava.setColor(this._lastColor, this._lastExact);
+                    if (this._isSidePanel !== undefined) {
+                        this._cava.setSidePanel(this._isSidePanel, this._maxWidth);
+                    }
                 }
                 if (this.get_child() !== this._cava) this.set_child(this._cava);
                 this._cava.setPlaying(this._isPlaying);

@@ -150,6 +150,7 @@ export const ScrollLabel = GObject.registerClass(
             }, this);
 
             this.connectObject('notify::allocation', () => {
+                if (this._ignoreResizeUntil && Date.now() < this._ignoreResizeUntil) return;
                 if (this._resizeTimer) { GLib.Source.remove(this._resizeTimer); this._resizeTimer = null; }
                 this._resizeTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                     this._resizeTimer = null;
@@ -316,6 +317,19 @@ export const ScrollLabel = GObject.registerClass(
             this._pendingScrollStop = stop;
         }
 
+        ignoreResizeFor(ms = 500) {
+            this._ignoreResizeUntil = Date.now() + ms;
+            if (this._resizeTimer) { GLib.Source.remove(this._resizeTimer); this._resizeTimer = null; }
+            if (this._measureTimeout) { GLib.Source.remove(this._measureTimeout); this._measureTimeout = null; }
+            if (this._idleResizeId) { GLib.Source.remove(this._idleResizeId); this._idleResizeId = null; }
+            this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms + 50, () => {
+                this._measureTimeout = null;
+                this._ignoreResizeUntil = 0;
+                if (this.has_allocation()) this._checkResize();
+                return GLib.SOURCE_REMOVE;
+            });
+        }
+
         _checkResize() {
             if (!this._text || this._gameMode || this._paused) return;
 
@@ -331,6 +345,7 @@ export const ScrollLabel = GObject.registerClass(
                 if (this._lyricFinished) return GLib.SOURCE_REMOVE;
                 // Re-check paused/gameMode state — may have changed since idle was scheduled
                 if (this._gameMode || this._paused) return GLib.SOURCE_REMOVE;
+                if (this._ignoreResizeUntil && Date.now() < this._ignoreResizeUntil) return GLib.SOURCE_REMOVE;
 
                 let boxWidth = this.get_allocation_box().get_width();
                 if (boxWidth <= 1) return GLib.SOURCE_REMOVE;
@@ -390,13 +405,19 @@ export const ScrollLabel = GObject.registerClass(
             this._separator.hide();
 
             // Determine if the text overflows and will scroll to avoid ellipsis flicker
+            let isDynamic = this._settings && this._settings.get_boolean('pill-dynamic-width');
             let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
             let textWidth = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
             let overflows = (boxWidth > 1) ? (textWidth > boxWidth + 2) : false;
             let scrollSetting = this._settings ? this._settings.get_boolean('scroll-text') : false;
             let willScroll = overflows && (scrollSetting || lyricTime > 0);
 
-            if (willScroll) {
+            if (isDynamic && lyricTime <= 0) {
+                // In dynamic width mode, pill expands to fit the text, so start centered
+                this._container.x_align = Clutter.ActorAlign.CENTER;
+                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+                this._label1.x_expand = true;
+            } else if (willScroll) {
                 this._container.x_align = Clutter.ActorAlign.START;
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
                 this._label1.x_expand = false;
@@ -430,19 +451,8 @@ export const ScrollLabel = GObject.registerClass(
             // Don't schedule scroll measurement while paused
             if (this._paused) return;
 
-            let isDynamic = this._settings && this._settings.get_boolean('pill-dynamic-width');
-            if (isDynamic) {
-                this._ignoreResizeUntil = Date.now() + 450;
-            }
-
             let delay = isDynamic ? 450 : 100;
-
-            if (this._measureTimeout) { GLib.Source.remove(this._measureTimeout); this._measureTimeout = null; }
-            this._measureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
-                this._measureTimeout = null;
-                if (this.has_allocation()) this._checkOverflow();
-                return GLib.SOURCE_REMOVE;
-            });
+            this.ignoreResizeFor(delay);
         }
 
         _stopAnimation(resetPosition = true) {
@@ -462,6 +472,7 @@ export const ScrollLabel = GObject.registerClass(
 
         _checkOverflow() {
             if (this._gameMode || this._paused || !this.get_parent()) return;
+            if (this._ignoreResizeUntil && Date.now() < this._ignoreResizeUntil) return;
             let boxWidth = this.get_allocation_box().get_width();
             if (boxWidth <= 1) return;
 
@@ -531,6 +542,13 @@ export const ScrollLabel = GObject.registerClass(
                             if (!isFinished || this._gameMode || this._pendingScrollStop) {
                                 this._isScrolling = false;
                                 this._pendingScrollStop = false;
+                                this._stopAnimation(true);
+                                let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
+                                let textW = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
+                                let overflows = (boxWidth > 1) && (textW > boxWidth + 2);
+                                this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+                                this._label2.hide();
+                                this._separator.hide();
                                 return;
                             }
 
