@@ -4,8 +4,9 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-08-09 10:51+0000\n"
-"Last-Translator: Guilherme Odai <guilherme.odai@outlook.com>\n"
+"PO-Revision-Date: 2026-10-16 17:37+0000\n"
+"Last-Translator: Guilherme Odai "
+"<guilhermeodai@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "dynamic-music-pill/settings/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -13,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.9.dev0\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: prefs.js:39
 msgid "Main Pill"
@@ -105,11 +106,11 @@ msgstr "Escolha qual fonte de áudio controlar quando rolar o volume"
 
 #: prefs.js:204
 msgid "Scroll Animation"
-msgstr ""
+msgstr "Animação de Rolagem"
 
 #: prefs.js:205
 msgid "Animate the pill with a jump effect when scrolling"
-msgstr ""
+msgstr "Anima a pílula com um efeito de salto durante a rolagem"
 
 #: prefs.js:217
 msgid "Invert Scroll Animation"
@@ -545,7 +546,8 @@ msgstr "Botões de Controle Personalizados"
 
 #: prefs.js:696
 msgid "Add up to two extra buttons in the expanded player's controls row."
-msgstr "Adicione até 2 botões extras à linha de controles do player expandido."
+msgstr ""
+"Adicione até 2 botões extras à linha de controles do reprodutor expandido."
 
 #: prefs.js:700
 msgid "Enable Custom Buttons"
@@ -820,7 +822,7 @@ msgstr "Deslocamento Vertical (Y)"
 
 #: prefs.js:984
 msgid "Shift Up (-) or Down (+)"
-msgstr "Mover Acima (-) ou Abaixo (+)"
+msgstr "Move Acima (-) ou Abaixo (+)"
 
 #: prefs.js:991
 msgid "Horizontal Offset (X)"
@@ -828,7 +830,7 @@ msgstr "Deslocamento Horizontal (X)"
 
 #: prefs.js:992
 msgid "Shift Left (-) or Right (+)"
-msgstr "Mover para Esquerda (-) ou Direita (+)"
+msgstr "Move para Esquerda (-) ou Direita (+)"
 
 #: prefs.js:998
 msgid "Dimensions (Dock Mode)"
@@ -882,7 +884,7 @@ msgstr "Cor do Texto"
 
 #: prefs.js:1086
 msgid "Visualizer Color"
-msgstr ""
+msgstr "Cor do Visualizador"
 
 #: prefs.js:1096
 msgid "System & Reset"
@@ -1298,33 +1300,37 @@ msgstr "Desfoque dinâmico (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Aplicar desfoque gaussiano atrás da pílula e do pop-up usando Blur my Shell ou gnome-rounded-blur."
+msgstr ""
+"Aplica desfoque gaussiano atrás da pílula e do pop-up usando Blur my Shell "
+"ou gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
-msgstr "Ativar desfoque na pílula"
+msgstr "Ativar Desfoque na Pílula"
 
 #: prefs.js:911
 msgid "Blur the background behind the music pill"
-msgstr "Desfocar o fundo atrás da pílula de música"
+msgstr "Desfoca o fundo atrás da pílula de música"
 
 #: prefs.js:920
 msgid "Enable Blur for Pop-up"
-msgstr "Ativar desfoque no pop-up"
+msgstr "Ativar Desfoque no Pop-up"
 
 #: prefs.js:921
 msgid "Blur the background behind the expanded player pop-up"
-msgstr "Desfocar o fundo atrás do pop-up do player expandido"
+msgstr "Desfoca o fundo atrás do pop-up do reprodutor expandido"
 
 #: prefs.js:930
 msgid "Tint Blur with Album Art Color"
-msgstr "Tingir desfoque com a cor da capa do álbum"
+msgstr "Tingir Desfoque com a Cor da Capa do Álbum"
 
 #: prefs.js:931
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr "Misturar cores dinâmicas do álbum sobre o fundo desfocado em vez de vidro fosco neutro"
+msgstr ""
+"Mistura as cores do álbum dinamicamente sobre o fundo desfocado em vez de "
+"vidro fosco neutro"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1332,7 +1338,7 @@ msgstr "Extensão Blur my Shell"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr "Recomendado para desfoque dinâmico nativo no Wayland"
+msgstr "Recomendada para desfoque dinâmico nativo no Wayland"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
@@ -1388,7 +1394,7 @@ msgstr "Quais docks exibem a pílula quando a dock está em todos os monitores"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
-msgstr "Raio do desfoque (Sigma)"
+msgstr "Raio do Desfoque (Sigma)"
 
 #: prefs.js:1031
 msgid "Strength of the Gaussian blur effect"
@@ -1396,88 +1402,95 @@ msgstr "Intensidade do efeito de desfoque gaussiano"
 
 #: prefs.js:1257
 msgid "Light Mode"
-msgstr "Modo claro"
+msgstr "Modo Claro"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Usar uma paleta pastel clara para fundos dinâmicos e texto/ícones escuros"
+msgstr ""
+"Usa uma paleta pastel clara para fundos dinâmicos e texto/ícones escuros"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
-msgstr ""
+msgstr "Aplica desfoque gaussiano nativo Dual Kawase atrás da pílula e pop-up."
 
 #: prefs.js:1071
 msgid "Follow Blur my Shell Pipelines"
-msgstr ""
+msgstr "Seguir Pipelines do Blur my Shell"
 
 #: prefs.js:1072
 msgid "Use the blur pipelines and effects configured in Blur my Shell"
-msgstr ""
+msgstr "Usa os pipelines de desfoque e efeitos configurados no Blur my Shell"
 
 #: prefs.js:1086
 msgid "Controlled by Blur my Shell pipeline"
-msgstr ""
+msgstr "Controlado por pipeline do Blur my Shell"
 
 #: prefs.js:1098
 msgid "Native Dual Kawase blur backend active (v76+)"
-msgstr ""
+msgstr "Backend de desfoque nativo Dual Kawase ativo (v76+)"
 
 #: src/blurHelper.js:137
 msgid "Please install \"Blur my Shell\" for dynamic blur."
-msgstr ""
+msgstr "Instale a extensão \"Blur my Shell\" para usar o desfoque dinâmico."
 
 #: src/blurHelper.js:139
 msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
 msgstr ""
+"Por favor, atualize o \"Blur my Shell\" ou instale o pacote \"gnome-rounded-"
+"blur\" para usar o desfoque dinâmico."
 
 #: prefs.js:954
 msgid "Controls"
-msgstr ""
+msgstr "Controles"
 
 #: prefs.js:1037
 msgid "Scroll Controls"
-msgstr ""
+msgstr "Controles de Rolagem"
 
 #: prefs.js:1111
 msgid "On-Pill Buttons (Tablet Mode)"
-msgstr ""
+msgstr "Botões da Pílula (Modo Tablet)"
 
 #: prefs.js:1146
 msgid "Lyrics"
-msgstr ""
+msgstr "Letras"
 
 #: prefs.js:1153
 msgid "Interactive Pop-up Lyrics"
-msgstr ""
+msgstr "Letras Interativas no Pop-up"
 
 #: prefs.js:1154
 msgid "💡 Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
 msgstr ""
+"💡Dica: Clicar na capa do álbum ou vinil dentro do reprodutor expandido abre "
+"instantaneamente a visualização de letras sincronizadas!"
 
 #: prefs.js:1162
 msgid "Lyrics & Karaoke"
-msgstr ""
+msgstr "Letras & Karaokê"
 
 #: prefs.js:1163
 msgid "Real-time synchronized lyrics with multi-provider karaoke support."
 msgstr ""
+"Letras sincronizadas em tempo real, com suporte a karaokê de múltiplos "
+"provedores."
 
 #: prefs.js:1339
 msgid "Please install %s for dynamic blur."
-msgstr ""
+msgstr "Por favor, instale %s para usar o desfoque dinâmico."
 
 #: prefs.js:1339
 msgid "and"
-msgstr ""
+msgstr "e"
 
 #: prefs.js:1358
 msgid "Note: Dynamic blur requires %s to be installed."
-msgstr ""
+msgstr "Nota: o desfoque dinâmico requer que %s esteja instalado."
 
 #: prefs.js:1599
 msgid "Audio Visualizers"
-msgstr ""
+msgstr "Visualizadores de Áudio"
 
 #: prefs.js:1682
 msgid "Enable audio visualizer bars inside the expanded player"
-msgstr ""
+msgstr "Habilita barras de visualização de áudio dentro do reprodutor expandido"
