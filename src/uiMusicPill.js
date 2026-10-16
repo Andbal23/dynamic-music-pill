@@ -691,6 +691,95 @@ export const MusicPill = GObject.registerClass(
                 // Signal pill scroll labels to finish current cycle then stop
                 if (this._titleScroll) this._titleScroll.setPendingScrollStop(true);
                 if (this._artistScroll) this._artistScroll.setPendingScrollStop(true);
+
+                let hidePillVis = this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
+                if (hidePillVis && this._visBin && this._visBin.visible) {
+                    this._visBin.remove_all_transitions();
+                    this._visBin.set_pivot_point(0.5, 0.5);
+                    this._visAnimatingHide = true;
+                    let targetHopY = 12;
+                    let targetHopX = 0;
+                    try {
+                        let [px, py] = this.get_transformed_position();
+                        let monitorIndex = global.display.get_current_monitor ? global.display.get_current_monitor() : 0;
+                        let monitor = global.display.get_monitor_geometry(monitorIndex);
+                        if (this._isSidePanel) {
+                            let isLeft = px < monitor.x + (monitor.width / 2);
+                            targetHopX = isLeft ? 14 : -14;
+                            targetHopY = 0;
+                        } else {
+                            let isTop = py < monitor.y + (monitor.height / 2);
+                            targetHopY = isTop ? 14 : -14;
+                            targetHopX = 0;
+                        }
+                    } catch (_) {
+                        targetHopY = this._isSidePanel ? 0 : 12;
+                        targetHopX = this._isSidePanel ? 12 : 0;
+                    }
+                    this._visBin.ease({
+                        opacity: 0,
+                        scale_x: 0.5,
+                        scale_y: 0.5,
+                        translation_x: targetHopX,
+                        translation_y: targetHopY,
+                        duration: 170,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                        onStopped: () => {
+                            if (!this._visAnimatingHide) return;
+                            this._visAnimatingHide = false;
+                            this._visBin.translation_x = 0;
+                            this._visBin.translation_y = 0;
+                            this._visBin.scale_x = 1.0;
+                            this._visBin.scale_y = 1.0;
+                            this._updateDimensions();
+                        }
+                    });
+                    return;
+                }
+            } else {
+                let hidePillVis = this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
+                this._visAnimatingHide = false;
+                this._updateDimensions();
+                if (hidePillVis && this._visBin && this._visBin.visible) {
+                    let targetHopY = 12;
+                    let targetHopX = 0;
+                    try {
+                        let [px, py] = this.get_transformed_position();
+                        let monitorIndex = global.display.get_current_monitor ? global.display.get_current_monitor() : 0;
+                        let monitor = global.display.get_monitor_geometry(monitorIndex);
+                        if (this._isSidePanel) {
+                            let isLeft = px < monitor.x + (monitor.width / 2);
+                            targetHopX = isLeft ? 14 : -14;
+                            targetHopY = 0;
+                        } else {
+                            let isTop = py < monitor.y + (monitor.height / 2);
+                            targetHopY = isTop ? 14 : -14;
+                            targetHopX = 0;
+                        }
+                    } catch (_) {
+                        targetHopY = this._isSidePanel ? 0 : 12;
+                        targetHopX = this._isSidePanel ? 12 : 0;
+                    }
+                    let targetOp = (this._settings.get_boolean('enable-transparency') && this._settings.get_boolean('transparent-visualizer'))
+                        ? Math.round(this._settings.get_int('transparency-level') * 2.55) : 255;
+                    this._visBin.remove_all_transitions();
+                    this._visBin.set_pivot_point(0.5, 0.5);
+                    this._visBin.opacity = 0;
+                    this._visBin.scale_x = 0.5;
+                    this._visBin.scale_y = 0.5;
+                    this._visBin.translation_x = targetHopX;
+                    this._visBin.translation_y = targetHopY;
+                    this._visBin.ease({
+                        opacity: targetOp,
+                        scale_x: 1.0,
+                        scale_y: 1.0,
+                        translation_x: 0,
+                        translation_y: 0,
+                        duration: 250,
+                        mode: Clutter.AnimationMode.EASE_OUT_BACK
+                    });
+                }
+                return;
             }
             this._updateDimensions();
         }
@@ -887,7 +976,7 @@ export const MusicPill = GObject.registerClass(
                 }
             }
 
-            let forceHideVis = this._isPopupOpen && this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
+            let forceHideVis = this._isPopupOpen && !this._visAnimatingHide && this._settings.get_boolean('popup-hide-pill-visualizer') && this._settings.get_boolean('popup-show-visualizer');
 
             if (this._currentStatus === 'Stopped' && (!this._origTitle || this._origTitle === _('No Media') || this._origTitle === 'No Media')) {
                 forceHideVis = true;

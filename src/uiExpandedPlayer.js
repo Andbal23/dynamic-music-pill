@@ -2230,6 +2230,26 @@ export const ExpandedPlayer = GObject.registerClass(
                         mode: Clutter.AnimationMode.EASE_OUT_EXPO
                     });
                 }
+
+                if (showVis && this._settings.get_boolean('popup-hide-pill-visualizer')) {
+                    this._visBin.remove_all_transitions();
+                    this._visBin.set_pivot_point(0.5, 0.5);
+                    this._visBin.opacity = 0;
+                    this._visBin.scale_x = 0.5;
+                    this._visBin.scale_y = 0.5;
+                    this._visBin.translation_x = Math.round(startTx * 1.5);
+                    this._visBin.translation_y = Math.round(startTy * 1.5);
+
+                    this._visBin.ease({
+                        opacity: 255,
+                        scale_x: 1.0,
+                        scale_y: 1.0,
+                        translation_x: 0,
+                        translation_y: 0,
+                        duration: 280,
+                        mode: Clutter.AnimationMode.EASE_OUT_BACK,
+                    });
+                }
             }
 
             this.grab_key_focus();
@@ -2269,7 +2289,20 @@ export const ExpandedPlayer = GObject.registerClass(
             restoreDockAutohide();
             this._stopTimer();
             this._stopVinyl();
-            if (this._visualizer) this._visualizer.setPlaying(false);
+            if (this._visBin && this._visBin.visible && this._settings.get_boolean('popup-hide-pill-visualizer')) {
+                let closeTx = Math.round((this._openOffsetX || 0) * 1.5);
+                let closeTy = Math.round((this._openOffsetY || 12) * 1.5);
+                this._visBin.remove_all_transitions();
+                this._visBin.ease({
+                    opacity: 0,
+                    scale_x: 0.5,
+                    scale_y: 0.5,
+                    translation_x: closeTx,
+                    translation_y: closeTy,
+                    duration: 160,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                });
+            }
             if (this._pill && this._controller && (!this._controller._pills || this._controller._pills().includes(this._pill))) {
                 this._pill._setPopupOpen(false);
             }
