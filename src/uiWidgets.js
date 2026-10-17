@@ -9,15 +9,15 @@ const PixelSnappedBox = St.BoxLayout;
 
 export const CrossfadeArt = GObject.registerClass(
     class CrossfadeArt extends St.Widget {
-        _init() {
-            super._init({
+        _init(params = {}) {
+            super._init(Object.assign({
                 name: 'pill-crossfade-art',
                 layout_manager: new Clutter.BinLayout(),
                 style_class: 'art-widget',
                 clip_to_allocation: false,
                 x_expand: false,
                 y_expand: false
-            });
+            }, params));
             this._radius = 10;
             this._shadowCSS = 'box-shadow: none;';
         }
@@ -25,13 +25,15 @@ export const CrossfadeArt = GObject.registerClass(
         setRadius(r) {
             this._radius = (typeof r === 'number' && !isNaN(r)) ? r : 10;
             this._updateContainerStyle();
-            this.get_children().forEach(c => this._refreshLayerStyle(c));
+            let children = this.get_children ? this.get_children() : [];
+            children.forEach(c => this._refreshLayerStyle(c));
         }
 
         setShadowStyle(cssString) {
             this._shadowCSS = cssString || 'box-shadow: none;';
             this._updateContainerStyle();
-            this.get_children().forEach(c => this._refreshLayerStyle(c));
+            let children = this.get_children ? this.get_children() : [];
+            children.forEach(c => this._refreshLayerStyle(c));
         }
 
         _updateContainerStyle() {
@@ -43,7 +45,7 @@ export const CrossfadeArt = GObject.registerClass(
         }
 
         _refreshLayerStyle(layer) {
-            if (!layer || !layer.get_parent()) return;
+            if (!layer || !layer.get_parent || !layer.get_parent()) return;
             let url = layer._bgUrl;
             let bgPart = url ? `background-image: url("${url}");` : '';
             let safeR = (typeof this._radius === 'number' && !isNaN(this._radius)) ? this._radius : 10;
@@ -51,66 +53,86 @@ export const CrossfadeArt = GObject.registerClass(
             if (layer._lastCss === newCss) return;
             layer._lastCss = newCss;
 
-            if (layer.get_parent()) {
+            if (layer.get_parent && layer.get_parent()) {
                 layer.set_style(newCss);
             }
         }
 
         setArt(newUrl, force = false) {
-            let children = this.get_children();
+            if (!newUrl) {
+                this._currentUrl = null;
+                let cur = this.get_children ? this.get_children() : [];
+                for (let c of cur) {
+                    try { c.destroy(); } catch (_) {}
+                }
+                return;
+            }
 
-            if (children.length > 0 && children[children.length - 1]._bgUrl === newUrl) {
+            let children = this.get_children ? this.get_children() : [];
+            if (!force && children.length > 0 && children[children.length - 1]._bgUrl === newUrl) {
                 return;
             }
 
             this._currentUrl = newUrl;
             this._updateContainerStyle();
 
-            this.get_children().forEach(c => c.remove_all_transitions());
+            let shouldCrossfade = (children.length > 0 && this.visible);
 
             let newLayer = new St.Widget({
                 name: 'pill-cover-layer',
                 x_expand: true,
                 y_expand: true,
-                opacity: 0
+                x_align: Clutter.ActorAlign.FILL,
+                y_align: Clutter.ActorAlign.FILL,
+                opacity: shouldCrossfade ? 0 : 255
             });
+            if (this.width > 0) newLayer.width = this.width;
+            if (this.height > 0) newLayer.height = this.height;
             newLayer._bgUrl = newUrl;
 
             this.add_child(newLayer);
             this._refreshLayerStyle(newLayer);
 
-            newLayer.ease({
-                opacity: 255,
-                duration: 1800,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: (isFinished) => {
-                    if (!isFinished) return;
-
-                    newLayer.opacity = 255;
-
-                    let currentChildren = this.get_children();
-                    let myIndex = currentChildren.indexOf(newLayer);
-                    if (myIndex > 0) {
-                        for (let i = 0; i < myIndex; i++) {
-                            let oldLayer = currentChildren[i];
-                            oldLayer.ease({
-                                opacity: 0,
-                                duration: 300,
-                                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                                onStopped: () => oldLayer.destroy()
-                            });
+            if (shouldCrossfade) {
+                newLayer.ease({
+                    opacity: 255,
+                    duration: 250,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => {
+                        if (!this.get_parent && !this.get_children) return;
+                        let curChildren = this.get_children ? this.get_children() : [];
+                        let myIdx = curChildren.indexOf(newLayer);
+                        if (myIdx > 0) {
+                            for (let i = 0; i < myIdx; i++) {
+                                try { curChildren[i].destroy(); } catch (_) {}
+                            }
                         }
                     }
+                });
+            } else {
+                for (let c of children) {
+                    try { c.destroy(); } catch (_) {}
                 }
-            });
+            }
+        }
+
+        destroy() {
+            this._currentUrl = null;
+            let children = this.get_children ? this.get_children() : [];
+            for (let c of children) {
+                c.remove_all_transitions();
+                try { c.destroy(); } catch (_) {}
+            }
+            super.destroy();
         }
     });
 
 export const ScrollLabel = GObject.registerClass(
     class ScrollLabel extends St.Widget {
-        _init(styleClass, settings) {
+        _init(styleClass, settings, isPopup = false) {
             super._init({ layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: false, clip_to_allocation: true });
             this._settings = settings;
+            this._isPopup = isPopup;
             this._text = "";
             this._gameMode = false;
             this._playerPaused = false;
@@ -158,8 +180,6 @@ export const ScrollLabel = GObject.registerClass(
                     return GLib.SOURCE_REMOVE;
                 });
             }, this);
-
-            this.connect('destroy', () => this._cleanup());
         }
 
         vfunc_get_preferred_width(forHeight) {
@@ -178,13 +198,11 @@ export const ScrollLabel = GObject.registerClass(
                 ct.ellipsize = Pango.EllipsizeMode.NONE;
             }
             let natW = 0;
-            try {
-                let layout = ct.get_layout();
-                if (layout) {
-                    let [pixelW] = layout.get_pixel_size();
-                    natW = pixelW;
-                }
-            } catch (_) {}
+            let layout = ct.get_layout();
+            if (layout) {
+                let [pixelW] = layout.get_pixel_size();
+                natW = pixelW;
+            }
             let [, prefW] = this._label1.get_preferred_width(-1);
             if (prevMode !== Pango.EllipsizeMode.NONE) {
                 ct.ellipsize = prevMode;
@@ -339,7 +357,7 @@ export const ScrollLabel = GObject.registerClass(
 
             this._idleResizeId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
                 this._idleResizeId = null;
-                if (!this || (this.is_finalized && this.is_finalized()) || !this.get_parent())
+                if (!this.get_parent())
                     return GLib.SOURCE_REMOVE;
 
                 if (this._lyricFinished) return GLib.SOURCE_REMOVE;
@@ -405,43 +423,59 @@ export const ScrollLabel = GObject.registerClass(
             this._separator.hide();
 
             // Determine if the text overflows and will scroll to avoid ellipsis flicker
-            let isDynamic = this._settings && this._settings.get_boolean('pill-dynamic-width');
+            let isDynamic = !this._isPopup && this._settings && this._settings.get_boolean('pill-dynamic-width');
             let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
-            let textWidth = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
-            let overflows = (boxWidth > 1) ? (textWidth > boxWidth + 2) : false;
+            let textWidth = this.getNaturalTextWidth();
+            let confWidth = this._settings ? (this._settings.get_int('target-container') > 0 ? this._settings.get_int('panel-pill-width') : this._settings.get_int('pill-width')) : 300;
+            let maxAvailableWidth = this._isPopup ? (boxWidth > 1 ? boxWidth : 260) : (isDynamic ? Math.max(60, confWidth - 80) : (boxWidth > 1 ? boxWidth : confWidth - 80));
+            let overflows = (boxWidth > 1) ? (textWidth > boxWidth + 2) : (textWidth > maxAvailableWidth);
+            let willOverflowMax = textWidth > maxAvailableWidth;
             let scrollSetting = this._settings ? this._settings.get_boolean('scroll-text') : false;
-            let willScroll = overflows && (scrollSetting || lyricTime > 0);
+            let willScroll = (overflows || willOverflowMax) && (scrollSetting || lyricTime > 0);
 
-            if (isDynamic && lyricTime <= 0) {
-                // In dynamic width mode, pill expands to fit the text, so start centered
-                this._container.x_align = Clutter.ActorAlign.CENTER;
-                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
-                this._label1.x_expand = true;
-            } else if (willScroll) {
+            if (willScroll) {
                 this._container.x_align = Clutter.ActorAlign.START;
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
                 this._label1.x_expand = false;
-                this._setFadeOutEffect(false, true, false);
-            } else if (overflows) {
-                this._container.x_align = Clutter.ActorAlign.START;
+                if (lyricTime <= 0) {
+                    this._setFadeOutEffect(false, true, false);
+                } else {
+                    this._clearFadeOutEffect();
+                }
+            } else {
+                this._clearFadeOutEffect();
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                 this._label1.x_expand = true;
-            } else {
-                this._container.x_align = Clutter.ActorAlign.CENTER;
-                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
-                this._label1.x_expand = true;
+                if (isDynamic && lyricTime <= 0 && !overflows && !willOverflowMax) {
+                    this._container.x_align = Clutter.ActorAlign.CENTER;
+                } else if (overflows || willOverflowMax) {
+                    this._container.x_align = Clutter.ActorAlign.START;
+                } else {
+                    this._container.x_align = Clutter.ActorAlign.CENTER;
+                }
             }
 
             this._label1.remove_transition('opacity');
             let isLyric = (lyricTime > 0);
             let lyricFadeEnabled = this._settings ? this._settings.get_boolean('lyric-fade-enable') : false;
 
-            if (!isLyric || (isLyric && lyricFadeEnabled)) {
-                let duration = (isLyric && this._settings) ? this._settings.get_int('lyric-fade-duration') : 600;
+            if (isLyric) {
+                if (lyricFadeEnabled) {
+                    let duration = this._settings ? this._settings.get_int('lyric-fade-duration') : 600;
+                    this._label1.opacity = 0;
+                    this._label1.ease({
+                        opacity: 255,
+                        duration: duration,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                    });
+                } else {
+                    this._label1.opacity = 255;
+                }
+            } else if (force || this._label1.opacity < 255) {
                 this._label1.opacity = 0;
                 this._label1.ease({
                     opacity: 255,
-                    duration: duration,
+                    duration: 600,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD
                 });
             } else {
@@ -493,7 +527,7 @@ export const ScrollLabel = GObject.registerClass(
             } else {
                 this._stopAnimation(true);
                 this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
-                this._label1.clutter_text.ellipsize = overflows ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
+                this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                 this._label1.x_expand = true;
             }
         }
@@ -564,6 +598,7 @@ export const ScrollLabel = GObject.registerClass(
 
         _startLyricScroll(textWidth) {
             this._stopAnimation(true);
+            this._clearFadeOutEffect();
             this._isScrolling = true;
             this._label2.hide();
             this._separator.hide();
@@ -571,28 +606,22 @@ export const ScrollLabel = GObject.registerClass(
             this._label1.x_expand = false;
 
             let boxWidth = this.get_allocation_box().get_width();
-            const distance = textWidth - boxWidth;
+            const distance = Math.max(0, textWidth - boxWidth + 6);
 
             if (distance <= 5) return;
 
             const totalDurationMs = this._lyricTime * 1000;
-            const pauseTime = (boxWidth / textWidth) * totalDurationMs * 0.5;
-            const tailTime = totalDurationMs * 0.2;
-            const scrollDuration = totalDurationMs - pauseTime - tailTime;
+            const pauseTime = Math.min(350, Math.max(150, totalDurationMs * 0.10));
+            const tailTime = Math.min(1200, Math.max(600, totalDurationMs * 0.25));
+            const scrollDuration = Math.max(300, totalDurationMs - pauseTime - tailTime);
 
             if (scrollDuration <= 0) return;
-
-            // Initially fade right edge where text extends beyond the box
-            this._setFadeOutEffect(false, true, true);
 
             if (this._scrollTimer) GLib.Source.remove(this._scrollTimer);
 
             this._scrollTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, Math.max(100, pauseTime), () => {
                 this._scrollTimer = null;
                 if (this._gameMode || !this.get_parent()) return GLib.SOURCE_REMOVE;
-
-                // While scrolling, fade both edges
-                this._setFadeOutEffect(true, true, true);
 
                 this._container.ease({
                     translation_x: -distance,
@@ -601,7 +630,6 @@ export const ScrollLabel = GObject.registerClass(
                     onStopped: () => {
                         this._isScrolling = false;
                         this._lyricFinished = true;
-                        this._setFadeOutEffect(true, false, true);
                     }
                 });
                 return GLib.SOURCE_REMOVE;

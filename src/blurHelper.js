@@ -10,49 +10,29 @@ let BlurModule = null;
 let SUPPORTS_CORNER_RADIUS = false;
 
 try {
-    let mod = null;
-    try {
-        mod = (await import('gi://Blur')).default ?? (await import('gi://Blur'));
-    } catch (_) {
-        mod = null;
+    const mod = (await import('gi://Blur')).default ?? (await import('gi://Blur'));
+    if (mod && mod.BlurEffect && mod.BlurEffect.$gtype) {
+        BlurModule = mod;
+        const props = mod.BlurEffect.list_properties();
+        if (props.some(p => p.name === 'corner-radius' || p.name === 'corner_radius'))
+            SUPPORTS_CORNER_RADIUS = true;
     }
-
-    if (mod) {
-        try {
-            if (mod.BlurEffect && typeof mod.BlurEffect === 'function' && mod.BlurEffect.$gtype) {
-                BlurModule = mod;
-                if (typeof mod.BlurEffect.list_properties === 'function') {
-                    let props = mod.BlurEffect.list_properties();
-                    if (props && props.some(p => p.name === 'corner-radius' || p.name === 'corner_radius')) {
-                        SUPPORTS_CORNER_RADIUS = true;
-                    }
-                }
-            }
-        } catch (err) {
-            console.debug(`[Dynamic Music Pill] Incompatible or broken gi://Blur library: ${err.message}`);
-            BlurModule = null;
-        }
-    }
-} catch (outerErr) {
-    console.debug(`[Dynamic Music Pill] Failed to load gi://Blur: ${outerErr.message}`);
+} catch {
     BlurModule = null;
 }
 
 const BlurOrShell = BlurModule ?? Shell;
 
 if (!SUPPORTS_CORNER_RADIUS) {
-    try {
-        let props = Shell.BlurEffect?.list_properties?.();
-        if (props && props.some(p => p.name === 'corner-radius' || p.name === 'corner_radius')) {
-            SUPPORTS_CORNER_RADIUS = true;
-        }
-    } catch (_) {}
+    const props = Shell.BlurEffect.list_properties();
+    if (props.some(p => p.name === 'corner-radius' || p.name === 'corner_radius'))
+        SUPPORTS_CORNER_RADIUS = true;
 }
 
 let BmsDynamicPipelineClass = null;
 
 function getBmsDirectory() {
-    let bms = Main.extensionManager?.lookup?.('blur-my-shell@aunetx');
+    let bms = Main.extensionManager.lookup('blur-my-shell@aunetx');
     if (bms && bms.path) return bms.path;
     let userDir = GLib.build_filenamev([GLib.get_user_data_dir(), 'gnome-shell', 'extensions', 'blur-my-shell@aunetx']);
     if (GLib.file_test(userDir, GLib.FileTest.IS_DIR)) return userDir;
@@ -85,7 +65,9 @@ export function isBmsUnifiedInstalled() {
                 let meta = JSON.parse(new TextDecoder().decode(contents));
                 if (meta && typeof meta.version === 'number' && meta.version >= 76) return true;
             }
-        } catch (_) {}
+        } catch {
+            return false;
+        }
     }
     return false;
 }
@@ -110,9 +92,7 @@ export async function initBlurBackend(force = false) {
 }
 
 // Attempt eager backend resolution
-try {
-    await initBlurBackend();
-} catch (_) {}
+await initBlurBackend();
 
 export function getBmsDynamicPipelineClass() {
     return BmsDynamicPipelineClass;
@@ -120,17 +100,29 @@ export function getBmsDynamicPipelineClass() {
 
 export function isBlurMyShellAvailable() {
     if (global.blur_my_shell) return true;
-    let bms = Main.extensionManager?.lookup?.('blur-my-shell@aunetx');
+    let bms = Main.extensionManager.lookup('blur-my-shell@aunetx');
     if (bms && bms.state === 1) return true;
     return getBmsDirectory() !== null;
 }
 
 export function isRoundedBlurAvailable() {
     if (getBmsDynamicPipelineClass() !== null) return true;
-    if (global.blur_my_shell?._effects_manager) return true;
+    let bms = global.blur_my_shell;
+    if (bms && bms._effects_manager) return true;
     if (isBmsUnifiedInstalled()) return true;
     if (SUPPORTS_CORNER_RADIUS) return true;
-    if (global.blur_my_shell?._settings?.ROUNDED_BLUR_FOUND) return true;
+    if (BlurModule !== null) return true;
+    if (bms && bms._settings && bms._settings.ROUNDED_BLUR_FOUND) return true;
+
+    let typelibEnv = GLib.getenv('GI_TYPELIB_PATH');
+    if (typelibEnv) {
+        for (let dir of typelibEnv.split(':')) {
+            if (dir && GLib.file_test(GLib.build_filenamev([dir, 'Blur-1.0.typelib']), GLib.FileTest.EXISTS)) {
+                return true;
+            }
+        }
+    }
+
     let paths = [
         '/usr/lib/girepository-1.0/Blur-1.0.typelib',
         '/usr/lib64/girepository-1.0/Blur-1.0.typelib',
@@ -140,7 +132,13 @@ export function isRoundedBlurAvailable() {
         '/usr/local/lib/girepository-2.0/Blur-1.0.typelib',
         '/usr/lib/libblur-effect-1.0.so',
         '/usr/lib64/libblur-effect-1.0.so',
-        '/usr/local/lib/libblur-effect-1.0.so'
+        '/usr/local/lib/libblur-effect-1.0.so',
+        '/run/current-system/sw/lib/girepository-1.0/Blur-1.0.typelib',
+        '/run/current-system/sw/lib/libblur-effect-1.0.so',
+        GLib.build_filenamev([GLib.get_home_dir(), '.nix-profile', 'lib', 'girepository-1.0', 'Blur-1.0.typelib']),
+        GLib.build_filenamev([GLib.get_home_dir(), '.nix-profile', 'lib', 'libblur-effect-1.0.so']),
+        '/nix/var/nix/profiles/default/lib/girepository-1.0/Blur-1.0.typelib',
+        '/nix/var/nix/profiles/default/lib/libblur-effect-1.0.so',
     ];
     return paths.some(p => GLib.file_test(p, GLib.FileTest.EXISTS));
 }
@@ -177,9 +175,8 @@ const PaintCallbackEffect = GObject.registerClass(
         }
 
         vfunc_paint(node, paint_context, paint_flags) {
-            if (this._callback) {
-                try { this._callback(); } catch (_) {}
-            }
+            if (this._callback)
+                this._callback();
             super.vfunc_paint(node, paint_context, paint_flags);
         }
     }
@@ -215,7 +212,7 @@ export class ActorBlurController {
                         if (ext.state === 1) {
                             initBlurBackend(true).then(() => {
                                 if (this._enabled) this._refreshEffect();
-                            }).catch(() => {});
+                            });
                         } else {
                             BmsDynamicPipelineClass = null;
                             if (this._enabled) this._refreshEffect();
@@ -268,7 +265,6 @@ export class ActorBlurController {
         if (!this._dynamicPipeline) return;
         let shouldFollow = (this._shouldFollowPipeline ? this._shouldFollowPipeline() : true);
         if (shouldFollow) {
-            // When following BMS pipeline, let Blur my Shell's configured pipeline effects & sigma govern the blur
             return;
         }
 
@@ -294,19 +290,15 @@ export class ActorBlurController {
         if (!this._enabled) return;
         let r = (typeof newRadius === 'number') ? newRadius : (this._getRadius ? this._getRadius() : 0);
         if (this._isBmsDynamic && this._dynamicPipeline) {
-            try {
-                this._dynamicPipeline.set_corner_radius(r);
-            } catch (_) {}
+            this._dynamicPipeline.set_corner_radius(r);
             return;
         }
         if (!this._effect) return;
         let scale = this._getScaleFactor();
-        if ('corner-radius' in this._effect || 'corner_radius' in this._effect) {
-            try {
-                this._effect.corner_radius = r * scale;
-            } catch (_) {
-                try { this._effect['corner-radius'] = r * scale; } catch (__) {}
-            }
+        if ('corner-radius' in this._effect) {
+            this._effect['corner-radius'] = r * scale;
+        } else if ('corner_radius' in this._effect) {
+            this._effect.corner_radius = r * scale;
         }
     }
 
@@ -320,10 +312,7 @@ export class ActorBlurController {
             return;
         }
         if (!this._effect) return;
-        let targetRadius = this._computeScaledSigma(newSigma);
-        try {
-            this._effect.radius = targetRadius;
-        } catch (_) {}
+        this._effect.radius = this._computeScaledSigma(newSigma);
     }
 
     setOpacityFactor(factor) {
@@ -333,30 +322,23 @@ export class ActorBlurController {
         if (!this._enabled) return;
 
         if (this._isBmsDynamic && this._dynamicPipeline) {
-            try {
-                this._dynamicPipeline.set_opacity_factor(clamped, true);
-                this._syncSigma();
-            } catch (_) {}
+            this._dynamicPipeline.set_opacity_factor(clamped, true);
+            this._syncSigma();
             return;
         }
 
         if (!this._effect) return;
-        let targetRadius = this._computeScaledSigma();
-        try {
-            this._effect.radius = targetRadius;
-        } catch (_) {}
+        this._effect.radius = this._computeScaledSigma();
     }
 
     invalidate() {
         if (!this._enabled) return;
         if (this._isBmsDynamic && this._dynamicPipeline) {
-            try {
-                this._dynamicPipeline.repaint_effect();
-            } catch (_) {}
+            this._dynamicPipeline.repaint_effect();
             return;
         }
-        if (this._effect && typeof this._effect.queue_repaint === 'function') {
-            try { this._effect.queue_repaint(); } catch (_) {}
+        if (this._effect) {
+            this._effect.queue_repaint();
         }
     }
 
@@ -377,13 +359,14 @@ export class ActorBlurController {
 
         let DynPipelineClass = getBmsDynamicPipelineClass();
         let bms = global.blur_my_shell;
-        if (DynPipelineClass && bms?._effects_manager && bms?._pipelines_manager) {
+        if (DynPipelineClass && bms && bms._effects_manager && bms._pipelines_manager) {
+            let bmsSettings = bms._settings;
             try {
                 let pipelineId = 'pipeline_default';
-                if (this._role === 'panel' && bms._settings?.panel?.PIPELINE) {
-                    pipelineId = bms._settings.panel.PIPELINE;
-                } else if (bms._settings?.popup?.PIPELINE) {
-                    pipelineId = bms._settings.popup.PIPELINE;
+                if (this._role === 'panel' && bmsSettings && bmsSettings.panel && bmsSettings.panel.PIPELINE) {
+                    pipelineId = bmsSettings.panel.PIPELINE;
+                } else if (bmsSettings && bmsSettings.popup && bmsSettings.popup.PIPELINE) {
+                    pipelineId = bmsSettings.popup.PIPELINE;
                 }
 
                 this._dynamicPipeline = new DynPipelineClass(
@@ -415,13 +398,26 @@ export class ActorBlurController {
 
                 this._dynamicPipeline.set_opacity_factor(this._opacityFactor, true);
                 this._syncSigma(rawSigma);
+            } catch (e) {
+                console.warn(`[Dynamic Music Pill] Failed to initialize BMS DynamicPipeline: ${e.message}`, e.stack);
+                if (this._dynamicPipeline) {
+                    this._dynamicPipeline.destroy();
+                    this._dynamicPipeline = null;
+                }
+                this._isBmsDynamic = false;
+            }
 
-                let targetComp = (this._role === 'panel') ? bms._settings?.panel : bms._settings?.popup;
-                if (targetComp?.settings && typeof targetComp.settings.connect === 'function') {
+            if (this._isBmsDynamic && this._dynamicPipeline) {
+                let targetComp = (this._role === 'panel')
+                    ? (bmsSettings ? bmsSettings.panel : null)
+                    : (bmsSettings ? bmsSettings.popup : null);
+                if (targetComp && targetComp.settings) {
                     this._bmsSettingsChangedId = targetComp.settings.connect('changed::pipeline', () => {
                         let shouldFollow = (this._shouldFollowPipeline ? this._shouldFollowPipeline() : true);
                         if (shouldFollow && this._dynamicPipeline) {
-                            let newId = (this._role === 'panel') ? bms._settings?.panel?.PIPELINE : bms._settings?.popup?.PIPELINE;
+                            let newId = (this._role === 'panel')
+                                ? (bmsSettings && bmsSettings.panel ? bmsSettings.panel.PIPELINE : null)
+                                : (bmsSettings && bmsSettings.popup ? bmsSettings.popup.PIPELINE : null);
                             if (newId) {
                                 this._dynamicPipeline.change_pipeline_to(newId);
                                 this._syncSigma();
@@ -429,45 +425,25 @@ export class ActorBlurController {
                         }
                     });
                 }
-            } catch (e) {
-                console.warn(`[Dynamic Music Pill] Failed to initialize BMS DynamicPipeline: ${e.message}`, e.stack);
-                if (this._dynamicPipeline) {
-                    try { this._dynamicPipeline.destroy(); } catch (_) {}
-                    this._dynamicPipeline = null;
-                }
-                this._isBmsDynamic = false;
             }
         }
 
         if (!this._dynamicPipeline) {
             this._isBmsDynamic = false;
             let blurRadius = this._computeScaledSigma();
-            try {
-                let EffectClass = BlurOrShell.BlurEffect;
-                if (EffectClass) {
-                    let mode = BlurOrShell.BlurMode ? BlurOrShell.BlurMode.BACKGROUND : 1;
-                    this._effect = new EffectClass({ mode: mode, radius: blurRadius });
-                    if ('corner-radius' in this._effect || 'corner_radius' in this._effect) {
-                        try {
-                            this._effect.corner_radius = radius * scale;
-                        } catch (_) {
-                            try { this._effect['corner-radius'] = radius * scale; } catch (__) {}
-                        }
-                    }
+            let EffectClass = BlurOrShell.BlurEffect;
+            if (EffectClass) {
+                let mode = BlurOrShell.BlurMode ? BlurOrShell.BlurMode.BACKGROUND : 1;
+                this._effect = new EffectClass({ mode: mode, radius: blurRadius });
+                if ('corner-radius' in this._effect) {
+                    this._effect['corner-radius'] = radius * scale;
+                } else if ('corner_radius' in this._effect) {
+                    this._effect.corner_radius = radius * scale;
                 }
-            } catch (e) {
-                console.debug(`[Dynamic Music Pill] Failed to create BlurEffect: ${e.message}`);
-                this._effect = null;
             }
 
             if (this._effect) {
-                try {
-                    this._actor.add_effect(this._effect);
-                } catch (e) {
-                    console.debug(`[Dynamic Music Pill] Could not add blur effect: ${e.message}`);
-                    this._effect = null;
-                    return;
-                }
+                this._actor.add_effect(this._effect);
 
                 let skipping = 0;
                 this._paintCallback = new PaintCallbackEffect();
@@ -490,68 +466,63 @@ export class ActorBlurController {
                     } else {
                         skipping = 0;
                     }
-                    if (this._effect && typeof this._effect.queue_repaint === 'function') {
+                    if (this._effect) {
                         this._effect.queue_repaint();
                     }
                 });
-                try {
-                    this._actor.add_effect(this._paintCallback);
-                } catch (_) {
-                    this._paintCallback = null;
-                }
+                this._actor.add_effect(this._paintCallback);
 
-                try {
-                    this._themeContext = St.ThemeContext.get_for_stage(global.stage);
-                    if (this._themeContext) {
-                        this._themeContext.connectObject('notify::scale-factor', () => {
-                            if (this._effect) {
-                                let s = this._getScaleFactor();
-                                let curR = (this._getRadius ? this._getRadius() : 24) || 0;
-                                this._effect.radius = this._computeScaledSigma();
-                                if ('corner-radius' in this._effect || 'corner_radius' in this._effect) {
-                                    try { this._effect.corner_radius = curR * s; } catch (_) {}
-                                }
+                this._themeContext = St.ThemeContext.get_for_stage(global.stage);
+                if (this._themeContext) {
+                    this._themeContext.connectObject('notify::scale-factor', () => {
+                        if (this._effect) {
+                            let s = this._getScaleFactor();
+                            let curR = (this._getRadius ? this._getRadius() : 24) || 0;
+                            this._effect.radius = this._computeScaledSigma();
+                            if ('corner-radius' in this._effect) {
+                                this._effect['corner-radius'] = curR * s;
+                            } else if ('corner_radius' in this._effect) {
+                                this._effect.corner_radius = curR * s;
                             }
-                        }, this);
-                    }
-                } catch (_) {}
+                        }
+                    }, this);
+                }
             }
         }
     }
 
     _removeEffect() {
         if (this._dynamicPipeline) {
-            try {
-                this._dynamicPipeline.destroy();
-            } catch (e) {
-                console.debug(`[Dynamic Music Pill] Error destroying DynamicPipeline: ${e.message}`);
-            }
+            this._dynamicPipeline.destroy();
             this._dynamicPipeline = null;
             this._isBmsDynamic = false;
         }
 
         if (this._bmsSettingsChangedId) {
             let bms = global.blur_my_shell;
-            let targetComp = (this._role === 'panel') ? bms?._settings?.panel : bms?._settings?.popup;
-            if (targetComp?.settings && typeof targetComp.settings.disconnect === 'function') {
-                try { targetComp.settings.disconnect(this._bmsSettingsChangedId); } catch (_) {}
+            let bmsSettings = bms ? bms._settings : null;
+            let targetComp = (this._role === 'panel')
+                ? (bmsSettings ? bmsSettings.panel : null)
+                : (bmsSettings ? bmsSettings.popup : null);
+            if (targetComp && targetComp.settings) {
+                targetComp.settings.disconnect(this._bmsSettingsChangedId);
             }
             this._bmsSettingsChangedId = 0;
         }
 
         if (this._paintCallback) {
             if (this._actor) {
-                try { this._actor.remove_effect(this._paintCallback); } catch (_) {}
+                this._actor.remove_effect(this._paintCallback);
             }
             this._paintCallback = null;
         }
 
         if (this._effect) {
             if (this._actor) {
-                try { this._actor.remove_effect(this._effect); } catch (_) {}
+                this._actor.remove_effect(this._effect);
             }
-            if (typeof this._effect.releaseTargets === 'function') {
-                try { this._effect.releaseTargets(); } catch (_) {}
+            if (this._effect.releaseTargets) {
+                this._effect.releaseTargets();
             }
             this._effect = null;
         }
@@ -563,11 +534,7 @@ export class ActorBlurController {
     }
 
     _getScaleFactor() {
-        try {
-            return St.ThemeContext.get_for_stage(global.stage)?.scale_factor ?? 1;
-        } catch (_) {
-            return 1;
-        }
+        return St.ThemeContext.get_for_stage(global.stage).scale_factor;
     }
 
     destroy() {

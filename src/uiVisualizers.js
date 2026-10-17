@@ -24,23 +24,11 @@ const CavaVisualizer = GObject.registerClass(
             this.set_width(this._barCount * 4);
 
             this.connect('repaint', this._onRepaint.bind(this));
-            this.connect('destroy', () => this._cleanup());
 
             let engine = SharedVisualizerEngine.get();
             this._engine = engine;
             let callback = (normalizedBars, isSilent) => {
-                if (!this._isPlaying) return;
-                let mapped = false;
-                try {
-                    mapped = this.mapped;
-                } catch (_e) {
-                    if (this._engine) {
-                        this._engine.setPlaying(callback, false);
-                        this._engine.unsubscribe(callback);
-                    }
-                    return;
-                }
-                if (!mapped) return;
+                if (!this._isPlaying || !this.mapped) return;
                 this._onEngineUpdate(normalizedBars, isSilent);
             };
             this._engineCallback = callback;
@@ -114,6 +102,7 @@ const CavaVisualizer = GObject.registerClass(
                 this._peakValues.fill(0);
                 this._isSilent = true;
                 this.queue_repaint();
+                this.queue_redraw();
             }
         }
 
@@ -141,15 +130,11 @@ const CavaVisualizer = GObject.registerClass(
         }
 
         _onEngineUpdate(normalizedBars, isSilent) {
-            if (!this._isPlaying) {
+            if (!this._isPlaying && !isSilent) {
                 return;
             }
 
-            try {
-                if (!this.mapped) return;
-            } catch (_e) {
-                return;
-            }
+            if (!this.mapped) return;
 
             this._isSilent = isSilent;
             let myBars = this._resampleBars(normalizedBars, this._barCount);
@@ -183,6 +168,12 @@ const CavaVisualizer = GObject.registerClass(
             let width = this.get_width();
             let height = this.get_height();
             if (width <= 0 || height <= 0) return;
+
+            if (!this._isPlaying) {
+                this._prevHeights.fill(1);
+                this._peakValues.fill(0);
+                this._isSilent = true;
+            }
 
             cr.setOperator(Cairo.Operator.CLEAR);
             cr.paint();
@@ -335,12 +326,8 @@ const SimulatedVisualizer = GObject.registerClass(
 
             if (playing && this._mode !== 0) {
                 this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                    try {
-                        if (!this.get_parent()) return GLib.SOURCE_REMOVE;
-                        if (!this.mapped) return GLib.SOURCE_CONTINUE;
-                    } catch (_e) {
-                        return GLib.SOURCE_REMOVE;
-                    }
+                    if (!this.get_parent()) return GLib.SOURCE_REMOVE;
+                    if (!this.mapped) return GLib.SOURCE_CONTINUE;
                     let t = Date.now() / 250;
                     this._updateVisuals(t);
                     return GLib.SOURCE_CONTINUE;
@@ -393,7 +380,6 @@ export const WaveformVisualizer = GObject.registerClass(
             this._isPlaying = false;
 
             this.set_child(this._simulated);
-            this.connect('destroy', () => this._cleanup());
 
             if (this._isPopup) {
                 this._settings.connectObject('changed::popup-visualizer-bars', () => this._updateSize(), this);
@@ -406,7 +392,6 @@ export const WaveformVisualizer = GObject.registerClass(
             }
 
             this._updateSize();
-            this.connect('destroy', () => this._cleanup());
         }
 
         setSidePanel(isSidePanel, maxWidth) {

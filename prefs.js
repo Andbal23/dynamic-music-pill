@@ -22,6 +22,7 @@ const PREFS_KEYS = [
     'fallback-art-path', 'popup-show-visualizer', 'popup-hide-pill-visualizer', 'compatibility-delay',
     'popup-follow-custom-bg', 'popup-follow-custom-text', 'action-hover', 'hover-delay', 'selected-player-bus',
     'popup-show-player-selector', 'hide-auto-smart-selection', 'popup-player-selector-position', 'show-pill-border', 'invert-scroll-direction', 'always-show-pill', 'popup-hide-on-leave',
+    'popup-vertical-offset', 'popup-horizontal-offset',
     'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'lyrics-language-preference', 'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
     'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
     'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history', 'has-seen-first-hint',
@@ -32,15 +33,26 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
-        version: '1.5.2',
-        subtitle: 'Vertical Dock Visualizer Fix, Text Center Snap Fix & Weblate Translations',
+        version: '1.6',
+        subtitle: 'Always-On Last Track & Quick Launch, Dynamic Width Default, Player Blur & Polish',
         expanded: true,
-        notes: 'Improvements & Bug Fixes:\n' +
+        notes: 'New Features & Enhancements:\n' +
+            '• Always-On Mode with Last Played Music & Quick Launch: When Always-On mode is active and playback stops or the machine reboots, the pill remembers and displays the last played track (title, artist, album art, and adaptive color palette). Clicking the pill or Play button instantly reopens that browser, website (e.g. YouTube video), or desktop media player (Spotify, VLC, Amberol, etc.).\n' +
+            '• Dynamic Pill Width Default: Pill width now dynamically adapts to track length and visualizer bars by default for a sleek, compact appearance.\n' +
+            '• Player Selector Blur Integration: Connected the full native Blur my Shell dynamic backdrop to the Player Selector Menu, seamlessly matching pop-up blur, sigma, and tint settings.\n' +
+            '• Pop-up Vertical Offset Setting: Added a dedicated setting to fine-tune the vertical offset of the expanded pop-up player for pixel-perfect placement.\n\n' +
+            'Improvements & Bug Fixes:\n' +
             '• Visualizer Clipping & Centering in Vertical Docks: Visualizer bars now dynamically adjust bar width, gap, and horizontal alignment in left/right side docks, eliminating clipping.\n' +
             '• CAVA Frequency Resampling Refinements: Enhanced frequency distribution with combined average + peak resampling and high-frequency perceptual compensation for dynamic, full-spectrum bar activity.\n' +
+            '• CAVA Visualizer Pause Freeze Fix: Audio spectrum now smoothly resets to flat baseline immediately on pause without requiring a mouse hover.\n' +
             '• Text Alignment & Squeezing Fix on Pop-up Close: Kept pill visualizer space reserved during pop-up open state, eliminating layout squish and premature text jumping between start and center.\n' +
-            '• Text Fade & Scrolling Polish: Preserved continuous edge fade effects during scrolling and eliminated temporary ellipsis flash when resuming playback.\n' +
-            '• Album Art Clamping: Clamped maximum album art dimensions in side docks to prevent layout overflows.\n\n' +
+            '• Text Fade & Scrolling Polish: Preserved continuous edge fade effects during scrolling, and eliminated delayed ellipsis popping and text jumping on track skips when scrolling text is disabled.\n' +
+            '• Album Art Clamping: Clamped maximum album art dimensions in side docks to prevent layout overflows.\n' +
+            '• NixOS & Multi-Distro Blur Detection Fix (#179): Added dynamic typelib environment scanning (`GI_TYPELIB_PATH`, NixOS system profiles, and runtime module checking) so dynamic blur works seamlessly across non-FHS distributions.\n' +
+            '• Pop-up Cover Art & Text Polish: Unified cover art crossfading with the pill widget, eliminating flicker, delayed updates, and disposed widget errors on track skips.\n' +
+            '• Smooth Vinyl Rotation: Enhanced vinyl record rotation with hardware FBO bilinear filtering, smooth spin-up and deceleration curves, and automatic spinning upon opening the pop-up player.\n' +
+            '• Pill Lyrics Rhythm & Symmetrical Layout: Refined synced lyrics scrolling rhythm in the pill to match vocal pacing with ample ending reading time, and perfected symmetrical centering for Always-On mode.\n' +
+            '• Memory & Lifecycle Stability: Hardened widget lifecycle teardown and disposal across all custom widgets for guaranteed leak-free operation.\n\n' +
             'Translations:\n' +
             '• Updated translations from Hosted Weblate, including 100% Brazilian Portuguese (#178).',
     },
@@ -820,6 +832,26 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         popCustomWidthExpander.add_row(popCustomWidthRow);
         popupGroup.add(popCustomWidthExpander);
 
+        const popVOffsetRow = this._createSpinRow(settings, {
+            key: 'popup-vertical-offset',
+            title: _('Vertical Offset (Y)'),
+            subtitle: _('Shift Up (-) or Down (+)'),
+            lower: -100,
+            upper: 100,
+            step: 1,
+        });
+        popupGroup.add(popVOffsetRow);
+
+        const popHOffsetRow = this._createSpinRow(settings, {
+            key: 'popup-horizontal-offset',
+            title: _('Horizontal Offset (X)'),
+            subtitle: _('Shift Left (-) or Right (+)'),
+            lower: -100,
+            upper: 100,
+            step: 1,
+        });
+        popupGroup.add(popHOffsetRow);
+
         // --- Vinyl / Album Art ExpanderRow (all vinyl options grouped together) ---
         const { expander: vinylExpander } = this._createExpanderSwitchRow(settings, {
             key: 'popup-show-vinyl',
@@ -1262,7 +1294,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                     const meta = JSON.parse(new TextDecoder().decode(contents));
                     if (meta && typeof meta.version === 'number' && meta.version >= 76) return true;
                 }
-            } catch (_) {}
+            } catch (e) {
+                console.debug(`[Dynamic Music Pill Prefs] Failed to read BMS metadata: ${e.message}`);
+            }
         }
         return false;
     }
@@ -1817,45 +1851,47 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 child = next;
             }
 
-            try {
-                const connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
-                connection.call(
-                    'org.freedesktop.DBus',
-                    '/org/freedesktop/DBus',
-                    'org.freedesktop.DBus',
-                    'ListNames',
-                    null,
-                    null,
-                    Gio.DBusCallFlags.NONE,
-                    -1,
-                    null,
-                    (c, res) => {
-                        try {
-                            const r = c.call_finish(res);
-                            const names = r.deep_unpack()[0];
-                            const mpris = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.'));
-                            const apps = [...new Set(mpris.map(n => n.replace('org.mpris.MediaPlayer2.', '').split('.')[0]))];
-
-                            if (apps.length === 0) {
-                                playerBox.append(new Gtk.Label({ label: _('No players found') }));
-                            } else {
-                                apps.forEach(app => {
-                                    const btn = new Gtk.Button({ label: app, css_classes: ['suggested-action'] });
-                                    btn.connect('clicked', () => {
-                                        const current = settings.get_string('player-filter-list');
-                                        const list = current.split(',').map(s => s.trim()).filter(s => s.length > 0);
-                                        if (!list.includes(app)) {
-                                            list.push(app);
-                                            settings.set_string('player-filter-list', list.join(', '));
-                                        }
-                                    });
-                                    playerBox.append(btn);
-                                });
-                            }
-                        } catch (_) {}
+            const connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
+            connection.call(
+                'org.freedesktop.DBus',
+                '/org/freedesktop/DBus',
+                'org.freedesktop.DBus',
+                'ListNames',
+                null,
+                null,
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                (c, res) => {
+                    let r;
+                    try {
+                        r = c.call_finish(res);
+                    } catch (e) {
+                        console.debug(`[Dynamic Music Pill Prefs] ListNames error: ${e.message}`);
+                        return;
                     }
-                );
-            } catch (_) {}
+                    const names = r.deep_unpack()[0];
+                    const mpris = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.'));
+                    const apps = [...new Set(mpris.map(n => n.replace('org.mpris.MediaPlayer2.', '').split('.')[0]))];
+
+                    if (apps.length === 0) {
+                        playerBox.append(new Gtk.Label({ label: _('No players found') }));
+                    } else {
+                        apps.forEach(app => {
+                            const btn = new Gtk.Button({ label: app, css_classes: ['suggested-action'] });
+                            btn.connect('clicked', () => {
+                                const current = settings.get_string('player-filter-list');
+                                const list = current.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                                if (!list.includes(app)) {
+                                    list.push(app);
+                                    settings.set_string('player-filter-list', list.join(', '));
+                                }
+                            });
+                            playerBox.append(btn);
+                        });
+                    }
+                }
+            );
         };
 
         refreshBtn.connect('clicked', updateDetected);
@@ -1941,77 +1977,77 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             }
             detectedPlayerRows = [];
 
-            try {
-                const connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
-                connection.call(
-                    'org.freedesktop.DBus',
-                    '/org/freedesktop/DBus',
-                    'org.freedesktop.DBus',
-                    'ListNames',
-                    null,
-                    null,
-                    Gio.DBusCallFlags.NONE,
-                    -1,
-                    null,
-                    (c, res) => {
-                        try {
-                            const r = c.call_finish(res);
-                            const names = r.deep_unpack()[0];
-                            const mprisNames = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.'));
-
-                            if (mprisNames.length === 0) {
-                                activePlayersGroup.set_description(_('No active players detected. Open a music app first!'));
-                            } else {
-                                activePlayersGroup.set_description(_('Select a player to help the extension identify it:'));
-
-                                mprisNames.forEach(fullBusName => {
-                                    let shortName = fullBusName.replace('org.mpris.MediaPlayer2.', '');
-                                    if (shortName.includes('.instance')) {
-                                        shortName = shortName.split('.instance')[0];
-                                    }
-
-                                    const currentMapStr = settings.get_string('app-name-mapping') || '';
-                                    if (currentMapStr.includes(shortName + ':')) {
-                                        return;
-                                    }
-
-                                    const row = new Adw.ActionRow({
-                                        title: this._escapeMarkup(shortName),
-                                        subtitle: this._escapeMarkup(`Bus: ${fullBusName}`),
-                                    });
-
-                                    const btn = new Gtk.Button({
-                                        label: _('Use This'),
-                                        css_classes: ['suggested-action'],
-                                        valign: Gtk.Align.CENTER,
-                                    });
-
-                                    btn.connect('clicked', () => {
-                                        const currentVal = settings.get_string('app-name-mapping');
-                                        if (currentVal.includes(shortName + ':')) return;
-
-                                        const newVal = currentVal
-                                            ? `${currentVal},${shortName}:ENTER_APP_ID_HERE`
-                                            : `${shortName}:ENTER_APP_ID_HERE`;
-                                        settings.set_string('app-name-mapping', newVal);
-
-                                        GLib.idle_add_once(() => {
-                                            refreshAppMappings();
-                                            updateDetectedPlayers();
-                                        });
-                                    });
-
-                                    row.add_suffix(btn);
-                                    activePlayersGroup.add(row);
-                                    detectedPlayerRows.push(row);
-                                });
-                            }
-                        } catch (e) {
-                            console.error('Error fetching DBus names:', e);
-                        }
+            const connection = Gio.bus_get_sync(Gio.BusType.SESSION, null);
+            connection.call(
+                'org.freedesktop.DBus',
+                '/org/freedesktop/DBus',
+                'org.freedesktop.DBus',
+                'ListNames',
+                null,
+                null,
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                (c, res) => {
+                    let r;
+                    try {
+                        r = c.call_finish(res);
+                    } catch (e) {
+                        console.debug(`[Dynamic Music Pill Prefs] Error fetching DBus names: ${e.message}`);
+                        return;
                     }
-                );
-            } catch (_) {}
+                    const names = r.deep_unpack()[0];
+                    const mprisNames = names.filter(n => n.startsWith('org.mpris.MediaPlayer2.'));
+
+                    if (mprisNames.length === 0) {
+                        activePlayersGroup.set_description(_('No active players detected. Open a music app first!'));
+                    } else {
+                        activePlayersGroup.set_description(_('Select a player to help the extension identify it:'));
+
+                        mprisNames.forEach(fullBusName => {
+                            let shortName = fullBusName.replace('org.mpris.MediaPlayer2.', '');
+                            if (shortName.includes('.instance')) {
+                                shortName = shortName.split('.instance')[0];
+                            }
+
+                            const currentMapStr = settings.get_string('app-name-mapping') || '';
+                            if (currentMapStr.includes(shortName + ':')) {
+                                return;
+                            }
+
+                            const row = new Adw.ActionRow({
+                                title: this._escapeMarkup(shortName),
+                                subtitle: this._escapeMarkup(`Bus: ${fullBusName}`),
+                            });
+
+                            const btn = new Gtk.Button({
+                                label: _('Use This'),
+                                css_classes: ['suggested-action'],
+                                valign: Gtk.Align.CENTER,
+                            });
+
+                            btn.connect('clicked', () => {
+                                const currentVal = settings.get_string('app-name-mapping');
+                                if (currentVal.includes(shortName + ':')) return;
+
+                                const newVal = currentVal
+                                    ? `${currentVal},${shortName}:ENTER_APP_ID_HERE`
+                                    : `${shortName}:ENTER_APP_ID_HERE`;
+                                settings.set_string('app-name-mapping', newVal);
+
+                                GLib.idle_add_once(() => {
+                                    refreshAppMappings();
+                                    updateDetectedPlayers();
+                                });
+                            });
+
+                            row.add_suffix(btn);
+                            activePlayersGroup.add(row);
+                            detectedPlayerRows.push(row);
+                        });
+                    }
+                }
+            );
         };
 
         const refreshAppMappings = () => {
@@ -2191,9 +2227,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         const ownCacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'dynamic-music-pill', 'art']);
 
         const getCacheInfo = () => {
+            const dir = Gio.File.new_for_path(ownCacheDir);
+            if (!dir.query_exists(null)) return { count: 0, size: 0 };
             try {
-                const dir = Gio.File.new_for_path(ownCacheDir);
-                if (!dir.query_exists(null)) return { count: 0, size: 0 };
                 const en = dir.enumerate_children('standard::size', Gio.FileQueryInfoFlags.NONE, null);
                 let count = 0;
                 let size = 0;
@@ -2204,7 +2240,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 }
                 en.close(null);
                 return { count, size };
-            } catch (_) {
+            } catch (e) {
+                console.debug(`[Dynamic Music Pill Prefs] Cache info error: ${e.message}`);
                 return { count: 0, size: 0 };
             }
         };
@@ -2229,17 +2266,19 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             css_classes: ['destructive-action'],
         });
         clearCacheBtn.connect('clicked', () => {
-            try {
-                const dir = Gio.File.new_for_path(ownCacheDir);
-                if (dir.query_exists(null)) {
+            const dir = Gio.File.new_for_path(ownCacheDir);
+            if (dir.query_exists(null)) {
+                try {
                     const en = dir.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
                     let fi;
                     while ((fi = en.next_file(null)) !== null) {
                         dir.get_child(fi.get_name()).delete(null);
                     }
                     en.close(null);
+                } catch (e) {
+                    console.debug(`[Dynamic Music Pill Prefs] Cache clear error: ${e.message}`);
                 }
-            } catch (_) {}
+            }
             cacheRow.subtitle = buildCacheSubtitle(getCacheInfo());
         });
 
@@ -2287,9 +2326,9 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             title: _('Support the Project'),
         });
 
-        const versionName = this.metadata?.['version-name'] || '1.5.2';
+        const versionName = this.metadata['version-name'] || '1.6';
         const infoRow = new Adw.ActionRow({
-            title: this.metadata?.name || 'Dynamic Music Pill',
+            title: this.metadata.name || 'Dynamic Music Pill',
             subtitle: `v${versionName} • GNOME Shell Extension`,
         });
         this._addRowIcon(infoRow, 'audio-x-generic-symbolic');

@@ -134,7 +134,7 @@
       <summary>Square Vinyl (No Rotation)</summary>
     </key>
     <key name="pill-dynamic-width" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Dynamic Pill Width</summary>
     </key>
     <key name="popup-use-custom-width" type="b">
@@ -229,6 +229,18 @@
       <default>false</default>
       <summary>Hide popup when mouse leaves</summary>
       <description>Automatically close the expanded player when the mouse cursor leaves its area.</description>
+    </key>
+    <key name="popup-vertical-offset" type="i">
+      <default>0</default>
+      <range min="-100" max="100"/>
+      <summary>Popup vertical offset</summary>
+      <description>Shift popup position vertically up or down</description>
+    </key>
+    <key name="popup-horizontal-offset" type="i">
+      <default>0</default>
+      <range min="-100" max="100"/>
+      <summary>Popup horizontal offset</summary>
+      <description>Shift popup position horizontally left or right</description>
     </key>
     <key name="inline-artist" type="b">
       <default>true</default>

@@ -64,13 +64,12 @@ function extractAltArtistTitle(title, artist = "") {
 
 function ttmlTimeToMs(val) {
   if (!val) return 0;
-  try {
-    const parts = String(val).trim().split(":");
-    if (parts.length === 1) return Math.round(parseFloat(parts[0]) * 1000);
-    if (parts.length === 2) return Math.round((parseInt(parts[0]) * 60 + parseFloat(parts[1])) * 1000);
-    if (parts.length === 3) return Math.round((parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseFloat(parts[2])) * 1000);
-  } catch (_) {}
-  return 0;
+  const parts = String(val).trim().split(":");
+  let ms = 0;
+  if (parts.length === 1) ms = Math.round(parseFloat(parts[0]) * 1000);
+  else if (parts.length === 2) ms = Math.round((parseInt(parts[0], 10) * 60 + parseFloat(parts[1])) * 1000);
+  else if (parts.length === 3) ms = Math.round((parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseFloat(parts[2])) * 1000);
+  return isNaN(ms) ? 0 : ms;
 }
 
 function parseTTML(ttmlText) {
@@ -149,10 +148,19 @@ function parseLyricsInput(input, allowPlain = false) {
   }
 
   if (typeof input === "object" || (typeof input === "string" && input.trim().startsWith("{"))) {
-    try {
-      const obj = typeof input === "object" ? input : JSON.parse(input);
+    let obj = null;
+    if (typeof input === "object") {
+      obj = input;
+    } else {
+      try {
+        obj = JSON.parse(input);
+      } catch {
+        obj = null;
+      }
+    }
 
-      if (obj && typeof obj.ttml === "string") {
+    if (obj) {
+      if (typeof obj.ttml === "string") {
         return parseTTML(obj.ttml);
       }
 
@@ -189,7 +197,7 @@ function parseLyricsInput(input, allowPlain = false) {
           return { lines, hasWordLevel };
         }
       }
-    } catch (_) {}
+    }
   }
 
   if (typeof input !== "string") return { lines: [], hasWordLevel: false };
@@ -274,7 +282,7 @@ class AppleMusicProvider {
   }
 
   async fetchLyrics(title, artist, album, duration) {
-    if (!title?.trim()) return null;
+    if (!title || !title.trim()) return null;
     const cArtist = cleanArtist(artist);
     const cleaned = cleanTitle(title, cArtist);
     const alt = extractAltArtistTitle(title, cArtist);
@@ -302,7 +310,7 @@ class AppleMusicProvider {
             };
           }
           const json = JSON.parse(rawText);
-          const results = json?.results;
+          const results = json && json.results ? json.results : null;
           if (Array.isArray(results) && results.length > 0) {
             let bestItem = results.find(r => r.timing_type === "word") || results[0];
             if (bestItem && bestItem.lyricsUrl) {
@@ -389,7 +397,7 @@ class BiniLyricsProvider {
     }
 
     const json = JSON.parse(rawText);
-    const results = json?.results;
+    const results = json && json.results ? json.results : null;
     if (!Array.isArray(results) || results.length === 0) return null;
 
     let bestItem = results.find(r => r.timing_type === "word") || results[0];
@@ -416,7 +424,7 @@ class BiniLyricsProvider {
   }
 
   async fetchLyrics(title, artist, album, duration) {
-    if (!title?.trim()) return null;
+    if (!title || !title.trim()) return null;
     const cArtist = cleanArtist(artist);
     const cleaned = cleanTitle(title, cArtist);
     const alt = extractAltArtistTitle(title, cArtist);
@@ -447,7 +455,7 @@ class LrclibProvider {
   }
 
   async fetchLyrics(title, artist, album, duration, pref) {
-    if (!title?.trim() && !artist?.trim()) return null;
+    if ((!title || !title.trim()) && (!artist || !artist.trim())) return null;
     const cArtist = cleanArtist(artist);
     const cleaned = cleanTitle(title, cArtist);
     const alt = extractAltArtistTitle(title, cArtist);
@@ -556,10 +564,11 @@ class LrclibProvider {
       if (!msg) return null;
       const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
       if (msg.status_code === Soup.Status.OK) {
-        try { return JSON.parse(decode(bytes.get_data())); } catch (_) {}
+        return JSON.parse(decode(bytes.get_data()));
       }
       return null;
-    } catch (_) {
+    } catch (e) {
+      console.debug(`[LyricsClient] Lrclib exact fetch error: ${e.message}`);
       return null;
     }
   }
@@ -581,7 +590,8 @@ class LrclibProvider {
         if (closeMatches.length > 0) return closeMatches;
       }
       return data;
-    } catch (_) {
+    } catch (e) {
+      console.debug(`[LyricsClient] Lrclib search error: ${e.message}`);
       return [];
     }
   }
@@ -604,7 +614,7 @@ export class LyricsClient {
 
   async getLyrics(title, artist, album, duration, settings) {
     if (!this._session) return null;
-    if (!title?.trim() && !artist?.trim()) return null;
+    if ((!title || !title.trim()) && (!artist || !artist.trim())) return null;
     const pref = settings ? settings.get_int("lyrics-language-preference") : 0;
 
     // Launch all providers concurrently in parallel

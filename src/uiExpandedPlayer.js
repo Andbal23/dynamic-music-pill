@@ -8,7 +8,7 @@ import { formatTime, smartUnpack, disableDockAutohide, restoreDockAutohide, disa
 import { COPY_ICON_RESET_DELAY, COPY_ICON_FADE_IN_DURATION, COPY_ICON_FADE_OUT_DURATION, SUBPAGE_ANIM_IN_DURATION, SUBPAGE_ANIM_OUT_DURATION, SUBPAGE_BACK_BTN_WIDTH, SUBPAGE_HEADER_ICON_SIZE } from './constants.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
-import { PixelSnappedBox, ScrollLabel, _addBtnPressAnim } from './uiWidgets.js';
+import { PixelSnappedBox, ScrollLabel, CrossfadeArt, _addBtnPressAnim } from './uiWidgets.js';
 import { WaveformVisualizer } from './uiVisualizers.js';
 import { LyricsClient } from './LyricsClient.js';
 import { LyricsWidget } from './uiLyricsWidget.js';
@@ -49,10 +49,14 @@ export const ExpandedPlayer = GObject.registerClass(
                 height: bgH
             });
             this._backgroundBtn.connectObject('touch-event', (actor, event) => {
-                if (event.type() === Clutter.EventType.TOUCH_END) { this.hide(); return Clutter.EVENT_STOP; }
+                let t = event.type();
+                if (t === Clutter.EventType.TOUCH_BEGIN || t === Clutter.EventType.TOUCH_END) {
+                    this.hide();
+                    return Clutter.EVENT_STOP;
+                }
                 return Clutter.EVENT_PROPAGATE;
             }, this);
-            this._backgroundBtn.connectObject('button-release-event', (actor, event) => {
+            this._backgroundBtn.connectObject('button-press-event', (actor, event) => {
                 let btn = event.get_button();
                 if (btn === 1) {
                     this.hide();
@@ -60,6 +64,13 @@ export const ExpandedPlayer = GObject.registerClass(
                 } else if (btn === 8) {
                     if (this._currentSubPage) this._popPage();
                     else this.hide();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
+            this._backgroundBtn.connectObject('button-release-event', (actor, event) => {
+                let btn = event.get_button();
+                if (btn === 1 || btn === 8) {
                     return Clutter.EVENT_STOP;
                 }
                 return Clutter.EVENT_PROPAGATE;
@@ -270,6 +281,19 @@ export const ExpandedPlayer = GObject.registerClass(
                     this.updateContent(this._lastTrackTitle, '', artUrl, this._lastStatus);
                 }
             }, this);
+            this._settings.connectObject('changed::popup-vinyl-rotate', () => {
+                if (!this.visible) return;
+                if (this._settings.get_boolean('popup-vinyl-rotate')) {
+                    if (this._lastStatus === 'Playing') this._startVinyl(true);
+                } else {
+                    this._stopVinyl();
+                }
+            }, this);
+            this._settings.connectObject('changed::popup-vinyl-speed', () => {
+                if (this.visible && this._isSpinning) {
+                    this._startVinyl(true);
+                }
+            }, this);
             this._settings.connectObject('changed::popup-show-vinyl', () => {
                 if (this.visible && this._player) {
                     let artUrl = this._lastArtUrl || this._currentArtUrl;
@@ -287,6 +311,12 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._visualizer.setPlaying(this._lastStatus === 'Playing');
                     this.animateResize();
                 }
+            }, this);
+            this._settings.connectObject('changed::popup-vertical-offset', () => {
+                if (this.visible && !this._isHiding) this.animateResize();
+            }, this);
+            this._settings.connectObject('changed::popup-horizontal-offset', () => {
+                if (this.visible && !this._isHiding) this.animateResize();
             }, this);
             this._settings.connectObject('changed::visualizer-style', () => {
                 if (this.visible) {
@@ -307,9 +337,21 @@ export const ExpandedPlayer = GObject.registerClass(
                 style_class: 'vinyl-container',
                 layout_manager: new Clutter.BinLayout(),
                 width: 100,
-                height: 100
+                height: 100,
+                offscreen_redirect: Clutter.OffscreenRedirect.ALWAYS
             });
             this._vinyl.set_pivot_point(0.5, 0.5);
+
+            this._coverArtWidget = new CrossfadeArt({
+                width: 100,
+                height: 100,
+                x_expand: true,
+                y_expand: true,
+                x_align: Clutter.ActorAlign.FILL,
+                y_align: Clutter.ActorAlign.FILL
+            });
+            this._coverArtWidget.set_size(100, 100);
+            this._vinyl.add_child(this._coverArtWidget);
 
             this._vinylBin = new St.Bin({
                 child: this._vinyl,
@@ -320,6 +362,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 x_align: Clutter.ActorAlign.START,
                 y_align: Clutter.ActorAlign.CENTER
             });
+            this._vinylBin.set_pivot_point(0.5, 0.5);
             topRow.add_child(this._vinylBin);
 
             this._vinylBin.reactive = true;
@@ -327,11 +370,11 @@ export const ExpandedPlayer = GObject.registerClass(
             this._vinyl.reactive = true;
 
             this._vinylBin.connectObject('enter-event', () => {
-                this._vinyl.ease({ scale_x: 0.96, scale_y: 0.96, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                this._vinylBin.ease({ scale_x: 0.96, scale_y: 0.96, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_PROPAGATE;
             }, this);
             this._vinylBin.connectObject('leave-event', () => {
-                this._vinyl.ease({ scale_x: 1.0, scale_y: 1.0, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                this._vinylBin.ease({ scale_x: 1.0, scale_y: 1.0, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_PROPAGATE;
             }, this);
             this._vinylBin.connectObject('button-release-event', (actor, event) => {
@@ -359,9 +402,9 @@ export const ExpandedPlayer = GObject.registerClass(
             });
             this._infoBox.layout_manager.orientation = Clutter.Orientation.VERTICAL;
 
-            this._titleLabel = new ScrollLabel('expanded-title', this._settings);
+            this._titleLabel = new ScrollLabel('expanded-title', this._settings, true);
             this._titleLabel.setForceScroll(true);
-            this._artistLabel = new ScrollLabel('expanded-artist', this._settings);
+            this._artistLabel = new ScrollLabel('expanded-artist', this._settings, true);
             this._artistLabel.setForceScroll(true);
 
             this._visualizer = new WaveformVisualizer(80, this._settings, true);
@@ -655,7 +698,6 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this.connect('destroy', () => this._cleanup());
         }
 
         destroy() {
@@ -1059,9 +1101,16 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (album) displayArtist = `${displayArtist}  •  ${album}`;
             }
 
-            let trackChanged = (this._lastArtUrl !== artUrl || this._lastTrackTitle !== title);
+            let titleChanged = (this._lastTrackTitle !== title);
+            let artistChanged = (this._lastDisplayArtist !== displayArtist);
+            let textChanged = titleChanged || artistChanged;
+            let artChanged = (this._lastArtUrl !== artUrl);
+            let isFirst = !this._lastTrackTitle;
+            let trackChanged = textChanged || isFirst;
+
             this._lastArtUrl = artUrl;
             this._lastTrackTitle = title;
+            this._lastDisplayArtist = displayArtist;
             if (trackChanged && this._player) {
                 this._seekLockTime = 0;
                 this._player._lastPosition = 0;
@@ -1156,95 +1205,23 @@ export const ExpandedPlayer = GObject.registerClass(
             this._updateCustomButtons();
             this._updatePlayerSelector();
 
-            let isLiveTrackChange = trackChanged && this.visible && !this._isOpening;
+            let isLiveTrackChange = textChanged && this.visible && !this._isOpening && !isFirst;
 
-            if (this._textFadeTimerId) {
-                GLib.Source.remove(this._textFadeTimerId);
-                this._textFadeTimerId = null;
+            let currentTitle = this._titleLabel ? this._titleLabel._text : '';
+            let currentArtist = this._artistLabel ? this._artistLabel._text : '';
+            let hasRealTextChange = (currentTitle !== (title || _('Unknown Title'))) ||
+                                    (currentArtist !== displayArtist);
+
+            if (this._titleLabel && currentTitle !== (title || _('Unknown Title'))) {
+                this._titleLabel.setText(title || _('Unknown Title'), false);
             }
-            if (this._resizeFinishTimerId) {
-                GLib.Source.remove(this._resizeFinishTimerId);
-                this._resizeFinishTimerId = null;
+            if (this._artistLabel && currentArtist !== displayArtist) {
+                this._artistLabel.setText(displayArtist, false);
             }
+            this._setCoverArt(artUrl);
 
-            const fadeInContent = () => {
-                if (this._resizeFinishTimerId) {
-                    GLib.Source.remove(this._resizeFinishTimerId);
-                    this._resizeFinishTimerId = null;
-                }
-
-                if (this._infoBox) {
-                    this._infoBox.remove_all_transitions();
-                    if (isLiveTrackChange) {
-                        this._infoBox.opacity = 0;
-                        this._infoBox.ease({
-                            opacity: 255,
-                            duration: 150,
-                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
-                        });
-                    } else {
-                        this._infoBox.opacity = 255;
-                    }
-                }
-            };
-
-            const applyContentAndResize = () => {
-                if (this._titleLabel && this._titleLabel._text !== title) {
-                    this._titleLabel.setText(title || _('Unknown Title'), false);
-                }
-                if (this._artistLabel && this._artistLabel._text !== displayArtist) {
-                    this._artistLabel.setText(displayArtist, false);
-                }
-                this._setCoverArt(artUrl);
-
-                if (isLiveTrackChange) {
-                    if (this._infoBox) this._infoBox.opacity = 0;
-
-                    this._resizeFinishTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 260, () => {
-                        this._resizeFinishTimerId = null;
-                        fadeInContent();
-                        return GLib.SOURCE_REMOVE;
-                    });
-                }
-
-                if (this.visible && !this._isOpening) {
-                    this.animateResize(false, () => {
-                        fadeInContent();
-                    });
-                } else {
-                    fadeInContent();
-                }
-            };
-
-            if (isLiveTrackChange && this._infoBox) {
-                let applied = false;
-                const safeApply = () => {
-                    if (applied) return;
-                    applied = true;
-                    if (this._textFadeTimerId) {
-                        GLib.Source.remove(this._textFadeTimerId);
-                        this._textFadeTimerId = null;
-                    }
-                    applyContentAndResize();
-                };
-
-                this._textFadeTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
-                    this._textFadeTimerId = null;
-                    safeApply();
-                    return GLib.SOURCE_REMOVE;
-                });
-
-                this._infoBox.remove_all_transitions();
-                this._infoBox.ease({
-                    opacity: 0,
-                    duration: 60,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: (isFinished) => {
-                        if (isFinished) safeApply();
-                    }
-                });
-            } else {
-                applyContentAndResize();
+            if (this.visible && !this._isOpening && (isLiveTrackChange || hasRealTextChange)) {
+                this.animateResize(false);
             }
         }
 
@@ -1433,6 +1410,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 duration: 120,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => {
+                    if (this._lyricsWidget) {
+                        try { this._lyricsWidget.destroy(); } catch (_) {}
+                        this._lyricsWidget = null;
+                    }
                     if (p.get_parent()) p.get_parent().remove_child(p);
                     p.destroy();
                     if (this._mainPage) this._mainPage.show();
@@ -1502,7 +1483,13 @@ export const ExpandedPlayer = GObject.registerClass(
                         'SetPosition',
                         new GLib.Variant('(ox)', [trackId, positionMicro]),
                         null, Gio.DBusCallFlags.NONE, -1, null,
-                        (conn, res) => { try { conn.call_finish(res); } catch (e) { } }
+                        (conn, res) => {
+                            try {
+                                conn.call_finish(res);
+                            } catch (e) {
+                                console.debug(`[Dynamic Music Pill] SetPosition error: ${e.message}`);
+                            }
+                        }
                     );
                 }
             };
@@ -1576,12 +1563,15 @@ export const ExpandedPlayer = GObject.registerClass(
                     GLib.Source.remove(this._lyricsTimerId);
                     this._lyricsTimerId = null;
                 }
-                this._lyricsWidget = null;
+                if (this._lyricsWidget) {
+                    try { this._lyricsWidget.destroy(); } catch (_) {}
+                    this._lyricsWidget = null;
+                }
             });
         }
 
         _loadLyricsForCurrentTrack(page, lyricsWidget) {
-            if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
+            if (!lyricsWidget || !lyricsWidget.get_parent()) return;
             lyricsWidget.showLoading();
 
             if (!this._lyricsClient) {
@@ -1624,9 +1614,9 @@ export const ExpandedPlayer = GObject.registerClass(
                 fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings
             ).then(result => {
                 if (page !== this._currentSubPage || !page.get_parent()) return;
-                if (!lyricsWidget || (lyricsWidget.is_finalized && lyricsWidget.is_finalized())) return;
+                if (!lyricsWidget || !lyricsWidget.get_parent()) return;
                 let lines = Array.isArray(result) ? result : (result ? result.lines : null);
-                let provider = result?.provider || null;
+                let provider = (result && result.provider) ? result.provider : null;
                 if (lines && lines.length > 0) {
                     if (this._controller && this._controller._fetchedTrackKey === trackKey && !this._controller._fetchedLyricsData) {
                         this._controller._fetchedLyricsData = lines;
@@ -1640,9 +1630,8 @@ export const ExpandedPlayer = GObject.registerClass(
                     lyricsWidget.showEmpty();
                 }
             }).catch(() => {
-                if (page === this._currentSubPage && page.get_parent())
-                    if (!lyricsWidget.is_finalized || !lyricsWidget.is_finalized())
-                        lyricsWidget.showError();
+                if (page === this._currentSubPage && page.get_parent() && lyricsWidget && lyricsWidget.get_parent())
+                    lyricsWidget.showError();
             });
         }
 
@@ -1944,7 +1933,7 @@ export const ExpandedPlayer = GObject.registerClass(
                             lbl.text = '\u2713';
                             b.set_style(`border-radius:12px;padding:8px 12px;min-width:42px;background-color:${actBg};`);
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
-                                if (this.is_finalized && this.is_finalized()) return GLib.SOURCE_REMOVE;
+                                if (!this.get_parent()) return GLib.SOURCE_REMOVE;
                                 ctrl.startSleepTimer(m);
                                 this._updateCustomButtons();
                                 this._popPage();
@@ -2002,7 +1991,7 @@ export const ExpandedPlayer = GObject.registerClass(
                             lbl.text = '\u2713';
                             b.set_style(`border-radius:12px;padding:8px 14px;min-width:42px;background-color:${flashBtnBg};`);
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
-                                if (this.is_finalized && this.is_finalized()) return GLib.SOURCE_REMOVE;
+                                if (!this.get_parent()) return GLib.SOURCE_REMOVE;
                                 this._controller.setPlaybackRate(r);
                                 this._popPage();
                                 return GLib.SOURCE_REMOVE;
@@ -2025,7 +2014,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 let history = this._controller.getTrackHistory();
                 if (!history || history.length === 0) { contentBox.add_child(new St.Label({ text: _('No history yet'), style: `color:${ta};` })); return; }
 
-                let subpage = contentBox.get_parent()?.get_parent();
+                let parent = contentBox.get_parent();
+                let subpage = parent ? parent.get_parent() : null;
                 let copyTimeouts = [];
                 let copyIcons = [];
 
@@ -2156,7 +2146,10 @@ export const ExpandedPlayer = GObject.registerClass(
             this._visualizer.visible = showVis;
 
             if (showVis && this._settings.get_boolean('popup-hide-pill-visualizer')) {
+                this._visBin.opacity = 0;
                 if (this._pill) this._pill._setPopupOpen(true);
+            } else if (showVis) {
+                this._visBin.opacity = 255;
             }
 
             if (this._settings.get_boolean('has-seen-first-hint')) {
@@ -2165,16 +2158,20 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._firstHintBox.show();
             }
 
-            this.updateContent(title, artist, artUrl, status);
-
             this.visible = true;
             this.opacity = 255;
             if (this._box) this._box.opacity = 0;
+
+            this.updateContent(title, artist, artUrl, status);
 
             this._startTimer();
 
             // Synchronously compute final dimensions, position, and directional pivot before first frame
             this.animateResize(true);
+
+            if (status === 'Playing') {
+                this._startVinyl(true);
+            }
 
             let startTx = this._openOffsetX || 0;
             let startTy = this._openOffsetY || 12;
@@ -2214,9 +2211,6 @@ export const ExpandedPlayer = GObject.registerClass(
                     mode: Clutter.AnimationMode.EASE_OUT_EXPO,
                     onStopped: () => {
                         if (this._blurController) this._blurController.setOpacityFactor(1.0);
-                        if (this._box && !this._isHiding && !this._currentSubPage) {
-                            this._box.set_height(-1);
-                        }
                     }
                 });
 
@@ -2242,6 +2236,10 @@ export const ExpandedPlayer = GObject.registerClass(
 
                     this._visBin.ease({
                         opacity: 255,
+                        duration: 230,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    });
+                    this._visBin.ease({
                         scale_x: 1.0,
                         scale_y: 1.0,
                         translation_x: 0,
@@ -2259,14 +2257,20 @@ export const ExpandedPlayer = GObject.registerClass(
                 new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
                 null, Gio.DBusCallFlags.NONE, -1, null,
                 (conn, res) => {
+                    let result;
                     try {
-                        let result = conn.call_finish(res);
+                        result = conn.call_finish(res);
+                    } catch (e) {
+                        console.debug(`[Dynamic Music Pill] Failed to fetch position: ${e.message}`);
+                        return;
+                    }
+                    if (result) {
                         let val = smartUnpack(result.deep_unpack()[0]);
                         if (typeof val === 'number' && val >= 0) {
                             player._lastPosition = val;
                             player._lastPositionTime = Date.now();
                         }
-                    } catch (_) {}
+                    }
                 }
             );
         }
@@ -2277,35 +2281,66 @@ export const ExpandedPlayer = GObject.registerClass(
             this._isOpening = false;
             this._initialWidthSet = false;
 
-            if (this._leaveHideTimeoutId) {
-                GLib.Source.remove(this._leaveHideTimeoutId);
-                this._leaveHideTimeoutId = null;
+            // Immediately disable modal background to prevent trapping mouse clicks
+            if (this._backgroundBtn) {
+                this._backgroundBtn.reactive = false;
             }
-            if (this._resizeDebounceId) {
-                GLib.Source.remove(this._resizeDebounceId);
-                this._resizeDebounceId = null;
+            if (global.stage && (global.stage.key_focus === this || this.contains(global.stage.key_focus))) {
+                global.stage.set_key_focus(null);
             }
 
-            restoreDockAutohide();
-            this._stopTimer();
-            this._stopVinyl();
-            if (this._visBin && this._visBin.visible && this._settings.get_boolean('popup-hide-pill-visualizer')) {
-                let closeTx = Math.round((this._openOffsetX || 0) * 1.5);
-                let closeTy = Math.round((this._openOffsetY || 12) * 1.5);
-                this._visBin.remove_all_transitions();
-                this._visBin.ease({
-                    opacity: 0,
-                    scale_x: 0.5,
-                    scale_y: 0.5,
-                    translation_x: closeTx,
-                    translation_y: closeTy,
-                    duration: 160,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                });
+            try {
+                if (this._leaveHideTimeoutId) {
+                    GLib.Source.remove(this._leaveHideTimeoutId);
+                    this._leaveHideTimeoutId = null;
+                }
+                if (this._resizeDebounceId) {
+                    GLib.Source.remove(this._resizeDebounceId);
+                    this._resizeDebounceId = null;
+                }
+
+                restoreDockAutohide();
+                this._stopTimer();
+                this._stopVinyl();
+                if (this._visualizer) {
+                    this._visualizer.setPlaying(false);
+                }
+                if (this._visBin && this._visBin.visible && this._settings.get_boolean('popup-hide-pill-visualizer')) {
+                    let closeTx = Math.round((this._openOffsetX || 0) * 1.5);
+                    let closeTy = Math.round((this._openOffsetY || 12) * 1.5);
+                    this._visBin.remove_all_transitions();
+                    this._visBin.ease({
+                        opacity: 0,
+                        scale_x: 0.5,
+                        scale_y: 0.5,
+                        translation_x: closeTx,
+                        translation_y: closeTy,
+                        duration: 160,
+                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    });
+                }
+                if (this._pill && this._controller && (!this._controller._pills || this._controller._pills().includes(this._pill))) {
+                    try {
+                        this._pill._setPopupOpen(false);
+                    } catch (pillErr) {
+                        console.error(`[Dynamic Music Pill] Error in _setPopupOpen(false): ${pillErr.message}`);
+                    }
+                }
+            } catch (err) {
+                console.error(`[Dynamic Music Pill] Error in hide pre-cleanup: ${err.message}`);
             }
-            if (this._pill && this._controller && (!this._controller._pills || this._controller._pills().includes(this._pill))) {
-                this._pill._setPopupOpen(false);
+
+            // Safety fallback timer: guarantee popup closure within 350ms no matter what
+            if (this._safetyTimeoutId) {
+                GLib.Source.remove(this._safetyTimeoutId);
+                this._safetyTimeoutId = null;
             }
+            this._safetyTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 350, () => {
+                this._safetyTimeoutId = null;
+                this._finalizeClose();
+                return GLib.SOURCE_REMOVE;
+            });
+
             if (this._box) {
                 let closeTx = Math.round((this._openOffsetX || 0) * 0.8);
                 let closeTy = Math.round((this._openOffsetY || 12) * 0.8);
@@ -2332,22 +2367,51 @@ export const ExpandedPlayer = GObject.registerClass(
                     duration: 170,
                     mode: Clutter.AnimationMode.EASE_OUT_CUBIC,
                     onStopped: () => {
-                        if (!this._box) return;
-                        try {
-                            this.visible = false;
-                            this._isHiding = false;
-                            if (this._blurController) this._blurController.disable();
-                            if (this._blurBackdrop) this._blurBackdrop.hide();
-                            if (this._controller) {
-                                this._controller.closeMenu();
-                            }
-                        } catch (e) {}
+                        this._finalizeClose();
                     }
                 });
             } else {
-                this.visible = false;
-                this._isHiding = false;
-                if (this._controller) this._controller.closeMenu();
+                this._finalizeClose();
+            }
+        }
+
+        _finalizeClose() {
+            if (this._safetyTimeoutId) {
+                GLib.Source.remove(this._safetyTimeoutId);
+                this._safetyTimeoutId = null;
+            }
+            this.visible = false;
+            this._isHiding = false;
+            if (this._backgroundBtn) this._backgroundBtn.reactive = false;
+            if (this._blurController) {
+                try { this._blurController.disable(); } catch (_) {}
+            }
+            if (this._blurBackdrop) {
+                try { this._blurBackdrop.hide(); } catch (_) {}
+            }
+            if (this._currentSubPage) {
+                if (this._lyricsTimerId) {
+                    GLib.Source.remove(this._lyricsTimerId);
+                    this._lyricsTimerId = null;
+                }
+                if (this._lyricsWidget) {
+                    try { this._lyricsWidget.destroy(); } catch (_) {}
+                    this._lyricsWidget = null;
+                }
+                try {
+                    if (this._currentSubPage.get_parent())
+                        this._currentSubPage.get_parent().remove_child(this._currentSubPage);
+                    this._currentSubPage.destroy();
+                } catch (_) {}
+                this._currentSubPage = null;
+                if (this._mainPage) this._mainPage.show();
+            }
+            if (this._controller) {
+                try {
+                    this._controller.closeMenu();
+                } catch (e) {
+                    console.error(`[Dynamic Music Pill] Error in closeMenu: ${e.message}`);
+                }
             }
         }
 
@@ -2358,22 +2422,34 @@ export const ExpandedPlayer = GObject.registerClass(
             this.disconnectObject(this);
             if (this._box) this._box.remove_all_transitions();
             if (this._blurBackdrop) this._blurBackdrop.remove_all_transitions();
-            if (this._infoBox) this._infoBox.remove_all_transitions();
-            if (this._textFadeTimerId) { GLib.Source.remove(this._textFadeTimerId); this._textFadeTimerId = null; }
-            if (this._resizeFinishTimerId) { GLib.Source.remove(this._resizeFinishTimerId); this._resizeFinishTimerId = null; }
             if (this._updateTimer) { GLib.Source.remove(this._updateTimer); this._updateTimer = null; }
             if (this._resizeDebounceId) { GLib.Source.remove(this._resizeDebounceId); this._resizeDebounceId = null; }
             if (this._leaveHideTimeoutId) { GLib.Source.remove(this._leaveHideTimeoutId); this._leaveHideTimeoutId = null; }
+            if (this._safetyTimeoutId) { GLib.Source.remove(this._safetyTimeoutId); this._safetyTimeoutId = null; }
             if (this._artVisibilityTimer) { GLib.Source.remove(this._artVisibilityTimer); this._artVisibilityTimer = null; }
-            if (this._currentSubPage) { this._currentSubPage.destroy(); this._currentSubPage = null; }
+            if (this._vinyl) {
+                this._vinyl.remove_transition('rotation-angle-z');
+            }
+            this._isSpinning = false;
+            if (this._coverArtWidget) {
+                try { this._coverArtWidget.destroy(); } catch (_) {}
+                this._coverArtWidget = null;
+            }
             if (this._lyricsTimerId) { GLib.Source.remove(this._lyricsTimerId); this._lyricsTimerId = null; }
+            if (this._lyricsWidget) {
+                try { this._lyricsWidget.destroy(); } catch (_) {}
+                this._lyricsWidget = null;
+            }
             if (this._lyricsClient) {
                 if (!this._controller || this._lyricsClient !== this._controller._lyricsClient) {
                     this._lyricsClient.destroy();
                 }
                 this._lyricsClient = null;
             }
-            this._lyricsWidget = null;
+            if (this._currentSubPage) {
+                try { this._currentSubPage.destroy(); } catch (_) {}
+                this._currentSubPage = null;
+            }
             if (this._visualizer) {
                 this._visualizer.destroy();
                 this._visualizer = null;
@@ -2407,88 +2483,84 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _tick() {
-            try {
-                if (!this._player || !this.get_parent()) return GLib.SOURCE_REMOVE;
+            if (!this._player || !this.get_parent()) return GLib.SOURCE_REMOVE;
 
-                let meta = this._player.Metadata;
-                let length = meta ? smartUnpack(meta['mpris:length']) : 0;
-                if (length <= 0) return;
+            let meta = this._player.Metadata;
+            let length = meta ? smartUnpack(meta['mpris:length']) : 0;
+            if (length <= 0) return;
 
-                let now = Date.now();
-                if (now - this._seekLockTime < 2000) return GLib.SOURCE_CONTINUE;
+            let now = Date.now();
+            if (now - this._seekLockTime < 2000) return GLib.SOURCE_CONTINUE;
 
-                // Periodically sync position from DBus to keep _lastPositionTime fresh
-                // Most MPRIS players don't push Position updates, only send Seeked on seek
-                if (this._player.PlaybackStatus === 'Playing' &&
-                    (!this._lastPositionSync || now - this._lastPositionSync > 5000)) {
-                    this._lastPositionSync = now;
-                    if (this._controller) this._controller._syncPosition(this._player);
+            // Periodically sync position from DBus to keep _lastPositionTime fresh
+            // Most MPRIS players don't push Position updates, only send Seeked on seek
+            if (this._player.PlaybackStatus === 'Playing' &&
+                (!this._lastPositionSync || now - this._lastPositionSync > 5000)) {
+                this._lastPositionSync = now;
+                if (this._controller) this._controller._syncPosition(this._player);
+            }
+
+            let cachedPos = this._player._lastPosition || 0;
+            let lastUpdate = this._player._lastPositionTime || now;
+
+            // Stale position detection for KDE Connect / GS Connect
+            // Only triggers when position hasn't been updated by DBus for >6s
+            // AND the raw cached position hasn't changed (rules out normal interpolation)
+            let isStale = false;
+            if (this._player.PlaybackStatus === 'Playing') {
+                if (cachedPos === (this._lastTickPosition || 0) && (now - lastUpdate) > 6000
+                    && this._lastTickTime && (now - this._lastTickTime) > 6000) {
+                    isStale = true;
                 }
+                if (cachedPos !== (this._lastTickPosition || 0)) this._lastTickPosition = now;
+                this._lastTickPosition = cachedPos;
+            }
 
-                let cachedPos = this._player._lastPosition || 0;
-                let lastUpdate = this._player._lastPositionTime || now;
+            let currentPos = cachedPos;
+            if (this._player.PlaybackStatus === 'Playing' && !isStale) {
+                currentPos += (now - lastUpdate) * 1000;
+            }
+            if (currentPos > length) currentPos = length;
 
-                // Stale position detection for KDE Connect / GS Connect
-                // Only triggers when position hasn't been updated by DBus for >6s
-                // AND the raw cached position hasn't changed (rules out normal interpolation)
-                let isStale = false;
-                if (this._player.PlaybackStatus === 'Playing') {
-                    if (cachedPos === (this._lastTickPosition || 0) && (now - lastUpdate) > 6000
-                        && this._lastTickTime && (now - this._lastTickTime) > 6000) {
-                        isStale = true;
-                    }
-                    if (cachedPos !== (this._lastTickPosition || 0)) this._lastTickTime = now;
-                    this._lastTickPosition = cachedPos;
-                }
+            let useHours = length >= 3600000000 && this._settings.get_boolean('show-hours-format');
 
-                let currentPos = cachedPos;
-                if (this._player.PlaybackStatus === 'Playing' && !isStale) {
-                    currentPos += (now - lastUpdate) * 1000;
-                }
-                if (currentPos > length) currentPos = length;
-
-                let useHours = length >= 3600000000 && this._settings.get_boolean('show-hours-format');
-
-                // Detect track length change (format switch mm:ss <-> hh:mm:ss)
-                // Force label width recalculation when format changes
-                if (this._lastTickLength && this._lastTickLength !== length) {
-                    let prevUseHours = this._lastTickLength >= 3600000000 && this._settings.get_boolean('show-hours-format');
-                    if (prevUseHours !== useHours) {
-                        // Format changed - force width recalc by clearing fixed widths
-                        this._currentTimeLabel.set_width(-1);
-                        this._totalTimeLabel.set_width(-1);
-                    }
-                }
-                this._lastTickLength = length;
-
-                let newCurrentText = isStale ? '--:--' : formatTime(currentPos, useHours);
-                if (this._currentTimeLabel.text !== newCurrentText) {
-                    this._currentTimeLabel.text = newCurrentText;
+            // Detect track length change (format switch mm:ss <-> hh:mm:ss)
+            // Force label width recalculation when format changes
+            if (this._lastTickLength && this._lastTickLength !== length) {
+                let prevUseHours = this._lastTickLength >= 3600000000 && this._settings.get_boolean('show-hours-format');
+                if (prevUseHours !== useHours) {
+                    // Format changed - force width recalc by clearing fixed widths
                     this._currentTimeLabel.set_width(-1);
-                    let [, natWC] = this._currentTimeLabel.get_preferred_width(-1);
-                    this._currentTimeLabel.set_width(Math.ceil(natWC) + 2);
-                }
-                let newTotalText = isStale ? '--:--' : formatTime(length, useHours);
-                if (this._totalTimeLabel.text !== newTotalText) {
-                    this._totalTimeLabel.text = newTotalText;
                     this._totalTimeLabel.set_width(-1);
-                    let [, natWT] = this._totalTimeLabel.get_preferred_width(-1);
-                    this._totalTimeLabel.set_width(Math.ceil(natWT) + 2);
                 }
+            }
+            this._lastTickLength = length;
 
-                if (isStale) return;
+            let newCurrentText = isStale ? '--:--' : formatTime(currentPos, useHours);
+            if (this._currentTimeLabel.text !== newCurrentText) {
+                this._currentTimeLabel.text = newCurrentText;
+                this._currentTimeLabel.set_width(-1);
+                let [, natWC] = this._currentTimeLabel.get_preferred_width(-1);
+                this._currentTimeLabel.set_width(Math.ceil(natWC) + 2);
+            }
+            let newTotalText = isStale ? '--:--' : formatTime(length, useHours);
+            if (this._totalTimeLabel.text !== newTotalText) {
+                this._totalTimeLabel.text = newTotalText;
+                this._totalTimeLabel.set_width(-1);
+                let [, natWT] = this._totalTimeLabel.get_preferred_width(-1);
+                this._totalTimeLabel.set_width(Math.ceil(natWT) + 2);
+            }
 
-                let percent = Math.min(1, Math.max(0, currentPos / length));
-                let totalW = Math.round(this._sliderBin.get_width());
+            if (isStale) return;
 
-                if (totalW > 0) {
-                    let targetWidth = Math.max(6, Math.min(totalW, Math.round(totalW * percent)));
-                    if (Math.abs(this._sliderFill.width - targetWidth) >= 1) {
-                        this._sliderFill.width = targetWidth;
-                    }
+            let percent = Math.min(1, Math.max(0, currentPos / length));
+            let totalW = Math.round(this._sliderBin.get_width());
+
+            if (totalW > 0) {
+                let targetWidth = Math.max(6, Math.min(totalW, Math.round(totalW * percent)));
+                if (Math.abs(this._sliderFill.width - targetWidth) >= 1) {
+                    this._sliderFill.width = targetWidth;
                 }
-            } catch (e) {
-                console.debug(`[Dynamic Music Pill] _tick error: ${e.message}`);
             }
         }
 
@@ -2542,7 +2614,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _setCoverArt(artUrl) {
-            if (!this._vinyl) return;
+            if (!this._vinyl || !this._coverArtWidget) return;
 
             let showVinyl = this._settings.get_boolean('popup-show-vinyl');
             if (!showVinyl) {
@@ -2554,6 +2626,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._vinyl.hide();
                 this._stopVinyl();
                 this._currentArtUrl = null;
+                this._coverArtWidget.setArt(null);
                 if (this._infoBox) {
                     this._infoBox.x_expand = false;
                     this._infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
@@ -2568,6 +2641,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._vinylBin.hide();
                     this._vinyl.hide();
                     this._stopVinyl();
+                    this._coverArtWidget.setArt(null);
                 } else if (!this._artVisibilityTimer && this._currentArtUrl) {
                     this._artVisibilityTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 400, () => {
                         this._artVisibilityTimer = null;
@@ -2575,6 +2649,7 @@ export const ExpandedPlayer = GObject.registerClass(
                         this._vinylBin.hide();
                         this._vinyl.hide();
                         this._stopVinyl();
+                        this._coverArtWidget.setArt(null);
                         if (this._infoBox) {
                             this._infoBox.x_expand = false;
                             this._infoBox.set_style('min-width: 0px; margin-left: 0px; margin-right: 15px;');
@@ -2592,6 +2667,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._artVisibilityTimer = null;
             }
 
+            this._currentArtUrl = artUrl;
             this._vinylBin.show();
             this._vinyl.show();
 
@@ -2616,110 +2692,60 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._vinyl.set_style(shadowCss);
             }
 
-            let children = this._vinyl.get_children();
-            let topLayer = (children.length > 0) ? children[children.length - 1] : null;
-
-            if (topLayer && topLayer._bgUrl === artUrl) {
-                this._currentArtUrl = artUrl;
-                children.forEach(c => {
-                    let bgU = c._bgUrl ? `background-image: url("${c._bgUrl}"); ` : '';
-                    c.set_style(`${bgU}background-size: cover; border-radius: ${radius}px;`);
-                });
-                return;
-            }
-
-            this._currentArtUrl = artUrl;
-            let bg = `url("${artUrl}")`;
-            let style = `background-image: ${bg}; background-size: cover; border-radius: ${radius}px;`;
-
-            this._vinyl.opacity = 255;
-
-            let shouldCrossfade = (children.length > 0 && this.visible && !this._isOpening);
-
-            if (shouldCrossfade) {
-                children.forEach(c => c.remove_all_transitions());
-
-                let newLayer = new St.Widget({
-                    name: 'popup-cover-layer',
-                    style: style,
-                    width: 100,
-                    height: 100,
-                    x_expand: true,
-                    y_expand: true,
-                    opacity: 0
-                });
-                newLayer._bgUrl = artUrl;
-                this._vinyl.add_child(newLayer);
-
-                newLayer.ease({
-                    opacity: 255,
-                    duration: 1800,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: (isFinished) => {
-                        if (!isFinished || !this._vinyl) return;
-                        newLayer.opacity = 255;
-                        let currentChildren = this._vinyl.get_children();
-                        let myIndex = currentChildren.indexOf(newLayer);
-                        if (myIndex > 0) {
-                            for (let i = 0; i < myIndex; i++) {
-                                let oldLayer = currentChildren[i];
-                                oldLayer.ease({
-                                    opacity: 0,
-                                    duration: 300,
-                                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                                    onStopped: () => {
-                                        if (oldLayer.get_parent()) oldLayer.destroy();
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
-            } else {
-                this._vinyl.destroy_all_children();
-                let newLayer = new St.Widget({
-                    name: 'popup-cover-layer',
-                    style: style,
-                    width: 100,
-                    height: 100,
-                    x_expand: true,
-                    y_expand: true,
-                    opacity: 255
-                });
-                newLayer._bgUrl = artUrl;
-                this._vinyl.add_child(newLayer);
-            }
+            this._coverArtWidget.setRadius(radius);
+            this._coverArtWidget.setArt(artUrl);
         }
 
-        _startVinyl() {
+        _startVinyl(skipSpinUp = false) {
             if (!this._vinyl || !this._settings.get_boolean('popup-vinyl-rotate')) return;
             if (this._settings.get_boolean('popup-vinyl-square')) return;
-            if (this._isSpinning) return;
-
-            this._isSpinning = true;
 
             let speedVal = this._settings.get_int('popup-vinyl-speed') || 10;
             let durationFactor = 10 / speedVal;
-            let initialDuration = Math.round(800 * durationFactor);
-            let loopDuration = Math.round(350000 * durationFactor);
+            let oneTurnDuration = Math.round(3500 * durationFactor);
+            let loopDuration = oneTurnDuration * 100;
+            let totalDegrees = 360 * 100;
 
-            this._vinyl.remove_all_transitions();
-            let currentAngle = this._vinyl.rotation_angle_z || 0;
+            if (this._isSpinning && this._vinyl.get_transition('rotation-angle-z')) {
+                return;
+            }
 
-            this._vinyl.ease({
-                rotation_angle_z: currentAngle + 90,
-                duration: initialDuration,
-                mode: Clutter.AnimationMode.EASE_IN_QUAD,
-                onStopped: (isFinished) => {
-                    if (!isFinished || !this._isSpinning || !this._vinyl) return;
-                    let nextAngle = this._vinyl.rotation_angle_z || 0;
-                    this._vinyl.ease({
-                        rotation_angle_z: nextAngle + 36000,
-                        duration: loopDuration,
-                        mode: Clutter.AnimationMode.LINEAR
-                    });
-                }
-            });
+            this._isSpinning = true;
+            this._vinyl.remove_transition('rotation-angle-z');
+
+            let currentAngle = (this._vinyl.rotation_angle_z || 0) % 360;
+            this._vinyl.rotation_angle_z = currentAngle;
+
+            const runLoop = () => {
+                if (!this._isSpinning || !this._vinyl) return;
+                let cur = (this._vinyl.rotation_angle_z || 0) % 360;
+                this._vinyl.rotation_angle_z = cur;
+                this._vinyl.ease({
+                    rotation_angle_z: cur + totalDegrees,
+                    duration: loopDuration,
+                    mode: Clutter.AnimationMode.LINEAR,
+                    onStopped: () => {
+                        if (!this._isSpinning || !this._vinyl) return;
+                        runLoop();
+                    }
+                });
+            };
+
+            if (skipSpinUp) {
+                runLoop();
+            } else {
+                let initialDuration = Math.round(1200 * durationFactor);
+                let spinUpAngle = Math.round(62 * (10 / speedVal));
+                this._vinyl.ease({
+                    rotation_angle_z: currentAngle + spinUpAngle,
+                    duration: initialDuration,
+                    mode: Clutter.AnimationMode.EASE_IN_QUAD,
+                    onStopped: () => {
+                        if (!this._isSpinning || !this._vinyl) return;
+                        runLoop();
+                    }
+                });
+            }
         }
 
         _stopVinyl() {
@@ -2728,18 +2754,21 @@ export const ExpandedPlayer = GObject.registerClass(
 
             let speedVal = this._settings.get_int('popup-vinyl-speed') || 10;
             let durationFactor = 10 / speedVal;
-            let stopDuration = Math.round(800 * durationFactor);
+            let stopDuration = Math.round(1200 * durationFactor);
 
-            let currentAngle = this._vinyl.rotation_angle_z || 0;
-            this._vinyl.remove_all_transitions();
+            this._vinyl.remove_transition('rotation-angle-z');
+            let currentAngle = (this._vinyl.rotation_angle_z || 0) % 360;
+            this._vinyl.rotation_angle_z = currentAngle;
+
+            let stopAngle = Math.round(62 * (10 / speedVal));
 
             this._vinyl.ease({
-                rotation_angle_z: currentAngle + 90,
+                rotation_angle_z: currentAngle + stopAngle,
                 duration: stopDuration,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: (isFinished) => {
-                    if (isFinished && this._vinyl) {
-                        this._vinyl.rotation_angle_z = this._vinyl.rotation_angle_z % 360;
+                onStopped: () => {
+                    if (this._vinyl) {
+                        this._vinyl.rotation_angle_z = (this._vinyl.rotation_angle_z || 0) % 360;
                     }
                 }
             });
@@ -2877,9 +2906,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
 
                 let [minH, natH] = this._box.get_preferred_height(menuW);
-                natH = Math.ceil(natH);
-                let menuH = Math.round(natH > 0 ? natH : 260);
-                if (menuH % 2 !== 0) menuH++;
+                let menuH = Math.ceil(natH > 0 ? natH : 260);
 
                 if (currentW > 0) this._box.set_width(currentW);
 
@@ -2946,6 +2973,17 @@ export const ExpandedPlayer = GObject.registerClass(
                     pivX = menuW > 0 ? Math.max(0.08, Math.min(0.92, (anchorCenterX - targetX) / menuW)) : 0.5;
                 }
 
+                let vOffset = this._settings.get_int('popup-vertical-offset');
+                let hOffset = this._settings.get_int('popup-horizontal-offset');
+                targetX += hOffset;
+                targetY += vOffset;
+
+                if (targetX < monitor.x + 10) targetX = monitor.x + 10;
+                else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
+
+                if (targetY < monitor.y + 10) targetY = monitor.y + 10;
+                else if (targetY + menuH > monitor.y + monitor.height - 10) targetY = monitor.y + monitor.height - menuH - 10;
+
                 this._box.set_pivot_point(pivX, pivY);
                 if (this._blurBackdrop) {
                     this._blurBackdrop.set_pivot_point(pivX, pivY);
@@ -2953,9 +2991,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let isCurrentlySafe = (currentX >= monitor.x + 10 && (currentX + menuW) <= (monitor.x + monitor.width - 10));
 
-                if (menuW === currentW) {
-                    if (isCurrentlySafe && Math.abs(targetX - currentX) < 16) targetX = currentX;
-                    if (isCurrentlySafe && Math.abs(targetY - currentY) < 16) targetY = currentY;
+                if (!this._isOpening && menuW === currentW) {
+                    if (isCurrentlySafe && Math.abs(targetX - currentX) < 4) targetX = currentX;
+                    if (isCurrentlySafe && Math.abs(targetY - currentY) < 4) targetY = currentY;
                 }
 
                 if (!this._isOpening && currentW === menuW && currentH === menuH && currentX === targetX && currentY === targetY) {
@@ -2987,7 +3025,6 @@ export const ExpandedPlayer = GObject.registerClass(
                     duration: 180,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: () => {
-                        this._box.set_height(-1);
                         callFinish();
                     }
                 });

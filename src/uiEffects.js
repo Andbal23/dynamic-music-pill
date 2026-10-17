@@ -7,11 +7,7 @@ export const TextFadeEffect = GObject.registerClass(
     { GTypeName: 'DmpTextFadeEffect' },
     class TextFadeEffect extends Clutter.ShaderEffect {
         static isSupported() {
-            try {
-                return !!(Cogl && Cogl.Snippet && Cogl.Snippet.new && Clutter && Clutter.ShaderEffect);
-            } catch (_) {
-                return false;
-            }
+            return Boolean(Cogl.Snippet && Clutter.ShaderEffect);
         }
 
         vfunc_get_static_snippet() {

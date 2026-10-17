@@ -136,57 +136,43 @@ export function getDockManager() {
 
 function _applyDisable() {
     _refreshDockManager();
-    if (!_dtdDockManager) return;
-    try {
-        for (const dock of _dtdDockManager._allDocks) {
+    if (!_dtdDockManager || !_dtdDockManager._allDocks) return;
+    for (const dock of _dtdDockManager._allDocks) {
+        if (dock && dock.dash) {
             dock.dash.requiresVisibility = true;
-            dock._show();
+            dock.updateDashVisibility();
         }
-    } catch (e) {
-        console.debug('[Dynamic Music Pill] DTD _applyDisable error: ' + e.message);
     }
 }
 
 export function disableDashToDockAutohide() {
-    try {
-        dtdDisableRequests++;
-        if (dtdDisableRequests === 1) {
-            if (_dtdDockManager) {
-                _applyDisable();
-            } else {
-                initDTDModule();
-            }
+    dtdDisableRequests++;
+    if (dtdDisableRequests === 1) {
+        if (_dtdDockManager) {
+            _applyDisable();
+        } else {
+            initDTDModule();
         }
-    } catch (e) {
-        console.debug('[Dynamic Music Pill] DTD/Ubuntu Dock disable error: ' + e.message);
     }
 }
 
 function _applyRestore() {
     _refreshDockManager();
-    if (!_dtdDockManager) return;
-    try {
-        for (const dock of _dtdDockManager._allDocks) {
+    if (!_dtdDockManager || !_dtdDockManager._allDocks) return;
+    for (const dock of _dtdDockManager._allDocks) {
+        if (dock && dock.dash) {
             dock.dash.requiresVisibility = false;
-            dock._updateDashVisibility();
+            dock.updateDashVisibility();
         }
-    } catch (e) {
-        console.debug('[Dynamic Music Pill] DTD _applyRestore error: ' + e.message);
     }
 }
 
 export function restoreDashToDockAutohide() {
-    try {
-        if (dtdDisableRequests > 0) {
-            dtdDisableRequests--;
-            if (dtdDisableRequests === 0) {
-                if (_dtdDockManager) {
-                    _applyRestore();
-                }
-            }
+    if (dtdDisableRequests > 0) {
+        dtdDisableRequests--;
+        if (dtdDisableRequests === 0 && _dtdDockManager) {
+            _applyRestore();
         }
-    } catch (e) {
-        console.debug('[Dynamic Music Pill] DTD/Ubuntu Dock restore error: ' + e.message);
     }
 }
 
@@ -195,7 +181,7 @@ let _stbAutohideDisabled = false;
 
 function _patchSimpleTaskbarAutoHide(autoHideCtrl) {
     if (!autoHideCtrl) return;
-    if (!autoHideCtrl._dmpOrigIsBlockedCallback && typeof autoHideCtrl._isBlockedCallback === 'function') {
+    if (!autoHideCtrl._dmpOrigIsBlockedCallback && autoHideCtrl._isBlockedCallback) {
         const origCb = autoHideCtrl._isBlockedCallback.bind(autoHideCtrl);
         autoHideCtrl._dmpOrigIsBlockedCallback = origCb;
         autoHideCtrl._isBlockedCallback = function() {
@@ -203,15 +189,15 @@ function _patchSimpleTaskbarAutoHide(autoHideCtrl) {
             return origCb();
         };
     }
-    try {
-        autoHideCtrl._clearHideTimeout?.();
-        autoHideCtrl.show?.(true);
-    } catch (_) {}
+    if (autoHideCtrl._clearHideTimeout)
+        autoHideCtrl._clearHideTimeout();
+    if (autoHideCtrl.show)
+        autoHideCtrl.show(true);
 }
 
 function _patchSimpleTaskbarController(panelCtrl) {
     if (!panelCtrl) return;
-    if (!panelCtrl._origInteractionIsBlocked && typeof panelCtrl._interactionIsBlocked === 'function') {
+    if (!panelCtrl._origInteractionIsBlocked && panelCtrl._interactionIsBlocked) {
         panelCtrl._origInteractionIsBlocked = panelCtrl._interactionIsBlocked.bind(panelCtrl);
         panelCtrl._interactionIsBlocked = function(includePreviews) {
             if (_stbAutohideDisabled) return true;
@@ -231,68 +217,66 @@ function _applySimpleTaskbarDisable() {
     let inst = _getSimpleTaskbarInstance();
     if (!inst) return;
 
-    if (typeof inst._panelInteractionIsBlocked === 'function' && !inst._origPanelInteractionIsBlocked) {
+    if (inst._panelInteractionIsBlocked && !inst._origPanelInteractionIsBlocked) {
         inst._origPanelInteractionIsBlocked = inst._panelInteractionIsBlocked.bind(inst);
         inst._panelInteractionIsBlocked = function(includePreviews) {
             if (_stbAutohideDisabled) return true;
             return inst._origPanelInteractionIsBlocked(includePreviews);
         };
     }
-    _patchSimpleTaskbarAutoHide(inst._panelController?._autoHideController);
+    let panelCtrl = inst._panelController;
+    _patchSimpleTaskbarAutoHide(panelCtrl ? panelCtrl._autoHideController : null);
 
-    if (inst._dockPanelManager?._panels) {
-        for (const p of inst._dockPanelManager._panels) {
+    let dockPanelMgr = inst._dockPanelManager;
+    if (dockPanelMgr && dockPanelMgr._panels) {
+        for (const p of dockPanelMgr._panels) {
             _patchSimpleTaskbarController(p);
         }
     }
-    if (inst._secondaryPanelManager?._panels) {
-        for (const p of inst._secondaryPanelManager._panels) {
+    let secPanelMgr = inst._secondaryPanelManager;
+    if (secPanelMgr && secPanelMgr._panels) {
+        for (const p of secPanelMgr._panels) {
             _patchSimpleTaskbarController(p);
         }
     }
 }
 
 export function disableSimpleTaskbarAutohide() {
-    try {
-        stbDisableRequests++;
-        _stbAutohideDisabled = true;
-        _applySimpleTaskbarDisable();
-    } catch (e) {
-        console.debug('[Dynamic Music Pill] Simple Taskbar disable error: ' + e.message);
-    }
+    stbDisableRequests++;
+    _stbAutohideDisabled = true;
+    _applySimpleTaskbarDisable();
 }
 
 export function restoreSimpleTaskbarAutohide() {
-    try {
-        if (stbDisableRequests > 0) {
-            stbDisableRequests--;
-            if (stbDisableRequests === 0) {
-                _stbAutohideDisabled = false;
-                let inst = _getSimpleTaskbarInstance();
-                if (inst) {
-                    const restoreCtrl = (ah) => {
-                        if (!ah) return;
-                        try {
-                            ah.setMenuOpen?.(false);
-                            ah._scheduleHide?.();
-                        } catch (_) {}
-                    };
-                    restoreCtrl(inst._panelController?._autoHideController);
-                    if (inst._dockPanelManager?._panels) {
-                        for (const p of inst._dockPanelManager._panels) {
-                            restoreCtrl(p?._autoHideController);
-                        }
+    if (stbDisableRequests > 0) {
+        stbDisableRequests--;
+        if (stbDisableRequests === 0) {
+            _stbAutohideDisabled = false;
+            let inst = _getSimpleTaskbarInstance();
+            if (inst) {
+                const restoreCtrl = (ah) => {
+                    if (!ah) return;
+                    if (ah.setMenuOpen)
+                        ah.setMenuOpen(false);
+                    if (ah._scheduleHide)
+                        ah._scheduleHide();
+                };
+                let panelCtrl = inst._panelController;
+                restoreCtrl(panelCtrl ? panelCtrl._autoHideController : null);
+                let dockPanelMgr = inst._dockPanelManager;
+                if (dockPanelMgr && dockPanelMgr._panels) {
+                    for (const p of dockPanelMgr._panels) {
+                        restoreCtrl(p ? p._autoHideController : null);
                     }
-                    if (inst._secondaryPanelManager?._panels) {
-                        for (const p of inst._secondaryPanelManager._panels) {
-                            restoreCtrl(p?._autoHideController);
-                        }
+                }
+                let secPanelMgr = inst._secondaryPanelManager;
+                if (secPanelMgr && secPanelMgr._panels) {
+                    for (const p of secPanelMgr._panels) {
+                        restoreCtrl(p ? p._autoHideController : null);
                     }
                 }
             }
         }
-    } catch (e) {
-        console.debug('[Dynamic Music Pill] Simple Taskbar restore error: ' + e.message);
     }
 }
 

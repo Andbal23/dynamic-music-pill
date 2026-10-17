@@ -56,12 +56,34 @@ export const LyricsWidget = GObject.registerClass(
 
             this._fgR = 1; this._fgG = 1; this._fgB = 1;
 
-            this.connect('repaint', this._onRepaint.bind(this));
-            this.connect('button-release-event', this._onClick.bind(this));
-            this.connect('motion-event', this._onMotion.bind(this));
-            this.connect('leave-event', this._onLeave.bind(this));
-            this.connect('scroll-event', this._onScroll.bind(this));
-            this.connect('destroy', () => this._cleanup());
+            this._aliveToken = { active: true };
+            const token = this._aliveToken;
+
+            this._signalIds = [
+                this.connect('repaint', () => {
+                    if (!token.active) return;
+                    this._onRepaint();
+                }),
+                this.connect('button-release-event', (actor, event) => {
+                    if (!token.active) return Clutter.EVENT_PROPAGATE;
+                    return this._onClick(actor, event);
+                }),
+                this.connect('motion-event', (actor, event) => {
+                    if (!token.active) return Clutter.EVENT_PROPAGATE;
+                    return this._onMotion(actor, event);
+                }),
+                this.connect('leave-event', () => {
+                    if (!token.active) return Clutter.EVENT_PROPAGATE;
+                    return this._onLeave();
+                }),
+                this.connect('scroll-event', (actor, event) => {
+                    if (!token.active) return Clutter.EVENT_PROPAGATE;
+                    return this._onScroll(actor, event);
+                }),
+                this.connect('destroy', () => {
+                    this._cleanup();
+                }),
+            ];
         }
 
         destroy() {
@@ -204,37 +226,41 @@ export const LyricsWidget = GObject.registerClass(
         }
 
         _startAlphaAnim() {
-            if (this._alphaTickId) return;
+            if (!this._aliveToken || !this._aliveToken.active || this._alphaTickId) return;
+            const token = this._aliveToken;
             this._alphaTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                try {
-                    let done = true;
-                    for (let i = 0; i < this._lineAlpha.length; i++) {
-                        let diff = this._targetAlpha(i) - this._lineAlpha[i];
-                        if (Math.abs(diff) < 0.003) {
-                            this._lineAlpha[i] += diff;
-                        } else {
-                            this._lineAlpha[i] += diff * 0.15;
-                            done = false;
-                        }
-                    }
-
-                    for (let i = 0; i < this._lineScale.length; i++) {
-                        let diff = this._targetScale(i) - this._lineScale[i];
-                        if (Math.abs(diff) < 0.0015) {
-                            this._lineScale[i] += diff;
-                        } else {
-                            this._lineScale[i] += diff * 0.14;
-                            done = false;
-                        }
-                    }
-
-                    this.queue_repaint();
-                    if (done) { this._alphaTickId = null; return GLib.SOURCE_REMOVE; }
-                    return GLib.SOURCE_CONTINUE;
-                } catch (_) {
+                if (!token.active) return GLib.SOURCE_REMOVE;
+                let parent = null;
+                try { parent = this.get_parent(); } catch (_) { this._alphaTickId = null; return GLib.SOURCE_REMOVE; }
+                if (!parent || !token.active) {
                     this._alphaTickId = null;
                     return GLib.SOURCE_REMOVE;
                 }
+
+                let done = true;
+                for (let i = 0; i < this._lineAlpha.length; i++) {
+                    let diff = this._targetAlpha(i) - this._lineAlpha[i];
+                    if (Math.abs(diff) < 0.005) {
+                        this._lineAlpha[i] += diff;
+                    } else {
+                        this._lineAlpha[i] += diff * 0.15;
+                        done = false;
+                    }
+                }
+
+                for (let i = 0; i < this._lineScale.length; i++) {
+                    let diff = this._targetScale(i) - this._lineScale[i];
+                    if (Math.abs(diff) < 0.0015) {
+                        this._lineScale[i] += diff;
+                    } else {
+                        this._lineScale[i] += diff * 0.14;
+                        done = false;
+                    }
+                }
+
+                this.queue_repaint();
+                if (done) { this._alphaTickId = null; return GLib.SOURCE_REMOVE; }
+                return GLib.SOURCE_CONTINUE;
             });
         }
 
@@ -265,23 +291,26 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _startScrollAnim() {
-            if (this._scrollTickId) return;
+            if (!this._aliveToken || !this._aliveToken.active || this._scrollTickId) return;
+            const token = this._aliveToken;
             this._scrollTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                try {
-                    let diff = this._targetScrollOffset - this._scrollOffset;
-                    if (Math.abs(diff) < 0.4) {
-                        this._scrollOffset = this._targetScrollOffset;
-                        this.queue_repaint();
-                        this._scrollTickId = null;
-                        return GLib.SOURCE_REMOVE;
-                    }
-                    this._scrollOffset += diff * 0.22;
-                    this.queue_repaint();
-                    return GLib.SOURCE_CONTINUE;
-                } catch (_) {
+                if (!token.active) return GLib.SOURCE_REMOVE;
+                let parent = null;
+                try { parent = this.get_parent(); } catch (_) { this._scrollTickId = null; return GLib.SOURCE_REMOVE; }
+                if (!parent || !token.active) {
                     this._scrollTickId = null;
                     return GLib.SOURCE_REMOVE;
                 }
+                let diff = this._targetScrollOffset - this._scrollOffset;
+                if (Math.abs(diff) < 0.4) {
+                    this._scrollOffset = this._targetScrollOffset;
+                    this.queue_repaint();
+                    this._scrollTickId = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+                this._scrollOffset += diff * 0.22;
+                this.queue_repaint();
+                return GLib.SOURCE_CONTINUE;
             });
         }
 
@@ -294,7 +323,7 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onScroll(actor, event) {
-            if (this._state !== 'lyrics') return Clutter.EVENT_PROPAGATE;
+            if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics') return Clutter.EVENT_PROPAGATE;
             let dy = 0;
             let dir = event.get_scroll_direction();
             if (dir === Clutter.ScrollDirection.UP) dy = -48;
@@ -312,8 +341,13 @@ export const LyricsWidget = GObject.registerClass(
             this._targetScrollOffset = Math.min(Math.max(this._targetScrollOffset + dy, 0), maxScroll);
             this._startScrollAnim();
 
+            const token = this._aliveToken;
             this._manualTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._MANUAL_MS, () => {
                 this._manualTimer = null;
+                if (!token || !token.active) return GLib.SOURCE_REMOVE;
+                let parent = null;
+                try { parent = this.get_parent(); } catch (_) { return GLib.SOURCE_REMOVE; }
+                if (!parent || !token.active) return GLib.SOURCE_REMOVE;
                 this._manualScroll = false;
                 this._updateScrollTarget();
                 this._startScrollAnim();
@@ -332,7 +366,7 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onMotion(actor, event) {
-            if (this._state !== 'lyrics' || !this._seekCallback || !this._geomBuilt)
+            if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics' || !this._seekCallback || !this._geomBuilt)
                 return Clutter.EVENT_PROPAGATE;
             let [sx, sy] = event.get_coords();
             let [ok, , ly] = this.transform_stage_point(sx, sy);
@@ -354,65 +388,70 @@ export const LyricsWidget = GObject.registerClass(
         }
 
         _onLeave() {
-            if (this._hoverIndex === -1) return Clutter.EVENT_PROPAGATE;
+            if (!this._aliveToken || !this._aliveToken.active || this._hoverIndex === -1)
+                return Clutter.EVENT_PROPAGATE;
             this._hoverIndex = -1;
             this._startHoverAnim();
             return Clutter.EVENT_PROPAGATE;
         }
 
         _startHoverAnim() {
-            if (this._hoverTickId) return;
+            if (!this._aliveToken || !this._aliveToken.active || this._hoverTickId) return;
+            const token = this._aliveToken;
             this._hoverTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-                try {
-                    let done = true;
-
-                    let pillTargetAlpha = 0.0;
-                    let pillTargetY = -1;
-                    if (this._hoverIndex >= 0 && this._hoverIndex < this._geoms.length) {
-                        let g = this._geoms[this._hoverIndex];
-                        pillTargetY = g.y - this._scrollOffset;
-                    }
-
-                    let aDiff = pillTargetAlpha - this._hoverPillAlpha;
-                    if (Math.abs(aDiff) < 0.003) {
-                        this._hoverPillAlpha = pillTargetAlpha;
-                    } else {
-                        this._hoverPillAlpha += aDiff * 0.22;
-                        done = false;
-                    }
-
-                    if (pillTargetY >= 0) {
-                        if (this._hoverPillY < 0) {
-                            this._hoverPillY = pillTargetY;
-                        } else {
-                            let yDiff = pillTargetY - this._hoverPillY;
-                            if (Math.abs(yDiff) < 0.4) {
-                                this._hoverPillY = pillTargetY;
-                            } else {
-                                this._hoverPillY += yDiff * 0.22;
-                                done = false;
-                            }
-                        }
-                    }
-
-                    for (let i = 0; i < this._hoverExtras.length; i++) {
-                        let target = (i === this._hoverIndex) ? 0.14 : 0.0;
-                        let diff = target - this._hoverExtras[i];
-                        if (Math.abs(diff) < 0.003) {
-                            this._hoverExtras[i] = target;
-                        } else {
-                            this._hoverExtras[i] += diff * 0.22;
-                            done = false;
-                        }
-                    }
-
-                    this.queue_repaint();
-                    if (done) { this._hoverTickId = null; return GLib.SOURCE_REMOVE; }
-                    return GLib.SOURCE_CONTINUE;
-                } catch (_) {
+                if (!token.active) return GLib.SOURCE_REMOVE;
+                let parent = null;
+                try { parent = this.get_parent(); } catch (_) { this._hoverTickId = null; return GLib.SOURCE_REMOVE; }
+                if (!parent || !token.active) {
                     this._hoverTickId = null;
                     return GLib.SOURCE_REMOVE;
                 }
+
+                let done = true;
+
+                let pillTargetAlpha = 0.0;
+                let pillTargetY = -1;
+                if (this._hoverIndex >= 0 && this._hoverIndex < this._geoms.length) {
+                    let g = this._geoms[this._hoverIndex];
+                    pillTargetY = g.y - this._scrollOffset;
+                }
+
+                let aDiff = pillTargetAlpha - this._hoverPillAlpha;
+                if (Math.abs(aDiff) < 0.003) {
+                    this._hoverPillAlpha = pillTargetAlpha;
+                } else {
+                    this._hoverPillAlpha += aDiff * 0.22;
+                    done = false;
+                }
+
+                if (pillTargetY >= 0) {
+                    if (this._hoverPillY < 0) {
+                        this._hoverPillY = pillTargetY;
+                    } else {
+                        let yDiff = pillTargetY - this._hoverPillY;
+                        if (Math.abs(yDiff) < 0.4) {
+                            this._hoverPillY = pillTargetY;
+                        } else {
+                            this._hoverPillY += yDiff * 0.22;
+                            done = false;
+                        }
+                    }
+                }
+
+                for (let i = 0; i < this._hoverExtras.length; i++) {
+                    let target = (i === this._hoverIndex) ? 0.14 : 0.0;
+                    let diff = target - this._hoverExtras[i];
+                    if (Math.abs(diff) < 0.003) {
+                        this._hoverExtras[i] = target;
+                    } else {
+                        this._hoverExtras[i] += diff * 0.22;
+                        done = false;
+                    }
+                }
+
+                this.queue_repaint();
+                if (done) { this._hoverTickId = null; return GLib.SOURCE_REMOVE; }
+                return GLib.SOURCE_CONTINUE;
             });
         }
 
@@ -425,7 +464,7 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onClick(actor, event) {
-            if (this._state !== 'lyrics' || !this._seekCallback) return Clutter.EVENT_PROPAGATE;
+            if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics' || !this._seekCallback) return Clutter.EVENT_PROPAGATE;
             if (event.get_button() !== 1) return Clutter.EVENT_PROPAGATE;
             let [sx, sy] = event.get_coords();
             let [ok, , ly] = this.transform_stage_point(sx, sy);
@@ -445,22 +484,21 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _startPulseAnim() {
-            if (this._pulseTickId) return;
+            if (!this._aliveToken || !this._aliveToken.active || this._pulseTickId) return;
+            const token = this._aliveToken;
             this._pulseTickId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 32, () => {
-                try {
-                    if (this._state !== 'loading') {
-                        this._pulseTickId = null;
-                        return GLib.SOURCE_REMOVE;
-                    }
-                    this._pulseAlpha += this._pulseDir * 0.018;
-                    if (this._pulseAlpha >= 0.70) { this._pulseAlpha = 0.70; this._pulseDir = -1; }
-                    if (this._pulseAlpha <= 0.18) { this._pulseAlpha = 0.18; this._pulseDir = +1; }
-                    this.queue_repaint();
-                    return GLib.SOURCE_CONTINUE;
-                } catch (_) {
+                if (!token.active) return GLib.SOURCE_REMOVE;
+                let parent = null;
+                try { parent = this.get_parent(); } catch (_) { this._pulseTickId = null; return GLib.SOURCE_REMOVE; }
+                if (!parent || !token.active || this._state !== 'loading') {
                     this._pulseTickId = null;
                     return GLib.SOURCE_REMOVE;
                 }
+                this._pulseAlpha += this._pulseDir * 0.018;
+                if (this._pulseAlpha >= 0.70) { this._pulseAlpha = 0.70; this._pulseDir = -1; }
+                if (this._pulseAlpha <= 0.18) { this._pulseAlpha = 0.18; this._pulseDir = +1; }
+                this.queue_repaint();
+                return GLib.SOURCE_CONTINUE;
             });
         }
 
@@ -473,6 +511,7 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onRepaint() {
+            if (!this._aliveToken || !this._aliveToken.active) return;
             let cr = this.get_context();
             let [width, height] = this.get_surface_size();
 
@@ -582,7 +621,7 @@ export const LyricsWidget = GObject.registerClass(
                     }
                     try {
                         layout.set_markup(markup.trim(), -1);
-                    } catch (_) {
+                    } catch {
                         layout.set_attributes(null);
                         layout.set_text(geo.text, -1);
                     }
@@ -614,6 +653,18 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _cleanup() {
+            if (this._aliveToken) {
+                this._aliveToken.active = false;
+                this._aliveToken = null;
+            }
+            try { this.reactive = false; } catch (_) {}
+            if (this._signalIds) {
+                for (const id of this._signalIds) {
+                    try { this.disconnect(id); } catch (_) {}
+                }
+                this._signalIds = null;
+            }
+            this._hoverIndex = -1;
             this._stopScrollAnim();
             this._stopAlphaAnim();
             this._stopHoverAnim();

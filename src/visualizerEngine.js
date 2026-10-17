@@ -117,71 +117,74 @@ export class SharedVisualizerEngine {
 
         let readSize = Math.max(4096, this._fixedBarCount * 2 * 4);
         this._stdout.read_bytes_async(readSize, GLib.PRIORITY_DEFAULT, this._cancellable, (stream, res) => {
+            let gbytes;
             try {
-                let gbytes = stream.read_bytes_finish(res);
-                if (!gbytes) return;
+                gbytes = stream.read_bytes_finish(res);
+            } catch {
+                return;
+            }
+            if (!gbytes) return;
 
-                let chunk = gbytes.get_data();
-                if (!chunk || chunk.length === 0) {
-                    this._readStdoutBytes();
-                    return;
-                }
-
-                let needed = this._bufferUsed + chunk.length;
-                if (needed > this._rawBuffer.length) {
-                    let newBuffer = new Uint8Array(Math.max(needed, this._rawBuffer.length * 2));
-                    newBuffer.set(this._rawBuffer.subarray(0, this._bufferUsed));
-                    this._rawBuffer = newBuffer;
-                }
-                this._rawBuffer.set(chunk, this._bufferUsed);
-                this._bufferUsed += chunk.length;
-
-                let frameSize = this._fixedBarCount * 2;
-                let totalFrames = Math.floor(this._bufferUsed / frameSize);
-
-                if (totalFrames > 0) {
-                    let lastFrameOffset = (totalFrames - 1) * frameSize;
-                    let dv = new DataView(this._rawBuffer.buffer, this._rawBuffer.byteOffset + lastFrameOffset, frameSize);
-
-                    let currentFrameMax = 1;
-                    for (let i = 0; i < this._fixedBarCount; i++) {
-                        let v = dv.getUint16(i * 2, true);
-                        this._bins[i] = v;
-                        if (v > currentFrameMax) currentFrameMax = v;
-                    }
-
-                    if (currentFrameMax < 100) {
-                        this._silentFrames++;
-                    } else {
-                        this._silentFrames = 0;
-                    }
-
-                    let normalizedArray = new Array(this._fixedBarCount).fill(0);
-
-                    if (this._silentFrames >= 30) {
-                        this._rollingMax = 2000;
-                    } else {
-                        if (currentFrameMax > this._rollingMax) {
-                            this._rollingMax = currentFrameMax;
-                        } else {
-                            this._rollingMax = this._rollingMax * 0.98 + currentFrameMax * 0.02;
-                        }
-                        
-                        let safeMax = Math.max(this._rollingMax, 5000); 
-                        let invMaxVal = 1 / safeMax;
-
-                        for (let i = 0; i < this._fixedBarCount; i++) {
-                            normalizedArray[i] = Math.min(1.0, this._bins[i] * invMaxVal);
-                        }
-                    }
-
-                    this._broadcast(normalizedArray, this._silentFrames >= 30);
-
-                    this._rawBuffer.copyWithin(0, totalFrames * frameSize, this._bufferUsed);
-                    this._bufferUsed -= totalFrames * frameSize;
-                }
+            let chunk = gbytes.get_data();
+            if (!chunk || chunk.length === 0) {
                 this._readStdoutBytes();
-            } catch (e) { }
+                return;
+            }
+
+            let needed = this._bufferUsed + chunk.length;
+            if (needed > this._rawBuffer.length) {
+                let newBuffer = new Uint8Array(Math.max(needed, this._rawBuffer.length * 2));
+                newBuffer.set(this._rawBuffer.subarray(0, this._bufferUsed));
+                this._rawBuffer = newBuffer;
+            }
+            this._rawBuffer.set(chunk, this._bufferUsed);
+            this._bufferUsed += chunk.length;
+
+            let frameSize = this._fixedBarCount * 2;
+            let totalFrames = Math.floor(this._bufferUsed / frameSize);
+
+            if (totalFrames > 0) {
+                let lastFrameOffset = (totalFrames - 1) * frameSize;
+                let dv = new DataView(this._rawBuffer.buffer, this._rawBuffer.byteOffset + lastFrameOffset, frameSize);
+
+                let currentFrameMax = 1;
+                for (let i = 0; i < this._fixedBarCount; i++) {
+                    let v = dv.getUint16(i * 2, true);
+                    this._bins[i] = v;
+                    if (v > currentFrameMax) currentFrameMax = v;
+                }
+
+                if (currentFrameMax < 100) {
+                    this._silentFrames++;
+                } else {
+                    this._silentFrames = 0;
+                }
+
+                let normalizedArray = new Array(this._fixedBarCount).fill(0);
+
+                if (this._silentFrames >= 30) {
+                    this._rollingMax = 2000;
+                } else {
+                    if (currentFrameMax > this._rollingMax) {
+                        this._rollingMax = currentFrameMax;
+                    } else {
+                        this._rollingMax = this._rollingMax * 0.98 + currentFrameMax * 0.02;
+                    }
+                    
+                    let safeMax = Math.max(this._rollingMax, 5000); 
+                    let invMaxVal = 1 / safeMax;
+
+                    for (let i = 0; i < this._fixedBarCount; i++) {
+                        normalizedArray[i] = Math.min(1.0, this._bins[i] * invMaxVal);
+                    }
+                }
+
+                this._broadcast(normalizedArray, this._silentFrames >= 30);
+
+                this._rawBuffer.copyWithin(0, totalFrames * frameSize, this._bufferUsed);
+                this._bufferUsed -= totalFrames * frameSize;
+            }
+            this._readStdoutBytes();
         });
     }
 
@@ -190,7 +193,8 @@ export class SharedVisualizerEngine {
         for (let cb of this._subscribers.keys()) {
             try {
                 cb(data, isSilent);
-            } catch (_e) {
+            } catch (e) {
+                console.debug(`[Dynamic Music Pill] Visualizer subscriber error: ${e.message}`);
                 if (!deadCallbacks) deadCallbacks = [];
                 deadCallbacks.push(cb);
             }
@@ -209,18 +213,19 @@ export class SharedVisualizerEngine {
             this._cancellable = null;
         }
         if (this._process) {
-            try { this._process.force_exit(); } catch (e) { }
+            this._process.force_exit();
             this._process = null;
         }
         if (this._stdout) {
-            try { this._stdout.close(null); } catch (e) { }
+            try {
+                this._stdout.close(null);
+            } catch (e) {
+                console.debug(`[Dynamic Music Pill] stdout close: ${e.message}`);
+            }
             this._stdout = null;
         }
         if (this._tmpConfigPath) {
-            try {
-                let file = Gio.File.new_for_path(this._tmpConfigPath);
-                if (file.query_exists(null)) file.delete(null);
-            } catch (e) { }
+            GLib.unlink(this._tmpConfigPath);
             this._tmpConfigPath = null;
         }
         this._cavaProcess = false;
