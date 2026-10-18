@@ -109,17 +109,35 @@ const CavaVisualizer = GObject.registerClass(
         _resampleBars(rawData, targetCount) {
             if (rawData.length === targetCount) return rawData;
             let result = new Array(targetCount).fill(0);
-            let ratio = rawData.length / targetCount;
+            let totalRaw = rawData.length;
 
             for (let i = 0; i < targetCount; i++) {
-                let start = Math.floor(i * ratio);
-                let end = Math.floor((i + 1) * ratio);
-                let sum = 0, count = 0;
-                for (let j = start; j < end && j < rawData.length; j++) {
-                    sum += rawData[j];
+                // Perceptual logarithmic frequency distribution matching musical octaves:
+                // Lower bars focus on bass/kick transients, higher bars span broader treble.
+                let tStart = i / targetCount;
+                let tEnd = (i + 1) / targetCount;
+
+                let start = Math.floor(Math.pow(tStart, 1.7) * totalRaw);
+                let end = Math.min(totalRaw, Math.ceil(Math.pow(tEnd, 1.7) * totalRaw));
+                if (end <= start) end = start + 1;
+
+                let sum = 0, maxVal = 0, count = 0;
+                for (let j = start; j < end && j < totalRaw; j++) {
+                    let v = rawData[j];
+                    sum += v;
+                    if (v > maxVal) maxVal = v;
                     count++;
                 }
-                result[i] = count > 0 ? (sum / count) : 0;
+
+                let avg = count > 0 ? (sum / count) : 0;
+                // Peak-weighted blend (75% peak + 25% avg) so beats punch cleanly without being diluted
+                let blended = maxVal * 0.75 + avg * 0.25;
+
+                // Natural balanced curve: punchy bass, clear vocals, shimmering treble without dominating
+                let freqT = i / Math.max(1, targetCount - 1);
+                let eqCurve = 1.15 - (freqT * 0.30); // 1.15 (bass) -> 0.85 (treble)
+
+                result[i] = Math.min(1.0, Math.max(0, blended * eqCurve));
             }
             return result;
         }
@@ -139,20 +157,18 @@ const CavaVisualizer = GObject.registerClass(
 
             for (let i = 0; i < this._barCount; i++) {
                 let norm = myBars[i];
-                let visualCurve = Math.pow(norm, 0.8);
+                let visualCurve = Math.pow(norm, 1.05);
                 let target = Math.max(1, Math.round(visualCurve * maxHalfHeight));
 
-                if (!isSilent && norm > 0 && target < 3) target = 3;
-
                 let prev = this._prevHeights[i];
-                let alpha = target < prev ? 0.6 : 0.95;
+                let alpha = target < prev ? 0.45 : 0.90;
                 let height = Math.round(prev * (1 - alpha) + target * alpha);
                 this._prevHeights[i] = height;
 
                 if (height > this._peakValues[i]) {
                     this._peakValues[i] = height;
                 } else {
-                    this._peakValues[i] -= this._peakValues[i] * 0.06;
+                    this._peakValues[i] -= this._peakValues[i] * 0.05;
                 }
             }
             this.queue_repaint();
