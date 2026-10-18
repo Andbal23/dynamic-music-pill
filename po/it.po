@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-06-07 08:28+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2026-10-19 13:51+0000\n"
+"Last-Translator: talpinum <talpinum@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/it/>\n"
 "Language: it\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: prefs.js:39
 msgid "Main Pill"
@@ -102,14 +102,15 @@ msgstr ""
 #: prefs.js:184
 msgid "Choose which sound source to control when scrolling volume"
 msgstr ""
+"Scegli quale sorgente d'audio controllare con i controlli di scorrimento"
 
 #: prefs.js:204
 msgid "Scroll Animation"
-msgstr ""
+msgstr "Animazione di scorrimento"
 
 #: prefs.js:205
 msgid "Animate the pill with a jump effect when scrolling"
-msgstr ""
+msgstr "Aggiungi un effetto di salto alla pillola durante lo scorrimento"
 
 #: prefs.js:217
 msgid "Invert Scroll Animation"
@@ -426,11 +427,11 @@ msgstr "Usa una copertina quadrata (disabilita la rotazione)"
 
 #: prefs.js:562
 msgid "Album Art Shadow"
-msgstr ""
+msgstr "Ombra della copertina dell'album"
 
 #: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
-msgstr ""
+msgstr "Mostra un'ombra dietro la copertina dell'album nel pop-up"
 
 #: prefs.js:568
 msgid "Show Shuffle and Loop"
@@ -884,7 +885,7 @@ msgstr "Colore del testo"
 
 #: prefs.js:1086
 msgid "Visualizer Color"
-msgstr ""
+msgstr "Colore del visualizzatore"
 
 #: prefs.js:1096
 msgid "System & Reset"
@@ -1411,15 +1412,15 @@ msgstr ""
 
 #: prefs.js:1071
 msgid "Follow Blur my Shell Pipelines"
-msgstr ""
+msgstr "Segui le pipeline di Blur my Shell"
 
 #: prefs.js:1072
 msgid "Use the blur pipelines and effects configured in Blur my Shell"
-msgstr ""
+msgstr "Usa le pipeline di sfocatura e gli effetti configurati in Blur my Shell"
 
 #: prefs.js:1086
 msgid "Controlled by Blur my Shell pipeline"
-msgstr ""
+msgstr "Controllato dalla pipeline di Blur my Shell"
 
 #: prefs.js:1098
 msgid "Native Dual Kawase blur backend active (v76+)"
@@ -1427,19 +1428,21 @@ msgstr ""
 
 #: src/blurHelper.js:137
 msgid "Please install \"Blur my Shell\" for dynamic blur."
-msgstr ""
+msgstr "Si prega di installare \"Blur my Shell\" per la sfocatura dinamica."
 
 #: src/blurHelper.js:139
 msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
 msgstr ""
+"Aggiorna \"Blur my Shell\" o installa \"gnome-rounded-blur\" per la "
+"sfocatura dinamica."
 
 #: prefs.js:954
 msgid "Controls"
-msgstr ""
+msgstr "Controlli"
 
 #: prefs.js:1037
 msgid "Scroll Controls"
-msgstr ""
+msgstr "Controlli di scorrimento"
 
 #: prefs.js:1111
 msgid "On-Pill Buttons (Tablet Mode)"
@@ -1447,7 +1450,7 @@ msgstr ""
 
 #: prefs.js:1146
 msgid "Lyrics"
-msgstr ""
+msgstr "Testi"
 
 #: prefs.js:1153
 msgid "Interactive Pop-up Lyrics"
@@ -1459,27 +1462,27 @@ msgstr ""
 
 #: prefs.js:1162
 msgid "Lyrics & Karaoke"
-msgstr ""
+msgstr "Testi e karaoke"
 
 #: prefs.js:1163
 msgid "Real-time synchronized lyrics with multi-provider karaoke support."
-msgstr ""
+msgstr "Testi sincronizzati in tempo reale, con supporto a più provider."
 
 #: prefs.js:1339
 msgid "Please install %s for dynamic blur."
-msgstr ""
+msgstr "Si prega di installare %s per la sfocatura dinamica."
 
 #: prefs.js:1339
 msgid "and"
-msgstr ""
+msgstr "e"
 
 #: prefs.js:1358
 msgid "Note: Dynamic blur requires %s to be installed."
-msgstr ""
+msgstr "Nota: la sfocatura dinamica richiede l'installazione di %s."
 
 #: prefs.js:1599
 msgid "Audio Visualizers"
-msgstr ""
+msgstr "Visualizzatori audio"
 
 #: prefs.js:1682
 msgid "Enable audio visualizer bars inside the expanded player"
