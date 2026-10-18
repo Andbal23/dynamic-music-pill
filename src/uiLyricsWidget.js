@@ -61,24 +61,42 @@ export const LyricsWidget = GObject.registerClass(
 
             this._signalIds = [
                 this.connect('repaint', () => {
-                    if (!token.active) return;
-                    this._onRepaint();
+                    try {
+                        if (!token.active) return;
+                        this._onRepaint();
+                    } catch (_) {}
                 }),
                 this.connect('button-release-event', (actor, event) => {
-                    if (!token.active) return Clutter.EVENT_PROPAGATE;
-                    return this._onClick(actor, event);
+                    try {
+                        if (!token.active) return Clutter.EVENT_PROPAGATE;
+                        return this._onClick(actor, event);
+                    } catch (_) {
+                        return Clutter.EVENT_PROPAGATE;
+                    }
                 }),
                 this.connect('motion-event', (actor, event) => {
-                    if (!token.active) return Clutter.EVENT_PROPAGATE;
-                    return this._onMotion(actor, event);
+                    try {
+                        if (!token.active) return Clutter.EVENT_PROPAGATE;
+                        return this._onMotion(actor, event);
+                    } catch (_) {
+                        return Clutter.EVENT_PROPAGATE;
+                    }
                 }),
                 this.connect('leave-event', () => {
-                    if (!token.active) return Clutter.EVENT_PROPAGATE;
-                    return this._onLeave();
+                    try {
+                        if (!token.active) return Clutter.EVENT_PROPAGATE;
+                        return this._onLeave();
+                    } catch (_) {
+                        return Clutter.EVENT_PROPAGATE;
+                    }
                 }),
                 this.connect('scroll-event', (actor, event) => {
-                    if (!token.active) return Clutter.EVENT_PROPAGATE;
-                    return this._onScroll(actor, event);
+                    try {
+                        if (!token.active) return Clutter.EVENT_PROPAGATE;
+                        return this._onScroll(actor, event);
+                    } catch (_) {
+                        return Clutter.EVENT_PROPAGATE;
+                    }
                 }),
                 this.connect('destroy', () => {
                     this._cleanup();
@@ -323,38 +341,42 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onScroll(actor, event) {
-            if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics') return Clutter.EVENT_PROPAGATE;
-            let dy = 0;
-            let dir = event.get_scroll_direction();
-            if (dir === Clutter.ScrollDirection.UP) dy = -48;
-            else if (dir === Clutter.ScrollDirection.DOWN) dy = 48;
-            else if (dir === Clutter.ScrollDirection.SMOOTH) {
-                let [, deltaY] = event.get_scroll_delta();
-                dy = deltaY * 38;
-            }
-            if (dy === 0) return Clutter.EVENT_PROPAGATE;
+            try {
+                if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics') return Clutter.EVENT_PROPAGATE;
+                let dy = 0;
+                let dir = event.get_scroll_direction();
+                if (dir === Clutter.ScrollDirection.UP) dy = -48;
+                else if (dir === Clutter.ScrollDirection.DOWN) dy = 48;
+                else if (dir === Clutter.ScrollDirection.SMOOTH) {
+                    let [, deltaY] = event.get_scroll_delta();
+                    dy = deltaY * 38;
+                }
+                if (dy === 0) return Clutter.EVENT_PROPAGATE;
 
-            this._manualScroll = true;
-            this._cancelManualTimer();
+                this._manualScroll = true;
+                this._cancelManualTimer();
 
-            let maxScroll = Math.max(0, this._totalH - this.get_height());
-            this._targetScrollOffset = Math.min(Math.max(this._targetScrollOffset + dy, 0), maxScroll);
-            this._startScrollAnim();
-
-            const token = this._aliveToken;
-            this._manualTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._MANUAL_MS, () => {
-                this._manualTimer = null;
-                if (!token || !token.active) return GLib.SOURCE_REMOVE;
-                let parent = null;
-                try { parent = this.get_parent(); } catch (_) { return GLib.SOURCE_REMOVE; }
-                if (!parent || !token.active) return GLib.SOURCE_REMOVE;
-                this._manualScroll = false;
-                this._updateScrollTarget();
+                let maxScroll = Math.max(0, this._totalH - this.get_height());
+                this._targetScrollOffset = Math.min(Math.max(this._targetScrollOffset + dy, 0), maxScroll);
                 this._startScrollAnim();
-                this._startAlphaAnim();
-                return GLib.SOURCE_REMOVE;
-            });
-            return Clutter.EVENT_STOP;
+
+                const token = this._aliveToken;
+                this._manualTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._MANUAL_MS, () => {
+                    this._manualTimer = null;
+                    if (!token || !token.active) return GLib.SOURCE_REMOVE;
+                    let parent = null;
+                    try { parent = this.get_parent(); } catch (_) { return GLib.SOURCE_REMOVE; }
+                    if (!parent || !token.active) return GLib.SOURCE_REMOVE;
+                    this._manualScroll = false;
+                    this._updateScrollTarget();
+                    this._startScrollAnim();
+                    this._startAlphaAnim();
+                    return GLib.SOURCE_REMOVE;
+                });
+                return Clutter.EVENT_STOP;
+            } catch (_) {
+                return Clutter.EVENT_PROPAGATE;
+            }
         }
 
         _cancelManualTimer() {
@@ -366,32 +388,36 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onMotion(actor, event) {
-            if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics' || !this._seekCallback || !this._geomBuilt)
-                return Clutter.EVENT_PROPAGATE;
-            let [sx, sy] = event.get_coords();
-            let [ok, , ly] = this.transform_stage_point(sx, sy);
-            if (!ok) return Clutter.EVENT_PROPAGATE;
-            let hitY = ly + this._scrollOffset;
-            let newHover = -1;
-            for (let i = 0; i < this._geoms.length; i++) {
-                let g = this._geoms[i];
+            try {
+                if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics' || !this._seekCallback || !this._geomBuilt)
+                    return Clutter.EVENT_PROPAGATE;
+                let [sx, sy] = event.get_coords();
+                let [ok, , ly] = this.transform_stage_point(sx, sy);
+                if (!ok) return Clutter.EVENT_PROPAGATE;
+                let hitY = ly + this._scrollOffset;
+                let newHover = -1;
+                for (let i = 0; i < this._geoms.length; i++) {
+                    let g = this._geoms[i];
 
-                if (hitY >= g.y && hitY < g.y + g.slotH) {
-                    newHover = i; break;
+                    if (hitY >= g.y && hitY < g.y + g.slotH) {
+                        newHover = i; break;
+                    }
                 }
-            }
-            if (newHover !== this._hoverIndex) {
-                this._hoverIndex = newHover;
-                this._startHoverAnim();
-            }
+                if (newHover !== this._hoverIndex) {
+                    this._hoverIndex = newHover;
+                    this._startHoverAnim();
+                }
+            } catch (_) {}
             return Clutter.EVENT_PROPAGATE;
         }
 
         _onLeave() {
-            if (!this._aliveToken || !this._aliveToken.active || this._hoverIndex === -1)
-                return Clutter.EVENT_PROPAGATE;
-            this._hoverIndex = -1;
-            this._startHoverAnim();
+            try {
+                if (!this._aliveToken || !this._aliveToken.active || this._hoverIndex === -1)
+                    return Clutter.EVENT_PROPAGATE;
+                this._hoverIndex = -1;
+                this._startHoverAnim();
+            } catch (_) {}
             return Clutter.EVENT_PROPAGATE;
         }
 
@@ -464,21 +490,23 @@ export const LyricsWidget = GObject.registerClass(
 
 
         _onClick(actor, event) {
-            if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics' || !this._seekCallback) return Clutter.EVENT_PROPAGATE;
-            if (event.get_button() !== 1) return Clutter.EVENT_PROPAGATE;
-            let [sx, sy] = event.get_coords();
-            let [ok, , ly] = this.transform_stage_point(sx, sy);
-            if (!ok) return Clutter.EVENT_PROPAGATE;
-            let hitY = ly + this._scrollOffset;
-            for (let i = 0; i < this._geoms.length; i++) {
-                let g = this._geoms[i];
-                if (hitY >= g.y && hitY < g.y + g.slotH + this._GAP) {
-                    this._cancelManualTimer();
-                    this._manualScroll = false;
-                    this._seekCallback(this._lyrics[i].time);
-                    return Clutter.EVENT_STOP;
+            try {
+                if (!this._aliveToken || !this._aliveToken.active || this._state !== 'lyrics' || !this._seekCallback) return Clutter.EVENT_PROPAGATE;
+                if (event.get_button() !== 1) return Clutter.EVENT_PROPAGATE;
+                let [sx, sy] = event.get_coords();
+                let [ok, , ly] = this.transform_stage_point(sx, sy);
+                if (!ok) return Clutter.EVENT_PROPAGATE;
+                let hitY = ly + this._scrollOffset;
+                for (let i = 0; i < this._geoms.length; i++) {
+                    let g = this._geoms[i];
+                    if (hitY >= g.y && hitY < g.y + g.slotH + this._GAP) {
+                        this._cancelManualTimer();
+                        this._manualScroll = false;
+                        this._seekCallback(this._lyrics[i].time);
+                        return Clutter.EVENT_STOP;
+                    }
                 }
-            }
+            } catch (_) {}
             return Clutter.EVENT_PROPAGATE;
         }
 

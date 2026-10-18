@@ -114,17 +114,12 @@ const CavaVisualizer = GObject.registerClass(
             for (let i = 0; i < targetCount; i++) {
                 let start = Math.floor(i * ratio);
                 let end = Math.floor((i + 1) * ratio);
-                let sum = 0, maxVal = 0, count = 0;
+                let sum = 0, count = 0;
                 for (let j = start; j < end && j < rawData.length; j++) {
-                    let v = rawData[j];
-                    sum += v;
-                    if (v > maxVal) maxVal = v;
+                    sum += rawData[j];
                     count++;
                 }
-                let avg = count > 0 ? (sum / count) : 0;
-                let blended = avg * 0.65 + maxVal * 0.35;
-                let trebleBoost = 1.0 + (i / Math.max(1, targetCount - 1)) * 0.6;
-                result[i] = Math.min(1.0, blended * trebleBoost);
+                result[i] = count > 0 ? (sum / count) : 0;
             }
             return result;
         }

@@ -24,6 +24,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 width: bgW,
                 height: bgH,
                 reactive: true,
+                can_focus: true,
                 visible: false,
                 x: 0,
                 y: 0
@@ -58,7 +59,7 @@ export const ExpandedPlayer = GObject.registerClass(
             }, this);
             this._backgroundBtn.connectObject('button-press-event', (actor, event) => {
                 let btn = event.get_button();
-                if (btn === 1) {
+                if (btn === 1 || btn === 2 || btn === 3) {
                     this.hide();
                     return Clutter.EVENT_STOP;
                 } else if (btn === 8) {
@@ -70,19 +71,58 @@ export const ExpandedPlayer = GObject.registerClass(
             }, this);
             this._backgroundBtn.connectObject('button-release-event', (actor, event) => {
                 let btn = event.get_button();
-                if (btn === 1 || btn === 8) {
+                if (btn === 1 || btn === 2 || btn === 3 || btn === 8) {
                     return Clutter.EVENT_STOP;
                 }
                 return Clutter.EVENT_PROPAGATE;
             }, this);
-            this.connectObject('key-press-event', (actor, event) => {
-                if (event.get_key_symbol() === Clutter.KEY_Escape) {
-                    if (this._currentSubPage) this._popPage();
-                    else this.hide();
-                    return Clutter.EVENT_STOP;
-                }
-                return Clutter.EVENT_PROPAGATE;
-            }, this);
+            this.connectObject(
+                'key-press-event', (actor, event) => {
+                    if (event.get_key_symbol() === Clutter.KEY_Escape) {
+                        if (this._currentSubPage) this._popPage();
+                        else this.hide();
+                        return Clutter.EVENT_STOP;
+                    }
+                    return Clutter.EVENT_PROPAGATE;
+                },
+                'button-press-event', (actor, event) => {
+                    let source = event ? event.get_source() : null;
+                    let isInsideBox = false;
+                    if (this._box && source) {
+                        try {
+                            isInsideBox = (source === this._box || this._box.contains(source));
+                        } catch (_) {}
+                    }
+                    if (!isInsideBox) {
+                        let btn = event ? event.get_button() : 1;
+                        if (btn === 8 && this._currentSubPage) {
+                            this._popPage();
+                        } else {
+                            this.hide();
+                        }
+                        return Clutter.EVENT_STOP;
+                    }
+                    return Clutter.EVENT_PROPAGATE;
+                },
+                'touch-event', (actor, event) => {
+                    let source = event ? event.get_source() : null;
+                    let isInsideBox = false;
+                    if (this._box && source) {
+                        try {
+                            isInsideBox = (source === this._box || this._box.contains(source));
+                        } catch (_) {}
+                    }
+                    if (!isInsideBox) {
+                        let t = event ? event.type() : null;
+                        if (t === Clutter.EventType.TOUCH_BEGIN || t === Clutter.EventType.TOUCH_END) {
+                            this.hide();
+                            return Clutter.EVENT_STOP;
+                        }
+                    }
+                    return Clutter.EVENT_PROPAGATE;
+                },
+                this
+            );
             this.add_child(this._backgroundBtn);
 
             this._box = new PixelSnappedBox({
@@ -707,22 +747,46 @@ export const ExpandedPlayer = GObject.registerClass(
 
         vfunc_allocate(box) {
             this.set_allocation(box);
+            let boxW = box.get_width();
+            let boxH = box.get_height();
+            if (typeof boxW !== 'number' || isNaN(boxW) || boxW <= 0) boxW = 1;
+            if (typeof boxH !== 'number' || isNaN(boxH) || boxH <= 0) boxH = 1;
+
             if (this._backgroundBtn && this._backgroundBtn.visible) {
                 let bgBox = new Clutter.ActorBox();
-                bgBox.init_rect(0, 0, Math.max(1, Math.round(box.get_width())), Math.max(1, Math.round(box.get_height())));
+                bgBox.init_rect(0, 0, Math.max(1, Math.round(boxW)), Math.max(1, Math.round(boxH)));
                 this._backgroundBtn.allocate(bgBox);
             }
             if (this._box && this._box.visible) {
                 let bx = Math.round(this._box.x);
                 let by = Math.round(this._box.y);
-                let bw = Math.max(1, Math.round(this._box.width > 0 ? this._box.width : this._box.get_preferred_width(-1)[1]));
+                if (typeof bx !== 'number' || isNaN(bx)) bx = 0;
+                if (typeof by !== 'number' || isNaN(by)) by = 0;
+
+                let prefW = 320;
+                try {
+                    let [, natW] = this._box.get_preferred_width(-1);
+                    if (typeof natW === 'number' && !isNaN(natW) && natW > 0) prefW = natW;
+                } catch (_) {}
+
+                let curBoxW = this._box.width;
+                let bw = Math.max(1, Math.round((typeof curBoxW === 'number' && curBoxW > 0) ? curBoxW : prefW));
+                if (typeof bw !== 'number' || isNaN(bw) || bw <= 0) bw = 320;
+
                 let bh;
-                if (this._box.get_transition('height') || (this._currentSubPage && this._box.height > 0) || (this._box.height > 0 && (this._isOpening || this._isHiding || this._box.get_transition('scale-x')))) {
-                    bh = Math.max(1, Math.round(this._box.height));
+                let curBoxH = this._box.height;
+                if (this._box.get_transition('height') || (this._currentSubPage && curBoxH > 0) || (curBoxH > 0 && (this._isOpening || this._isHiding || this._box.get_transition('scale-x')))) {
+                    bh = Math.max(1, Math.round(curBoxH));
                 } else {
-                    let [, natH] = this._box.get_preferred_height(bw);
+                    let natH = 260;
+                    try {
+                        let [, h] = this._box.get_preferred_height(bw);
+                        if (typeof h === 'number' && !isNaN(h) && h > 0) natH = h;
+                    } catch (_) {}
                     bh = Math.max(1, Math.round(natH));
                 }
+                if (typeof bh !== 'number' || isNaN(bh) || bh <= 0) bh = 260;
+
                 let boxActorBox = new Clutter.ActorBox();
                 boxActorBox.init_rect(bx, by, bw, bh);
                 this._box.allocate(boxActorBox);
@@ -2130,6 +2194,10 @@ export const ExpandedPlayer = GObject.registerClass(
             this._isOpening = true;
             this._isHiding = false;
             this._initialWidthSet = false;
+            this.reactive = true;
+            if (this._backgroundBtn) {
+                this._backgroundBtn.reactive = true;
+            }
 
             let status = player.PlaybackStatus;
             let m = player.Metadata;
@@ -2282,12 +2350,16 @@ export const ExpandedPlayer = GObject.registerClass(
             this._initialWidthSet = false;
 
             // Immediately disable modal background to prevent trapping mouse clicks
+            this.reactive = false;
             if (this._backgroundBtn) {
                 this._backgroundBtn.reactive = false;
             }
-            if (global.stage && (global.stage.key_focus === this || this.contains(global.stage.key_focus))) {
-                global.stage.set_key_focus(null);
-            }
+            try {
+                let kf = global.stage ? global.stage.key_focus : null;
+                if (kf && (kf === this || this.contains(kf))) {
+                    global.stage.set_key_focus(null);
+                }
+            } catch (_) {}
 
             try {
                 if (this._leaveHideTimeoutId) {
@@ -2381,6 +2453,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._safetyTimeoutId = null;
             }
             this.visible = false;
+            this.reactive = false;
             this._isHiding = false;
             if (this._backgroundBtn) this._backgroundBtn.reactive = false;
             if (this._blurController) {
@@ -2973,10 +3046,20 @@ export const ExpandedPlayer = GObject.registerClass(
                     pivX = menuW > 0 ? Math.max(0.08, Math.min(0.92, (anchorCenterX - targetX) / menuW)) : 0.5;
                 }
 
-                let vOffset = this._settings.get_int('popup-vertical-offset');
-                let hOffset = this._settings.get_int('popup-horizontal-offset');
+                let vOffset = 0;
+                let hOffset = 0;
+                try {
+                    vOffset = this._settings.get_int('popup-vertical-offset') || 0;
+                    hOffset = this._settings.get_int('popup-horizontal-offset') || 0;
+                } catch (_) {}
+                if (typeof vOffset !== 'number' || isNaN(vOffset)) vOffset = 0;
+                if (typeof hOffset !== 'number' || isNaN(hOffset)) hOffset = 0;
+
                 targetX += hOffset;
                 targetY += vOffset;
+
+                if (typeof targetX !== 'number' || isNaN(targetX)) targetX = monitor.x + 10;
+                if (typeof targetY !== 'number' || isNaN(targetY)) targetY = monitor.y + 10;
 
                 if (targetX < monitor.x + 10) targetX = monitor.x + 10;
                 else if (targetX + menuW > monitor.x + monitor.width - 10) targetX = monitor.x + monitor.width - menuW - 10;
