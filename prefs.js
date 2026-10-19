@@ -1302,6 +1302,15 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
     }
 
     _isRoundedBlurInstalled() {
+        const typelibEnv = GLib.getenv('GI_TYPELIB_PATH');
+        if (typelibEnv) {
+            for (let dir of typelibEnv.split(':')) {
+                if (dir && GLib.file_test(GLib.build_filenamev([dir, 'Blur-1.0.typelib']), GLib.FileTest.EXISTS)) {
+                    return true;
+                }
+            }
+        }
+
         const paths = [
             '/usr/lib/girepository-1.0/Blur-1.0.typelib',
             '/usr/lib64/girepository-1.0/Blur-1.0.typelib',
@@ -1312,6 +1321,12 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             '/usr/lib/libblur-effect-1.0.so',
             '/usr/lib64/libblur-effect-1.0.so',
             '/usr/local/lib/libblur-effect-1.0.so',
+            '/run/current-system/sw/lib/girepository-1.0/Blur-1.0.typelib',
+            '/run/current-system/sw/lib/libblur-effect-1.0.so',
+            GLib.build_filenamev([GLib.get_home_dir(), '.nix-profile', 'lib', 'girepository-1.0', 'Blur-1.0.typelib']),
+            GLib.build_filenamev([GLib.get_home_dir(), '.nix-profile', 'lib', 'libblur-effect-1.0.so']),
+            '/nix/var/nix/profiles/default/lib/girepository-1.0/Blur-1.0.typelib',
+            '/nix/var/nix/profiles/default/lib/libblur-effect-1.0.so',
         ];
         return paths.some(p => GLib.file_test(p, GLib.FileTest.EXISTS));
     }
