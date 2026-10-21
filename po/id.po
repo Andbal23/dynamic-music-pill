@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-06-11 13:01+0000\n"
-"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
+"PO-Revision-Date: 2026-10-21 08:51+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/id/>\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.6\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: prefs.js:39
 msgid "Main Pill"
@@ -92,27 +92,27 @@ msgstr "Pilih fungsi guliran pada pil"
 
 #: prefs.js:178
 msgid "System Master Volume"
-msgstr ""
+msgstr "Volume Utama Sistem"
 
 #: prefs.js:179
 msgid "Active Media App Volume"
-msgstr ""
+msgstr "Volume Aplikasi Media Aktif"
 
 #: prefs.js:183
 msgid "Volume Scroll Target"
-msgstr ""
+msgstr "Target Pengguliran Volume"
 
 #: prefs.js:184
 msgid "Choose which sound source to control when scrolling volume"
-msgstr ""
+msgstr "Pilih sumber suara yang dikontrol saat menggulir untuk mengatur volume"
 
 #: prefs.js:204
 msgid "Scroll Animation"
-msgstr ""
+msgstr "Animasi Pengguliran"
 
 #: prefs.js:205
 msgid "Animate the pill with a jump effect when scrolling"
-msgstr ""
+msgstr "Animasikan pil dengan efek lompatan saat menggulir"
 
 #: prefs.js:217
 msgid "Invert Scroll Animation"
@@ -164,13 +164,15 @@ msgstr "Tampilkan lirik sinkron waktu nyata untuk trek saat ini."
 
 #: prefs.js:279
 msgid "Word-level Karaoke in Pill"
-msgstr ""
+msgstr "Karaoke per Kata di Pil"
 
 #: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
+"Sorot setiap kata pada pil utama jika tersedia (pop-up selalu menggunakan "
+"penyorotan per kata)."
 
 #: prefs.js:292
 msgid "Lyrics language preference"
@@ -428,11 +430,11 @@ msgstr "Gunakan seni album persegi (menonaktifkan rotasi)"
 
 #: prefs.js:562
 msgid "Album Art Shadow"
-msgstr ""
+msgstr "Bayangan Sampul Album"
 
 #: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
-msgstr ""
+msgstr "Tampilkan bayangan di belakang sampul album pada pop-up"
 
 #: prefs.js:568
 msgid "Show Shuffle and Loop"
@@ -879,7 +881,7 @@ msgstr "Warna Teks"
 
 #: prefs.js:1086
 msgid "Visualizer Color"
-msgstr ""
+msgstr "Warna Visualisator"
 
 #: prefs.js:1096
 msgid "System & Reset"
@@ -1401,82 +1403,89 @@ msgstr "Gunakan palet pastel cerah untuk latar belakang dinamis serta teks/ikon 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
 msgstr ""
+"Terapkan efek buram Gaussian Dual Kawase bawaan di belakang pil dan pop-up."
 
 #: prefs.js:1071
 msgid "Follow Blur my Shell Pipelines"
-msgstr ""
+msgstr "Ikuti Pipeline Blur my Shell"
 
 #: prefs.js:1072
 msgid "Use the blur pipelines and effects configured in Blur my Shell"
-msgstr ""
+msgstr "Gunakan pipeline dan efek buram yang dikonfigurasi di Blur my Shell"
 
 #: prefs.js:1086
 msgid "Controlled by Blur my Shell pipeline"
-msgstr ""
+msgstr "Dikontrol oleh pipeline Blur my Shell"
 
 #: prefs.js:1098
 msgid "Native Dual Kawase blur backend active (v76+)"
-msgstr ""
+msgstr "Backend efek buram Dual Kawase bawaan aktif (v76+)"
 
 #: src/blurHelper.js:137
 msgid "Please install \"Blur my Shell\" for dynamic blur."
-msgstr ""
+msgstr "Instal \"Blur my Shell\" untuk efek buram dinamis."
 
 #: src/blurHelper.js:139
 msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
 msgstr ""
+"Perbarui \"Blur my Shell\" atau instal \"gnome-rounded-blur\" untuk efek "
+"buram dinamis."
 
 #: prefs.js:954
 msgid "Controls"
-msgstr ""
+msgstr "Kontrol"
 
 #: prefs.js:1037
 msgid "Scroll Controls"
-msgstr ""
+msgstr "Kontrol Pengguliran"
 
 #: prefs.js:1111
 msgid "On-Pill Buttons (Tablet Mode)"
-msgstr ""
+msgstr "Tombol pada Pil (Mode Tablet)"
 
 #: prefs.js:1146
 msgid "Lyrics"
-msgstr ""
+msgstr "Lirik"
 
 #: prefs.js:1153
 msgid "Interactive Pop-up Lyrics"
-msgstr ""
+msgstr "Lirik Pop-up Interaktif"
 
 #: prefs.js:1154
 msgid "💡 Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
 msgstr ""
+"💡 Tips: Klik sampul album atau piringan hitam pada pop-up pemutar yang "
+"diperluas untuk langsung membuka tampilan lirik tersinkron!"
 
 #: prefs.js:1162
 msgid "Lyrics & Karaoke"
-msgstr ""
+msgstr "Lirik & Karaoke"
 
 #: prefs.js:1163
 msgid "Real-time synchronized lyrics with multi-provider karaoke support."
 msgstr ""
+"Lirik tersinkron secara real-time dengan dukungan karaoke dari berbagai "
+"penyedia."
 
 #: prefs.js:1339
 msgid "Please install %s for dynamic blur."
-msgstr ""
+msgstr "Instal %s untuk efek buram dinamis."
 
 #: prefs.js:1339
 msgid "and"
-msgstr ""
+msgstr "dan"
 
 #: prefs.js:1358
 msgid "Note: Dynamic blur requires %s to be installed."
-msgstr ""
+msgstr "Catatan: Efek buram dinamis memerlukan pemasangan %s."
 
 #: prefs.js:1599
 msgid "Audio Visualizers"
-msgstr ""
+msgstr "Visualisator Audio"
 
 #: prefs.js:1682
 msgid "Enable audio visualizer bars inside the expanded player"
-msgstr ""
+msgstr "Aktifkan bilah visualisator audio di dalam pemutar yang diperluas"
 
 #~ msgid "Unmute"
 #~ msgstr "Aktifkan suara"
