@@ -72,43 +72,105 @@ function ttmlTimeToMs(val) {
   return isNaN(ms) ? 0 : ms;
 }
 
+function parseWordsFromTTML(pBody) {
+  const tokens = [];
+  const tokenRegex = /(<[^>]+>)|([^<]+)/g;
+  let match;
+  while ((match = tokenRegex.exec(pBody)) !== null) {
+    if (match[1]) tokens.push({ type: "tag", val: match[1] });
+    else if (match[2]) tokens.push({ type: "text", val: match[2] });
+  }
+
+  const words = [];
+  const tagStack = [];
+
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+
+    if (t.type === "tag") {
+      if (t.val.startsWith("</")) {
+        tagStack.pop();
+      } else if (!t.val.endsWith("/>")) {
+        const beginMatch = t.val.match(/begin="([^"]+)"/);
+        const endMatch = t.val.match(/end="([^"]+)"/);
+
+        tagStack.push({
+          begin: beginMatch ? beginMatch[1] : null,
+          end: endMatch ? endMatch[1] : null,
+        });
+      }
+    } else if (t.type === "text") {
+      const currentTag = tagStack[tagStack.length - 1];
+
+      if (currentTag && currentTag.begin && currentTag.end) {
+        const text = t.val.trim();
+        if (!text) continue;
+
+        let hasSpace = false;
+        for (let j = i + 1; j < tokens.length; j++) {
+          const next = tokens[j];
+          if (next.type === "text" && /\s/.test(next.val)) {
+            hasSpace = true;
+            break;
+          }
+          if (next.type === "tag" && !next.val.startsWith("</") && /begin=/.test(next.val)) {
+            break;
+          }
+        }
+
+        const wStart = ttmlTimeToMs(currentTag.begin);
+        const wEnd = ttmlTimeToMs(currentTag.end);
+
+        words.push({
+          time: wStart,
+          duration: Math.max(0.1, (wEnd - wStart) / 1000),
+          text: text,
+          hasSpace: hasSpace,
+        });
+      }
+    }
+  }
+
+  return words;
+}
+
 function parseTTML(ttmlText) {
   if (!ttmlText || typeof ttmlText !== "string") return { lines: [], hasWordLevel: false };
 
   const lines = [];
   let hasWordLevel = false;
 
-  const pRegex = /<p\s+[^>]*begin="([^"]+)"[^>]*>(.*?)<\/p>/gi;
-  const spanRegex = /<span\s+[^>]*begin="([^"]+)"[^>]*end="([^"]+)"[^>]*>([^<]+)<\/span>/gi;
+  const pRegex = /<p\s+([^>]*)>(.*?)<\/p>/gis;
 
   let pMatch;
   while ((pMatch = pRegex.exec(ttmlText)) !== null) {
-    const lineStart = ttmlTimeToMs(pMatch[1]);
-    let pBody = pMatch[2];
+    const pAttrs = pMatch[1];
+    const pBody = pMatch[2];
+    const beginMatch = pAttrs.match(/begin="([^"]+)"/i);
+    const endMatch = pAttrs.match(/end="([^"]+)"/i);
+    const lineStart = beginMatch ? ttmlTimeToMs(beginMatch[1]) : 0;
+    const lineEnd = endMatch ? ttmlTimeToMs(endMatch[1]) : 0;
+    const isLineBg = /ttm:role="x-bg"/i.test(pAttrs);
 
-    // Strip background vocal spans so they don't create overlapping active lines
-    pBody = pBody.replace(/<span\s+[^>]*ttm:role="x-bg"[^>]*>.*?<\/span>/gi, "");
+    const words = parseWordsFromTTML(pBody, isLineBg);
 
-    const words = [];
-    let spanMatch;
-    spanRegex.lastIndex = 0;
-    while ((spanMatch = spanRegex.exec(pBody)) !== null) {
-      const wStart = ttmlTimeToMs(spanMatch[1]);
-      const wEnd = ttmlTimeToMs(spanMatch[2]);
-      const wText = spanMatch[3].trim();
-      if (wText) {
-        const wDur = Math.max(0.1, (wEnd - wStart) / 1000);
-        words.push({ time: wStart, duration: wDur, text: wText });
+    let lineText = "";
+    if (words.length > 0) {
+      for (const w of words) {
+        lineText += w.text + (w.hasSpace ? " " : "");
       }
+      lineText = lineText.trim();
+    } else {
+      lineText = pBody.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     }
 
-    const lineText = pBody.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     if (lineText) {
+      const lineDuration = lineEnd > lineStart ? (lineEnd - lineStart) / 1000 : 0;
       if (words.length > 0) {
         hasWordLevel = true;
-        lines.push({ time: lineStart, text: lineText, words, isWordLevel: true });
+        lines.push({ time: lineStart, text: lineText, words, isWordLevel: true, duration: lineDuration });
       } else {
-        lines.push({ time: lineStart, text: lineText, isWordLevel: false });
+        lines.push({ time: lineStart, text: lineText, isWordLevel: false, duration: lineDuration });
       }
     }
   }
@@ -116,25 +178,24 @@ function parseTTML(ttmlText) {
   // Sort lines by timestamp
   lines.sort((a, b) => a.time - b.time);
 
-  // Merge lines with identical or near-identical timestamps
+  // Deduplicate exact duplicate lines (do not merge different simultaneous vocal lines)
   const uniqueLines = [];
   for (const line of lines) {
-    if (uniqueLines.length > 0 && Math.abs(uniqueLines[uniqueLines.length - 1].time - line.time) < 100) {
-      if (!uniqueLines[uniqueLines.length - 1].text.includes(line.text)) {
-        uniqueLines[uniqueLines.length - 1].text += " " + line.text;
-        if (line.words && line.words.length > 0) {
-          uniqueLines[uniqueLines.length - 1].words = (uniqueLines[uniqueLines.length - 1].words || []).concat(line.words);
-        }
+    if (uniqueLines.length > 0) {
+      const prev = uniqueLines[uniqueLines.length - 1];
+      if (prev.text === line.text && Math.abs(prev.time - line.time) < 500) {
+        continue;
       }
-    } else {
-      uniqueLines.push(line);
     }
+    uniqueLines.push(line);
   }
 
   for (let i = 0; i < uniqueLines.length; i++) {
-    const nextTime = i + 1 < uniqueLines.length ? uniqueLines[i + 1].time : uniqueLines[i].time + 5000;
-    const raw = (nextTime - uniqueLines[i].time) / 1000;
-    uniqueLines[i].duration = Math.min(raw, Math.max(3.0, uniqueLines[i].text.length / 4));
+    if (!uniqueLines[i].duration || uniqueLines[i].duration <= 0) {
+      const nextTime = i + 1 < uniqueLines.length ? uniqueLines[i + 1].time : uniqueLines[i].time + 5000;
+      const raw = Math.max(0.5, (nextTime - uniqueLines[i].time) / 1000);
+      uniqueLines[i].duration = Math.min(raw, Math.max(3.0, uniqueLines[i].text.length / 4));
+    }
   }
 
   return { lines: uniqueLines, hasWordLevel };
