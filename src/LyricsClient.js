@@ -371,83 +371,6 @@ class AppleMusicProvider {
   }
 }
 
-class BiniLyricsProvider {
-  constructor(session) {
-    this.name = "BiniLyrics";
-    this._session = session;
-  }
-
-  async _tryUrl(url) {
-    let msg = Soup.Message.new("GET", url);
-    if (!msg) return null;
-    msg.request_headers.append("User-Agent", "BetterLyrics/1.0");
-    const bytes = await this._session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
-    if (msg.status_code !== Soup.Status.OK) return null;
-    const rawText = decode(bytes.get_data());
-
-    const directParsed = parseLyricsInput(rawText);
-    if (directParsed.lines && directParsed.lines.length > 0) {
-      return {
-        payload: rawText,
-        parsed: directParsed,
-        provider: this.name,
-        isSynced: true,
-        hasWordLevel: directParsed.hasWordLevel,
-      };
-    }
-
-    const json = JSON.parse(rawText);
-    const results = json && json.results ? json.results : null;
-    if (!Array.isArray(results) || results.length === 0) return null;
-
-    let bestItem = results.find(r => r.timing_type === "word") || results[0];
-    if (!bestItem || !bestItem.lyricsUrl) return null;
-
-    let ttmlMsg = Soup.Message.new("GET", bestItem.lyricsUrl);
-    if (!ttmlMsg) return null;
-    ttmlMsg.request_headers.append("User-Agent", "BetterLyrics/1.0");
-    const ttmlBytes = await this._session.send_and_read_async(ttmlMsg, GLib.PRIORITY_DEFAULT, null);
-    if (ttmlMsg.status_code !== Soup.Status.OK) return null;
-    const ttmlText = decode(ttmlBytes.get_data());
-
-    const parsed = parseLyricsInput(ttmlText);
-    if (parsed.lines && parsed.lines.length > 0) {
-      return {
-        payload: ttmlText,
-        parsed,
-        provider: this.name,
-        isSynced: true,
-        hasWordLevel: parsed.hasWordLevel,
-      };
-    }
-    return null;
-  }
-
-  async fetchLyrics(title, artist, album, duration) {
-    if (!title || !title.trim()) return null;
-    const cArtist = cleanArtist(artist);
-    const cleaned = cleanTitle(title, cArtist);
-    const alt = extractAltArtistTitle(title, cArtist);
-    const queryTitle = alt ? alt.title : (cleaned || title);
-    const queryArtist = alt ? alt.artist : cArtist;
-
-    try {
-      let url1 = `https://lyrics-api.binimum.org/getLyrics?s=${encodeURIComponent(queryTitle)}&a=${encodeURIComponent(queryArtist)}`;
-      if (album) url1 += `&al=${encodeURIComponent(album)}`;
-      if (duration && duration > 0) url1 += `&d=${Math.round(duration)}`;
-      let res1 = await this._tryUrl(url1);
-      if (res1) return res1;
-
-      const query = `${queryTitle} ${queryArtist}`.trim();
-      let url2 = `https://lyrics-api.binimum.org/getLyrics?q=${encodeURIComponent(query)}`;
-      return await this._tryUrl(url2);
-    } catch (e) {
-      console.debug(`[LyricsClient] BiniLyrics error: ${e.message}`);
-      return null;
-    }
-  }
-}
-
 class LrclibProvider {
   constructor(session) {
     this.name = "LRCLib";
@@ -607,7 +530,6 @@ export class LyricsClient {
     this._session = new Soup.Session({ user_agent: USER_AGENT, timeout: 8 });
     this._providers = [
       new AppleMusicProvider(this._session),
-      new BiniLyricsProvider(this._session),
       new LrclibProvider(this._session),
     ];
   }
