@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-10-12 22:40+0000\n"
+"PO-Revision-Date: 2026-10-24 19:23+0000\n"
 "Last-Translator: Yiğithan Karabel <yk38@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/tr/>\n"
@@ -47,7 +47,7 @@ msgstr "Şu an çalmakta olan şarkının kapak resmini gösterin"
 
 #: prefs.js:73
 msgid "Fallback Album Art"
-msgstr "Varsayılan Albüm Kapağı"
+msgstr "Alternatif Albüm Kapağı"
 
 #: prefs.js:74 prefs.js:114
 msgid "No image selected"
@@ -64,8 +64,8 @@ msgstr "Kaydırma Kontrollerini Etkinleştir"
 #: prefs.js:129
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr ""
-"Kaydırma tekerleği veya dokunmatik yüzeyi kullanarak parçaları, ses "
-"seviyesini veya medya oynatıcıyı değiştirin"
+"Kaydırma tekerleği veya dokunmatik yüzeyi kullanarak parçaları, ses düzeyini "
+"veya medya oynatıcıyı değiştirin"
 
 #: prefs.js:140
 msgid "Change Track"
@@ -73,7 +73,7 @@ msgstr "Parçayı Değiştir"
 
 #: prefs.js:141
 msgid "Change Volume"
-msgstr "Sesi Değiştir"
+msgstr "Ses Düzeyini Değiştir"
 
 #: prefs.js:142
 msgid "Switch Player"
@@ -93,27 +93,28 @@ msgstr "Simge üzerinde kaydırma işleminin ne yapacağını seçin"
 
 #: prefs.js:178
 msgid "System Master Volume"
-msgstr ""
+msgstr "Sistem Ana Ses Düzeyi"
 
 #: prefs.js:179
 msgid "Active Media App Volume"
-msgstr ""
+msgstr "Etkin Medya Uygulaması Ses Düzeyi"
 
 #: prefs.js:183
 msgid "Volume Scroll Target"
-msgstr ""
+msgstr "Ses Düzeyi Hedefi"
 
 #: prefs.js:184
 msgid "Choose which sound source to control when scrolling volume"
 msgstr ""
+"Ses düzeyini değiştirirken hangi ses kaynağının kontrol edileceğini seçin"
 
 #: prefs.js:204
 msgid "Scroll Animation"
-msgstr ""
+msgstr "Kaydırma Animasyonu"
 
 #: prefs.js:205
 msgid "Animate the pill with a jump effect when scrolling"
-msgstr ""
+msgstr "Kaydırırken atlama efektiyle simgeyi hareketlendirin"
 
 #: prefs.js:217
 msgid "Invert Scroll Animation"
@@ -167,13 +168,15 @@ msgstr ""
 
 #: prefs.js:279
 msgid "Word-level Karaoke in Pill"
-msgstr ""
+msgstr "Simge üzerinde sözcük düzeyinde karaoke"
 
 #: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
+"Kullanılabilir olduğunda ana simge üzerinde bağımsız sözcükleri vurgulayın "
+"(açılır menüde her zaman vurgulanır)."
 
 #: prefs.js:292
 msgid "Lyrics language preference"
@@ -297,7 +300,7 @@ msgstr "Önceki Parça"
 
 #: prefs.js:393
 msgid "Open Player App"
-msgstr "Oynatıcı Uygulamasını Aç"
+msgstr "Oynatıcı Uyg. Aç"
 
 #: prefs.js:393
 msgid "Open Menu"
@@ -429,11 +432,11 @@ msgstr "Kare albüm kapağı kullanın (plağı döndürmeyi kapatır)"
 
 #: prefs.js:562
 msgid "Album Art Shadow"
-msgstr ""
+msgstr "Albüm Kapağı Gölgesi"
 
 #: prefs.js:562
 msgid "Show drop shadow behind the album art in the pop-up"
-msgstr ""
+msgstr "Açılır menüde albüm kapağının arkasında gölge gösterin"
 
 #: prefs.js:568
 msgid "Show Shuffle and Loop"
@@ -465,12 +468,12 @@ msgstr "Açılır menüde etkin oynatıcıların ikonlarını gösterin"
 
 #: prefs.js:606
 msgid "Hide Auto (Smart Selection)"
-msgstr ""
+msgstr "Otomatik Seçeneğini Gizle (Akıllı Seçim)"
 
 #: prefs.js:607
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
-msgstr ""
+msgstr "Oynatıcı seçici menüsünden otomatik oynatıcı seçimi girdisini kaldırın"
 
 #: prefs.js:618
 msgid "Player Selector Position"
@@ -618,11 +621,11 @@ msgstr "Kapalı (Devre Dışı)"
 
 #: prefs.js:774
 msgid "Wave (Smooth)"
-msgstr ""
+msgstr "Dalga (Akıcı)"
 
 #: prefs.js:775
 msgid "Beat (Jumpy)"
-msgstr ""
+msgstr "Vuruş (Sıçramalı)"
 
 #: prefs.js:776
 msgid "Real-Time (Cava needed)"
@@ -667,6 +670,7 @@ msgstr "Görselleştirici Yüksekliği"
 #: prefs.js:814
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
+"Görselleştiricinin maksimum yüksekliği (simge yüksekliğiyle sınırlandırılır)"
 
 #: prefs.js:821
 msgid "Visualizer Margin"
@@ -780,6 +784,7 @@ msgstr "Dinamik Genişlik"
 #: prefs.js:945
 msgid "Auto-adjust pill width (slider acts as max width)"
 msgstr ""
+"Simge genişliğini otomatik ayarla (kaydırıcı maksimum genişlik görevi görür)"
 
 #: prefs.js:960
 msgid "Manual Index"
@@ -1082,7 +1087,7 @@ msgstr "İçe Aktar"
 
 #: prefs.js:1489
 msgid "Open Settings Backup"
-msgstr ""
+msgstr "Ayarlar Yedeklemesini Aç"
 
 #: prefs.js:1516
 msgid "Art Cache"
@@ -1201,7 +1206,7 @@ msgstr "Ses akışı mevcut değil"
 
 #: src/uiExpandedPlayer.js:1473
 msgid "Toggle Mute All"
-msgstr ""
+msgstr "Tümünü Sessize Al/Sesini Aç"
 
 #: src/uiExpandedPlayer.js:1493
 msgid "Seek"
@@ -1273,7 +1278,7 @@ msgstr "Medya Yok"
 
 #: src/uiMusicPill.js:1064
 msgid "Waiting for playback..."
-msgstr ""
+msgstr "Oynatma bekleniyor..."
 
 #: src/uiMusicPill.js:1302
 msgid "Loading..."
@@ -1335,7 +1340,7 @@ msgstr "Blur my Shell Eklentisi"
 
 #: prefs.js:941
 msgid "Recommended for native Wayland dynamic blur"
-msgstr "Yerel Wayland dinamik bulanıklılığı için önerilir"
+msgstr "Yerleşik Wayland dinamik bulanıklılığı için önerilir"
 
 #: prefs.js:953
 msgid "gnome-rounded-blur Library"
@@ -1343,7 +1348,7 @@ msgstr "gnome-rounded-blur Kütüphanesi"
 
 #: prefs.js:954
 msgid "Installation guide for native rounded corners blur"
-msgstr "Yerel yuvarlatılmış köşeleri bulanıklaştırma için kurulum rehberi"
+msgstr "Yerleşik yuvarlatılmış köşeleri bulanıklaştırma için kurulum rehberi"
 
 #: prefs.js:945
 msgid "GitHub"
@@ -1410,82 +1415,93 @@ msgstr "Dinamik arka planlar için açık pastel renk paleti ve koyu metin/simge
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
 msgstr ""
+"Simge ve açılır menüye yerleşik Dual Kawase Gauss bulanıklaştırmasını "
+"uygulayın."
 
 #: prefs.js:1071
 msgid "Follow Blur my Shell Pipelines"
-msgstr ""
+msgstr "Blur My Shell Akışını Takip Et"
 
 #: prefs.js:1072
 msgid "Use the blur pipelines and effects configured in Blur my Shell"
 msgstr ""
+"Blur my Shell tarafından yapılandırılmış bulanıklaştırma ve efektleri "
+"kullanın"
 
 #: prefs.js:1086
 msgid "Controlled by Blur my Shell pipeline"
-msgstr ""
+msgstr "Blur my Shell tarafından kontrol edilir"
 
 #: prefs.js:1098
 msgid "Native Dual Kawase blur backend active (v76+)"
-msgstr ""
+msgstr "Yerleşik Dual Kawase bulanıklaştırma altyapısı etkin (sürüm 76+)"
 
 #: src/blurHelper.js:137
 msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
+"Dinamik bulanıklaştırma için lütfen \"Blur my Shell\" eklentisini kurun."
 
 #: src/blurHelper.js:139
 msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
 msgstr ""
+"Dinamik bulanıklaştırma için lütfen \"Bluy my Shell\"i güncelleyin veya "
+"\"gnome-rounded-blur\"u kurun."
 
 #: prefs.js:954
 msgid "Controls"
-msgstr ""
+msgstr "Kontroller"
 
 #: prefs.js:1037
 msgid "Scroll Controls"
-msgstr ""
+msgstr "Kaydırma Kontrolleri"
 
 #: prefs.js:1111
 msgid "On-Pill Buttons (Tablet Mode)"
-msgstr ""
+msgstr "Tablet Modu Düğmeleri"
 
 #: prefs.js:1146
 msgid "Lyrics"
-msgstr ""
+msgstr "Şarkı Sözleri"
 
 #: prefs.js:1153
 msgid "Interactive Pop-up Lyrics"
-msgstr ""
+msgstr "Etkileşimli Açılır Menüde Şarkı Sözleri"
 
 #: prefs.js:1154
 msgid "💡 Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
 msgstr ""
+"💡 İpucu: Genişletilmiş oynatıcıda albüm kapağına veya plağa dokunmak, "
+"senkronize şarkı sözlerini gösterir!"
 
 #: prefs.js:1162
 msgid "Lyrics & Karaoke"
-msgstr ""
+msgstr "Şarkı Sözleri & Karaoke"
 
 #: prefs.js:1163
 msgid "Real-time synchronized lyrics with multi-provider karaoke support."
 msgstr ""
+"Birden fazla sağlayıcıdan karaoke desteği sunan, gerçek zamanlı, senkronize "
+"şarkı sözleri."
 
 #: prefs.js:1339
 msgid "Please install %s for dynamic blur."
-msgstr ""
+msgstr "Dinamik bulanıklaştırma için lütfen %s eklentisini kurun."
 
 #: prefs.js:1339
 msgid "and"
-msgstr ""
+msgstr "ve"
 
 #: prefs.js:1358
 msgid "Note: Dynamic blur requires %s to be installed."
-msgstr ""
+msgstr "Not: Dinamik bulanıklaştırma %s eklentisini gerektirir."
 
 #: prefs.js:1599
 msgid "Audio Visualizers"
-msgstr ""
+msgstr "Ses Görselleştiricileri"
 
 #: prefs.js:1682
 msgid "Enable audio visualizer bars inside the expanded player"
-msgstr ""
+msgstr "Genişletilmiş oynatıcıda görselleştirici çubuklarını etkinleştirin"
 
 #~ msgid "Unmute"
 #~ msgstr "Sesi aç"
