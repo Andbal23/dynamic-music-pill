@@ -134,15 +134,26 @@ export function getDockManager() {
     return _dtdDockManager;
 }
 
+// Dash-to-Dock renamed `updateDashVisibility()` to `_updateDashVisibility()`
+// (e.g. v105). Support both, and never let a dock API change break our UI.
+function _setDockRequiresVisibility(dock, value) {
+    if (!dock || !dock.dash) return;
+    try {
+        dock.dash.requiresVisibility = value;
+        if (typeof dock.updateDashVisibility === 'function')
+            dock.updateDashVisibility();
+        else if (typeof dock._updateDashVisibility === 'function')
+            dock._updateDashVisibility();
+    } catch (e) {
+        console.debug(`[Dynamic Music Pill] Dock visibility update failed: ${e.message}`);
+    }
+}
+
 function _applyDisable() {
     _refreshDockManager();
     if (!_dtdDockManager || !_dtdDockManager._allDocks) return;
-    for (const dock of _dtdDockManager._allDocks) {
-        if (dock && dock.dash) {
-            dock.dash.requiresVisibility = true;
-            dock.updateDashVisibility();
-        }
-    }
+    for (const dock of _dtdDockManager._allDocks)
+        _setDockRequiresVisibility(dock, true);
 }
 
 export function disableDashToDockAutohide() {
@@ -159,12 +170,8 @@ export function disableDashToDockAutohide() {
 function _applyRestore() {
     _refreshDockManager();
     if (!_dtdDockManager || !_dtdDockManager._allDocks) return;
-    for (const dock of _dtdDockManager._allDocks) {
-        if (dock && dock.dash) {
-            dock.dash.requiresVisibility = false;
-            dock.updateDashVisibility();
-        }
-    }
+    for (const dock of _dtdDockManager._allDocks)
+        _setDockRequiresVisibility(dock, false);
 }
 
 export function restoreDashToDockAutohide() {

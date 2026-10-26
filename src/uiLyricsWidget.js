@@ -640,11 +640,12 @@ export const LyricsWidget = GObject.registerClass(
                         let wStr = (word.text || "").trim();
                         if (!wStr) continue;
                         let escapedText = GLib.markup_escape_text(wStr, -1);
+                        let space = (word.hasSpace !== false) ? " " : "";
 
                         if (currentMs >= word.time) {
-                            markup += `<b><span alpha="100%">${escapedText}</span></b> `;
+                            markup += `<b><span alpha="100%">${escapedText}</span></b>${space}`;
                         } else {
-                            markup += `<span alpha="40%">${escapedText}</span> `;
+                            markup += `<span alpha="40%">${escapedText}</span>${space}`;
                         }
                     }
                     try {
