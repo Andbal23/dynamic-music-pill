@@ -1646,9 +1646,14 @@ export class MusicController {
             this._lastLyricIndex = currentIndex;
 
             let currentLine = this._fetchedLyricsData[currentIndex];
-            let durationSec = 5;
-            if (currentIndex + 1 < this._fetchedLyricsData.length) {
-                durationSec = (this._fetchedLyricsData[currentIndex + 1].time - currentLine.time) / 1000;
+
+            // Past the end of the line (e.g. an instrumental break): show the track until the next line,
+            // unless that line is about to start anyway
+            let lineEndMs = currentLine.time + currentLine.duration * 1000;
+            let nextLine = this._fetchedLyricsData[currentIndex + 1];
+            if (positionMs > lineEndMs && (!nextLine || nextLine.time - lineEndMs > 2000)) {
+                this._pills().forEach(p => p.setLyric(null));
+                return;
             }
 
             let enablePillWordLevel = this._settings ? this._settings.get_boolean('pill-enable-word-level') : true;
@@ -1656,7 +1661,7 @@ export class MusicController {
             let lrc = {
                 sender: this._fetchedLyricsProvider || "lrclib",
                 content: currentLine.text,
-                time: durationSec,
+                time: currentLine.duration,
                 words: enablePillWordLevel ? (currentLine.words || null) : null,
                 positionMs: positionMs,
             };
