@@ -949,8 +949,8 @@ msgid "No players found"
 msgstr "Плееры не найдены"
 
 #: prefs.js:1231
-msgid "💡 How to find the correct App ID?"
-msgstr "💡 Как найти правильный App ID?"
+msgid "How to find the correct App ID?"
+msgstr "Как найти правильный App ID?"
 
 #: prefs.js:1232
 msgid "Click here for a quick guide and examples"
@@ -1444,7 +1444,7 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "💡 Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

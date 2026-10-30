@@ -23,7 +23,8 @@ const PREFS_KEYS = [
     'popup-follow-custom-bg', 'popup-follow-custom-text', 'action-hover', 'hover-delay', 'selected-player-bus',
     'popup-show-player-selector', 'hide-auto-smart-selection', 'popup-player-selector-position', 'show-pill-border', 'invert-scroll-direction', 'always-show-pill', 'popup-hide-on-leave',
     'popup-vertical-offset', 'popup-horizontal-offset',
-    'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'lyrics-language-preference', 'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
+    'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'lyrics-language-preference',
+    'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
     'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
     'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history', 'has-seen-first-hint',
     'show-hours-format', 'popup-show-album-title',
@@ -37,21 +38,30 @@ const CHANGELOG_ENTRIES = [
         subtitle: 'Always-On Last Track & Quick Launch, Dynamic Width Default, Player Blur & Polish',
         expanded: true,
         notes: 'New Features & Enhancements:\n' +
-            '• Always-On Mode with Last Played Music & Quick Launch: When Always-On mode is active and playback stops or the machine reboots, the pill remembers and displays the last played track (title, artist, album art, and adaptive color palette). Clicking the pill or Play button instantly reopens that browser, website (e.g. YouTube video), or desktop media player (Spotify, VLC, Amberol, etc.).\n' +
+            '• Always-On Mode with Last Played Music & Quick Launch: When Always-On mode is active and playback stops ' +
+            'or the machine reboots, the pill remembers and displays the last played track (title, artist, album art, and ' +
+            'adaptive color palette). Clicking the pill or Play button instantly reopens that browser, website (e.g. YouTube ' +
+            'video), or desktop media player (Spotify, VLC, Amberol, etc.).\n' +
             '• Dynamic Pill Width Default: Pill width now dynamically adapts to track length and visualizer bars by default for a sleek, compact appearance.\n' +
             '• Player Selector Blur Integration: Connected the full native Blur my Shell dynamic backdrop to the Player Selector Menu, seamlessly matching pop-up blur, sigma, and tint settings.\n' +
             '• Pop-up Vertical Offset Setting: Added a dedicated setting to fine-tune the vertical offset of the expanded pop-up player for pixel-perfect placement.\n\n' +
             'Improvements & Bug Fixes:\n' +
             '• Visualizer Clipping & Centering in Vertical Docks: Visualizer bars now dynamically adjust bar width, gap, and horizontal alignment in left/right side docks, eliminating clipping.\n' +
-            '• CAVA Frequency Resampling Refinements: Enhanced frequency distribution with combined average + peak resampling and high-frequency perceptual compensation for dynamic, full-spectrum bar activity.\n' +
+            '• CAVA Frequency Resampling Refinements: Enhanced frequency distribution with combined average + peak ' +
+            'resampling and high-frequency perceptual compensation for dynamic, full-spectrum bar activity.\n' +
             '• CAVA Visualizer Pause Freeze Fix: Audio spectrum now smoothly resets to flat baseline immediately on pause without requiring a mouse hover.\n' +
-            '• Text Alignment & Squeezing Fix on Pop-up Close: Kept pill visualizer space reserved during pop-up open state, eliminating layout squish and premature text jumping between start and center.\n' +
-            '• Text Fade & Scrolling Polish: Preserved continuous edge fade effects during scrolling, and eliminated delayed ellipsis popping and text jumping on track skips when scrolling text is disabled.\n' +
+            '• Text Alignment & Squeezing Fix on Pop-up Close: Kept pill visualizer space reserved during pop-up open ' +
+            'state, eliminating layout squish and premature text jumping between start and center.\n' +
+            '• Text Fade & Scrolling Polish: Preserved continuous edge fade effects during scrolling, and eliminated ' +
+            'delayed ellipsis popping and text jumping on track skips when scrolling text is disabled.\n' +
             '• Album Art Clamping: Clamped maximum album art dimensions in side docks to prevent layout overflows.\n' +
-            '• NixOS & Multi-Distro Blur Detection Fix (#179): Added dynamic typelib environment scanning (`GI_TYPELIB_PATH`, NixOS system profiles, and runtime module checking) so dynamic blur works seamlessly across non-FHS distributions.\n' +
+            '• NixOS & Multi-Distro Blur Detection Fix (#179): Added dynamic typelib environment scanning ' +
+            '(`GI_TYPELIB_PATH`, NixOS system profiles, and runtime module checking) so dynamic blur works seamlessly across non-FHS distributions.\n' +
             '• Pop-up Cover Art & Text Polish: Unified cover art crossfading with the pill widget, eliminating flicker, delayed updates, and disposed widget errors on track skips.\n' +
-            '• Smooth Vinyl Rotation: Enhanced vinyl record rotation with hardware FBO bilinear filtering, smooth spin-up and deceleration curves, and automatic spinning upon opening the pop-up player.\n' +
-            '• Pill Lyrics Rhythm & Symmetrical Layout: Refined synced lyrics scrolling rhythm in the pill to match vocal pacing with ample ending reading time, and perfected symmetrical centering for Always-On mode.\n' +
+            '• Smooth Vinyl Rotation: Enhanced vinyl record rotation with hardware FBO bilinear filtering, smooth ' +
+            'spin-up and deceleration curves, and automatic spinning upon opening the pop-up player.\n' +
+            '• Pill Lyrics Rhythm & Symmetrical Layout: Refined synced lyrics scrolling rhythm in the pill to match ' +
+            'vocal pacing with ample ending reading time, and perfected symmetrical centering for Always-On mode.\n' +
             '• Memory & Lifecycle Stability: Hardened widget lifecycle teardown and disposal across all custom widgets for guaranteed leak-free operation.\n\n' +
             'Translations:\n' +
             '• Updated translations from Hosted Weblate, including 100% Brazilian Portuguese (#178).',
@@ -61,7 +71,8 @@ const CHANGELOG_ENTRIES = [
         subtitle: 'Blur my Shell v76+ Pipeline Integration, Allocation Fix & Smooth Text Fade',
         expanded: false,
         notes: 'Improvements & Fixes:\n' +
-            '• Blur my Shell v76+ Native Pipeline Integration: Full native support for Blur my Shell\'s modern Dual Kawase DynamicPipeline backend — no gnome-rounded-blur dependency required on modern BMS versions.\n' +
+            '• Blur my Shell v76+ Native Pipeline Integration: Full native support for Blur my Shell\'s modern Dual ' +
+            'Kawase DynamicPipeline backend — no gnome-rounded-blur dependency required on modern BMS versions.\n' +
             '• Multi-Tier Blur Fallbacks: Automatic seamless 3-tier fallback architecture (BMS Dynamic Pipeline -> BMS + gnome-rounded-blur -> graceful fallback).\n' +
             '• Pipeline Following Option: New toggle to inherit Blur my Shell\'s exact configured blur pipelines, effects, and brightness for the panel pill and pop-up.\n' +
             '• Fixed Stage View Allocation Log Warnings: Eliminated \'needs an allocation\' log warnings during track transitions and pop-up open/close animations.\n' +
@@ -75,10 +86,12 @@ const CHANGELOG_ENTRIES = [
         notes: 'New Features:\n' +
             '• Dynamic Gaussian Blur: Native Wayland blur behind the pill and pop-up via Blur my Shell & gnome-rounded-blur, with adjustable Blur Radius (Sigma) and Album Art Color tinting.\n' +
             '• Light Mode (#173): Bright pastel dynamic palette and frosted light glass with dark text and icons.\n' +
-            '• Multi-Monitor Docks (#171) & Simple Taskbar Support (#172): Choose whether the pill appears on Main, All, or Secondary docks, plus full support for Simple Taskbar (simple-taskbar@sultech) dock placement.\n' +
+            '• Multi-Monitor Docks (#171) & Simple Taskbar Support (#172): Choose whether the pill appears on Main, ' +
+            'All, or Secondary docks, plus full support for Simple Taskbar (simple-taskbar@sultech) dock placement.\n' +
             '• Custom Visualizer Color (#159): Independent custom color picker for the audio visualizer bars.\n' +
             '• Apple Music Lyrics Provider (#174): Replaced NetEase with Apple Music word-level karaoke provider and improved Firefox / YouTube / YouTube Music lyrics search & fallbacks.\n' +
-            '• Scroll Animation Toggle & Player Minimize Toggle: Option to toggle the scroll jump animation, and clicking \'Open Player App\' now toggles minimize/restore when the player is already focused.\n\n' +
+            '• Scroll Animation Toggle & Player Minimize Toggle: Option to toggle the scroll jump animation, and ' +
+            'clicking \'Open Player App\' now toggles minimize/restore when the player is already focused.\n\n' +
             'Bug Fixes:\n' +
             '• Eliminated pop-up open/close flicker and added smooth directional pivot animations.\n' +
             '• Fixed volume scroll feedback bar overflowing or jittering between 99% and 100% on short pills.\n' +
@@ -107,7 +120,8 @@ const CHANGELOG_ENTRIES = [
             '• LRCLib Cloudflare Fix: Custom User-Agent on lyrics requests to bypass HTTP 403 blocks.\n\n' +
             'Bug Fixes:\n' +
             '• Fixed Volume Scrolling (#148): Fixed stream.change_volume() Gvc method invocation for PulseAudio/Pipewire volume scrolling.\n' +
-            '• Fixed Missing Album Art Shadow Blob: Immediately hide vinyl container and drop shadow when album art is unavailable (e.g. YouTube videos without thumbnails) to prevent layout shifts and dark shadow artifacts.\n' +
+            '• Fixed Missing Album Art Shadow Blob: Immediately hide vinyl container and drop shadow when album art ' +
+            'is unavailable (e.g. YouTube videos without thumbnails) to prevent layout shifts and dark shadow artifacts.\n' +
             '• Fixed pop-up play/pause button icon and player controls state when album art is disabled.\n' +
             '• Fixed empty shadow box and pop-up layout shift when turning off album art.\n' +
             '• Fixed seeker progress bar jumping to 0:00 when seeking with album art disabled.\n\n' +
@@ -154,8 +168,10 @@ const CHANGELOG_ENTRIES = [
         subtitle: 'Custom Buttons & Bug Fixes',
         expanded: false,
         notes: 'New Features:\n' +
-            '• Custom Control Buttons: Add up to two extra buttons to the pop-up controls row. Each can be assigned to Volume, Seek Step, Audio Output, Sleep Timer, Playback Speed, or Recently Played history.\n' +
-            '• First-Time Hint: A one-time tip in the pop-up suggests checking settings for more options (custom buttons, scroll actions, etc.). Dismissible with a click or via the settings button.\n' +
+            '• Custom Control Buttons: Add up to two extra buttons to the pop-up controls row. Each can be assigned ' +
+            'to Volume, Seek Step, Audio Output, Sleep Timer, Playback Speed, or Recently Played history.\n' +
+            '• First-Time Hint: A one-time tip in the pop-up suggests checking settings for more options (custom ' +
+            'buttons, scroll actions, etc.). Dismissible with a click or via the settings button.\n' +
             '• Scroll on Hover Only: A new setting to scroll long text only when hovering over the pill.\n\n' +
             'Bug Fixes:\n' +
             '• Fixed GNOME Shell freezes (metadata crash) when player state unexpectedly becomes undefined.\n' +
@@ -939,7 +955,8 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         // --- Group 2: Playback & Custom Control Buttons ---
         const customBtnGroup = new Adw.PreferencesGroup({
             title: _('Custom Control Buttons'),
-            description: _("Add up to two extra buttons in the expanded player's controls row.") + ' ' + _('If both buttons are set to Seek, they act directly (Button 1 = −10s, Button 2 = +10s). Otherwise Seek opens a sub-page.'),
+            description: _("Add up to two extra buttons in the expanded player's controls row.") + ' ' +
+                _('If both buttons are set to Seek, they act directly (Button 1 = −10s, Button 2 = +10s). Otherwise Seek opens a sub-page.'),
         });
 
         const { row: showShuffleRow } = this._createSwitchRow(settings, {
@@ -1197,7 +1214,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         const hintGroup = new Adw.PreferencesGroup();
         const hintRow = new Adw.ActionRow({
             title: this._escapeMarkup(_('Interactive Pop-up Lyrics')),
-            subtitle: this._escapeMarkup(_('💡 Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!')),
+            subtitle: this._escapeMarkup(_('Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!')),
         });
         this._addRowIcon(hintRow, 'emblem-music-symbolic');
         hintGroup.add(hintRow);
@@ -1927,9 +1944,10 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         // --- Group 3: App ID Mapping Guide & Saved Mappings ---
         const mappingHelpGroup = new Adw.PreferencesGroup();
         const helpExpander = new Adw.ExpanderRow({
-            title: _('💡 How to find the correct App ID?'),
+            title: _('How to find the correct App ID?'),
             subtitle: _('Click here for a quick guide and examples'),
         });
+        this._addRowIcon(helpExpander, 'dialog-information-symbolic');
 
         const helpLabel = new Gtk.Label({
             label: _('To allow the extension to open/close your player, you need to provide its exact window name (App ID).\n\n' +
@@ -1974,6 +1992,13 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         let savedMappingRows = [];
         let detectedPlayerRows = [];
         let isRefreshingMappings = false;
+        const activeSourceIds = new Set();
+        window.connect('close-request', () => {
+            for (const sourceId of activeSourceIds)
+                GLib.Source.remove(sourceId);
+            activeSourceIds.clear();
+            return false;
+        });
 
         const refreshMappingRow = new Adw.ActionRow({
             title: _('Refresh List'),
@@ -2051,10 +2076,13 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                                     : `${shortName}:ENTER_APP_ID_HERE`;
                                 settings.set_string('app-name-mapping', newVal);
 
-                                GLib.idle_add_once(() => {
+                                const id = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                                    activeSourceIds.delete(id);
                                     refreshAppMappings();
                                     updateDetectedPlayers();
+                                    return GLib.SOURCE_REMOVE;
                                 });
+                                activeSourceIds.add(id);
                             });
 
                             row.add_suffix(btn);
@@ -2123,9 +2151,12 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                         settings.set_string('app-name-mapping', newPairs.join(','));
 
                         saveBtn.set_icon_name('object-select-symbolic');
-                        GLib.timeout_add_once(1500, () => {
+                        const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
+                            activeSourceIds.delete(id);
                             if (saveBtn) saveBtn.set_icon_name('document-save-symbolic');
+                            return GLib.SOURCE_REMOVE;
                         });
+                        activeSourceIds.add(id);
                     };
 
                     saveBtn.connect('clicked', saveAction);
@@ -2144,10 +2175,13 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                         const newPairs = currentPairs.filter(p => !p.startsWith(mprisName + ':'));
                         settings.set_string('app-name-mapping', newPairs.join(','));
 
-                        GLib.idle_add_once(() => {
+                        const id = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                            activeSourceIds.delete(id);
                             refreshAppMappings();
                             updateDetectedPlayers();
+                            return GLib.SOURCE_REMOVE;
                         });
+                        activeSourceIds.add(id);
                     });
 
                     btnBox.append(saveBtn);

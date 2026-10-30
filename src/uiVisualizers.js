@@ -33,6 +33,7 @@ const CavaVisualizer = GObject.registerClass(
             };
             this._engineCallback = callback;
             this._engine.subscribe(this._engineCallback);
+            this.connect('destroy', () => this._cleanup());
         }
 
         setSidePanel(isSidePanel, maxWidth) {
@@ -218,11 +219,6 @@ const CavaVisualizer = GObject.registerClass(
             cr.$dispose();
         }
 
-        destroy() {
-            this._cleanup();
-            super.destroy();
-        }
-
         _cleanup() {
             if (this._engine && this._engineCallback) {
                 this._engine.setPlaying(this._engineCallback, false);
@@ -246,6 +242,7 @@ const SimulatedVisualizer = GObject.registerClass(
             this._timerId = null;
 
             this._updateBarCount();
+            this.connect('destroy', () => this._cleanup());
         }
 
         setSidePanel(isSidePanel, maxWidth) {
@@ -296,11 +293,6 @@ const SimulatedVisualizer = GObject.registerClass(
             this._updateBarsCss();
         }
 
-        destroy() {
-            this._cleanup();
-            super.destroy();
-        }
-
         _cleanup() {
             if (this._timerId) {
                 GLib.Source.remove(this._timerId);
@@ -308,6 +300,7 @@ const SimulatedVisualizer = GObject.registerClass(
             }
             if (this._settings) {
                 this._settings.disconnectObject(this);
+                this._settings = null;
             }
             this.disconnectObject(this);
         }
@@ -403,6 +396,7 @@ export const WaveformVisualizer = GObject.registerClass(
             }
 
             this._updateSize();
+            this.connect('destroy', () => this._cleanup());
         }
 
         setSidePanel(isSidePanel, maxWidth) {
@@ -482,16 +476,13 @@ export const WaveformVisualizer = GObject.registerClass(
             }
         }
 
-        destroy() {
-            this._cleanup();
-            super.destroy();
-        }
-
         _cleanup() {
             if (this._settings) {
                 this._settings.disconnectObject(this);
+                this._settings = null;
             }
             this.disconnectObject(this);
+            this.set_child(null);
             if (this._simulated) {
                 this._simulated.destroy();
                 this._simulated = null;

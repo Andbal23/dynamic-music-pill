@@ -85,21 +85,21 @@ export const PlayerSelectorMenu = GObject.registerClass(
                 this._blurBackdrop,
                 () => 20,
                 () => this._settings.get_int('blur-sigma'),
-                'popup',
+                () => 'popup',
                 () => this._settings.get_boolean('bms-follow-pipeline')
             );
 
             this._settings.connectObject(
                 'changed::enable-blur-popup', () => {
                     if (this.visible) {
-                        let pill = this._controller._getAnchorPill ? this._controller._getAnchorPill() : this._controller._pill;
+                        let pill = this._controller._getAnchorPill();
                         let c = pill ? pill._displayedColor : null;
                         this._updateStyle(c ? c.r : null, c ? c.g : null, c ? c.b : null);
                     }
                 },
                 'changed::blur-blend-color', () => {
                     if (this.visible) {
-                        let pill = this._controller._getAnchorPill ? this._controller._getAnchorPill() : this._controller._pill;
+                        let pill = this._controller._getAnchorPill();
                         let c = pill ? pill._displayedColor : null;
                         this._updateStyle(c ? c.r : null, c ? c.g : null, c ? c.b : null);
                     }
@@ -153,11 +153,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-        }
-
-        destroy() {
-            this._cleanup();
-            super.destroy();
+            this.connect('destroy', () => this._cleanup());
         }
 
         _cleanup() {
@@ -169,11 +165,11 @@ export const PlayerSelectorMenu = GObject.registerClass(
                 this._blurController.destroy();
                 this._blurController = null;
             }
-            if (this._blurBackdrop) {
-                this._blurBackdrop.destroy();
-                this._blurBackdrop = null;
+            this._blurBackdrop = null;
+            if (this._settings) {
+                this._settings.disconnectObject(this);
+                this._settings = null;
             }
-            this._settings.disconnectObject(this);
             this.disconnectObject(this);
         }
 
@@ -399,7 +395,7 @@ export const PlayerSelectorMenu = GObject.registerClass(
             this.grab_key_focus();
             this.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
 
-            let pill = this._controller._getAnchorPill ? this._controller._getAnchorPill() : this._controller._pill;
+            let pill = this._controller._getAnchorPill();
             if (!pill || !pill.get_parent()) {
                 this.hide();
                 return;

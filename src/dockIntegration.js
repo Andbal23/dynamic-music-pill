@@ -43,9 +43,8 @@ export function getDockContainer() {
     const dock = Main.panel.statusArea['dash-to-dock'] || Main.panel.statusArea['ubuntu-dock'];
     if (dock && dock._box) return dock._box;
 
-    const extMgr = Main.extensionManager;
     const isExtActive = (uuid) => {
-        const ext = extMgr?.lookup?.(uuid);
+        const ext = Main.extensionManager.lookup(uuid);
         return Boolean(ext && ext.state === 1);
     };
     if (
@@ -57,7 +56,7 @@ export function getDockContainer() {
         return null;
     }
 
-    return (Main.overview && Main.overview.dash && Main.overview.dash._box) ? Main.overview.dash._box : null;
+    return Main.overview.dash._box || null;
 }
 
 export function getSecondaryDockContainers() {

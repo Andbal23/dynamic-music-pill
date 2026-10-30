@@ -5,7 +5,10 @@ import Gio from 'gi://Gio';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { formatTime, smartUnpack, disableDockAutohide, restoreDockAutohide, disableDashToDockAutohide, restoreDashToDockAutohide, getPlayerIcon } from './utils.js';
-import { COPY_ICON_RESET_DELAY, COPY_ICON_FADE_IN_DURATION, COPY_ICON_FADE_OUT_DURATION, SUBPAGE_ANIM_IN_DURATION, SUBPAGE_ANIM_OUT_DURATION, SUBPAGE_BACK_BTN_WIDTH, SUBPAGE_HEADER_ICON_SIZE } from './constants.js';
+import {
+    COPY_ICON_RESET_DELAY, COPY_ICON_FADE_IN_DURATION, COPY_ICON_FADE_OUT_DURATION,
+    SUBPAGE_ANIM_IN_DURATION, SUBPAGE_ANIM_OUT_DURATION, SUBPAGE_BACK_BTN_WIDTH, SUBPAGE_HEADER_ICON_SIZE,
+} from './constants.js';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { PixelSnappedBox, ScrollLabel, CrossfadeArt, _addBtnPressAnim } from './uiWidgets.js';
@@ -87,12 +90,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 },
                 'button-press-event', (actor, event) => {
                     let source = event ? event.get_source() : null;
-                    let isInsideBox = false;
-                    if (this._box && source) {
-                        try {
-                            isInsideBox = (source === this._box || this._box.contains(source));
-                        } catch (_) {}
-                    }
+                    let isInsideBox = Boolean(this._box && source && (source === this._box || this._box.contains(source)));
                     if (!isInsideBox) {
                         let btn = event ? event.get_button() : 1;
                         if (btn === 8 && this._currentSubPage) {
@@ -106,12 +104,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 },
                 'touch-event', (actor, event) => {
                     let source = event ? event.get_source() : null;
-                    let isInsideBox = false;
-                    if (this._box && source) {
-                        try {
-                            isInsideBox = (source === this._box || this._box.contains(source));
-                        } catch (_) {}
-                    }
+                    let isInsideBox = Boolean(this._box && source && (source === this._box || this._box.contains(source)));
                     if (!isInsideBox) {
                         let t = event ? event.type() : null;
                         if (t === Clutter.EventType.TOUCH_BEGIN || t === Clutter.EventType.TOUCH_END) {
@@ -227,7 +220,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     return (typeof rawRadius === 'number' && !isNaN(rawRadius)) ? rawRadius : 24;
                 },
                 () => this._settings.get_int('blur-sigma'),
-                'popup',
+                () => 'popup',
                 () => this._settings.get_boolean('bms-follow-pipeline')
             );
             if (this._settings.get_boolean('enable-blur-popup')) {
@@ -370,7 +363,13 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
             }, this);
 
-            let topRow = new PixelSnappedBox({ style_class: 'expanded-top-row', orientation: Clutter.Orientation.HORIZONTAL, y_align: Clutter.ActorAlign.CENTER, x_expand: true, clip_to_allocation: true });
+            let topRow = new PixelSnappedBox({
+                style_class: 'expanded-top-row',
+                orientation: Clutter.Orientation.HORIZONTAL,
+                y_align: Clutter.ActorAlign.CENTER,
+                x_expand: true,
+                clip_to_allocation: true,
+            });
 
             this._vinyl = new St.Widget({
                 name: 'popup-vinyl',
@@ -522,30 +521,80 @@ export const ExpandedPlayer = GObject.registerClass(
             this._shuffleIcon = new St.Icon({ icon_name: 'media-playlist-shuffle-symbolic', icon_size: 16 });
             this._shuffleBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._shuffleIcon, reactive: true, can_focus: false });
             _addBtnPressAnim(this._shuffleBtn);
-            this._shuffleBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.toggleShuffle(); return Clutter.EVENT_STOP; }, this);
-            this._shuffleBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.toggleShuffle(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
+            this._shuffleBtn.connectObject('button-release-event', (a, e) => {
+                if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                this._controller.toggleShuffle();
+                return Clutter.EVENT_STOP;
+            }, this);
+            this._shuffleBtn.connectObject('touch-event', (actor, event) => {
+                if (event.type() === Clutter.EventType.TOUCH_END) {
+                    this._controller.toggleShuffle();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
 
             this._prevBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 24 }), reactive: true, can_focus: false });
             _addBtnPressAnim(this._prevBtn);
-            this._prevBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.previous(); return Clutter.EVENT_STOP; }, this);
-            this._prevBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.previous(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
+            this._prevBtn.connectObject('button-release-event', (a, e) => {
+                if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                this._controller.previous();
+                return Clutter.EVENT_STOP;
+            }, this);
+            this._prevBtn.connectObject('touch-event', (actor, event) => {
+                if (event.type() === Clutter.EventType.TOUCH_END) {
+                    this._controller.previous();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
 
             this._playPauseIcon = new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 24 });
             this._playPauseBtn = new St.Button({ style_class: 'control-btn', child: this._playPauseIcon, reactive: true, can_focus: false });
             _addBtnPressAnim(this._playPauseBtn);
-            this._playPauseBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.togglePlayback(); return Clutter.EVENT_STOP; }, this);
-            this._playPauseBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.togglePlayback(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
+            this._playPauseBtn.connectObject('button-release-event', (a, e) => {
+                if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                this._controller.togglePlayback();
+                return Clutter.EVENT_STOP;
+            }, this);
+            this._playPauseBtn.connectObject('touch-event', (actor, event) => {
+                if (event.type() === Clutter.EventType.TOUCH_END) {
+                    this._controller.togglePlayback();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
 
             this._nextBtn = new St.Button({ style_class: 'control-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 24 }), reactive: true, can_focus: false });
             _addBtnPressAnim(this._nextBtn);
-            this._nextBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.next(); return Clutter.EVENT_STOP; }, this);
-            this._nextBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.next(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
+            this._nextBtn.connectObject('button-release-event', (a, e) => {
+                if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                this._controller.next();
+                return Clutter.EVENT_STOP;
+            }, this);
+            this._nextBtn.connectObject('touch-event', (actor, event) => {
+                if (event.type() === Clutter.EventType.TOUCH_END) {
+                    this._controller.next();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
 
             this._repeatIcon = new St.Icon({ icon_name: 'media-playlist-repeat-symbolic', icon_size: 16 });
             this._repeatBtn = new St.Button({ style_class: 'control-btn-secondary', child: this._repeatIcon, reactive: true, can_focus: false });
             _addBtnPressAnim(this._repeatBtn);
-            this._repeatBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; this._controller.toggleLoop(); return Clutter.EVENT_STOP; }, this);
-            this._repeatBtn.connectObject('touch-event', (actor, event) => { if (event.type() === Clutter.EventType.TOUCH_END) { this._controller.toggleLoop(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, this);
+            this._repeatBtn.connectObject('button-release-event', (a, e) => {
+                if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                this._controller.toggleLoop();
+                return Clutter.EVENT_STOP;
+            }, this);
+            this._repeatBtn.connectObject('touch-event', (actor, event) => {
+                if (event.type() === Clutter.EventType.TOUCH_END) {
+                    this._controller.toggleLoop();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, this);
 
             this._customBtn1 = new St.Button({
                 style_class: 'control-btn-secondary',
@@ -677,7 +726,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._firstHintBox.hide();
                 if (openSettings) {
                     this.hide();
-                    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                    if (this._hintSettingsTimeoutId)
+                        GLib.Source.remove(this._hintSettingsTimeoutId);
+                    this._hintSettingsTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                        this._hintSettingsTimeoutId = null;
                         this._controller.openSettings();
                         return GLib.SOURCE_REMOVE;
                     });
@@ -738,11 +790,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-        }
-
-        destroy() {
-            this._cleanup();
-            super.destroy();
+            this.connect('destroy', () => this._cleanup());
         }
 
         vfunc_allocate(box) {
@@ -763,11 +811,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (typeof bx !== 'number' || isNaN(bx)) bx = 0;
                 if (typeof by !== 'number' || isNaN(by)) by = 0;
 
-                let prefW = 320;
-                try {
-                    let [, natW] = this._box.get_preferred_width(-1);
-                    if (typeof natW === 'number' && !isNaN(natW) && natW > 0) prefW = natW;
-                } catch (_) {}
+                let [, natW] = this._box.get_preferred_width(-1);
+                let prefW = (typeof natW === 'number' && !isNaN(natW) && natW > 0) ? natW : 320;
 
                 let curBoxW = this._box.width;
                 let bw = Math.max(1, Math.round((typeof curBoxW === 'number' && curBoxW > 0) ? curBoxW : prefW));
@@ -775,14 +820,12 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let bh;
                 let curBoxH = this._box.height;
-                if (this._box.get_transition('height') || (this._currentSubPage && curBoxH > 0) || (curBoxH > 0 && (this._isOpening || this._isHiding || this._box.get_transition('scale-x')))) {
+                if (this._box.get_transition('height') || (this._currentSubPage && curBoxH > 0) ||
+                    (curBoxH > 0 && (this._isOpening || this._isHiding || this._box.get_transition('scale-x')))) {
                     bh = Math.max(1, Math.round(curBoxH));
                 } else {
-                    let natH = 260;
-                    try {
-                        let [, h] = this._box.get_preferred_height(bw);
-                        if (typeof h === 'number' && !isNaN(h) && h > 0) natH = h;
-                    } catch (_) {}
+                    let [, h] = this._box.get_preferred_height(bw);
+                    let natH = (typeof h === 'number' && !isNaN(h) && h > 0) ? h : 260;
                     bh = Math.max(1, Math.round(natH));
                 }
                 if (typeof bh !== 'number' || isNaN(bh) || bh <= 0) bh = 260;
@@ -1456,6 +1499,12 @@ export const ExpandedPlayer = GObject.registerClass(
             page.add_child(contentScroll);
 
             buildFn(contentBox, tc, ta, page);
+            page.connect('destroy', () => {
+                if (this._subpageActionTimeoutId) {
+                    GLib.Source.remove(this._subpageActionTimeoutId);
+                    this._subpageActionTimeoutId = null;
+                }
+            });
             this._box.add_child(page);
 
             page.ease({
@@ -1475,7 +1524,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => {
                     if (this._lyricsWidget) {
-                        try { this._lyricsWidget.destroy(); } catch (_) {}
+                        this._lyricsWidget.destroy();
                         this._lyricsWidget = null;
                     }
                     if (p.get_parent()) p.get_parent().remove_child(p);
@@ -1627,10 +1676,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     GLib.Source.remove(this._lyricsTimerId);
                     this._lyricsTimerId = null;
                 }
-                if (this._lyricsWidget) {
-                    try { this._lyricsWidget.destroy(); } catch (_) {}
-                    this._lyricsWidget = null;
-                }
+                this._lyricsWidget = null;
             });
         }
 
@@ -1800,7 +1846,12 @@ export const ExpandedPlayer = GObject.registerClass(
                     let wrapper = new St.BoxLayout({ orientation: Clutter.Orientation.VERTICAL, style: 'margin-bottom: 12px;' });
                     
                     let titleBox = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'margin-bottom: 6px;', x_align: Clutter.ActorAlign.START });
-                    titleBox.add_child(new St.Icon({ icon_name: isMaster ? 'audio-speakers-symbolic' : 'audio-x-generic-symbolic', icon_size: 14, style: `color:${ta};margin-right:6px;`, y_align: Clutter.ActorAlign.CENTER }));
+                    titleBox.add_child(new St.Icon({
+                        icon_name: isMaster ? 'audio-speakers-symbolic' : 'audio-x-generic-symbolic',
+                        icon_size: 14,
+                        style: `color:${ta};margin-right:6px;`,
+                        y_align: Clutter.ActorAlign.CENTER,
+                    }));
                     titleBox.add_child(new St.Label({ text: title, style: `color:${ta};font-size:9pt;font-weight:bold;`, y_align: Clutter.ActorAlign.CENTER }));
                     wrapper.add_child(titleBox);
 
@@ -1824,8 +1875,22 @@ export const ExpandedPlayer = GObject.registerClass(
                     sliderBg.add_child(sliderFill);
                     let volLabel = new St.Label({ text: `${Math.round(frac0 * 100)}%`, style: `color:${tc};min-width:38px;text-align:right;`, y_align: Clutter.ActorAlign.CENTER });
 
-                    const upd = (f) => { f = Math.max(0, Math.min(1, f)); if (!sliderBg.has_allocation || !sliderBg.has_allocation()) { volLabel.text = `${Math.round(f * 100)}%`; return; } let w = sliderBg.get_width(); if (w > 0) sliderFill.width = Math.round(w * f); volLabel.text = `${Math.round(f * 100)}%`; };
-                    const applyVol = (f) => { f = Math.max(0, Math.min(1, f)); stream.volume = Math.round(f * maxVol); stream.push_volume(); if (stream.is_muted && f > 0) stream.change_is_muted(false); };
+                    const upd = (f) => {
+                        f = Math.max(0, Math.min(1, f));
+                        if (!sliderBg.has_allocation()) {
+                            volLabel.text = `${Math.round(f * 100)}%`;
+                            return;
+                        }
+                        let w = sliderBg.get_width();
+                        if (w > 0) sliderFill.width = Math.round(w * f);
+                        volLabel.text = `${Math.round(f * 100)}%`;
+                    };
+                    const applyVol = (f) => {
+                        f = Math.max(0, Math.min(1, f));
+                        stream.volume = Math.round(f * maxVol);
+                        stream.push_volume();
+                        if (stream.is_muted && f > 0) stream.change_is_muted(false);
+                    };
 
                     let _lastApplyTime = 0;
                     const applyVolThrottled = (f) => {
@@ -1857,24 +1922,41 @@ export const ExpandedPlayer = GObject.registerClass(
 
                     stream.connectObject('notify::volume', syncFromStream, subpage);
                     stream.connectObject('notify::is-muted', syncFromStream, subpage);
+                    sliderBg.connectObject('notify::allocation', syncFromStream, subpage);
 
-                    sliderBg.connectObject('button-press-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; sliderBg._drag = true; sliderBg._dragFrac = stream.is_muted ? 0 : Math.min(1, stream.volume / maxVol); drag(e); return Clutter.EVENT_STOP; }, subpage);
-                    sliderBg.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; sliderBg._drag = false; applyVol(sliderBg._dragFrac || 0); return Clutter.EVENT_STOP; }, subpage);
-                    sliderBg.connectObject('motion-event', (a, e) => { if (sliderBg._drag) drag(e); return Clutter.EVENT_STOP; }, subpage);
-                    sliderBg.connectObject('touch-event', (a, e) => { let t = e.type(); if (t === Clutter.EventType.TOUCH_BEGIN || t === Clutter.EventType.TOUCH_UPDATE) { drag(e); return Clutter.EVENT_STOP; } if (t === Clutter.EventType.TOUCH_END) { applyVol(sliderBg._dragFrac || 0); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, subpage);
+                    sliderBg.connectObject('button-press-event', (a, e) => {
+                        if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                        sliderBg._drag = true;
+                        sliderBg._dragFrac = stream.is_muted ? 0 : Math.min(1, stream.volume / maxVol);
+                        drag(e);
+                        return Clutter.EVENT_STOP;
+                    }, subpage);
+                    sliderBg.connectObject('button-release-event', (a, e) => {
+                        if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                        sliderBg._drag = false;
+                        applyVol(sliderBg._dragFrac || 0);
+                        return Clutter.EVENT_STOP;
+                    }, subpage);
+                    sliderBg.connectObject('motion-event', (a, e) => {
+                        if (sliderBg._drag) drag(e);
+                        return Clutter.EVENT_STOP;
+                    }, subpage);
+                    sliderBg.connectObject('touch-event', (a, e) => {
+                        let t = e.type();
+                        if (t === Clutter.EventType.TOUCH_BEGIN || t === Clutter.EventType.TOUCH_UPDATE) {
+                            drag(e);
+                            return Clutter.EVENT_STOP;
+                        }
+                        if (t === Clutter.EventType.TOUCH_END) {
+                            applyVol(sliderBg._dragFrac || 0);
+                            return Clutter.EVENT_STOP;
+                        }
+                        return Clutter.EVENT_PROPAGATE;
+                    }, subpage);
 
                     sliderRow.add_child(sliderBg);
                     sliderRow.add_child(volLabel);
                     wrapper.add_child(sliderRow);
-
-                    GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                        if (!sliderBg.get_parent() || !subpage.get_parent()) return GLib.SOURCE_REMOVE;
-                        if (sliderBg.has_allocation && sliderBg.has_allocation() && sliderBg.get_width() > 0) {
-                            upd(frac0);
-                            return GLib.SOURCE_REMOVE;
-                        }
-                        return GLib.SOURCE_CONTINUE;
-                    });
 
                     allSliders.push({ sliderBg, drag, applyVol });
                     contentBox.add_child(wrapper);
@@ -1907,7 +1989,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 };
                 muteAllBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
                 muteAllBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; doMuteAll(); return Clutter.EVENT_STOP; }, subpage);
-                muteAllBtn.connectObject('touch-event', (a, e) => { if (e.type() === Clutter.EventType.TOUCH_END) { doMuteAll(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, subpage);
+                muteAllBtn.connectObject('touch-event', (a, e) => {
+                    if (e.type() === Clutter.EventType.TOUCH_END) { doMuteAll(); return Clutter.EVENT_STOP; }
+                    return Clutter.EVENT_PROPAGATE;
+                }, subpage);
                 contentBox.add_child(muteAllBtn);
 
             });
@@ -1964,7 +2049,14 @@ export const ExpandedPlayer = GObject.registerClass(
                     row.add_child(new St.Icon({ icon_name: isDef ? 'audio-speakers-symbolic' : 'audio-card-symbolic', icon_size: 18, style: `color:${tc};` }));
                     row.add_child(new St.Label({ text: desc, y_align: Clutter.ActorAlign.CENTER, style: `color:${tc};`, x_expand: true }));
                     if (isDef) row.add_child(new St.Icon({ icon_name: 'object-select-symbolic', icon_size: 14, style: `color:${tc};` }));
-                    let btn = new St.Button({ child: row, x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: `border-radius:12px;padding:10px 12px;margin-bottom:4px;background-color:${isDef ? defBg : normBg};` });
+                    let btn = new St.Button({
+                        child: row,
+                        x_expand: true,
+                        reactive: true,
+                        can_focus: false,
+                        style_class: 'subpage-action-btn',
+                        style: `border-radius:12px;padding:10px 12px;margin-bottom:4px;background-color:${isDef ? defBg : normBg};`,
+                    });
                     _addBtnPressAnim(btn);
                     const doIt = () => { mixer.set_default_sink(sink); this._popPage(); };
                     btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
@@ -1985,12 +2077,26 @@ export const ExpandedPlayer = GObject.registerClass(
                 let btnBg = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.1)';
                 let actBg = isLight ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.38)';
                 if (isActive) {
-                    let cancelBtn = new St.Button({ label: _('Cancel Timer'), x_expand: true, reactive: true, can_focus: false, style_class: 'subpage-action-btn subpage-danger-btn', style: 'border-radius:12px;padding:9px 12px;margin-bottom:8px;background-color:rgba(210,50,50,0.35);color:' + tc + ';' });
+                    let cancelBtn = new St.Button({
+                        label: _('Cancel Timer'),
+                        x_expand: true,
+                        reactive: true,
+                        can_focus: false,
+                        style_class: 'subpage-action-btn subpage-danger-btn',
+                        style: 'border-radius:12px;padding:9px 12px;margin-bottom:8px;background-color:rgba(210,50,50,0.35);color:' + tc + ';',
+                    });
                     _addBtnPressAnim(cancelBtn);
                     const doCancel = () => { ctrl.cancelSleepTimer(); this._updateCustomButtons(); this._popPage(); };
                     cancelBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
-                    cancelBtn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; doCancel(); return Clutter.EVENT_STOP; }, subpage);
-                    cancelBtn.connectObject('touch-event', (a, e) => { if (e.type() === Clutter.EventType.TOUCH_END) { doCancel(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, subpage);
+                    cancelBtn.connectObject('button-release-event', (a, e) => {
+                        if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                        doCancel();
+                        return Clutter.EVENT_STOP;
+                    }, subpage);
+                    cancelBtn.connectObject('touch-event', (a, e) => {
+                        if (e.type() === Clutter.EventType.TOUCH_END) { doCancel(); return Clutter.EVENT_STOP; }
+                        return Clutter.EVENT_PROPAGATE;
+                    }, subpage);
                     contentBox.add_child(cancelBtn);
                 }
                 let presets = [5, 10, 15, 20, 30, 45, 60, 90];
@@ -1998,12 +2104,21 @@ export const ExpandedPlayer = GObject.registerClass(
                     let row = new St.BoxLayout({ orientation: Clutter.Orientation.HORIZONTAL, style: 'spacing: 8px;', x_align: Clutter.ActorAlign.CENTER });
                     presets.slice(s, e).forEach(min => {
                         let btnLabel = new St.Label({ text: min + 'm', y_align: Clutter.ActorAlign.CENTER, style: 'color:' + tc + ';' });
-                        let btn = new St.Button({ child: btnLabel, reactive: true, can_focus: false, style_class: 'subpage-action-btn', style: `border-radius:12px;padding:8px 12px;min-width:42px;background-color:${btnBg};` });
+                        let btn = new St.Button({
+                            child: btnLabel,
+                            reactive: true,
+                            can_focus: false,
+                            style_class: 'subpage-action-btn',
+                            style: `border-radius:12px;padding:8px 12px;min-width:42px;background-color:${btnBg};`,
+                        });
                         _addBtnPressAnim(btn);
                         const doTimer = (m, b, lbl) => {
                             lbl.text = '\u2713';
                             b.set_style(`border-radius:12px;padding:8px 12px;min-width:42px;background-color:${actBg};`);
-                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                            if (this._subpageActionTimeoutId)
+                                GLib.Source.remove(this._subpageActionTimeoutId);
+                            this._subpageActionTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                                this._subpageActionTimeoutId = null;
                                 if (!this.get_parent()) return GLib.SOURCE_REMOVE;
                                 ctrl.startSleepTimer(m);
                                 this._updateCustomButtons();
@@ -2012,13 +2127,24 @@ export const ExpandedPlayer = GObject.registerClass(
                             });
                         };
                         btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
-                        btn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; doTimer(min, btn, btnLabel); return Clutter.EVENT_STOP; }, subpage);
-                        btn.connectObject('touch-event', (a, ev) => { if (ev.type() === Clutter.EventType.TOUCH_END) { doTimer(min, btn, btnLabel); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, subpage);
+                        btn.connectObject('button-release-event', (a, e) => {
+                            if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                            doTimer(min, btn, btnLabel);
+                            return Clutter.EVENT_STOP;
+                        }, subpage);
+                        btn.connectObject('touch-event', (a, ev) => {
+                            if (ev.type() === Clutter.EventType.TOUCH_END) { doTimer(min, btn, btnLabel); return Clutter.EVENT_STOP; }
+                            return Clutter.EVENT_PROPAGATE;
+                        }, subpage);
                         row.add_child(btn);
                     });
                     contentBox.add_child(row);
                 });
-                contentBox.add_child(new St.Label({ text: _('Runs inside the shell \u2014 works on lock screen'), style: 'color:' + ta + ';font-size:8pt;margin-top:2px;', x_align: Clutter.ActorAlign.CENTER }));
+                contentBox.add_child(new St.Label({
+                    text: _('Runs inside the shell \u2014 works on lock screen'),
+                    style: 'color:' + ta + ';font-size:8pt;margin-top:2px;',
+                    x_align: Clutter.ActorAlign.CENTER,
+                }));
             });
         }
 
@@ -2061,7 +2187,10 @@ export const ExpandedPlayer = GObject.registerClass(
                         const doRate = (r, b, lbl) => {
                             lbl.text = '\u2713';
                             b.set_style(`border-radius:12px;padding:8px 14px;min-width:42px;background-color:${flashBtnBg};`);
-                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                            if (this._subpageActionTimeoutId)
+                                GLib.Source.remove(this._subpageActionTimeoutId);
+                            this._subpageActionTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+                                this._subpageActionTimeoutId = null;
                                 if (!this.get_parent()) return GLib.SOURCE_REMOVE;
                                 this._controller.setPlaybackRate(r);
                                 this._popPage();
@@ -2069,8 +2198,15 @@ export const ExpandedPlayer = GObject.registerClass(
                             });
                         };
                         btn.connectObject('button-press-event', () => Clutter.EVENT_STOP, subpage);
-                        btn.connectObject('button-release-event', (a, e) => { if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE; doRate(rate, btn, btnLabel); return Clutter.EVENT_STOP; }, subpage);
-                        btn.connectObject('touch-event', (a, ev) => { if (ev.type() === Clutter.EventType.TOUCH_END) { doRate(rate, btn, btnLabel); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, subpage);
+                        btn.connectObject('button-release-event', (a, e) => {
+                            if (e.get_button() === 8) return Clutter.EVENT_PROPAGATE;
+                            doRate(rate, btn, btnLabel);
+                            return Clutter.EVENT_STOP;
+                        }, subpage);
+                        btn.connectObject('touch-event', (a, ev) => {
+                            if (ev.type() === Clutter.EventType.TOUCH_END) { doRate(rate, btn, btnLabel); return Clutter.EVENT_STOP; }
+                            return Clutter.EVENT_PROPAGATE;
+                        }, subpage);
                         row.add_child(btn);
                     });
                     contentBox.add_child(row);
@@ -2081,12 +2217,10 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _showHistoryPopup() {
-            this._pushPage(_('Recently Played'), 'document-open-recent-symbolic', (contentBox, tc, ta) => {
+            this._pushPage(_('Recently Played'), 'document-open-recent-symbolic', (contentBox, tc, ta, subpage) => {
                 let history = this._controller.getTrackHistory();
                 if (!history || history.length === 0) { contentBox.add_child(new St.Label({ text: _('No history yet'), style: `color:${ta};` })); return; }
 
-                let parent = contentBox.get_parent();
-                let subpage = parent ? parent.get_parent() : null;
                 let copyTimeouts = [];
                 let copyIcons = [];
 
@@ -2168,7 +2302,10 @@ export const ExpandedPlayer = GObject.registerClass(
                         doCopy();
                         return Clutter.EVENT_STOP;
                     }, contentBox);
-                    rowBtn.connectObject('touch-event', (a, e) => { if (e.type() === Clutter.EventType.TOUCH_END) { doCopy(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, contentBox);
+                    rowBtn.connectObject('touch-event', (a, e) => {
+                        if (e.type() === Clutter.EventType.TOUCH_END) { doCopy(); return Clutter.EVENT_STOP; }
+                        return Clutter.EVENT_PROPAGATE;
+                    }, contentBox);
                     contentBox.add_child(rowBtn);
                 });
 
@@ -2190,7 +2327,10 @@ export const ExpandedPlayer = GObject.registerClass(
                     doClear();
                     return Clutter.EVENT_STOP;
                 }, contentBox);
-                clearBtn.connectObject('touch-event', (a, e) => { if (e.type() === Clutter.EventType.TOUCH_END) { doClear(); return Clutter.EVENT_STOP; } return Clutter.EVENT_PROPAGATE; }, contentBox);
+                clearBtn.connectObject('touch-event', (a, e) => {
+                    if (e.type() === Clutter.EventType.TOUCH_END) { doClear(); return Clutter.EVENT_STOP; }
+                    return Clutter.EVENT_PROPAGATE;
+                }, contentBox);
                 contentBox.add_child(clearBtn);
             });
         }
@@ -2361,52 +2501,42 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._backgroundBtn) {
                 this._backgroundBtn.reactive = false;
             }
-            try {
-                let kf = global.stage ? global.stage.key_focus : null;
-                if (kf && (kf === this || this.contains(kf))) {
-                    global.stage.set_key_focus(null);
-                }
-            } catch (_) {}
+            let kf = global.stage.key_focus;
+            if (kf && (kf === this || this.contains(kf))) {
+                global.stage.set_key_focus(null);
+            }
 
-            try {
-                if (this._leaveHideTimeoutId) {
-                    GLib.Source.remove(this._leaveHideTimeoutId);
-                    this._leaveHideTimeoutId = null;
-                }
-                if (this._resizeDebounceId) {
-                    GLib.Source.remove(this._resizeDebounceId);
-                    this._resizeDebounceId = null;
-                }
+            if (this._leaveHideTimeoutId) {
+                GLib.Source.remove(this._leaveHideTimeoutId);
+                this._leaveHideTimeoutId = null;
+            }
+            if (this._resizeDebounceId) {
+                GLib.Source.remove(this._resizeDebounceId);
+                this._resizeDebounceId = null;
+            }
 
-                restoreDockAutohide();
-                this._stopTimer();
-                this._stopVinyl();
-                if (this._visualizer) {
-                    this._visualizer.setPlaying(false);
-                }
-                if (this._visBin && this._visBin.visible && this._settings.get_boolean('popup-hide-pill-visualizer')) {
-                    let closeTx = Math.round((this._openOffsetX || 0) * 1.5);
-                    let closeTy = Math.round((this._openOffsetY || 12) * 1.5);
-                    this._visBin.remove_all_transitions();
-                    this._visBin.ease({
-                        opacity: 0,
-                        scale_x: 0.5,
-                        scale_y: 0.5,
-                        translation_x: closeTx,
-                        translation_y: closeTy,
-                        duration: 160,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    });
-                }
-                if (this._pill && this._controller && (!this._controller._pills || this._controller._pills().includes(this._pill))) {
-                    try {
-                        this._pill._setPopupOpen(false);
-                    } catch (pillErr) {
-                        console.error(`[Dynamic Music Pill] Error in _setPopupOpen(false): ${pillErr.message}`);
-                    }
-                }
-            } catch (err) {
-                console.error(`[Dynamic Music Pill] Error in hide pre-cleanup: ${err.message}`);
+            restoreDockAutohide();
+            this._stopTimer();
+            this._stopVinyl();
+            if (this._visualizer) {
+                this._visualizer.setPlaying(false);
+            }
+            if (this._visBin && this._visBin.visible && this._settings.get_boolean('popup-hide-pill-visualizer')) {
+                let closeTx = Math.round((this._openOffsetX || 0) * 1.5);
+                let closeTy = Math.round((this._openOffsetY || 12) * 1.5);
+                this._visBin.remove_all_transitions();
+                this._visBin.ease({
+                    opacity: 0,
+                    scale_x: 0.5,
+                    scale_y: 0.5,
+                    translation_x: closeTx,
+                    translation_y: closeTy,
+                    duration: 160,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                });
+            }
+            if (this._pill && this._controller && this._controller._pills().includes(this._pill)) {
+                this._pill._setPopupOpen(false);
             }
 
             // Safety fallback timer: guarantee popup closure within 350ms no matter what
@@ -2464,10 +2594,10 @@ export const ExpandedPlayer = GObject.registerClass(
             this._isHiding = false;
             if (this._backgroundBtn) this._backgroundBtn.reactive = false;
             if (this._blurController) {
-                try { this._blurController.disable(); } catch (_) {}
+                this._blurController.disable();
             }
             if (this._blurBackdrop) {
-                try { this._blurBackdrop.hide(); } catch (_) {}
+                this._blurBackdrop.hide();
             }
             if (this._currentSubPage) {
                 if (this._lyricsTimerId) {
@@ -2475,29 +2605,24 @@ export const ExpandedPlayer = GObject.registerClass(
                     this._lyricsTimerId = null;
                 }
                 if (this._lyricsWidget) {
-                    try { this._lyricsWidget.destroy(); } catch (_) {}
+                    this._lyricsWidget.destroy();
                     this._lyricsWidget = null;
                 }
-                try {
-                    if (this._currentSubPage.get_parent())
-                        this._currentSubPage.get_parent().remove_child(this._currentSubPage);
-                    this._currentSubPage.destroy();
-                } catch (_) {}
+                if (this._currentSubPage.get_parent())
+                    this._currentSubPage.get_parent().remove_child(this._currentSubPage);
+                this._currentSubPage.destroy();
                 this._currentSubPage = null;
                 if (this._mainPage) this._mainPage.show();
             }
             if (this._controller) {
-                try {
-                    this._controller.closeMenu();
-                } catch (e) {
-                    console.error(`[Dynamic Music Pill] Error in closeMenu: ${e.message}`);
-                }
+                this._controller.closeMenu();
             }
         }
 
         _cleanup() {
             if (this._settings) {
                 this._settings.disconnectObject(this);
+                this._settings = null;
             }
             this.disconnectObject(this);
             if (this._box) this._box.remove_all_transitions();
@@ -2507,41 +2632,28 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._leaveHideTimeoutId) { GLib.Source.remove(this._leaveHideTimeoutId); this._leaveHideTimeoutId = null; }
             if (this._safetyTimeoutId) { GLib.Source.remove(this._safetyTimeoutId); this._safetyTimeoutId = null; }
             if (this._artVisibilityTimer) { GLib.Source.remove(this._artVisibilityTimer); this._artVisibilityTimer = null; }
+            if (this._hintSettingsTimeoutId) { GLib.Source.remove(this._hintSettingsTimeoutId); this._hintSettingsTimeoutId = null; }
+            if (this._subpageActionTimeoutId) { GLib.Source.remove(this._subpageActionTimeoutId); this._subpageActionTimeoutId = null; }
             if (this._vinyl) {
                 this._vinyl.remove_transition('rotation-angle-z');
             }
             this._isSpinning = false;
-            if (this._coverArtWidget) {
-                try { this._coverArtWidget.destroy(); } catch (_) {}
-                this._coverArtWidget = null;
-            }
+            this._coverArtWidget = null;
             if (this._lyricsTimerId) { GLib.Source.remove(this._lyricsTimerId); this._lyricsTimerId = null; }
-            if (this._lyricsWidget) {
-                try { this._lyricsWidget.destroy(); } catch (_) {}
-                this._lyricsWidget = null;
-            }
+            this._lyricsWidget = null;
             if (this._lyricsClient) {
                 if (!this._controller || this._lyricsClient !== this._controller._lyricsClient) {
                     this._lyricsClient.destroy();
                 }
                 this._lyricsClient = null;
             }
-            if (this._currentSubPage) {
-                try { this._currentSubPage.destroy(); } catch (_) {}
-                this._currentSubPage = null;
-            }
-            if (this._visualizer) {
-                this._visualizer.destroy();
-                this._visualizer = null;
-            }
+            this._currentSubPage = null;
+            this._visualizer = null;
             if (this._blurController) {
                 this._blurController.destroy();
                 this._blurController = null;
             }
-            if (this._blurBackdrop) {
-                this._blurBackdrop.destroy();
-                this._blurBackdrop = null;
-            }
+            this._blurBackdrop = null;
         }
 
         _startTimer() {
@@ -2890,8 +3002,8 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (onFinished) onFinished();
                 return;
             }
-            if (!this._pill || (this._controller._pills && !this._controller._pills().includes(this._pill))) {
-                this._pill = this._controller._getAnchorPill ? this._controller._getAnchorPill() : this._controller._pill;
+            if (!this._pill || !this._controller._pills().includes(this._pill)) {
+                this._pill = this._controller._getAnchorPill();
             }
             if (!this._pill) {
                 if (onFinished) onFinished();
@@ -2938,8 +3050,12 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 if (this._vinylBin) this._vinylBin.set_width(100);
 
-                let titleW = (this._titleLabel && this._titleLabel.visible) ? (this._titleLabel.getNaturalTextWidth ? this._titleLabel.getNaturalTextWidth() : (this._titleLabel.get_preferred_width(-1)[1] || 0)) : 0;
-                let artistW = (this._artistLabel && this._artistLabel.visible) ? (this._artistLabel.getNaturalTextWidth ? this._artistLabel.getNaturalTextWidth() : (this._artistLabel.get_preferred_width(-1)[1] || 0)) : 0;
+                let titleW = (this._titleLabel && this._titleLabel.visible)
+                    ? this._titleLabel.getNaturalTextWidth()
+                    : 0;
+                let artistW = (this._artistLabel && this._artistLabel.visible)
+                    ? this._artistLabel.getNaturalTextWidth()
+                    : 0;
                 let textW = Math.max(titleW, artistW);
 
                 let showVinyl = this._settings.get_boolean('popup-show-vinyl') && this._vinylBin && this._vinylBin.visible;
@@ -3053,12 +3169,8 @@ export const ExpandedPlayer = GObject.registerClass(
                     pivX = menuW > 0 ? Math.max(0.08, Math.min(0.92, (anchorCenterX - targetX) / menuW)) : 0.5;
                 }
 
-                let vOffset = 0;
-                let hOffset = 0;
-                try {
-                    vOffset = this._settings.get_int('popup-vertical-offset') || 0;
-                    hOffset = this._settings.get_int('popup-horizontal-offset') || 0;
-                } catch (_) {}
+                let vOffset = this._settings.get_int('popup-vertical-offset') || 0;
+                let hOffset = this._settings.get_int('popup-horizontal-offset') || 0;
                 if (typeof vOffset !== 'number' || isNaN(vOffset)) vOffset = 0;
                 if (typeof hOffset !== 'number' || isNaN(hOffset)) hOffset = 0;
 

@@ -189,21 +189,8 @@ export class SharedVisualizerEngine {
     }
 
     _broadcast(data, isSilent) {
-        let deadCallbacks = null;
         for (let cb of this._subscribers.keys()) {
-            try {
-                cb(data, isSilent);
-            } catch (e) {
-                console.debug(`[Dynamic Music Pill] Visualizer subscriber error: ${e.message}`);
-                if (!deadCallbacks) deadCallbacks = [];
-                deadCallbacks.push(cb);
-            }
-        }
-        if (deadCallbacks) {
-            for (let cb of deadCallbacks) {
-                this._subscribers.delete(cb);
-            }
-            this._evaluatePlayback();
+            cb(data, isSilent);
         }
     }
 
@@ -217,11 +204,7 @@ export class SharedVisualizerEngine {
             this._process = null;
         }
         if (this._stdout) {
-            try {
-                this._stdout.close(null);
-            } catch (e) {
-                console.debug(`[Dynamic Music Pill] stdout close: ${e.message}`);
-            }
+            this._stdout.close_async(GLib.PRIORITY_DEFAULT, null, null);
             this._stdout = null;
         }
         if (this._tmpConfigPath) {

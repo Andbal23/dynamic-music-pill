@@ -2,11 +2,12 @@ import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
-let TextFadeEffectClass = null;
+const [SHELL_MAJOR] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
 
-try {
-    TextFadeEffectClass = GObject.registerClass(
+export const TextFadeEffect = SHELL_MAJOR >= 51
+    ? GObject.registerClass(
         { GTypeName: 'DmpTextFadeEffect' },
         class TextFadeEffect extends Clutter.ShaderEffect {
             static isSupported() {
@@ -107,10 +108,8 @@ try {
                 super.vfunc_paint_target(node, paint_context);
             }
         }
-    );
-} catch (e) {
-    // Fallback for GNOME 50 and earlier where vfunc_get_static_snippet does not exist in Clutter.ShaderEffect
-    TextFadeEffectClass = GObject.registerClass(
+    )
+    : GObject.registerClass(
         { GTypeName: 'DmpTextFadeEffectFallback' },
         class TextFadeEffectFallback extends Clutter.Effect {
             static isSupported() {
@@ -126,9 +125,6 @@ try {
                 this._fadePixels = pixels;
             }
 
-            setEdges(left, right, animate = false) {}
+            setEdges(_left, _right, _animate = false) {}
         }
     );
-}
-
-export const TextFadeEffect = TextFadeEffectClass;

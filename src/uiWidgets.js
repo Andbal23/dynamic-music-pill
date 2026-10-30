@@ -20,20 +20,21 @@ export const CrossfadeArt = GObject.registerClass(
             }, params));
             this._radius = 10;
             this._shadowCSS = 'box-shadow: none;';
+            this.connect('destroy', () => {
+                this._currentUrl = null;
+            });
         }
 
         setRadius(r) {
             this._radius = (typeof r === 'number' && !isNaN(r)) ? r : 10;
             this._updateContainerStyle();
-            let children = this.get_children ? this.get_children() : [];
-            children.forEach(c => this._refreshLayerStyle(c));
+            this.get_children().forEach(c => this._refreshLayerStyle(c));
         }
 
         setShadowStyle(cssString) {
             this._shadowCSS = cssString || 'box-shadow: none;';
             this._updateContainerStyle();
-            let children = this.get_children ? this.get_children() : [];
-            children.forEach(c => this._refreshLayerStyle(c));
+            this.get_children().forEach(c => this._refreshLayerStyle(c));
         }
 
         _updateContainerStyle() {
@@ -45,30 +46,26 @@ export const CrossfadeArt = GObject.registerClass(
         }
 
         _refreshLayerStyle(layer) {
-            if (!layer || !layer.get_parent || !layer.get_parent()) return;
+            if (!layer || !layer.get_parent()) return;
             let url = layer._bgUrl;
             let bgPart = url ? `background-image: url("${url}");` : '';
             let safeR = (typeof this._radius === 'number' && !isNaN(this._radius)) ? this._radius : 10;
             let newCss = `border-radius: ${safeR}px; background-size: cover; box-shadow: none; ${bgPart}`;
             if (layer._lastCss === newCss) return;
             layer._lastCss = newCss;
-
-            if (layer.get_parent && layer.get_parent()) {
-                layer.set_style(newCss);
-            }
+            layer.set_style(newCss);
         }
 
         setArt(newUrl, force = false) {
             if (!newUrl) {
                 this._currentUrl = null;
-                let cur = this.get_children ? this.get_children() : [];
-                for (let c of cur) {
-                    try { c.destroy(); } catch (_) {}
+                for (let c of this.get_children()) {
+                    c.destroy();
                 }
                 return;
             }
 
-            let children = this.get_children ? this.get_children() : [];
+            let children = this.get_children();
             if (!force && children.length > 0 && children[children.length - 1]._bgUrl === newUrl) {
                 return;
             }
@@ -99,31 +96,21 @@ export const CrossfadeArt = GObject.registerClass(
                     duration: 250,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: () => {
-                        if (!this.get_parent && !this.get_children) return;
-                        let curChildren = this.get_children ? this.get_children() : [];
+                        if (!newLayer.get_parent()) return;
+                        let curChildren = this.get_children();
                         let myIdx = curChildren.indexOf(newLayer);
                         if (myIdx > 0) {
                             for (let i = 0; i < myIdx; i++) {
-                                try { curChildren[i].destroy(); } catch (_) {}
+                                curChildren[i].destroy();
                             }
                         }
                     }
                 });
             } else {
                 for (let c of children) {
-                    try { c.destroy(); } catch (_) {}
+                    c.destroy();
                 }
             }
-        }
-
-        destroy() {
-            this._currentUrl = null;
-            let children = this.get_children ? this.get_children() : [];
-            for (let c of children) {
-                c.remove_all_transitions();
-                try { c.destroy(); } catch (_) {}
-            }
-            super.destroy();
         }
     });
 
@@ -180,6 +167,7 @@ export const ScrollLabel = GObject.registerClass(
                     return GLib.SOURCE_REMOVE;
                 });
             }, this);
+            this.connect('destroy', () => this._cleanup());
         }
 
         vfunc_get_preferred_width(forHeight) {
@@ -237,18 +225,15 @@ export const ScrollLabel = GObject.registerClass(
             }
         }
 
-        destroy() {
-            this._cleanup();
-            super.destroy();
-        }
-
         _cleanup() {
             this._stopAnimation();
             if (this._settings) {
                 this._settings.disconnectObject(this);
+                this._settings = null;
             }
             this.disconnectObject(this);
             if (this._fadeEffect) {
+                this._fadeEffect.setEdges(false, false, false);
                 if (this._fadeEffectAttached) this.remove_effect(this._fadeEffect);
                 this._fadeEffect = null;
                 this._fadeEffectAttached = false;

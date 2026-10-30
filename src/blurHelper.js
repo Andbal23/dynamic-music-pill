@@ -25,7 +25,8 @@ let BlurModule = null;
 let SUPPORTS_CORNER_RADIUS = false;
 
 try {
-    const mod = (await import('gi://Blur')).default ?? (await import('gi://Blur'));
+    const blurImport = await import('gi://Blur');
+    const mod = blurImport.default ?? blurImport;
     if (mod && mod.BlurEffect && mod.BlurEffect.$gtype) {
         BlurModule = mod;
         const props = mod.BlurEffect.list_properties();
@@ -198,11 +199,11 @@ const PaintCallbackEffect = GObject.registerClass(
 );
 
 export class ActorBlurController {
-    constructor(actor, getRadius, getSigma = null, role = 'popup', shouldFollowPipeline = null) {
+    constructor(actor, getRadius, getSigma = null, getRole = () => 'popup', shouldFollowPipeline = null) {
         this._actor = actor;
         this._getRadius = getRadius;
         this._getSigma = getSigma;
-        this._role = role;
+        this._getRole = getRole;
         this._shouldFollowPipeline = shouldFollowPipeline;
         this._opacityFactor = 1.0;
         this._effect = null;
@@ -228,28 +229,26 @@ export class ActorBlurController {
             );
         }
 
-        if (Main.extensionManager) {
-            Main.extensionManager.connectObject(
-                'extension-state-changed', (_mgr, ext) => {
-                    if (ext && ext.uuid === 'blur-my-shell@aunetx') {
-                        if (ext.state === 1) {
-                            initBlurBackend(true).then(() => {
-                                if (this._enabled) this._refreshEffect();
-                            });
-                        } else {
-                            BmsDynamicPipelineClass = null;
+        Main.extensionManager.connectObject(
+            'extension-state-changed', (_mgr, ext) => {
+                if (ext && ext.uuid === 'blur-my-shell@aunetx') {
+                    if (ext.state === 1) {
+                        initBlurBackend(true).then(() => {
                             if (this._enabled) this._refreshEffect();
-                        }
+                        });
+                    } else {
+                        BmsDynamicPipelineClass = null;
+                        if (this._enabled) this._refreshEffect();
                     }
-                },
-                this
-            );
-        }
+                }
+            },
+            this
+        );
     }
 
     _getReferenceActor() {
         if (!this._actor) return null;
-        let parent = this._actor.get_parent ? this._actor.get_parent() : null;
+        let parent = this._actor.get_parent();
         if (parent && parent._body) return parent._body;
         if (parent && parent._box) return parent._box;
         return this._actor;
@@ -265,13 +264,10 @@ export class ActorBlurController {
                 cur.offscreen_redirect &&
                 cur.offscreen_redirect !== Clutter.OffscreenRedirect.AUTOMATIC
             );
-            let hasOffscreenEffect = false;
-            if (typeof cur.get_effects === 'function') {
-                let effs = cur.get_effects();
-                if (effs && effs.some(e => e && e.enabled && (e instanceof Clutter.OffscreenEffect))) {
-                    hasOffscreenEffect = true;
-                }
-            }
+            let effs = cur.get_effects();
+            let hasOffscreenEffect = Boolean(
+                effs && effs.some(e => e && e.enabled && (e instanceof Clutter.OffscreenEffect))
+            );
             if (hasOffscreenRedirect || hasOffscreenEffect) {
                 highestRedirected = cur;
             }
@@ -311,7 +307,7 @@ export class ActorBlurController {
 
     _hasRunningTransitions() {
         const checkActor = (a) => Boolean(
-            a && a.get_transition && (
+            a && (
                 a.get_transition('width') ||
                 a.get_transition('height') ||
                 a.get_transition('x') ||
@@ -324,7 +320,7 @@ export class ActorBlurController {
             )
         );
         let refActor = this._getReferenceActor();
-        let parent = this._actor?.get_parent?.();
+        let parent = this._actor ? this._actor.get_parent() : null;
         return checkActor(this._actor) || checkActor(refActor) || checkActor(parent);
     }
 
@@ -342,33 +338,38 @@ export class ActorBlurController {
             cur = cur.get_parent();
         }
         watched.add(hostParent);
-        let parentOfHost = hostParent.get_parent ? hostParent.get_parent() : null;
+        let parentOfHost = hostParent.get_parent();
         if (parentOfHost) {
             watched.add(parentOfHost);
             if (parentOfHost._slider) watched.add(parentOfHost._slider);
         }
 
         for (const actor of watched) {
-            const ids = [];
-            for (const sig of GEOMETRY_SIGNALS) {
-                try {
-                    ids.push(actor.connect(sig, onGeomChanged));
-                } catch (_) {}
+            const ids = GEOMETRY_SIGNALS.map(sig => actor.connect(sig, onGeomChanged));
+            if ('slide-x' in actor) {
+                ids.push(actor.connect('notify::slide-x', onGeomChanged));
             }
-            if (actor._slider && 'slide-x' in actor._slider) {
-                try {
-                    ids.push(actor._slider.connect('notify::slide-x', onGeomChanged));
-                } catch (_) {}
-            }
-            this._externalSignalRecords.push({ actor, ids });
+            const rec = { actor, ids, destroyId: 0 };
+            rec.destroyId = actor.connect('destroy', () => {
+                rec.ids = [];
+                rec.destroyId = 0;
+                const idx = this._externalSignalRecords.indexOf(rec);
+                if (idx >= 0) {
+                    this._externalSignalRecords.splice(idx, 1);
+                }
+            });
+            this._externalSignalRecords.push(rec);
         }
     }
 
     _disconnectExternalSignals() {
         for (const rec of this._externalSignalRecords) {
+            if (rec.destroyId) {
+                rec.actor.disconnect(rec.destroyId);
+            }
             for (const id of rec.ids) {
                 if (id) {
-                    try { rec.actor.disconnect(id); } catch (_) {}
+                    rec.actor.disconnect(id);
                 }
             }
         }
@@ -437,12 +438,12 @@ export class ActorBlurController {
 
             let opacity = 255;
             let visible = this._enabled && refActor.mapped && hostSibling.mapped;
-            if (Main.sessionMode?.isLocked) {
+            if (Main.sessionMode.isLocked) {
                 visible = false;
             }
-            let role = (typeof this._role === 'function') ? this._role() : this._role;
+            let role = this._getRole ? this._getRole() : 'popup';
             let bmsSettings = global.blur_my_shell?._settings;
-            if (role === 'dock' && bmsSettings?.dash_to_dock?.UNBLUR_IN_OVERVIEW && Main.overview?.visible) {
+            if (role === 'dock' && bmsSettings?.dash_to_dock?.UNBLUR_IN_OVERVIEW && Main.overview.visible) {
                 visible = false;
             }
             let anc = refActor;
@@ -539,25 +540,19 @@ export class ActorBlurController {
         if (this._enabled) return;
         this._enabled = true;
         this._opacityFactor = 1.0;
-        if (Main.overview) {
-            Main.overview.connectObject(
-                'showing', () => this.scheduleUpdateSize(),
-                'hiding', () => this.scheduleUpdateSize(),
-                this
-            );
-        }
-        if (Main.sessionMode) {
-            Main.sessionMode.connectObject(
-                'updated', () => this.scheduleUpdateSize(),
-                this
-            );
-        }
-        if (Main.layoutManager) {
-            Main.layoutManager.connectObject(
-                'monitors-changed', () => this.scheduleUpdateSize(),
-                this
-            );
-        }
+        Main.overview.connectObject(
+            'showing', () => this.scheduleUpdateSize(),
+            'hiding', () => this.scheduleUpdateSize(),
+            this
+        );
+        Main.sessionMode.connectObject(
+            'updated', () => this.scheduleUpdateSize(),
+            this
+        );
+        Main.layoutManager.connectObject(
+            'monitors-changed', () => this.scheduleUpdateSize(),
+            this
+        );
         this._checkSizeAndApply();
         this.scheduleUpdateSize();
     }
@@ -565,9 +560,9 @@ export class ActorBlurController {
     disable() {
         if (!this._enabled && !this._effect && !this._dynamicPipeline) return;
         this._enabled = false;
-        if (Main.overview) Main.overview.disconnectObject(this);
-        if (Main.sessionMode) Main.sessionMode.disconnectObject(this);
-        if (Main.layoutManager) Main.layoutManager.disconnectObject(this);
+        Main.overview.disconnectObject(this);
+        Main.sessionMode.disconnectObject(this);
+        Main.layoutManager.disconnectObject(this);
         if (this._updateSizeId) {
             global.compositor.get_laters().remove(this._updateSizeId);
             this._updateSizeId = 0;
@@ -742,124 +737,105 @@ export class ActorBlurController {
         let bms = global.blur_my_shell;
         if (DynPipelineClass && bms && bms._effects_manager && bms._pipelines_manager) {
             let bmsSettings = bms._settings;
-            try {
-                let shouldFollow = (this._shouldFollowPipeline ? this._shouldFollowPipeline() : true);
-                let role = (typeof this._role === 'function') ? this._role() : this._role;
-                if (!role) role = 'panel';
+            let shouldFollow = (this._shouldFollowPipeline ? this._shouldFollowPipeline() : true);
+            let role = (this._getRole ? this._getRole() : 'panel') || 'panel';
 
-                let pipelineId = 'pipeline_default';
-                if (shouldFollow && bmsSettings) {
-                    if (role === 'dock' && bmsSettings.dash_to_dock && bmsSettings.dash_to_dock.PIPELINE) {
-                        pipelineId = bmsSettings.dash_to_dock.PIPELINE;
-                    } else if (role === 'panel' && bmsSettings.panel && bmsSettings.panel.PIPELINE) {
-                        pipelineId = bmsSettings.panel.PIPELINE;
-                    } else if (role === 'popup' && bmsSettings.popup && bmsSettings.popup.PIPELINE) {
-                        pipelineId = bmsSettings.popup.PIPELINE;
-                    }
+            let pipelineId = 'pipeline_default';
+            if (shouldFollow && bmsSettings) {
+                if (role === 'dock' && bmsSettings.dash_to_dock && bmsSettings.dash_to_dock.PIPELINE) {
+                    pipelineId = bmsSettings.dash_to_dock.PIPELINE;
+                } else if (role === 'panel' && bmsSettings.panel && bmsSettings.panel.PIPELINE) {
+                    pipelineId = bmsSettings.panel.PIPELINE;
+                } else if (role === 'popup' && bmsSettings.popup && bmsSettings.popup.PIPELINE) {
+                    pipelineId = bmsSettings.popup.PIPELINE;
                 }
-
-                this._dynamicPipeline = new DynPipelineClass(
-                    bms._effects_manager,
-                    bms._pipelines_manager,
-                    pipelineId,
-                    {
-                        corner_radius: radius,
-                        get_corners: () => 0
-                    }
-                );
-
-                let externalHost = this._findExternalHost();
-                let blurActor = null;
-                if (externalHost) {
-                    this._externalHostParent = externalHost.hostParent;
-                    this._externalHostSibling = externalHost.hostSibling;
-                    this._externalGroup = new Meta.BackgroundGroup({
-                        name: 'dmp-pill-blur-group',
-                        width: 0,
-                        height: 0,
-                    });
-                    this._externalHostParent.insert_child_below(this._externalGroup, this._externalHostSibling);
-                    this._externalGroupDestroyId = this._externalGroup.connect('destroy', () => {
-                        this._externalGroup = null;
-                        this._externalGroupDestroyId = 0;
-                        this._externalHostParent = null;
-                        this._externalHostSibling = null;
-                        this._disconnectExternalSignals();
-                        this._safeDestroyDynamicPipeline();
-                    });
-                    blurActor = this._dynamicPipeline.create_actor('dmp-blur-surface');
-                    this._dynamicPipeline.ownsActor = true;
-                    this._externalGroup.add_child(blurActor);
-                    this._dynamicPipeline.attach_pipeline();
-                    this._connectExternalSignals(this._externalHostParent);
-                } else {
-                    blurActor = this._dynamicPipeline.attach_to_container(this._actor, 'dmp-blur-surface');
-                    if (this._dynamicPipeline.allocationId) {
-                        this._actor.disconnect(this._dynamicPipeline.allocationId);
-                        this._dynamicPipeline.allocationId = 0;
-                    }
-                }
-
-                this._isBmsDynamic = true;
-                if (blurActor) {
-                    blurActor.set_size(w, h);
-                }
-                if (this._dynamicPipeline.contentActor) {
-                    this._dynamicPipeline.contentActor.set_size(w, h);
-                }
-
-                let origSetOpacity = this._dynamicPipeline.set_opacity_factor.bind(this._dynamicPipeline);
-                this._dynamicPipeline.set_opacity_factor = (factor, force = false) => {
-                    origSetOpacity(factor, force);
-                    this._syncSigma();
-                };
-
-                this._dynamicPipeline.set_opacity_factor(this._opacityFactor, true);
-                this._syncSigma(rawSigma);
-
-                if (blurActor) {
-                    if (this._mapId) {
-                        try { blurActor.disconnect(this._mapId); } catch (_) {}
-                        this._mapId = 0;
-                    }
-                    this._mapId = blurActor.connect('notify::mapped', () => {
-                        if (!blurActor.mapped) return;
-                        this.scheduleUpdateSize();
-                        if (this._dynamicPipeline) {
-                            this._dynamicPipeline.set_opacity_factor(this._opacityFactor, true);
-                            this._syncSigma();
-                        }
-                    });
-                }
-                this.scheduleUpdateSize();
-            } catch (e) {
-                console.error(`[Dynamic Music Pill] Failed to initialize BMS DynamicPipeline: ${e.message} \n ${e.stack}`);
-                this._disconnectExternalSignals();
-                this._safeDestroyDynamicPipeline();
-                if (this._externalGroup) {
-                    if (this._externalGroupDestroyId) {
-                        try { this._externalGroup.disconnect(this._externalGroupDestroyId); } catch (_) {}
-                        this._externalGroupDestroyId = 0;
-                    }
-                    try { this._externalGroup.destroy(); } catch (_) {}
-                    this._externalGroup = null;
-                }
-                this._externalHostParent = null;
-                this._externalHostSibling = null;
-                this._isBmsDynamic = false;
             }
 
+            this._dynamicPipeline = new DynPipelineClass(
+                bms._effects_manager,
+                bms._pipelines_manager,
+                pipelineId,
+                {
+                    corner_radius: radius,
+                    get_corners: () => 0,
+                }
+            );
+
+            let externalHost = this._findExternalHost();
+            let blurActor = null;
+            if (externalHost) {
+                this._externalHostParent = externalHost.hostParent;
+                this._externalHostSibling = externalHost.hostSibling;
+                this._externalGroup = new Meta.BackgroundGroup({
+                    name: 'dmp-pill-blur-group',
+                    width: 0,
+                    height: 0,
+                });
+                this._externalHostParent.insert_child_below(this._externalGroup, this._externalHostSibling);
+                this._externalGroupDestroyId = this._externalGroup.connect('destroy', () => {
+                    this._externalGroup = null;
+                    this._externalGroupDestroyId = 0;
+                    this._mapId = 0;
+                    this._externalHostParent = null;
+                    this._externalHostSibling = null;
+                    this._disconnectExternalSignals();
+                    this._safeDestroyDynamicPipeline();
+                });
+                blurActor = this._dynamicPipeline.create_actor('dmp-blur-surface');
+                this._dynamicPipeline.ownsActor = true;
+                this._externalGroup.add_child(blurActor);
+                this._dynamicPipeline.attach_pipeline();
+                this._connectExternalSignals(this._externalHostParent);
+            } else {
+                blurActor = this._dynamicPipeline.attach_to_container(this._actor, 'dmp-blur-surface');
+                if (this._dynamicPipeline.allocationId) {
+                    this._actor.disconnect(this._dynamicPipeline.allocationId);
+                    this._dynamicPipeline.allocationId = 0;
+                }
+            }
+
+            this._isBmsDynamic = true;
+            if (blurActor) {
+                blurActor.set_size(w, h);
+            }
+            if (this._dynamicPipeline.contentActor) {
+                this._dynamicPipeline.contentActor.set_size(w, h);
+            }
+
+            let origSetOpacity = this._dynamicPipeline.set_opacity_factor.bind(this._dynamicPipeline);
+            this._dynamicPipeline.set_opacity_factor = (factor, force = false) => {
+                origSetOpacity(factor, force);
+                this._syncSigma();
+            };
+
+            this._dynamicPipeline.set_opacity_factor(this._opacityFactor, true);
+            this._syncSigma(rawSigma);
+
+            if (blurActor) {
+                if (this._mapId) {
+                    blurActor.disconnect(this._mapId);
+                    this._mapId = 0;
+                }
+                this._mapId = blurActor.connect('notify::mapped', () => {
+                    if (!blurActor.mapped) return;
+                    this.scheduleUpdateSize();
+                    if (this._dynamicPipeline) {
+                        this._dynamicPipeline.set_opacity_factor(this._opacityFactor, true);
+                        this._syncSigma();
+                    }
+                });
+            }
+            this.scheduleUpdateSize();
+
             if (this._isBmsDynamic && this._dynamicPipeline && bmsSettings) {
-                let role = (typeof this._role === 'function') ? this._role() : this._role;
-                if (!role) role = 'panel';
                 let targetComp = (role === 'dock')
                     ? bmsSettings.dash_to_dock
                     : (role === 'panel' ? bmsSettings.panel : bmsSettings.popup);
                 if (targetComp && targetComp.settings) {
                     this._bmsConnectedSettings = targetComp.settings;
                     this._bmsSettingsChangedId = targetComp.settings.connect('changed::pipeline', () => {
-                        let shouldFollow = (this._shouldFollowPipeline ? this._shouldFollowPipeline() : true);
-                        if (shouldFollow && this._dynamicPipeline) {
+                        let follow = (this._shouldFollowPipeline ? this._shouldFollowPipeline() : true);
+                        if (follow && this._dynamicPipeline) {
                             let newId = targetComp.PIPELINE || 'pipeline_default';
                             if (newId) {
                                 this._dynamicPipeline.change_pipeline_to(newId);
@@ -926,22 +902,6 @@ export class ActorBlurController {
         }
     }
 
-    _safeClearPipelineSignals() {
-        if (!this._dynamicPipeline) return;
-        let activePm = global.blur_my_shell?._pipelines_manager;
-        if (this._dynamicPipeline.pipelinesManager !== activePm) {
-            this._dynamicPipeline.pipelineChangedIds = [];
-            if (this._dynamicPipeline.roundedPipeline) {
-                this._dynamicPipeline.roundedPipeline.pipelineSignalIds = [];
-            }
-            if (this._dynamicPipeline.pipeline) {
-                this._dynamicPipeline.pipeline._pipeline_changed_id = null;
-                this._dynamicPipeline.pipeline._pipeline_destroyed_id = null;
-                this._dynamicPipeline.pipeline.effects = [];
-            }
-        }
-    }
-
     _safeDestroyDynamicPipeline() {
         if (!this._dynamicPipeline) return;
         let dp = this._dynamicPipeline;
@@ -956,9 +916,7 @@ export class ActorBlurController {
                 dp.pipeline.effects = [];
             }
         }
-        try {
-            dp.destroy();
-        } catch (_) {}
+        dp.destroy();
     }
 
     _removeEffect() {
@@ -971,16 +929,14 @@ export class ActorBlurController {
 
         if (this._mapId) {
             if (this._dynamicPipeline && this._dynamicPipeline.actor) {
-                try { this._dynamicPipeline.actor.disconnect(this._mapId); } catch (_) {}
+                this._dynamicPipeline.actor.disconnect(this._mapId);
             }
             this._mapId = 0;
         }
 
-        if (this._externalGroup) {
-            if (this._externalGroupDestroyId) {
-                try { this._externalGroup.disconnect(this._externalGroupDestroyId); } catch (_) {}
-                this._externalGroupDestroyId = 0;
-            }
+        if (this._externalGroup && this._externalGroupDestroyId) {
+            this._externalGroup.disconnect(this._externalGroupDestroyId);
+            this._externalGroupDestroyId = 0;
         }
 
         if (this._dynamicPipeline) {
@@ -988,16 +944,14 @@ export class ActorBlurController {
         }
 
         if (this._externalGroup) {
-            try { this._externalGroup.destroy(); } catch (_) {}
+            this._externalGroup.destroy();
             this._externalGroup = null;
         }
         this._externalHostParent = null;
         this._externalHostSibling = null;
 
         if (this._bmsSettingsChangedId && this._bmsConnectedSettings) {
-            try {
-                this._bmsConnectedSettings.disconnect(this._bmsSettingsChangedId);
-            } catch (_) {}
+            this._bmsConnectedSettings.disconnect(this._bmsSettingsChangedId);
             this._bmsSettingsChangedId = 0;
             this._bmsConnectedSettings = null;
         }
@@ -1031,18 +985,10 @@ export class ActorBlurController {
 
     destroy() {
         this.disable();
-        if (Main.extensionManager) {
-            Main.extensionManager.disconnectObject(this);
-        }
-        if (Main.overview) {
-            Main.overview.disconnectObject(this);
-        }
-        if (Main.sessionMode) {
-            Main.sessionMode.disconnectObject(this);
-        }
-        if (Main.layoutManager) {
-            Main.layoutManager.disconnectObject(this);
-        }
+        Main.extensionManager.disconnectObject(this);
+        Main.overview.disconnectObject(this);
+        Main.sessionMode.disconnectObject(this);
+        Main.layoutManager.disconnectObject(this);
         if (this._actor) {
             this._actor.disconnectObject(this);
             this._actor = null;

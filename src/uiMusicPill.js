@@ -74,9 +74,24 @@ export const MusicPill = GObject.registerClass(
                 y_expand: false
             });
             this._body.add_child(this._artBin);
-            this._prevBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 20 }), reactive: true, can_focus: false });
-            this._playPauseBtnTablet = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 20 }), reactive: true, can_focus: false });
-            this._nextBtn = new St.Button({ style_class: 'tablet-skip-btn', child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 20 }), reactive: true, can_focus: false });
+            this._prevBtn = new St.Button({
+                style_class: 'tablet-skip-btn',
+                child: new St.Icon({ icon_name: 'media-skip-backward-symbolic', icon_size: 20 }),
+                reactive: true,
+                can_focus: false,
+            });
+            this._playPauseBtnTablet = new St.Button({
+                style_class: 'tablet-skip-btn',
+                child: new St.Icon({ icon_name: 'media-playback-start-symbolic', icon_size: 20 }),
+                reactive: true,
+                can_focus: false,
+            });
+            this._nextBtn = new St.Button({
+                style_class: 'tablet-skip-btn',
+                child: new St.Icon({ icon_name: 'media-skip-forward-symbolic', icon_size: 20 }),
+                reactive: true,
+                can_focus: false,
+            });
 
             this._prevBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
             this._playPauseBtnTablet.connectObject('button-press-event', () => Clutter.EVENT_STOP, this);
@@ -419,12 +434,17 @@ export const MusicPill = GObject.registerClass(
                 this._updateDimensions();
                 this._updateVisualizerColor();
             }, this);
-            this._settings.connectObject('changed::use-custom-colors', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); this._updateDimensions(); this._updateVisualizerColor(); }, this);
+            this._settings.connectObject('changed::use-custom-colors', () => {
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+                this._updateDimensions();
+                this._updateVisualizerColor();
+            }, this);
             this._settings.connectObject('changed::custom-bg-color', () => this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b), this);
             this._settings.connectObject('changed::custom-text-color', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::custom-vis-color', () => {
                 this._updateVisualizerColor();
-                if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer.updateStyle && this._controller._expandedPlayer._pill === this) {
+                if (this._controller && this._controller._expandedPlayer &&
+                    this._controller._expandedPlayer.visible && this._controller._expandedPlayer._pill === this) {
                     this._controller._expandedPlayer.updateStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
                 }
             }, this);
@@ -500,9 +520,18 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::bms-follow-pipeline', () => {
                 if (this._blurController) this._blurController._refreshEffect();
             }, this);
-            this._settings.connectObject('changed::enable-shadow', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
-            this._settings.connectObject('changed::shadow-opacity', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
-            this._settings.connectObject('changed::shadow-blur', () => { this._updateDimensions(); this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
+            this._settings.connectObject('changed::enable-shadow', () => {
+                this._updateDimensions();
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
+            this._settings.connectObject('changed::shadow-opacity', () => {
+                this._updateDimensions();
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
+            this._settings.connectObject('changed::shadow-blur', () => {
+                this._updateDimensions();
+                this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b);
+            }, this);
             this._settings.connectObject('changed::show-album-art', () => this._updateArtVisibility(), this);
             this._settings.connectObject('changed::show-pill-border', () => { this._applyStyle(this._displayedColor.r, this._displayedColor.g, this._displayedColor.b); }, this);
             this._settings.connectObject('changed::show-artist', () => { this._updateDimensions(); this._updateTextDisplay(true); }, this);
@@ -566,6 +595,8 @@ export const MusicPill = GObject.registerClass(
                     this._interfaceSettings = null;
                 }
             }
+
+            this.connect('destroy', () => this._cleanup());
         }
 
         _isBlurActive() {
@@ -609,9 +640,9 @@ export const MusicPill = GObject.registerClass(
                     if (!this._dhruvaLayoutIdleId) {
                         this._dhruvaLayoutIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
                             this._dhruvaLayoutIdleId = null;
-                            try {
-                                dockUI._updateLayout?.();
-                            } catch (_) {}
+                            if ('_updateLayout' in dockUI) {
+                                dockUI._updateLayout();
+                            }
                             return GLib.SOURCE_REMOVE;
                         });
                     }
@@ -619,16 +650,15 @@ export const MusicPill = GObject.registerClass(
             }
         }
 
-        destroy() {
-            this._cleanup();
-            super.destroy();
-        }
-
         _cleanup() {
-            if (this._interfaceSettings && this._settings.get_boolean('sync-accent-color')) {
+            if (this._interfaceSettings && this._settings && this._settings.get_boolean('sync-accent-color')) {
                 this._interfaceSettings.set_string('accent-color', this._originalAccent || 'blue');
             }
-            if (this._settings) this._settings.disconnectObject(this);
+            this._interfaceSettings = null;
+            if (this._settings) {
+                this._settings.disconnectObject(this);
+                this._settings = null;
+            }
             this.disconnectObject(this);
             if (this._visBin) this._visBin.remove_all_transitions();
             this._stopVisibilityTimer();
@@ -641,12 +671,13 @@ export const MusicPill = GObject.registerClass(
             if (this._singleClickTimerId) { GLib.Source.remove(this._singleClickTimerId); this._singleClickTimerId = null; }
             if (this._idleDimId) { GLib.Source.remove(this._idleDimId); this._idleDimId = null; }
             if (this._blurController) { this._blurController.destroy(); this._blurController = null; }
-            if (this._blurBackdrop) { this._blurBackdrop.destroy(); this._blurBackdrop = null; }
-            if (this._titleScroll) { this._titleScroll.destroy(); this._titleScroll = null; }
-            if (this._artistScroll) { this._artistScroll.destroy(); this._artistScroll = null; }
-            if (this._visualizer) { this._visualizer.destroy(); this._visualizer = null; }
-            if (this._statusPlayBtn) { this._statusPlayBtn.destroy(); this._statusPlayBtn = null; }
-            if (this._artWidget) { this._artWidget.destroy(); this._artWidget = null; }
+            this._blurBackdrop = null;
+            this._titleScroll = null;
+            this._artistScroll = null;
+            this._visualizer = null;
+            this._statusPlayBtn = null;
+            this._artWidget = null;
+            if (this._colorCancellable) { this._colorCancellable.cancel(); this._colorCancellable = null; }
             if (this._cancellable) { this._cancellable.cancel(); this._cancellable = null; }
         }
         animateOutAndDestroy() {
@@ -1967,12 +1998,12 @@ export const MusicPill = GObject.registerClass(
                 try {
                     [ok, bytes] = f.load_contents_finish(res);
                 } catch (e) {
-                    if (!e.matches || !e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED)) {
+                    if (!(e instanceof GLib.Error && e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))) {
                         console.debug(`[Dynamic Music Pill] Failed to load art color: ${e.message}`);
                     }
                     return;
                 }
-                if (!ok || !bytes || !this._visualizer) return;
+                if (!ok || !bytes || !this._visualizer || !this._settings) return;
 
                 let stream = Gio.MemoryInputStream.new_from_bytes(bytes);
                 GdkPixbuf.Pixbuf.new_from_stream_async(stream, this._colorCancellable, (source, pixRes) => {
@@ -1980,12 +2011,12 @@ export const MusicPill = GObject.registerClass(
                     try {
                         pixbuf = GdkPixbuf.Pixbuf.new_from_stream_finish(pixRes);
                     } catch (pixErr) {
-                        if (!pixErr.matches || !pixErr.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED)) {
+                        if (!(pixErr instanceof GLib.Error && pixErr.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))) {
                             console.debug(`[Dynamic Music Pill] Failed to decode art pixbuf: ${pixErr.message}`);
                         }
                         return;
                     }
-                    if (!pixbuf || !this._visualizer) return;
+                    if (!pixbuf || !this._visualizer || !this._settings) return;
 
                     this._targetColor = getAverageColor(pixbuf);
 
@@ -2168,10 +2199,9 @@ export const MusicPill = GObject.registerClass(
             }
             this._displayedColor = { r: safeDynR, g: safeDynG, b: safeDynB };
 
-            if (this._controller && this._controller._expandedPlayer && this._controller._expandedPlayer.visible && this._controller._expandedPlayer._pill === this) {
-                if (this._controller._expandedPlayer.updateStyle) {
-                    this._controller._expandedPlayer.updateStyle(safeDynR, safeDynG, safeDynB, alpha);
-                }
+            if (this._controller && this._controller._expandedPlayer &&
+                this._controller._expandedPlayer.visible && this._controller._expandedPlayer._pill === this) {
+                this._controller._expandedPlayer.updateStyle(safeDynR, safeDynG, safeDynB, alpha);
             }
         }
     });

@@ -103,9 +103,9 @@ let _dtdImportSettled = false;
 let _dtdLoadedPath = null;
 
 function _lookupDtdExtension() {
-    let ext = Main.extensionManager?.lookup?.('dash-to-dock@micxgx.gmail.com');
+    let ext = Main.extensionManager.lookup('dash-to-dock@micxgx.gmail.com');
     if (!ext || ext.state !== 1) {
-        ext = Main.extensionManager?.lookup?.('ubuntu-dock@ubuntu.com');
+        ext = Main.extensionManager.lookup('ubuntu-dock@ubuntu.com');
     }
     return (ext && ext.state === 1) ? ext : null;
 }
@@ -113,10 +113,10 @@ function _lookupDtdExtension() {
 function _resolveDockManager(ext, mod) {
     return (
         mod?.dockManager ||
-        mod?.DockManager?.getDefault?.() ||
+        (mod?.DockManager ? mod.DockManager.getDefault() : null) ||
         ext?.stateObj?._dockManager ||
         ext?.stateObj?.dockManager ||
-        Main.overview?.dash?._dtdDockManager ||
+        Main.overview.dash._dtdDockManager ||
         null
     );
 }
@@ -189,19 +189,14 @@ export function getDockManager() {
     return _dtdDockManager;
 }
 
-// Dash-to-Dock renamed `updateDashVisibility()` to `_updateDashVisibility()`
-// (e.g. v105). Support both, and never let a dock API change break our UI.
+// Dash to Dock exposed `updateDashVisibility()` publicly in v110 (previously `_updateDashVisibility()`).
 function _setDockRequiresVisibility(dock, value) {
     if (!dock || !dock.dash) return;
-    try {
-        dock.dash.requiresVisibility = value;
-        if (typeof dock.updateDashVisibility === 'function')
-            dock.updateDashVisibility();
-        else if (typeof dock._updateDashVisibility === 'function')
-            dock._updateDashVisibility();
-    } catch (e) {
-        console.debug(`[Dynamic Music Pill] Dock visibility update failed: ${e.message}`);
-    }
+    dock.dash.requiresVisibility = value;
+    if ('updateDashVisibility' in dock)
+        dock.updateDashVisibility();
+    else if ('_updateDashVisibility' in dock)
+        dock._updateDashVisibility();
 }
 
 function _applyDisable() {
@@ -348,7 +343,7 @@ const DHRUVA_MENU_HOLD = { isOpen: true };
 export function getDhruvaDocks() {
     const out = [];
     const seen = new Set();
-    const ext = Main.extensionManager?.lookup?.('dhruva@narkagni');
+    const ext = Main.extensionManager.lookup('dhruva@narkagni');
     if (ext && ext.state === 1) {
         const rawDocks = ext.stateObj?._monitorController?.docks ?? ext.stateObj?.monitorController?.docks;
         if (rawDocks) {
@@ -361,9 +356,9 @@ export function getDhruvaDocks() {
             }
         }
     }
-    if (out.length === 0 && Main.uiGroup) {
+    if (out.length === 0) {
         for (const actor of Main.uiGroup.get_children()) {
-            if (actor.get_name?.() === 'DhruvaContainer' && actor._dockUI?.boxActor && !seen.has(actor._dockUI)) {
+            if (actor.get_name() === 'DhruvaContainer' && actor._dockUI?.boxActor && !seen.has(actor._dockUI)) {
                 seen.add(actor._dockUI);
                 out.push(actor._dockUI);
             }
@@ -375,13 +370,11 @@ export function getDhruvaDocks() {
 export function disableDhruvaAutohide() {
     dhruvaDisableRequests++;
     for (const dockUI of getDhruvaDocks()) {
-        try {
-            if (!dockUI._activeContextMenu) {
-                dockUI._activeContextMenu = DHRUVA_MENU_HOLD;
-            }
-            dockUI.autoHideManager?.show?.();
-        } catch (e) {
-            console.debug(`[Dynamic Music Pill] Dhruva autohide disable failed: ${e.message}`);
+        if (!dockUI._activeContextMenu) {
+            dockUI._activeContextMenu = DHRUVA_MENU_HOLD;
+        }
+        if (dockUI.autoHideManager) {
+            dockUI.autoHideManager.show();
         }
     }
 }
@@ -391,13 +384,11 @@ export function restoreDhruvaAutohide() {
         dhruvaDisableRequests--;
         if (dhruvaDisableRequests === 0) {
             for (const dockUI of getDhruvaDocks()) {
-                try {
-                    if (dockUI._activeContextMenu === DHRUVA_MENU_HOLD) {
-                        dockUI._activeContextMenu = null;
-                    }
-                    dockUI.autoHideManager?.scheduleCheck?.();
-                } catch (e) {
-                    console.debug(`[Dynamic Music Pill] Dhruva autohide restore failed: ${e.message}`);
+                if (dockUI._activeContextMenu === DHRUVA_MENU_HOLD) {
+                    dockUI._activeContextMenu = null;
+                }
+                if (dockUI.autoHideManager) {
+                    dockUI.autoHideManager.scheduleCheck();
                 }
             }
         }

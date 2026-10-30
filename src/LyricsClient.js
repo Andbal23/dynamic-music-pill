@@ -972,7 +972,10 @@ class LrclibProvider {
     ];
 
     if (duration && duration > 0) {
-      const exactUrl = `https://lrclib.net/api/get?track_name=${encodeURIComponent(queryTitle)}&artist_name=${encodeURIComponent(cArtist)}&album_name=${encodeURIComponent(album || '')}&duration=${Math.round(duration)}`;
+      const exactUrl =
+        `https://lrclib.net/api/get?track_name=${encodeURIComponent(queryTitle)}` +
+        `&artist_name=${encodeURIComponent(cArtist)}` +
+        `&album_name=${encodeURIComponent(album || '')}&duration=${Math.round(duration)}`;
       tasks.unshift(this._fetchExact(exactUrl));
     }
 
