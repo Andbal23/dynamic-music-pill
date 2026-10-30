@@ -1663,6 +1663,9 @@ export const ExpandedPlayer = GObject.registerClass(
             let fetchAlbum = smartUnpack(metaObj['xesam:album']) || '';
             let lengthMicro = smartUnpack(metaObj['mpris:length']) || 0;
             let durationSec = lengthMicro > 0 ? Math.round(lengthMicro / 1_000_000) : 0;
+            let rawAsText = smartUnpack(metaObj['xesam:asText']);
+            if (Array.isArray(rawAsText)) rawAsText = rawAsText.filter(x => typeof x === 'string').join('\n');
+            let mprisLyrics = (typeof rawAsText === 'string' && rawAsText.trim().length > 0) ? rawAsText.trim() : null;
 
             let trackKey = `${fetchTitle}||${fetchArtist}`;
             if (this._controller &&
@@ -1675,18 +1678,22 @@ export const ExpandedPlayer = GObject.registerClass(
             }
 
             this._lyricsClient.getLyrics(
-                fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings
+                fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings, mprisLyrics
             ).then(result => {
                 if (page !== this._currentSubPage || !page.get_parent()) return;
                 if (!lyricsWidget || !lyricsWidget.get_parent()) return;
                 let lines = Array.isArray(result) ? result : (result ? result.lines : null);
                 let provider = (result && result.provider) ? result.provider : null;
+                let isSynced = Array.isArray(result) ? true : (result ? result.isSynced !== false : false);
                 if (lines && lines.length > 0) {
                     if (this._controller && this._controller._fetchedTrackKey === trackKey && !this._controller._fetchedLyricsData) {
                         this._controller._fetchedLyricsData = lines;
                         this._controller._fetchedLyricsProvider = provider || 'LRCLib';
-                        this._controller._startLyricsTimer();
-                        this._controller._onLyricsTick();
+                        this._controller._fetchedLyricsSynced = isSynced;
+                        if (isSynced) {
+                            this._controller._startLyricsTimer();
+                            this._controller._onLyricsTick();
+                        }
                     }
                     lyricsWidget.setLyrics(lines, provider);
                     lyricsWidget.updatePosition(this._getCurrentPositionMs());

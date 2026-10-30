@@ -636,11 +636,16 @@ export const LyricsWidget = GObject.registerClass(
                 if (isWordLevel) {
                     let currentMs = this._currentTimeMs || 0;
                     let markup = "";
-                    for (const word of lineObj.words) {
-                        let wStr = (word.text || "").trim();
+                    for (let wIdx = 0; wIdx < lineObj.words.length; wIdx++) {
+                        const word = lineObj.words[wIdx];
+                        let rawText = word.text || "";
+                        let wStr = rawText.trim();
                         if (!wStr) continue;
                         let escapedText = GLib.markup_escape_text(wStr, -1);
-                        let space = (word.hasSpace !== false) ? " " : "";
+                        let hasSp = typeof word.hasSpace === "boolean"
+                            ? word.hasSpace
+                            : (/\s$/.test(rawText) || (wIdx < lineObj.words.length - 1 && !/[\u3040-\u9FFF\uAC00-\uD7AF]/.test(wStr)));
+                        let space = hasSp ? " " : "";
 
                         if (currentMs >= word.time) {
                             markup += `<b><span alpha="100%">${escapedText}</span></b>${space}`;

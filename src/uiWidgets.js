@@ -191,23 +191,19 @@ export const ScrollLabel = GObject.registerClass(
         }
 
         getNaturalTextWidth() {
-            if (!this._label1 || !this._label1.clutter_text) return 0;
+            if (!this._label1 || !this._label1.clutter_text || !this._label1.get_stage()) return 0;
+            this._label1.ensure_style();
             let ct = this._label1.clutter_text;
-            let prevMode = ct.ellipsize;
-            if (prevMode !== Pango.EllipsizeMode.NONE) {
-                ct.ellipsize = Pango.EllipsizeMode.NONE;
-            }
-            let natW = 0;
             let layout = ct.get_layout();
-            if (layout) {
-                let [pixelW] = layout.get_pixel_size();
-                natW = pixelW;
+            if (!layout) return 0;
+            let measureLayout = layout;
+            if (layout.is_ellipsized() || layout.get_ellipsize() !== Pango.EllipsizeMode.NONE) {
+                measureLayout = layout.copy();
+                measureLayout.set_ellipsize(Pango.EllipsizeMode.NONE);
+                measureLayout.set_width(-1);
             }
-            let [, prefW] = this._label1.get_preferred_width(-1);
-            if (prevMode !== Pango.EllipsizeMode.NONE) {
-                ct.ellipsize = prevMode;
-            }
-            return Math.ceil(Math.max(natW, prefW || 0));
+            let [pixelW] = measureLayout.get_pixel_size();
+            return Math.ceil(pixelW);
         }
 
         setLabelStyle(css) {
@@ -216,7 +212,7 @@ export const ScrollLabel = GObject.registerClass(
         }
 
         _setFadeOutEffect(enableLeft = true, enableRight = true, animate = false) {
-            if (!this._label1 || !TextFadeEffect.isSupported()) return;
+            if (!this._label1 || !this._label1.get_stage() || !TextFadeEffect.isSupported()) return;
 
             let fontDesc = this._label1.get_theme_node().get_font();
             let fadeWidth = (fontDesc.get_size() / Pango.SCALE) + 4;
@@ -414,6 +410,7 @@ export const ScrollLabel = GObject.registerClass(
             this._text = text || "";
             this._lyricTime = lyricTime;
             this._lyricFinished = false;
+            this._pendingScrollStop = false;
 
             this._stopAnimation(true);
 
@@ -492,6 +489,7 @@ export const ScrollLabel = GObject.registerClass(
         _stopAnimation(resetPosition = true) {
             this._isScrolling = false;
             this._clearFadeOutEffect();
+            this._container.remove_transition('marquee-scroll');
             this._container.remove_all_transitions();
             if (resetPosition) this._container.translation_x = 0;
             if (this._scrollTimer) { GLib.Source.remove(this._scrollTimer); this._scrollTimer = null; }
@@ -502,6 +500,24 @@ export const ScrollLabel = GObject.registerClass(
                     this._label1.x_expand = true;
                 }
             }
+        }
+
+        _animateTranslationX(targetX, durationMs, onComplete) {
+            this._container.remove_transition('marquee-scroll');
+            this._container.remove_transition('translation-x');
+            let factor = St.Settings.get().slow_down_factor || 1;
+            let transition = new Clutter.PropertyTransition({
+                property_name: 'translation-x',
+                duration: Math.max(1, Math.round(durationMs * factor)),
+                progress_mode: Clutter.AnimationMode.LINEAR,
+                remove_on_complete: true,
+            });
+            transition.set_from(this._container.translation_x);
+            transition.set_to(targetX);
+            transition.connect('stopped', (_trans, isFinished) => {
+                if (onComplete) onComplete(isFinished);
+            });
+            this._container.add_transition('marquee-scroll', transition);
         }
 
         _checkOverflow() {
@@ -570,25 +586,27 @@ export const ScrollLabel = GObject.registerClass(
 
                     this._setFadeOutEffect(true, true, true);
 
-                    this._container.ease({
-                        translation_x: -distance, duration: duration, mode: Clutter.AnimationMode.LINEAR,
-                        onStopped: (isFinished) => {
-                            if (!isFinished || this._gameMode || this._pendingScrollStop) {
-                                this._isScrolling = false;
-                                this._pendingScrollStop = false;
-                                this._stopAnimation(true);
-                                let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
-                                let textW = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
-                                let overflows = (boxWidth > 1) && (textW > boxWidth + 2);
-                                this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
-                                this._label2.hide();
-                                this._separator.hide();
-                                return;
+                    this._animateTranslationX(-distance, duration, (isFinished) => {
+                        const wasPendingStop = this._pendingScrollStop;
+                        if (!isFinished || this._gameMode || this._paused || wasPendingStop) {
+                            this._isScrolling = false;
+                            this._pendingScrollStop = false;
+                            this._stopAnimation(true);
+                            let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
+                            let textW = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
+                            let overflows = (boxWidth > 1) && (textW > boxWidth + 2);
+                            this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+                            this._label2.hide();
+                            this._separator.hide();
+                            if (!isFinished && !wasPendingStop && !this._gameMode && !this._paused &&
+                                (!this._hoverOnly || this._hovered || this._forceScroll) && this.get_stage()) {
+                                this._checkResize();
                             }
-
-                            this._container.translation_x = 0;
-                            loop();
+                            return;
                         }
+
+                        this._container.translation_x = 0;
+                        loop();
                     });
                     return GLib.SOURCE_REMOVE;
                 });
@@ -623,14 +641,9 @@ export const ScrollLabel = GObject.registerClass(
                 this._scrollTimer = null;
                 if (this._gameMode || !this.get_parent()) return GLib.SOURCE_REMOVE;
 
-                this._container.ease({
-                    translation_x: -distance,
-                    duration: scrollDuration,
-                    mode: Clutter.AnimationMode.LINEAR,
-                    onStopped: () => {
-                        this._isScrolling = false;
-                        this._lyricFinished = true;
-                    }
+                this._animateTranslationX(-distance, scrollDuration, () => {
+                    this._isScrolling = false;
+                    this._lyricFinished = true;
                 });
                 return GLib.SOURCE_REMOVE;
             });

@@ -1,5 +1,14 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import { getDockManager } from './utils.js';
+import { getDockManager, getDhruvaDocks } from './utils.js';
+
+function _getPrimaryDhruvaDock(dhruvaDocks) {
+    if (!dhruvaDocks || dhruvaDocks.length === 0) return null;
+    return (
+        dhruvaDocks.find(d => d.isPanelHost) ||
+        dhruvaDocks.find(d => d.monitorIndex === Main.layoutManager.primaryIndex) ||
+        dhruvaDocks[0]
+    );
+}
 
 export function getDockContainer() {
     const dockBox = Main.uiGroup.get_children().find(actor =>
@@ -10,6 +19,13 @@ export function getDockContainer() {
         const panel = dockBox.get_children().find(actor => actor.get_name() === 'panel');
         if (panel && panel.centerBox)
             return panel.centerBox;
+    }
+
+    const dhruvaDocks = getDhruvaDocks();
+    const primaryDhruva = _getPrimaryDhruvaDock(dhruvaDocks);
+    if (primaryDhruva && primaryDhruva.boxActor) {
+        primaryDhruva.boxActor._dhruvaDockUI = primaryDhruva;
+        return primaryDhruva.boxActor;
     }
 
     const manager = getDockManager();
@@ -27,13 +43,17 @@ export function getDockContainer() {
     const dock = Main.panel.statusArea['dash-to-dock'] || Main.panel.statusArea['ubuntu-dock'];
     if (dock && dock._box) return dock._box;
 
-    const hasDtd = Boolean(
-        (Main.extensionManager.lookup && (
-            Main.extensionManager.lookup('dash-to-dock@micxgx.gmail.com') ||
-            Main.extensionManager.lookup('ubuntu-dock@ubuntu.com')
-        ))
-    );
-    if (hasDtd) {
+    const extMgr = Main.extensionManager;
+    const isExtActive = (uuid) => {
+        const ext = extMgr?.lookup?.(uuid);
+        return Boolean(ext && ext.state === 1);
+    };
+    if (
+        isExtActive('dash-to-dock@micxgx.gmail.com') ||
+        isExtActive('ubuntu-dock@ubuntu.com') ||
+        isExtActive('dhruva@narkagni') ||
+        isExtActive('simple-taskbar@sultech')
+    ) {
         return null;
     }
 
@@ -53,6 +73,17 @@ export function getSecondaryDockContainers() {
         .filter(Boolean);
     if (boxes.length > 0)
         return boxes;
+
+    const dhruvaDocks = getDhruvaDocks();
+    if (dhruvaDocks.length > 0) {
+        const primaryDhruva = _getPrimaryDhruvaDock(dhruvaDocks);
+        return dhruvaDocks
+            .filter(d => d && d !== primaryDhruva && d.boxActor)
+            .map(d => {
+                d.boxActor._dhruvaDockUI = d;
+                return d.boxActor;
+            });
+    }
 
     const manager = getDockManager();
     if (!manager || !Array.isArray(manager._allDocks)) return [];

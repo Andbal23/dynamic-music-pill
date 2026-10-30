@@ -27,6 +27,8 @@ export const MusicPill = GObject.registerClass(
             });
             this._delegate = { app: null };
             this.child = { _delegate: this._delegate };
+            this._isExternal = true;
+            this._isStatic = true;
 
             this._lastScrollTime = 0;
             this._controller = controller;
@@ -250,7 +252,7 @@ export const MusicPill = GObject.registerClass(
                 this._controller._activePill = this;
                 if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                if (this._isBlurActive()) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 return Clutter.EVENT_STOP;
             }, this);
 
@@ -260,13 +262,13 @@ export const MusicPill = GObject.registerClass(
                 if (type === Clutter.EventType.TOUCH_BEGIN) {
                     if (!this._body) return Clutter.EVENT_STOP;
                     this._body.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                    if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    if (this._isBlurActive()) this._blurBackdrop.ease({ scale_x: 0.96, scale_y: 0.96, duration: 80, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     return Clutter.EVENT_STOP;
                 } else if (type === Clutter.EventType.TOUCH_END) {
                     if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
                     if (!this._body) return Clutter.EVENT_STOP;
                     this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
-                    if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
+                    if (this._isBlurActive()) this._blurBackdrop.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
                     this._handleLeftClick();
                     return Clutter.EVENT_STOP;
                 }
@@ -278,7 +280,7 @@ export const MusicPill = GObject.registerClass(
                 if (this._hoverTimeout) { GLib.Source.remove(this._hoverTimeout); this._hoverTimeout = null; }
                 if (!this._body) return Clutter.EVENT_STOP;
                 this._body.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
-                if (this._blurBackdrop) this._blurBackdrop.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
+                if (this._isBlurActive()) this._blurBackdrop.ease({ scale_x: 1.0, scale_y: 1.0, duration: 150, mode: Clutter.AnimationMode.EASE_OUT_BACK });
 
                 let button = event.get_button();
 
@@ -404,7 +406,7 @@ export const MusicPill = GObject.registerClass(
                 this._updateDimensions();
                 if (this._isActiveState) {
                     this._body.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                    if (this._blurBackdrop) this._blurBackdrop.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+                    if (this._isBlurActive()) this._blurBackdrop.ease({ width: this._targetWidth, duration: 300, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                 }
             }, this);
             this._settings.connectObject('changed::inline-artist', () => this._updateTextDisplay(true), this);
@@ -539,6 +541,12 @@ export const MusicPill = GObject.registerClass(
                 'notify::mapped', () => {
                     this._checkRealVisibility();
                 },
+                'notify::stage', () => {
+                    if (this.get_stage()) {
+                        this._updateDimensions();
+                        this._checkRealVisibility();
+                    }
+                },
                 this
             );
 
@@ -548,12 +556,7 @@ export const MusicPill = GObject.registerClass(
 
             this._isActuallyVisible = true;
             this._cancellable = new Gio.Cancellable();
-
-            this._realVisibilityTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
-                if (!this.get_parent()) return GLib.SOURCE_CONTINUE;
-                this._checkRealVisibility();
-                return GLib.SOURCE_CONTINUE;
-            });
+            this._realVisibilityTimerId = null;
 
             if (!isMirror) {
                 this._interfaceSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
@@ -565,10 +568,54 @@ export const MusicPill = GObject.registerClass(
             }
         }
 
+        _isBlurActive() {
+            return Boolean(this._blurBackdrop && this._settings && this._settings.get_boolean('enable-blur-pill'));
+        }
+
+        _ensureVisibilityTimer() {
+            if (this._realVisibilityTimerId) return;
+            this._realVisibilityTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+                if (!this._isActiveState || !this.visible) {
+                    this._realVisibilityTimerId = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+                if (this.get_parent() && this.get_stage()) {
+                    this._checkRealVisibility();
+                }
+                return GLib.SOURCE_CONTINUE;
+            });
+        }
+
+        _stopVisibilityTimer() {
+            if (this._realVisibilityTimerId) {
+                GLib.Source.remove(this._realVisibilityTimerId);
+                this._realVisibilityTimerId = null;
+            }
+        }
+
         vfunc_allocate(box) {
             super.vfunc_allocate(box);
             if (this._blurController) {
                 this._blurController.scheduleUpdateSize();
+            }
+            const parent = this.get_parent();
+            const dockUI = parent ? parent._dhruvaDockUI : null;
+            if (dockUI) {
+                const allocW = Math.round(box.get_width());
+                const allocH = Math.round(box.get_height());
+                if (this._lastDhruvaW !== allocW || this._lastDhruvaH !== allocH) {
+                    this._lastDhruvaW = allocW;
+                    this._lastDhruvaH = allocH;
+                    if (!this._dhruvaLayoutIdleId) {
+                        this._dhruvaLayoutIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+                            this._dhruvaLayoutIdleId = null;
+                            try {
+                                dockUI._updateLayout?.();
+                            } catch (_) {}
+                            return GLib.SOURCE_REMOVE;
+                        });
+                    }
+                }
             }
         }
 
@@ -584,7 +631,8 @@ export const MusicPill = GObject.registerClass(
             if (this._settings) this._settings.disconnectObject(this);
             this.disconnectObject(this);
             if (this._visBin) this._visBin.remove_all_transitions();
-            if (this._realVisibilityTimerId) { GLib.Source.remove(this._realVisibilityTimerId); this._realVisibilityTimerId = null; }
+            this._stopVisibilityTimer();
+            if (this._dhruvaLayoutIdleId) { GLib.Source.remove(this._dhruvaLayoutIdleId); this._dhruvaLayoutIdleId = null; }
             if (this._allocTimer) { GLib.Source.remove(this._allocTimer); this._allocTimer = null; }
             if (this._colorAnimId) { GLib.Source.remove(this._colorAnimId); this._colorAnimId = null; }
             if (this._artDebounceTimer) { GLib.Source.remove(this._artDebounceTimer); this._artDebounceTimer = null; }
@@ -913,7 +961,7 @@ export const MusicPill = GObject.registerClass(
         }
 
         _updateDimensions() {
-            if (!this.get_parent()) return;
+            if (!this.get_parent() || !this.get_stage()) return;
             let target = this._settings.get_int('target-container');
             this._inPanel = (target > 0);
 
@@ -1288,6 +1336,7 @@ export const MusicPill = GObject.registerClass(
 
             this._idleDimId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
                 this._idleDimId = null;
+                if (!this.get_parent() || !this.get_stage()) return GLib.SOURCE_REMOVE;
                 if (this._titleScroll) this._titleScroll._checkResize();
                 if (this._artistScroll) this._artistScroll._checkResize();
 
@@ -1338,9 +1387,13 @@ export const MusicPill = GObject.registerClass(
                         this._body.ease({
                             width: newTarget,
                             duration: 300,
-                            mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                            onStopped: () => {
+                                if (this._titleScroll) this._titleScroll._checkResize();
+                                if (this._artistScroll) this._artistScroll._checkResize();
+                            }
                         });
-                        if (this._blurBackdrop) {
+                        if (this._isBlurActive()) {
                             this._blurBackdrop.ease({
                                 width: newTarget,
                                 duration: 300,
@@ -1356,10 +1409,12 @@ export const MusicPill = GObject.registerClass(
             if (!this._isActiveState) {
                 this.visible = false;
                 this.set_width(0);
+                this._stopVisibilityTimer();
                 return;
             }
 
             this.visible = true;
+            this._ensureVisibilityTimer();
         }
 
         _animateSlide(offset) {
@@ -1372,7 +1427,7 @@ export const MusicPill = GObject.registerClass(
                     }
                 }
             });
-            if (this._blurBackdrop) {
+            if (this._isBlurActive()) {
                 this._blurBackdrop.ease({
                     translation_x: offset, duration: 100, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: (isFinished) => {
@@ -1405,14 +1460,20 @@ export const MusicPill = GObject.registerClass(
             if (this._lyricObj && Array.isArray(this._lyricObj.words) && this._lyricObj.words.length > 0 && this._titleScroll) {
                 let currentMs = this._lyricObj.positionMs || 0;
                 let markup = "";
-                for (const word of this._lyricObj.words) {
-                    let wStr = word.text + (word.hasSpace ? " " : "");
+                for (let wIdx = 0; wIdx < this._lyricObj.words.length; wIdx++) {
+                    const word = this._lyricObj.words[wIdx];
+                    let rawText = word.text || "";
+                    let wStr = rawText.trim();
                     if (!wStr) continue;
                     let escapedText = GLib.markup_escape_text(wStr, -1);
+                    let hasSp = typeof word.hasSpace === "boolean"
+                        ? word.hasSpace
+                        : (/\s$/.test(rawText) || (wIdx < this._lyricObj.words.length - 1 && !/[\u3040-\u9FFF\uAC00-\uD7AF]/.test(wStr)));
+                    let space = hasSp ? " " : "";
                     if (currentMs >= word.time) {
-                        markup += `<b><span alpha="100%">${escapedText}</span></b>`;
+                        markup += `<b><span alpha="100%">${escapedText}</span></b>${space}`;
                     } else {
-                        markup += `<span alpha="45%">${escapedText}</span>`;
+                        markup += `<span alpha="45%">${escapedText}</span>${space}`;
                     }
                 }
                 if (markup) {
@@ -1548,6 +1609,7 @@ export const MusicPill = GObject.registerClass(
                         this._isActiveState = true;
                         this.reactive = true;
                         this.visible = true;
+                        this._ensureVisibilityTimer();
 
                         this._updateDimensions();
                         let finalWidth = this._targetWidth;
@@ -1559,14 +1621,14 @@ export const MusicPill = GObject.registerClass(
                         if (this._isSidePanel) {
                             this._body.set_height(1);
                             this._body.set_width(finalWidth);
-                            if (this._blurBackdrop) {
+                            if (this._isBlurActive()) {
                                 this._blurBackdrop.set_height(1);
                                 this._blurBackdrop.set_width(finalWidth);
                             }
                         } else {
                             this._body.set_width(1);
                             this._body.set_height(finalHeight);
-                            if (this._blurBackdrop) {
+                            if (this._isBlurActive()) {
                                 this._blurBackdrop.set_width(1);
                                 this._blurBackdrop.set_height(finalHeight);
                             }
@@ -1578,14 +1640,24 @@ export const MusicPill = GObject.registerClass(
                             duration: 500,
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                             onStopped: () => {
+                                this._checkRealVisibility();
                                 if (this._blurController) {
                                     this._blurController.setOpacityFactor(1.0);
                                     this._blurController.scheduleUpdateSize();
                                 }
                             }
                         });
-                        this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                        if (this._blurBackdrop) {
+                        this._body.ease({
+                            width: finalWidth,
+                            height: finalHeight,
+                            duration: 500,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                            onStopped: () => {
+                                if (this._titleScroll) this._titleScroll._checkResize();
+                                if (this._artistScroll) this._artistScroll._checkResize();
+                            }
+                        });
+                        if (this._isBlurActive()) {
                             this._blurBackdrop.opacity = 255;
                             this._blurBackdrop.show();
                             this._blurBackdrop.ease({
@@ -1656,6 +1728,7 @@ export const MusicPill = GObject.registerClass(
 
                         this._isActiveState = false;
                         this.reactive = false;
+                        this._stopVisibilityTimer();
 
                         if (this._interfaceSettings && this._settings.get_boolean('sync-accent-color')) {
                             this._interfaceSettings.set_string('accent-color', this._originalAccent || 'blue');
@@ -1683,7 +1756,7 @@ export const MusicPill = GObject.registerClass(
                                 if (this._blurBackdrop) this._blurBackdrop.visible = false;
                             }
                         });
-                        if (this._blurBackdrop) {
+                        if (this._isBlurActive()) {
                             this._blurBackdrop.ease({
                                 width: targetW,
                                 height: targetH,
@@ -1711,6 +1784,25 @@ export const MusicPill = GObject.registerClass(
             this._origArtist = origArtist;
             this._updateTextDisplay(forceUpdate);
 
+            const artNeedsUpdate = Boolean(forceUpdate || artUrl !== this._lastArtUrl || titleChanged);
+            if (artNeedsUpdate) {
+                this._lastArtUrl = artUrl;
+                if (artUrl) {
+                    if (this._artDebounceTimer) {
+                        GLib.Source.remove(this._artDebounceTimer);
+                        this._artDebounceTimer = null;
+                    }
+                    if (this._settings.get_boolean('show-album-art')) {
+                        this._artBin.show();
+                        this._artBin.opacity = 255;
+                    } else {
+                        this._artBin.hide();
+                    }
+                } else {
+                    this._updateArtVisibility();
+                }
+            }
+
             if (!this._isActiveState || this.opacity === 0 || this.width <= 1) {
                 if (this._interfaceSettings && this._settings.get_boolean('sync-accent-color')) {
                     this._originalAccent = this._interfaceSettings.get_string('accent-color');
@@ -1719,6 +1811,7 @@ export const MusicPill = GObject.registerClass(
                 this._isActiveState = true;
                 this.reactive = true;
                 this.visible = true;
+                this._ensureVisibilityTimer();
 
                 this._updatePlayingStates();
                 let finalWidth = this._targetWidth;
@@ -1731,14 +1824,14 @@ export const MusicPill = GObject.registerClass(
                 if (this._isSidePanel) {
                     this._body.set_height(1);
                     this._body.set_width(finalWidth);
-                    if (this._blurBackdrop) {
+                    if (this._isBlurActive()) {
                         this._blurBackdrop.set_height(1);
                         this._blurBackdrop.set_width(finalWidth);
                     }
                 } else {
                     this._body.set_width(1);
                     this._body.set_height(finalHeight);
-                    if (this._blurBackdrop) {
+                    if (this._isBlurActive()) {
                         this._blurBackdrop.set_width(1);
                         this._blurBackdrop.set_height(finalHeight);
                     }
@@ -1750,14 +1843,24 @@ export const MusicPill = GObject.registerClass(
                     duration: 500,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onStopped: () => {
+                        this._checkRealVisibility();
                         if (this._blurController) {
                             this._blurController.setOpacityFactor(1.0);
                             this._blurController.scheduleUpdateSize();
                         }
                     }
                 });
-                this._body.ease({ width: finalWidth, height: finalHeight, duration: 500, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
-                if (this._blurBackdrop) {
+                this._body.ease({
+                    width: finalWidth,
+                    height: finalHeight,
+                    duration: 500,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onStopped: () => {
+                        if (this._titleScroll) this._titleScroll._checkResize();
+                        if (this._artistScroll) this._artistScroll._checkResize();
+                    }
+                });
+                if (this._isBlurActive()) {
                     this._blurBackdrop.opacity = 255;
                     this._blurBackdrop.show();
                     this._blurBackdrop.ease({
@@ -1781,26 +1884,10 @@ export const MusicPill = GObject.registerClass(
                 this._updatePlayingStates();
             }
 
-            if (forceUpdate || artUrl !== this._lastArtUrl || titleChanged) {
-                this._lastArtUrl = artUrl;
-
+            if (artNeedsUpdate) {
                 if (artUrl) {
-                    if (this._artDebounceTimer) {
-                        GLib.Source.remove(this._artDebounceTimer);
-                        this._artDebounceTimer = null;
-                    }
-
-                    if (this._settings.get_boolean('show-album-art')) {
-                        this._artBin.show();
-                        this._artBin.opacity = 255;
-                    } else {
-                        this._artBin.hide();
-                    }
-
                     this._artWidget.setArt(artUrl, true);
                     this._loadColorFromArt(artUrl);
-                } else {
-                    this._updateArtVisibility();
                 }
             } else {
                 if (statusChanged) {

@@ -7,7 +7,7 @@ import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
-import { smartUnpack, initDTDModule, getDockManager, getPlayerIcon } from './utils.js';
+import { smartUnpack, initDTDModule, resetDTDModule, getDockManager, getPlayerIcon } from './utils.js';
 import { getMixerControl } from 'resource:///org/gnome/shell/ui/status/volume.js';
 import { MusicPill, ExpandedPlayer, PlayerSelectorMenu } from './ui.js';
 import { LyricsClient } from './LyricsClient.js';
@@ -170,11 +170,13 @@ export class MusicController {
         this._settings.connectObject('changed::hide-default-player', () => this._updateDefaultPlayerVisibility(), this);
         Main.uiGroup.connectObject(
             'child-added', (_group, actor) => {
-                if (actor._simpleTaskbarPanelBox === 'dock' && this._settings.get_int('target-container') === 0)
+                if ((actor._simpleTaskbarPanelBox === 'dock' || actor.get_name?.() === 'DhruvaContainer') &&
+                    this._settings.get_int('target-container') === 0)
                     this._queueInject();
             },
             'child-removed', (_group, actor) => {
-                if (actor._simpleTaskbarPanelBox === 'dock' && this._settings.get_int('target-container') === 0)
+                if ((actor._simpleTaskbarPanelBox === 'dock' || actor.get_name?.() === 'DhruvaContainer') &&
+                    this._settings.get_int('target-container') === 0)
                     this._queueInject();
             },
             this
@@ -183,7 +185,9 @@ export class MusicController {
 
         if (Main.extensionManager) {
             Main.extensionManager.connectObject('extension-state-changed', (_mgr, ext) => {
-                if (ext && (ext.uuid === 'dash-to-dock@micxgx.gmail.com' || ext.uuid === 'ubuntu-dock@ubuntu.com')) {
+                if (!ext) return;
+                if (ext.uuid === 'dash-to-dock@micxgx.gmail.com' || ext.uuid === 'ubuntu-dock@ubuntu.com') {
+                    resetDTDModule();
                     if (ext.state === 1) {
                         let p = initDTDModule();
                         if (p) {
@@ -195,7 +199,11 @@ export class MusicController {
                         } else {
                             this._queueInject();
                         }
+                    } else {
+                        this._queueInject();
                     }
+                } else if (ext.uuid === 'dhruva@narkagni' || ext.uuid === 'simple-taskbar@sultech') {
+                    this._queueInject();
                 }
             }, this);
         }
@@ -217,15 +225,34 @@ export class MusicController {
     _doEnable() {
         this._inject();
         this._ownerId = this._connection.signal_subscribe(
-            'org.freedesktop.DBus', 'org.freedesktop.DBus', 'NameOwnerChanged',
-            '/org/freedesktop/DBus', null, Gio.DBusSignalFlags.NONE, () => this._scan()
+            'org.freedesktop.DBus',
+            'org.freedesktop.DBus',
+            'NameOwnerChanged',
+            '/org/freedesktop/DBus',
+            'org.mpris.MediaPlayer2',
+            Gio.DBusSignalFlags.MATCH_ARG0_NAMESPACE,
+            (_conn, _sender, _path, _iface, _signal, params) => {
+                if (this._isShuttingDown || !params) return;
+                const [name, _oldOwner, newOwner] = params.deep_unpack();
+                if (!name || !name.startsWith('org.mpris.MediaPlayer2.')) return;
+                if (newOwner) {
+                    if (this._isPlayerAllowed(name) && !this._proxies.has(name)) {
+                        this._add(name);
+                        this._triggerUpdate();
+                    }
+                } else if (this._proxies.has(name)) {
+                    this._removeProxy(name);
+                    this._artCache.delete(name);
+                    this._triggerUpdate();
+                }
+            }
         );
         this._scan();
         this._updateUI();
         this._settings.connectObject('changed::player-filter-mode', () => this._scan(), this);
         this._settings.connectObject('changed::player-filter-list', () => this._scan(), this);
 
-        this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
+        this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
             this._monitorGameMode();
             let target = this._settings ? this._settings.get_int('target-container') : 0;
             let expectedContainer = null;
@@ -239,7 +266,7 @@ export class MusicController {
             let parent = this._pill ? this._pill.get_parent() : null;
             if (!this._pill || !parent || (expectedContainer && parent !== expectedContainer)) {
                 this._inject();
-            } else if (this._settings.get_boolean('always-show-pill') && (!this._pill._isActiveState || this._pill.opacity === 0)) {
+            } else if (this._settings.get_boolean('always-show-pill') && !this._pill._gameModeActive && (!this._pill._isActiveState || this._pill.opacity === 0)) {
                 this._updateUI();
             }
             return GLib.SOURCE_CONTINUE;
@@ -259,6 +286,7 @@ export class MusicController {
                 this._stopLyricsTimer();
                 this._fetchedLyricsData = null;
                 this._fetchedTrackKey = null;
+                this._fetchedAsText = null;
                 this._dbusLyricActive = false;
             } else {
                 this._triggerUpdate();
@@ -267,6 +295,7 @@ export class MusicController {
         this._settings.connectObject('changed::lyrics-language-preference', () => {
             this._fetchedTrackKey = null;
             this._fetchedLyricsData = null;
+            this._fetchedAsText = null;
             this._lastLyricIndex = -1;
 
             if (this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
@@ -323,10 +352,7 @@ export class MusicController {
 
     disable() {
         this._isShuttingDown = true;
-        if (this._artMonitor) {
-            this._artMonitor.cancel();
-            this._artMonitor = null;
-        }
+        this._clearArtMonitor();
         if (this._artMonitorDebounce) {
             GLib.Source.remove(this._artMonitorDebounce);
             this._artMonitorDebounce = null;
@@ -1239,7 +1265,13 @@ export class MusicController {
                     this._triggerUpdate();
                 });
 
-                p._nameOwnerId = p.connect('notify::g-name-owner', () => { this._scan(); });
+                p._nameOwnerId = p.connect('notify::g-name-owner', () => {
+                    if (!p.g_name_owner && this._proxies.has(p._busName)) {
+                        this._removeProxy(p._busName);
+                        this._artCache.delete(p._busName);
+                        this._triggerUpdate();
+                    }
+                });
 
                 p._identity = null;
 
@@ -1490,6 +1522,13 @@ export class MusicController {
         }
     }
 
+    _extractAsText(metaObj) {
+        if (!metaObj) return null;
+        let raw = smartUnpack(metaObj['xesam:asText']);
+        if (Array.isArray(raw)) raw = raw.filter(x => typeof x === 'string').join('\n');
+        return (typeof raw === 'string' && raw.trim().length > 0) ? raw.trim() : null;
+    }
+
     // Network lyrics retrieval
     async _fetchNetworkLyrics(player) {
         if (!player || !this._lyricsClient) return;
@@ -1503,46 +1542,63 @@ export class MusicController {
         let artist = smartUnpack(metaObj['xesam:artist']);
         let album = smartUnpack(metaObj['xesam:album']) || '';
         let length = smartUnpack(metaObj['mpris:length']) || 0;
+        let asText = this._extractAsText(metaObj);
 
         if (Array.isArray(artist)) artist = artist.join(', ');
         if (!title || !title.trim()) return;
         artist = artist ? artist.trim() : '';
-        if (!artist && !/\s+[-–—]\s+/.test(title)) return;
+        if (!artist && !asText && !/\s+[-–—]\s+/.test(title)) return;
 
         let durationSec = length > 0 ? Math.round(length / 1000000) : 0;
         let trackKey = `${title}||${artist}`;
 
         this._fetchedTrackKey = trackKey;
         this._fetchedTrackDuration = durationSec;
+        this._fetchedAsText = asText;
         this._fetchedLyricsData = null;
+        this._fetchedLyricsSynced = false;
         this._fetchingLyrics = true;
         this._lastLyricIndex = -1;
 
         try {
-            let res = await this._lyricsClient.getLyrics(title, artist, album, durationSec, this._settings);
+            let res = await this._lyricsClient.getLyrics(title, artist, album, durationSec, this._settings, asText);
             if (this._fetchedTrackKey !== trackKey) return;
 
             if (res && res.lines) {
                 this._fetchedLyricsData = res.lines;
                 this._fetchedLyricsProvider = res.provider || 'LRCLib';
+                this._fetchedLyricsSynced = res.isSynced !== false;
             } else if (Array.isArray(res)) {
                 this._fetchedLyricsData = res;
                 this._fetchedLyricsProvider = 'LRCLib';
+                this._fetchedLyricsSynced = true;
             } else {
                 this._fetchedLyricsData = null;
                 this._fetchedLyricsProvider = null;
+                this._fetchedLyricsSynced = false;
             }
 
             this._lastLyricIndex = -1;
 
-            if (this._fetchedLyricsData && this._fetchedLyricsData.length > 0) {
+            if (this._expandedPlayer && this._expandedPlayer._lyricsWidget && this._expandedPlayer._lyricsWidget.get_parent()) {
+                if (this._fetchedLyricsData && this._fetchedLyricsData.length > 0) {
+                    this._expandedPlayer._lyricsWidget.setLyrics(this._fetchedLyricsData, this._fetchedLyricsProvider);
+                    this._expandedPlayer._lyricsWidget.updatePosition(this._expandedPlayer._getCurrentPositionMs());
+                }
+            }
+
+            if (this._fetchedLyricsData && this._fetchedLyricsData.length > 0 && this._fetchedLyricsSynced) {
                 this._startLyricsTimer();
                 this._onLyricsTick();
+            } else {
+                this._stopLyricsTimer();
+                this._pills().forEach(p => p.setLyric(null));
             }
         } catch (e) {
             console.debug(`[DynamicMusicPill] Network lyrics fetch error: ${e}`);
             this._fetchedLyricsData = null;
             this._fetchedLyricsProvider = null;
+            this._fetchedLyricsSynced = false;
         } finally {
             if (this._fetchedTrackKey === trackKey) {
                 this._fetchingLyrics = false;
@@ -1666,6 +1722,9 @@ export class MusicController {
                 positionMs: positionMs,
             };
             this._pills().forEach(p => p.setLyric(lrc));
+        } else if (this._lastLyricIndex !== -1) {
+            this._lastLyricIndex = -1;
+            this._pills().forEach(p => p.setLyric(null));
         }
     }
 
@@ -1684,22 +1743,27 @@ export class MusicController {
         });
     }
 
+    _clearArtMonitor() {
+        if (this._artMonitor) {
+            if (this._artMonitorChangedId) {
+                try { this._artMonitor.disconnect(this._artMonitorChangedId); } catch (_) {}
+                this._artMonitorChangedId = 0;
+            }
+            try { this._artMonitor.cancel(); } catch (_) {}
+            this._artMonitor = null;
+        }
+        this._monitoredArtUri = null;
+    }
+
     _monitorArtFile(artUri) {
         if (!artUri || !artUri.startsWith('file://')) {
-            if (this._artMonitor) {
-                this._artMonitor.cancel();
-                this._artMonitor = null;
-            }
-            this._monitoredArtUri = null;
+            this._clearArtMonitor();
             return;
         }
 
         if (this._monitoredArtUri === artUri) return;
 
-        if (this._artMonitor) {
-            this._artMonitor.cancel();
-            this._artMonitor = null;
-        }
+        this._clearArtMonitor();
 
         this._monitoredArtUri = artUri;
         let file = Gio.File.new_for_uri(artUri);
@@ -1712,14 +1776,15 @@ export class MusicController {
 
         if (!this._artMonitor) return;
 
-        this._artMonitor.connect('changed', (monitor, f, otherFile, eventType) => {
+        this._artMonitorChangedId = this._artMonitor.connect('changed', (_monitor, _f, _otherFile, eventType) => {
+            if (this._isShuttingDown) return;
             if (eventType === Gio.FileMonitorEvent.CHANGES_DONE_HINT || eventType === Gio.FileMonitorEvent.CREATED) {
                 if (this._artMonitorDebounce) {
                     GLib.Source.remove(this._artMonitorDebounce);
                 }
                 this._artMonitorDebounce = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
                     this._artMonitorDebounce = null;
-                    this._updateUI();
+                    if (!this._isShuttingDown) this._updateUI();
                     return GLib.SOURCE_REMOVE;
                 });
             }
@@ -2056,6 +2121,7 @@ export class MusicController {
                     currentArtist = currentArtist ? currentArtist.trim() : '';
                     let currentLength = metaObj2 ? (smartUnpack(metaObj2['mpris:length']) || 0) : 0;
                     let currentDurationSec = currentLength > 0 ? Math.round(currentLength / 1000000) : 0;
+                    let currentAsText = this._extractAsText(metaObj2);
 
                     let currentTrackKey = `${currentTitle}||${currentArtist}`;
                     let durationJustArrived = (
@@ -2065,11 +2131,17 @@ export class MusicController {
                         currentDurationSec > 0 &&
                         (!this._fetchedTrackDuration || this._fetchedTrackDuration <= 0)
                     );
+                    let asTextJustArrived = (
+                        this._fetchedTrackKey === currentTrackKey &&
+                        !this._fetchingLyrics &&
+                        Boolean(currentAsText) &&
+                        currentAsText !== this._fetchedAsText
+                    );
 
-                    if (currentTitle && (this._fetchedTrackKey !== currentTrackKey || durationJustArrived)) {
+                    if (currentTitle && (this._fetchedTrackKey !== currentTrackKey || durationJustArrived || asTextJustArrived)) {
                         this._pills().forEach(p => p.setLyric(null));
                         this._fetchNetworkLyrics(active);
-                    } else if (this._fetchedLyricsData && active.PlaybackStatus === 'Playing') {
+                    } else if (this._fetchedLyricsData && this._fetchedLyricsSynced && active.PlaybackStatus === 'Playing') {
                         this._startLyricsTimer();
                     } else if (active.PlaybackStatus !== 'Playing') {
                         this._stopLyricsTimer();
@@ -2088,6 +2160,8 @@ export class MusicController {
                 this._stopLyricsTimer();
                 this._fetchedTrackKey = null;
                 this._fetchedLyricsData = null;
+                this._fetchedAsText = null;
+                this._fetchedLyricsSynced = false;
                 this._dbusLyricActive = false;
                 this._lastLyricIndex = -1;
                 this._lastPositionSync = 0;

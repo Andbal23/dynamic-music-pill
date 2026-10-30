@@ -705,6 +705,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         panelDimGroup.add(this._createSpinRow(settings, {
             key: 'panel-pill-height',
             title: _('Widget Height'),
+            subtitle: _('Set to 32 or higher to display Title above Artist on two lines'),
             lower: 20,
             upper: 60,
             step: 2,

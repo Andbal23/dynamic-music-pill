@@ -99,33 +99,88 @@ let dtdDisableRequests = 0;
 let _dtdDockManager = null;
 let _dtdModule = null;
 let _dtdImportPromise = null;
+let _dtdImportSettled = false;
+let _dtdLoadedPath = null;
+
+function _lookupDtdExtension() {
+    let ext = Main.extensionManager?.lookup?.('dash-to-dock@micxgx.gmail.com');
+    if (!ext || ext.state !== 1) {
+        ext = Main.extensionManager?.lookup?.('ubuntu-dock@ubuntu.com');
+    }
+    return (ext && ext.state === 1) ? ext : null;
+}
+
+function _resolveDockManager(ext, mod) {
+    return (
+        mod?.dockManager ||
+        mod?.DockManager?.getDefault?.() ||
+        ext?.stateObj?._dockManager ||
+        ext?.stateObj?.dockManager ||
+        Main.overview?.dash?._dtdDockManager ||
+        null
+    );
+}
+
+export function resetDTDModule() {
+    _dtdDockManager = null;
+    _dtdModule = null;
+    _dtdImportPromise = null;
+    _dtdImportSettled = false;
+    _dtdLoadedPath = null;
+}
 
 export function initDTDModule() {
-    let ext = Main.extensionManager.lookup('dash-to-dock@micxgx.gmail.com');
-    if (!ext || ext.state !== 1) {
-        ext = Main.extensionManager.lookup('ubuntu-dock@ubuntu.com');
+    let ext = _lookupDtdExtension();
+    if (!ext) {
+        resetDTDModule();
+        return null;
     }
-    if (!ext || ext.state !== 1) return null;
-    
+
+    if (_dtdLoadedPath && _dtdLoadedPath !== ext.path) {
+        resetDTDModule();
+    }
+
+    const syncMgr = _resolveDockManager(ext, _dtdModule);
+    if (syncMgr) {
+        _dtdDockManager = syncMgr;
+        _dtdImportSettled = true;
+        _dtdLoadedPath = ext.path;
+        if (dtdDisableRequests > 0) {
+            _applyDisable();
+        }
+        return null;
+    }
+
+    if (_dtdImportSettled) return null;
     if (_dtdImportPromise) return _dtdImportPromise;
-    
+
+    _dtdLoadedPath = ext.path;
     _dtdImportPromise = import(`file://${ext.path}/extension.js`).then(mod => {
         _dtdModule = mod;
-        _dtdDockManager = mod.dockManager;
-        if (dtdDisableRequests > 0) {
+        _dtdImportSettled = true;
+        _dtdImportPromise = null;
+        _refreshDockManager();
+        if (dtdDisableRequests > 0 && _dtdDockManager) {
             _applyDisable();
         }
     }).catch((e) => {
         console.debug('[Dynamic Music Pill] DTD/Ubuntu Dock import error: ' + e.message);
+        _dtdImportSettled = true;
         _dtdImportPromise = null;
     });
-    
+
     return _dtdImportPromise;
 }
 
 function _refreshDockManager() {
-    if (_dtdModule && _dtdModule.dockManager) {
-        _dtdDockManager = _dtdModule.dockManager;
+    const ext = _lookupDtdExtension();
+    if (!ext) {
+        _dtdDockManager = null;
+        return;
+    }
+    const resolved = _resolveDockManager(ext, _dtdModule);
+    if (resolved) {
+        _dtdDockManager = resolved;
     }
 }
 
@@ -287,14 +342,78 @@ export function restoreSimpleTaskbarAutohide() {
     }
 }
 
+let dhruvaDisableRequests = 0;
+const DHRUVA_MENU_HOLD = { isOpen: true };
+
+export function getDhruvaDocks() {
+    const out = [];
+    const seen = new Set();
+    const ext = Main.extensionManager?.lookup?.('dhruva@narkagni');
+    if (ext && ext.state === 1) {
+        const rawDocks = ext.stateObj?._monitorController?.docks ?? ext.stateObj?.monitorController?.docks;
+        if (rawDocks) {
+            const iter = rawDocks instanceof Map ? rawDocks.values() : (Array.isArray(rawDocks) ? rawDocks : []);
+            for (const d of iter) {
+                if (d && d.boxActor && !seen.has(d)) {
+                    seen.add(d);
+                    out.push(d);
+                }
+            }
+        }
+    }
+    if (out.length === 0 && Main.uiGroup) {
+        for (const actor of Main.uiGroup.get_children()) {
+            if (actor.get_name?.() === 'DhruvaContainer' && actor._dockUI?.boxActor && !seen.has(actor._dockUI)) {
+                seen.add(actor._dockUI);
+                out.push(actor._dockUI);
+            }
+        }
+    }
+    return out;
+}
+
+export function disableDhruvaAutohide() {
+    dhruvaDisableRequests++;
+    for (const dockUI of getDhruvaDocks()) {
+        try {
+            if (!dockUI._activeContextMenu) {
+                dockUI._activeContextMenu = DHRUVA_MENU_HOLD;
+            }
+            dockUI.autoHideManager?.show?.();
+        } catch (e) {
+            console.debug(`[Dynamic Music Pill] Dhruva autohide disable failed: ${e.message}`);
+        }
+    }
+}
+
+export function restoreDhruvaAutohide() {
+    if (dhruvaDisableRequests > 0) {
+        dhruvaDisableRequests--;
+        if (dhruvaDisableRequests === 0) {
+            for (const dockUI of getDhruvaDocks()) {
+                try {
+                    if (dockUI._activeContextMenu === DHRUVA_MENU_HOLD) {
+                        dockUI._activeContextMenu = null;
+                    }
+                    dockUI.autoHideManager?.scheduleCheck?.();
+                } catch (e) {
+                    console.debug(`[Dynamic Music Pill] Dhruva autohide restore failed: ${e.message}`);
+                }
+            }
+        }
+    }
+}
+
 export function disableDockAutohide() {
     disableDashToDockAutohide();
     disableSimpleTaskbarAutohide();
+    disableDhruvaAutohide();
 }
 
 export function restoreDockAutohide() {
     restoreDashToDockAutohide();
     restoreSimpleTaskbarAutohide();
+    restoreDhruvaAutohide();
 }
 
 export function getPlayerIcon(proxy, busName) {

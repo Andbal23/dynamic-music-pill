@@ -245,28 +245,6 @@ export class ActorBlurController {
                 this
             );
         }
-
-        if (Main.overview) {
-            Main.overview.connectObject(
-                'showing', () => this.scheduleUpdateSize(),
-                'hiding', () => this.scheduleUpdateSize(),
-                this
-            );
-        }
-
-        if (Main.sessionMode) {
-            Main.sessionMode.connectObject(
-                'updated', () => this.scheduleUpdateSize(),
-                this
-            );
-        }
-
-        if (Main.layoutManager) {
-            Main.layoutManager.connectObject(
-                'monitors-changed', () => this.scheduleUpdateSize(),
-                this
-            );
-        }
     }
 
     _getReferenceActor() {
@@ -561,6 +539,25 @@ export class ActorBlurController {
         if (this._enabled) return;
         this._enabled = true;
         this._opacityFactor = 1.0;
+        if (Main.overview) {
+            Main.overview.connectObject(
+                'showing', () => this.scheduleUpdateSize(),
+                'hiding', () => this.scheduleUpdateSize(),
+                this
+            );
+        }
+        if (Main.sessionMode) {
+            Main.sessionMode.connectObject(
+                'updated', () => this.scheduleUpdateSize(),
+                this
+            );
+        }
+        if (Main.layoutManager) {
+            Main.layoutManager.connectObject(
+                'monitors-changed', () => this.scheduleUpdateSize(),
+                this
+            );
+        }
         this._checkSizeAndApply();
         this.scheduleUpdateSize();
     }
@@ -568,6 +565,9 @@ export class ActorBlurController {
     disable() {
         if (!this._enabled && !this._effect && !this._dynamicPipeline) return;
         this._enabled = false;
+        if (Main.overview) Main.overview.disconnectObject(this);
+        if (Main.sessionMode) Main.sessionMode.disconnectObject(this);
+        if (Main.layoutManager) Main.layoutManager.disconnectObject(this);
         if (this._updateSizeId) {
             global.compositor.get_laters().remove(this._updateSizeId);
             this._updateSizeId = 0;
