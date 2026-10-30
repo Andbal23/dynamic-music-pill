@@ -1406,13 +1406,13 @@ export const MusicPill = GObject.registerClass(
                 let currentMs = this._lyricObj.positionMs || 0;
                 let markup = "";
                 for (const word of this._lyricObj.words) {
-                    let wStr = (word.text || "").trim();
+                    let wStr = word.text + (word.hasSpace ? " " : "");
                     if (!wStr) continue;
                     let escapedText = GLib.markup_escape_text(wStr, -1);
                     if (currentMs >= word.time) {
-                        markup += `<b><span alpha="100%">${escapedText}</span></b> `;
+                        markup += `<b><span alpha="100%">${escapedText}</span></b>`;
                     } else {
-                        markup += `<span alpha="45%">${escapedText}</span> `;
+                        markup += `<span alpha="45%">${escapedText}</span>`;
                     }
                 }
                 if (markup) {
@@ -1836,7 +1836,7 @@ export const MusicPill = GObject.registerClass(
             let effectiveHeight = currentHeight - borderOffset;
 
             let isSqueezed = (this._inPanel && effectiveHeight < 30) || (!this._inPanel && effectiveHeight < 46);
-            
+
             let showArtist = this._settings.get_boolean('show-artist');
             if (!showArtist) {
                 a = null;
