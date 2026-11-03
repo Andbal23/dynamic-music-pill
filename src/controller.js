@@ -154,6 +154,12 @@ export class MusicController {
     }
 
     enable() {
+        if (!this._lyricsClient) {
+            this._lyricsClient = new LyricsClient();
+        }
+        if (!this._cancellable || this._cancellable.is_cancelled()) {
+            this._cancellable = new Gio.Cancellable();
+        }
         this._createPill();
         initDTDModule();
 
@@ -424,7 +430,9 @@ export class MusicController {
         }
 
         if (this._lyricObjectId && this._connection) {
-            this._connection.unregister_object(this._lyricObjectId);
+            try {
+                this._connection.unregister_object(this._lyricObjectId);
+            } catch (_) {}
             this._lyricObjectId = null;
         }
 
@@ -1117,12 +1125,11 @@ export class MusicController {
         }
 
         this._dragFixDashes.add(dash);
-        dash.connectObject('destroy', () => this._dragFixDashes.delete(dash), this);
+        container.connectObject('destroy', () => this._dragFixDashes.delete(dash), this);
     }
 
     _teardownDragFix() {
         for (const dash of this._dragFixDashes) {
-            dash.disconnectObject(this);
             if (dash._musicPillOrigHandleDragOver) {
                 dash.handleDragOver = dash._musicPillOrigHandleDragOver;
                 delete dash._musicPillOrigHandleDragOver;
@@ -1505,13 +1512,17 @@ export class MusicController {
             LYRIC_IFACE_NAME,
             Gio.BusNameOwnerFlags.NONE,
             (connection) => {
-                this._lyricObjectId = connection.register_object(
-                    LYRIC_OBJECT_PATH,
-                    this._lyricIfaceInfo,
-                    this._onLyricMethodCall.bind(this),
-                    null,
-                    null,
-                );
+                try {
+                    this._lyricObjectId = connection.register_object(
+                        LYRIC_OBJECT_PATH,
+                        this._lyricIfaceInfo,
+                        this._onLyricMethodCall.bind(this),
+                        null,
+                        null,
+                    );
+                } catch (e) {
+                    console.debug(`[Dynamic Music Pill] Lyric D-Bus register error: ${e.message}`);
+                }
             },
             null,
             null,
