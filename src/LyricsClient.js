@@ -1173,6 +1173,42 @@ class LrclibProvider {
   }
 }
 
+function readFileTextAsync(file) {
+  return new Promise((resolve) => {
+    file.load_contents_async(null, (f, res) => {
+      try {
+        const [ok, bytes] = f.load_contents_finish(res);
+        resolve(ok && bytes ? decode(bytes) : null);
+      } catch {
+        resolve(null);
+      }
+    });
+  });
+}
+
+function parseLocalLyricsText(text, provider = "Local") {
+  if (!text || !text.trim()) return null;
+  const synced = parseLyricsInput(text, false);
+  if (synced.lines && synced.lines.length > 0) {
+    return {
+      lines: synced.lines,
+      provider,
+      type: synced.hasWordLevel ? "word-level" : "synced",
+      isSynced: true,
+    };
+  }
+  const plain = parseLyricsInput(text, true);
+  if (plain.lines && plain.lines.length > 0) {
+    return {
+      lines: plain.lines,
+      provider,
+      type: "plain",
+      isSynced: false,
+    };
+  }
+  return null;
+}
+
 export { parseTTML, parseLyricsfile, parseLyricsInput };
 
 export class LyricsClient {
@@ -1189,7 +1225,107 @@ export class LyricsClient {
     ];
   }
 
-  async getLyrics(title, artist, album, duration, settings, mprisLyrics = null) {
+  async _getLocalLyrics(title, artist, trackUrl = null, settings = null) {
+    const cacheDir = GLib.build_filenamev([
+      GLib.get_user_cache_dir(),
+      "dynamic-music-pill",
+      "lyrics",
+    ]);
+    const indexFile = Gio.File.new_for_path(
+      GLib.build_filenamev([cacheDir, "index.json"]),
+    );
+    const indexText = await readFileTextAsync(indexFile);
+    if (indexText) {
+      let entries = null;
+      try {
+        entries = JSON.parse(indexText);
+      } catch {
+        entries = null;
+      }
+      if (Array.isArray(entries)) {
+        const normTitle = normalizeCompare(title);
+        const normArtist = normalizeCompare(artist);
+        const normCleanTitle = normalizeCompare(cleanTitle(title, artist));
+        const normCleanArtist = normalizeCompare(cleanArtist(artist));
+
+        const matched = entries.find((entry) => {
+          if (!entry || !entry.fileName) return false;
+          if (trackUrl && entry.trackUrl && entry.trackUrl === trackUrl) {
+            return true;
+          }
+          const eTitle = normalizeCompare(entry.title);
+          const eArtist = normalizeCompare(entry.artist);
+          if (normTitle && eTitle === normTitle) {
+            if (!eArtist || !normArtist || eArtist === normArtist) return true;
+          }
+          const eCleanTitle = normalizeCompare(cleanTitle(entry.title, entry.artist));
+          const eCleanArtist = normalizeCompare(cleanArtist(entry.artist));
+          if (normCleanTitle && eCleanTitle === normCleanTitle) {
+            if (!eCleanArtist || !normCleanArtist || eCleanArtist === normCleanArtist) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        if (matched) {
+          const lrcFile = Gio.File.new_for_path(
+            GLib.build_filenamev([cacheDir, matched.fileName]),
+          );
+          const lrcText = await readFileTextAsync(lrcFile);
+          const parsed = parseLocalLyricsText(lrcText, "Local");
+          if (parsed) return parsed;
+        }
+      }
+    }
+
+    const exts = [".lrc", ".LRC", ".ttml", ".TTML", ".txt", ".TXT"];
+    let audioBaseName = "";
+
+    if (trackUrl && typeof trackUrl === "string" && trackUrl.startsWith("file://")) {
+      const audioFile = Gio.File.new_for_uri(trackUrl);
+      const audioPath = audioFile.get_path();
+      if (audioPath) {
+        const basePath = audioPath.replace(/\.[^/.]+$/, "");
+        const baseNameWithExt = GLib.path_get_basename(audioPath);
+        audioBaseName = baseNameWithExt.replace(/\.[^/.]+$/, "");
+        for (const ext of exts) {
+          const text = await readFileTextAsync(Gio.File.new_for_path(basePath + ext));
+          const parsed = parseLocalLyricsText(text, "Local");
+          if (parsed) return parsed;
+        }
+      }
+    }
+
+    const folderPath = settings ? settings.get_string("local-lyrics-folder").trim() : "";
+    if (folderPath) {
+      const baseNames = [];
+      if (audioBaseName) baseNames.push(audioBaseName);
+      const safeTitle = (title || "").replace(/[/\\]/g, "_").trim();
+      const safeArtist = (artist || "").replace(/[/\\]/g, "_").trim();
+      if (safeArtist && safeTitle) {
+        baseNames.push(`${safeArtist} - ${safeTitle}`);
+        baseNames.push(`${safeTitle} - ${safeArtist}`);
+      }
+      if (safeTitle) baseNames.push(safeTitle);
+
+      for (const base of baseNames) {
+        for (const ext of [".lrc", ".ttml", ".txt"]) {
+          const candidatePath = GLib.build_filenamev([folderPath, base + ext]);
+          const text = await readFileTextAsync(Gio.File.new_for_path(candidatePath));
+          const parsed = parseLocalLyricsText(text, "Local");
+          if (parsed) return parsed;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  async getLyrics(title, artist, album, duration, settings, mprisLyrics = null, trackUrl = null) {
+    const localResult = await this._getLocalLyrics(title, artist, trackUrl, settings);
+    if (localResult) return localResult;
+
     let mprisText = "";
     if (Array.isArray(mprisLyrics)) {
       mprisText = mprisLyrics.filter(x => typeof x === "string").join("\n").trim();
@@ -1220,7 +1356,8 @@ export class LyricsClient {
     }
 
     if (!this._session) return mprisPlainFallback;
-    if ((!title || !title.trim()) && (!artist || !artist.trim())) return mprisPlainFallback;
+    if (!title || !title.trim()) return mprisPlainFallback;
+    if ((!artist || !artist.trim()) && !/\s+[-–—]\s+/.test(title)) return mprisPlainFallback;
     const pref = settings ? settings.get_int("lyrics-language-preference") : 0;
 
     // Launch all providers concurrently in parallel

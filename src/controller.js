@@ -294,17 +294,12 @@ export class MusicController {
                 this._triggerUpdate();
             }
         }, this);
-        this._settings.connectObject('changed::lyrics-language-preference', () => {
-            this._fetchedTrackKey = null;
-            this._fetchedLyricsData = null;
-            this._fetchedAsText = null;
-            this._lastLyricIndex = -1;
-
-            if (this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
-                let player = this._getActivePlayer();
-                if (player) this._fetchNetworkLyrics(player);
-            }
-        }, this);
+        this._settings.connectObject(
+            'changed::lyrics-language-preference', () => this._refetchCurrentLyrics(),
+            'changed::lyrics-cache-revision', () => this._refetchCurrentLyrics(),
+            'changed::local-lyrics-folder', () => this._refetchCurrentLyrics(),
+            this
+        );
         this._settings.connectObject(
             'changed::enable-blur-pill', () => {
                 if (this._settings.get_boolean('enable-blur-pill')) {
@@ -874,8 +869,9 @@ export class MusicController {
         });
     }
 
-    _ensurePosition(container, pill = this._pill) {
-        if (!container || !pill || this._isMovingItem || this._isUserDragging) return false;
+    _ensurePosition(container, pill = this._pill, force = false) {
+        if (!container || !pill) return false;
+        if (!force && (this._isMovingItem || this._isUserDragging)) return false;
 
         let mode = this._settings ? this._settings.get_int('position-mode') : 1;
         let manualIndex = this._settings ? this._settings.get_int('dock-position') : 0;
@@ -981,6 +977,10 @@ export class MusicController {
             }, this);
         }
 
+        if (target === 0) {
+            this._setupDragFix(container);
+        }
+
         let moved = this._ensurePosition(container);
 
         let pills = container.get_children().filter(
@@ -994,10 +994,6 @@ export class MusicController {
 
         if (parentChanged || moved || !oldParent) {
             this._pill._updateDimensions();
-        }
-
-        if (target === 0) {
-            this._setupDragFix(container);
         }
 
         this._syncMirrorPills(docks.slice(1));
@@ -1054,8 +1050,8 @@ export class MusicController {
                 );
                 created = true;
             }
-            if (this._ensurePosition(container, pill)) pill._updateDimensions();
             this._setupDragFix(container);
+            if (this._ensurePosition(container, pill)) pill._updateDimensions();
         }
 
         if (created) this._triggerUpdate();
@@ -1068,60 +1064,72 @@ export class MusicController {
 
         const pillIn = () => this._pills().find(p => p.get_parent() === container);
 
-        const _adjustX = (x) => {
+        const _adjustCoords = (x, y) => {
             const pill = pillIn();
-            if (!pill) return x;
+            if (!pill) return [x, y];
+            if (dash._isHorizontal === false) {
+                const pillHeight = pill.get_height();
+                const pillY = pill.y;
+                if (y > pillY + pillHeight) return [x, y - pillHeight];
+                if (y >= pillY) return [x, pillY];
+                return [x, y];
+            }
             const pillWidth = pill.get_width();
             const pillX = pill.x;
-            if (x > pillX + pillWidth) return x - pillWidth;
-            if (x >= pillX) return pillX;
-            return x;
+            if (x > pillX + pillWidth) return [x - pillWidth, y];
+            if (x >= pillX) return [pillX, y];
+            return [x, y];
         };
 
-        const _adjustWidth = (fn) => {
+        const _adjustBox = (fn) => {
             const pill = pillIn();
             const pillWidth = pill ? pill.get_width() : 0;
-            if (pillWidth > 0) {
+            const origGetChildren = container.get_children;
+            if (pill) {
+                container.get_children = () =>
+                    origGetChildren.call(container).filter(c => c !== pill);
+            }
+            if (pillWidth > 0 && dash._isHorizontal !== false) {
                 Object.defineProperty(container, 'width', {
                     get() { return container.get_width() - pillWidth; },
                     configurable: true,
                     enumerable: false,
                 });
             }
-            try { return fn(); }
-            finally { if (pillWidth > 0) delete container.width; }
+            try {
+                return fn();
+            } finally {
+                if (pill)
+                    delete container.get_children;
+                if (pillWidth > 0 && dash._isHorizontal !== false)
+                    delete container.width;
+            }
         };
 
         dash._musicPillOrigHandleDragOver = dash.handleDragOver;
-        dash.handleDragOver = (source, actor, x, y, time) =>
-            _adjustWidth(() =>
-                dash._musicPillOrigHandleDragOver.call(dash, source, actor, _adjustX(x), y, time));
+        dash.handleDragOver = (source, actor, x, y, time) => {
+            const [adjX, adjY] = _adjustCoords(x, y);
+            return this._withPillAtEnd(container, () =>
+                _adjustBox(() =>
+                    dash._musicPillOrigHandleDragOver.call(dash, source, actor, adjX, adjY, time)));
+        };
 
         if (dash.acceptDrop) {
             dash._musicPillOrigAcceptDrop = dash.acceptDrop;
             dash.acceptDrop = (source, actor, x, y, time) => {
-                const pill = pillIn();
-                const parent = pill ? pill.get_parent() : null;
-
-                if (parent) {
-                    this._isMovingItem = true;
-                    parent.remove_child(pill);
-                    this._isMovingItem = false;
-                }
-
-                let result;
-                try {
-                    result = _adjustWidth(() =>
-                        dash._musicPillOrigAcceptDrop.call(dash, source, actor, _adjustX(x), y, time));
-                } finally {
-                    if (pill && parent) {
-                        this._isMovingItem = true;
-                        this._ensurePosition(container, pill);
-                        this._isMovingItem = false;
-                    }
-                }
-                return result;
+                const [adjX, adjY] = _adjustCoords(x, y);
+                return this._withPillAtEnd(container, () =>
+                    _adjustBox(() =>
+                        dash._musicPillOrigAcceptDrop.call(dash, source, actor, adjX, adjY, time)));
             };
+        }
+
+        // Dash to Dock and the overview dash insert app icons by their index among the
+        // app icons only, so a pill placed before them shifts every insertion (#203).
+        if (dash._redisplay) {
+            dash._musicPillOrigRedisplay = dash._redisplay;
+            dash._redisplay = () =>
+                this._withPillAtEnd(container, () => dash._musicPillOrigRedisplay.call(dash));
         }
 
         this._dragFixDashes.add(dash);
@@ -1138,8 +1146,27 @@ export class MusicController {
                 dash.acceptDrop = dash._musicPillOrigAcceptDrop;
                 delete dash._musicPillOrigAcceptDrop;
             }
+            if (dash._musicPillOrigRedisplay) {
+                dash._redisplay = dash._musicPillOrigRedisplay;
+                delete dash._musicPillOrigRedisplay;
+            }
         }
         this._dragFixDashes.clear();
+    }
+
+    _withPillAtEnd(container, fn) {
+        const pill = this._pills().find(p => p.get_parent() === container);
+        if (!pill)
+            return fn();
+
+        this._isMovingItem = true;
+        container.set_child_at_index(pill, -1);
+        try {
+            return fn();
+        } finally {
+            this._isMovingItem = false;
+            this._ensurePosition(container, pill, true);
+        }
     }
 
     _scan() {
@@ -1569,6 +1596,24 @@ export class MusicController {
         return (typeof raw === 'string' && raw.trim().length > 0) ? raw.trim() : null;
     }
 
+    _refetchCurrentLyrics() {
+        this._fetchedTrackKey = null;
+        this._fetchedLyricsData = null;
+        this._fetchedAsText = null;
+        this._lastLyricIndex = -1;
+
+        if (this._settings && this._settings.get_boolean('enable-lyrics') && !this._dbusLyricActive) {
+            let player = this._getActivePlayer();
+            if (player) this._fetchNetworkLyrics(player);
+        }
+        if (this._expandedPlayer && this._expandedPlayer._currentSubPage && this._expandedPlayer._lyricsWidget) {
+            this._expandedPlayer._loadLyricsForCurrentTrack(
+                this._expandedPlayer._currentSubPage,
+                this._expandedPlayer._lyricsWidget
+            );
+        }
+    }
+
     // Network lyrics retrieval
     async _fetchNetworkLyrics(player) {
         if (!player || !this._lyricsClient) return;
@@ -1582,12 +1627,12 @@ export class MusicController {
         let artist = smartUnpack(metaObj['xesam:artist']);
         let album = smartUnpack(metaObj['xesam:album']) || '';
         let length = smartUnpack(metaObj['mpris:length']) || 0;
+        let trackUrl = smartUnpack(metaObj['xesam:url']) || '';
         let asText = this._extractAsText(metaObj);
 
         if (Array.isArray(artist)) artist = artist.join(', ');
         if (!title || !title.trim()) return;
         artist = artist ? artist.trim() : '';
-        if (!artist && !asText && !/\s+[-–—]\s+/.test(title)) return;
 
         let durationSec = length > 0 ? Math.round(length / 1000000) : 0;
         let trackKey = `${title}||${artist}`;
@@ -1601,7 +1646,9 @@ export class MusicController {
         this._lastLyricIndex = -1;
 
         try {
-            let res = await this._lyricsClient.getLyrics(title, artist, album, durationSec, this._settings, asText);
+            let res = await this._lyricsClient.getLyrics(
+                title, artist, album, durationSec, this._settings, asText, trackUrl
+            );
             if (this._fetchedTrackKey !== trackKey) return;
 
             if (res && res.lines) {

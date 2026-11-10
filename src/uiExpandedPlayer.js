@@ -1650,6 +1650,55 @@ export const ExpandedPlayer = GObject.registerClass(
 
             page.add_child(backBtnWrapper);
 
+            let importIcon = new St.Icon({
+                icon_name: 'document-open-symbolic',
+                icon_size: 16,
+                style: `color: ${iconClr};`,
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            let importBtn = new St.Button({
+                reactive: true,
+                can_focus: false,
+                child: importIcon,
+                style_class: 'subpage-back-btn',
+            });
+            let importBtnWrapper = new St.Bin({
+                x_expand: true,
+                y_expand: true,
+                x_align: Clutter.ActorAlign.END,
+                y_align: Clutter.ActorAlign.START,
+                child: importBtn,
+            });
+            _addBtnPressAnim(importBtn);
+            importBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, page);
+            const _doImportLyrics = () => {
+                if (!this._settings.get_boolean('enable-lyrics')) {
+                    this._settings.set_boolean('enable-lyrics', true);
+                }
+                this._settings.set_boolean('open-lyrics-import', true);
+                this.hide();
+                if (this._hintSettingsTimeoutId)
+                    GLib.Source.remove(this._hintSettingsTimeoutId);
+                this._hintSettingsTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                    this._hintSettingsTimeoutId = null;
+                    this._controller.openSettings();
+                    return GLib.SOURCE_REMOVE;
+                });
+            };
+            importBtn.connectObject('button-release-event', () => {
+                _doImportLyrics();
+                return Clutter.EVENT_STOP;
+            }, page);
+            importBtn.connectObject('touch-event', (a, e) => {
+                if (e.type() === Clutter.EventType.TOUCH_END) {
+                    _doImportLyrics();
+                    return Clutter.EVENT_STOP;
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }, page);
+            page.add_child(importBtnWrapper);
+
             this._lyricsWidget = lyricsWidget;
             this._box.add_child(page);
 
@@ -1709,6 +1758,7 @@ export const ExpandedPlayer = GObject.registerClass(
             let fetchAlbum = smartUnpack(metaObj['xesam:album']) || '';
             let lengthMicro = smartUnpack(metaObj['mpris:length']) || 0;
             let durationSec = lengthMicro > 0 ? Math.round(lengthMicro / 1_000_000) : 0;
+            let trackUrl = smartUnpack(metaObj['xesam:url']) || '';
             let rawAsText = smartUnpack(metaObj['xesam:asText']);
             if (Array.isArray(rawAsText)) rawAsText = rawAsText.filter(x => typeof x === 'string').join('\n');
             let mprisLyrics = (typeof rawAsText === 'string' && rawAsText.trim().length > 0) ? rawAsText.trim() : null;
@@ -1724,7 +1774,7 @@ export const ExpandedPlayer = GObject.registerClass(
             }
 
             this._lyricsClient.getLyrics(
-                fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings, mprisLyrics
+                fetchTitle, fetchArtist, fetchAlbum, durationSec, this._settings, mprisLyrics, trackUrl
             ).then(result => {
                 if (page !== this._currentSubPage || !page.get_parent()) return;
                 if (!lyricsWidget || !lyricsWidget.get_parent()) return;

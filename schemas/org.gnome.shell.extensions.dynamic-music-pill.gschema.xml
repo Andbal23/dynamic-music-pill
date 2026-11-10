@@ -371,6 +371,18 @@
       <default>0</default>
       <range min="-50" max="50"/>
     </key>
+    <key name="pill-margin-start" type="i">
+      <default>10</default>
+      <range min="0" max="50"/>
+      <summary>Pill Start Margin (Left / Top)</summary>
+      <description>Outer spacing before the pill in the dock or panel.</description>
+    </key>
+    <key name="pill-margin-end" type="i">
+      <default>10</default>
+      <range min="0" max="50"/>
+      <summary>Pill End Margin (Right / Bottom)</summary>
+      <description>Outer spacing after the pill in the dock or panel.</description>
+    </key>
     <key name="position-mode" type="i">
       <default>3</default>
       <range min="0" max="3"/>
@@ -406,6 +418,21 @@
       <default>0</default>
       <summary>Preferred lyrics script</summary>
       <description>0=auto, 1=prefer original script (CJK/Hangul), 2=prefer Latin (romanized or translated)</description>
+    </key>
+    <key name="local-lyrics-folder" type="s">
+      <default>''</default>
+      <summary>Local Lyrics Folder</summary>
+      <description>Optional directory path containing local .lrc, .ttml, or .txt lyrics files.</description>
+    </key>
+    <key name="lyrics-cache-revision" type="i">
+      <default>0</default>
+      <summary>Lyrics Cache Revision</summary>
+      <description>Incremented when manually imported lyrics are added or removed.</description>
+    </key>
+    <key name="open-lyrics-import" type="b">
+      <default>false</default>
+      <summary>Open Lyrics Import Dialog</summary>
+      <description>Transient trigger to open the Lyrics page and file chooser in Preferences.</description>
     </key>
     <key name="enable-gamemode" type="b">
       <default>true</default>

@@ -9,6 +9,7 @@ const PREFS_KEYS = [
     'scroll-text', 'scroll-on-hover-only', 'freeze-scroll-on-pause', 'show-album-art', 'enable-shadow', 'hide-default-player',
     'shadow-blur', 'shadow-opacity', 'pill-width', 'panel-pill-width',
     'pill-height', 'panel-pill-height', 'vertical-offset', 'horizontal-offset',
+    'pill-margin-start', 'pill-margin-end',
     'position-mode', 'dock-position', 'target-container', 'dock-monitors', 'enable-gamemode',
     'visualizer-style', 'border-radius', 'enable-transparency', 'transparency-strength',
     'transparency-art', 'transparency-text', 'transparency-vis', 'enable-scroll-animation', 'invert-scroll-animation',
@@ -24,6 +25,7 @@ const PREFS_KEYS = [
     'popup-show-player-selector', 'hide-auto-smart-selection', 'popup-player-selector-position', 'show-pill-border', 'invert-scroll-direction', 'always-show-pill', 'popup-hide-on-leave',
     'popup-vertical-offset', 'popup-horizontal-offset',
     'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'lyrics-language-preference',
+    'local-lyrics-folder', 'lyrics-cache-revision', 'open-lyrics-import',
     'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
     'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
     'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history', 'has-seen-first-hint',
@@ -264,6 +266,20 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         this._buildStylePage(window, settings);
         this._buildSystemPage(window, settings);
         this._buildAboutPage(window);
+
+        const checkOpenLyricsImport = () => {
+            if (settings.get_boolean('open-lyrics-import')) {
+                settings.set_boolean('open-lyrics-import', false);
+                if (this._lyricsPage) {
+                    window.set_visible_page(this._lyricsPage);
+                }
+                if (this._openLyricsImportDialog) {
+                    this._openLyricsImportDialog();
+                }
+            }
+        };
+        settings.connect('changed::open-lyrics-import', checkOpenLyricsImport);
+        checkOpenLyricsImport();
     }
 
     // =========================================================================
@@ -670,6 +686,26 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
             step: 1,
         });
         posGroup.add(hOffsetRow);
+
+        const marginStartRow = this._createSpinRow(settings, {
+            key: 'pill-margin-start',
+            title: _('Start Margin (Left / Top)'),
+            subtitle: _('Outer spacing before the pill in the dock or panel'),
+            lower: 0,
+            upper: 50,
+            step: 1,
+        });
+        posGroup.add(marginStartRow);
+
+        const marginEndRow = this._createSpinRow(settings, {
+            key: 'pill-margin-end',
+            title: _('End Margin (Right / Bottom)'),
+            subtitle: _('Outer spacing after the pill in the dock or panel'),
+            lower: 0,
+            upper: 50,
+            step: 1,
+        });
+        posGroup.add(marginEndRow);
 
         mainPage.add(posGroup);
 
@@ -1273,6 +1309,336 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
 
         lyricsGroup.add(lyricsExpander);
         lyricsPage.add(lyricsGroup);
+
+        // --- Group 3: Local & Imported Lyrics ---
+        const localGroup = new Adw.PreferencesGroup({
+            title: this._escapeMarkup(_('Local & Imported Lyrics')),
+            description: this._escapeMarkup(_(
+                'Sidecar .lrc, .ttml, and .txt files placed next to local audio files are detected automatically. ' +
+                'You can also select a lyrics folder or manually import lyrics for any song below.'
+            )),
+        });
+
+        const folderRow = new Adw.ActionRow({
+            title: this._escapeMarkup(_('Local Lyrics Folder')),
+            subtitle: this._escapeMarkup(settings.get_string('local-lyrics-folder') || _('No folder selected')),
+        });
+        this._addRowIcon(folderRow, 'folder-music-symbolic');
+
+        const folderBtn = new Gtk.Button({
+            icon_name: 'document-open-symbolic',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat'],
+        });
+        folderBtn.connect('clicked', () => {
+            const dialog = new Gtk.FileDialog({ title: _('Select Lyrics Folder') });
+            dialog.select_folder(window, null, (dlg, res) => {
+                try {
+                    const folder = dlg.select_folder_finish(res);
+                    if (folder) {
+                        const path = folder.get_path() || '';
+                        settings.set_string('local-lyrics-folder', path);
+                        folderRow.subtitle = this._escapeMarkup(path || _('No folder selected'));
+                    }
+                } catch {
+                    // User cancelled dialog
+                }
+            });
+        });
+
+        const clearFolderBtn = new Gtk.Button({
+            icon_name: 'edit-clear-symbolic',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat', 'error'],
+        });
+        clearFolderBtn.connect('clicked', () => {
+            settings.set_string('local-lyrics-folder', '');
+            folderRow.subtitle = this._escapeMarkup(_('No folder selected'));
+        });
+
+        settings.connect('changed::local-lyrics-folder', () => {
+            folderRow.subtitle = this._escapeMarkup(settings.get_string('local-lyrics-folder') || _('No folder selected'));
+        });
+
+        const folderBtnBox = new Gtk.Box({ spacing: 6, valign: Gtk.Align.CENTER });
+        folderBtnBox.append(folderBtn);
+        folderBtnBox.append(clearFolderBtn);
+        folderRow.add_suffix(folderBtnBox);
+        localGroup.add(folderRow);
+
+        const getHistoryTracks = () => {
+            try {
+                const parsed = JSON.parse(settings.get_string('playback-history') || '[]');
+                return Array.isArray(parsed) ? parsed.filter(t => t && t.title) : [];
+            } catch {
+                return [];
+            }
+        };
+
+        const trackSelectRow = new Adw.ComboRow({
+            title: this._escapeMarkup(_('Target Song')),
+            subtitle: this._escapeMarkup(_('Choose a recent song or enter custom title & artist')),
+        });
+        this._addRowIcon(trackSelectRow, 'audio-x-generic-symbolic');
+
+        const titleEntryRow = new Adw.EntryRow({
+            title: this._escapeMarkup(_('Track Title')),
+        });
+        const artistEntryRow = new Adw.EntryRow({
+            title: this._escapeMarkup(_('Artist Name')),
+        });
+
+        let selectedTrackUrl = '';
+        let historyTracks = [];
+
+        const syncSelectedTrack = () => {
+            const idx = trackSelectRow.selected;
+            if (idx >= 0 && idx < historyTracks.length) {
+                const t = historyTracks[idx];
+                titleEntryRow.text = t.title || '';
+                artistEntryRow.text = t.artist || '';
+                selectedTrackUrl = t.url || '';
+            } else {
+                selectedTrackUrl = '';
+            }
+        };
+
+        const refreshHistoryDropdown = () => {
+            historyTracks = getHistoryTracks().slice(0, 15);
+            const labels = historyTracks.map((t, i) => {
+                const prefix = i === 0 ? _('Current / Last: ') : '';
+                const art = t.artist ? ` \u2014 ${t.artist}` : '';
+                return `${prefix}${t.title}${art}`;
+            });
+            labels.push(_('Custom / Detect from File'));
+            trackSelectRow.model = Gtk.StringList.new(labels);
+            trackSelectRow.selected = 0;
+            syncSelectedTrack();
+        };
+
+        trackSelectRow.connect('notify::selected', syncSelectedTrack);
+        settings.connect('changed::playback-history', refreshHistoryDropdown);
+        refreshHistoryDropdown();
+
+        localGroup.add(trackSelectRow);
+        localGroup.add(titleEntryRow);
+        localGroup.add(artistEntryRow);
+
+        const cacheDir = GLib.build_filenamev([
+            GLib.get_user_cache_dir(),
+            'dynamic-music-pill',
+            'lyrics',
+        ]);
+        const indexPath = GLib.build_filenamev([cacheDir, 'index.json']);
+
+        const readIndex = () => {
+            if (!GLib.file_test(indexPath, GLib.FileTest.EXISTS)) return [];
+            try {
+                const [ok, bytes] = GLib.file_get_contents(indexPath);
+                if (!ok || !bytes) return [];
+                const parsed = JSON.parse(new TextDecoder().decode(bytes));
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        };
+
+        const writeIndex = (entries) => {
+            GLib.mkdir_with_parents(cacheDir, 0o755);
+            const jsonStr = JSON.stringify(entries, null, 2);
+            GLib.file_set_contents(indexPath, jsonStr);
+            const rev = settings.get_int('lyrics-cache-revision');
+            settings.set_int('lyrics-cache-revision', (rev + 1) % 1000000);
+        };
+
+        const importedGroup = new Adw.PreferencesGroup({
+            title: this._escapeMarkup(_('Imported Lyrics')),
+        });
+        let importedRows = [];
+
+        const refreshImportedList = () => {
+            for (const r of importedRows) {
+                importedGroup.remove(r);
+            }
+            importedRows = [];
+
+            const entries = readIndex();
+            if (entries.length === 0) {
+                const emptyRow = new Adw.ActionRow({
+                    title: this._escapeMarkup(_('No manually imported lyrics yet')),
+                    subtitle: this._escapeMarkup(_('Use "Import Lyrics File\u2026" above to attach a .lrc, .ttml, or .txt file to a song.')),
+                });
+                importedGroup.add(emptyRow);
+                importedRows.push(emptyRow);
+                return;
+            }
+
+            for (const entry of entries) {
+                const rowTitle = entry.artist
+                    ? `${entry.title} \u2014 ${entry.artist}`
+                    : (entry.title || entry.origFileName || _('Unknown Track'));
+                const rowSub = entry.origFileName
+                    ? `${entry.format || 'LRC'} \u2022 ${entry.origFileName}`
+                    : (entry.format || 'LRC');
+                const row = new Adw.ActionRow({
+                    title: this._escapeMarkup(rowTitle),
+                    subtitle: this._escapeMarkup(rowSub),
+                });
+                this._addRowIcon(row, 'text-x-generic-symbolic');
+
+                const delBtn = new Gtk.Button({
+                    icon_name: 'user-trash-symbolic',
+                    valign: Gtk.Align.CENTER,
+                    css_classes: ['flat', 'error'],
+                });
+                delBtn.connect('clicked', () => {
+                    const current = readIndex();
+                    const next = current.filter(e => e.id !== entry.id);
+                    if (entry.fileName) {
+                        const f = Gio.File.new_for_path(GLib.build_filenamev([cacheDir, entry.fileName]));
+                        if (f.query_exists(null)) {
+                            try {
+                                f.delete(null);
+                            } catch {
+                                // Ignore delete error
+                            }
+                        }
+                    }
+                    writeIndex(next);
+                    refreshImportedList();
+                });
+
+                row.add_suffix(delBtn);
+                importedGroup.add(row);
+                importedRows.push(row);
+            }
+        };
+
+        const openImportFileDialog = () => {
+            const dialog = new Gtk.FileDialog({ title: _('Import Lyrics File (.lrc, .ttml, .txt)') });
+            const filter = new Gtk.FileFilter();
+            filter.set_name(_('Lyrics Files (*.lrc, *.ttml, *.txt)'));
+            filter.add_suffix('lrc');
+            filter.add_suffix('LRC');
+            filter.add_suffix('ttml');
+            filter.add_suffix('TTML');
+            filter.add_suffix('txt');
+            filter.add_suffix('TXT');
+            const filterList = new Gio.ListStore({ item_type: Gtk.FileFilter });
+            filterList.append(filter);
+            dialog.set_filters(filterList);
+
+            dialog.open(window, null, (dlg, res) => {
+                let file = null;
+                try {
+                    file = dlg.open_finish(res);
+                } catch {
+                    return;
+                }
+                if (!file) return;
+
+                const srcPath = file.get_path();
+                if (!srcPath) return;
+
+                let rawText = '';
+                try {
+                    const [ok, bytes] = GLib.file_get_contents(srcPath);
+                    if (!ok || !bytes) return;
+                    rawText = new TextDecoder().decode(bytes);
+                } catch {
+                    return;
+                }
+
+                const origFileName = GLib.path_get_basename(srcPath);
+                const extMatch = origFileName.match(/\.([^.]+)$/);
+                const ext = extMatch ? extMatch[1].toLowerCase() : 'lrc';
+                const format = ext.toUpperCase();
+
+                let trackTitle = titleEntryRow.text.trim();
+                let trackArtist = artistEntryRow.text.trim();
+
+                if (!trackTitle) {
+                    const tiMatch = rawText.match(/\[ti:([^\]]+)\]/i);
+                    const arMatch = rawText.match(/\[ar:([^\]]+)\]/i);
+                    if (tiMatch && tiMatch[1].trim()) {
+                        trackTitle = tiMatch[1].trim();
+                    }
+                    if (!trackArtist && arMatch && arMatch[1].trim()) {
+                        trackArtist = arMatch[1].trim();
+                    }
+                }
+
+                if (!trackTitle) {
+                    const baseNoExt = origFileName.replace(/\.[^/.]+$/, '').trim();
+                    const dashParts = baseNoExt.split(/\s+[-–—]\s+/);
+                    if (dashParts.length >= 2) {
+                        if (!trackArtist) trackArtist = dashParts[0].trim();
+                        trackTitle = dashParts.slice(1).join(' - ').trim();
+                    } else {
+                        trackTitle = baseNoExt;
+                    }
+                }
+
+                titleEntryRow.text = trackTitle;
+                artistEntryRow.text = trackArtist;
+
+                GLib.mkdir_with_parents(cacheDir, 0o755);
+                const idKey = `${trackTitle.toLowerCase()}||${trackArtist.toLowerCase()}||${selectedTrackUrl}`;
+                const id = GLib.compute_checksum_for_string(GLib.ChecksumType.MD5, idKey, -1);
+                const savedFileName = `imported_${id}.${ext}`;
+                const destPath = GLib.build_filenamev([cacheDir, savedFileName]);
+
+                GLib.file_set_contents(destPath, rawText);
+
+                const entries = readIndex().filter(e => e && e.id !== id);
+                entries.unshift({
+                    id,
+                    title: trackTitle,
+                    artist: trackArtist,
+                    trackUrl: selectedTrackUrl || '',
+                    fileName: savedFileName,
+                    origFileName,
+                    format,
+                    importedAt: Date.now(),
+                });
+                writeIndex(entries);
+
+                if (!settings.get_boolean('enable-lyrics')) {
+                    settings.set_boolean('enable-lyrics', true);
+                }
+
+                refreshImportedList();
+                window.add_toast(new Adw.Toast({
+                    title: _('Imported lyrics for "%s"').replace('%s', trackTitle || origFileName),
+                }));
+            });
+        };
+
+        const importActionRow = new Adw.ActionRow({
+            title: this._escapeMarkup(_('Import Lyrics File\u2026')),
+            subtitle: this._escapeMarkup(_('Select a local .lrc, .ttml, or .txt lyrics file for the target song')),
+        });
+        this._addRowIcon(importActionRow, 'document-open-symbolic');
+
+        const importFileBtn = new Gtk.Button({
+            label: _('Choose File\u2026'),
+            valign: Gtk.Align.CENTER,
+            css_classes: ['suggested-action'],
+        });
+        importFileBtn.connect('clicked', openImportFileDialog);
+        importActionRow.add_suffix(importFileBtn);
+        importActionRow.activatable_widget = importFileBtn;
+        localGroup.add(importActionRow);
+
+        lyricsPage.add(localGroup);
+        refreshImportedList();
+        lyricsPage.add(importedGroup);
+
+        this._lyricsPage = lyricsPage;
+        this._openLyricsImportDialog = () => {
+            refreshHistoryDropdown();
+            openImportFileDialog();
+        };
 
         window.add(lyricsPage);
     }

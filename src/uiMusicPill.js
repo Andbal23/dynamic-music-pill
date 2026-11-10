@@ -480,6 +480,8 @@ export const MusicPill = GObject.registerClass(
             this._settings.connectObject('changed::panel-pill-width', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::vertical-offset', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::horizontal-offset', () => this._updateDimensions(), this);
+            this._settings.connectObject('changed::pill-margin-start', () => this._updateDimensions(), this);
+            this._settings.connectObject('changed::pill-margin-end', () => this._updateDimensions(), this);
             this._settings.connectObject('changed::dock-position', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::position-mode', () => this._controller._queueInject(), this);
             this._settings.connectObject('changed::target-container', () => {
@@ -1438,10 +1440,19 @@ export const MusicPill = GObject.registerClass(
             });
 
             if (!this._isActiveState) {
+                this.set_style('margin: 0px;');
                 this.visible = false;
                 this.set_width(0);
                 this._stopVisibilityTimer();
                 return;
+            }
+
+            let marginStart = this._settings.get_int('pill-margin-start');
+            let marginEnd = this._settings.get_int('pill-margin-end');
+            if (isSidePanel) {
+                this.set_style(`margin-top: ${marginStart}px; margin-bottom: ${marginEnd}px; margin-left: 0px; margin-right: 0px;`);
+            } else {
+                this.set_style(`margin-left: ${marginStart}px; margin-right: ${marginEnd}px; margin-top: 0px; margin-bottom: 0px;`);
             }
 
             this.visible = true;
