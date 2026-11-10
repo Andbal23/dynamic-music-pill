@@ -36,9 +36,43 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
+        version: '1.7',
+        subtitle: 'Local & Imported Lyrics, Dock Icon Stability, Independent Margins, Dhruva Dock & CPU Fixes',
+        expanded: true,
+        notes: 'New Features & Enhancements:\n' +
+            '• Local & Imported Lyrics (#199): Automatic detection of sidecar .lrc, .ttml, and .txt files next to ' +
+            'local audio tracks, an optional Local Lyrics Folder setting, and manual lyrics import & management in ' +
+            'Preferences -> Lyrics plus a quick Import Lyrics button inside the pop-up Lyrics view.\n' +
+            '• Embedded MPRIS Lyrics Support (#185, #198): Reads synced and plain lyrics directly from MPRIS ' +
+            'xesam:asText metadata when provided by media players.\n' +
+            '• Independent Pill Side Margins (#203): Added Start Margin (Left / Top) and End Margin (Right / Bottom) ' +
+            'settings in Positioning to adjust spacing on each side of the pill independently.\n' +
+            '• Pop-up Album Title & Horizontal Offset: Added Show Album Title (Artist \u2022 Album) and Horizontal ' +
+            'Offset (X) controls in Pop-up Appearance.\n' +
+            '• Dhruva Dock Support (#192): Added full integration with Dhruva Dock (dhruva@narkagni), including ' +
+            'dynamic pill width relayout and autohide inhibit while the pop-up is open.\n\n' +
+            'Improvements & Bug Fixes:\n' +
+            '• Fixed Dock Icons & Separator Jumping (#203): Prevented Dash to Dock and GNOME Dash favorite icons and ' +
+            'separator from shifting or scrambling order during workspace switches and app launches when the pill is ' +
+            'placed at First, Center, or Manual Index.\n' +
+            '• Dash to Dock v105+ Drag-and-Drop Fix (#187): Fixed icon drag-and-drop placeholder positioning around ' +
+            'the music pill in horizontal and vertical docks.\n' +
+            '• Lyrics Accuracy & Matching Overhaul (#185, #188, #194, #195, #196, #198): Added remix/live/acoustic ' +
+            'version qualifier scoring, duration validation, explicit instrumental track detection, genuine vs AI ' +
+            'word-sync prioritization, title-only fallback for YouTube channels, and removed deprecated BiniLyrics.\n' +
+            '• TTML & Instrumental Break Polish (#187, #191): Improved TTML XML entity unescaping, word spacing, ' +
+            'and automatic clearing of pill lyrics after a line\'s duration during instrumental breaks.\n' +
+            '• Fixed Idle CPU Usage & Marquee Scrolling (#180, #189, #193): Eliminated ~10% idle CPU drain when ' +
+            'paused or hidden, and fixed marquee text scrolling resetting or stopping when lyrics are enabled.\n' +
+            '• Dynamic Blur Refinements (#183) & EGO Review Compliance: Improved Blur my Shell backdrop sync and ' +
+            'hardened extension lifecycle and signal management.\n\n' +
+            'Translations:\n' +
+            '• Updated translations from Hosted Weblate (Italian, Indonesian, Vietnamese, Turkish).',
+    },
+    {
         version: '1.6',
         subtitle: 'Always-On Last Track & Quick Launch, Dynamic Width Default, Player Blur & Polish',
-        expanded: true,
+        expanded: false,
         notes: 'New Features & Enhancements:\n' +
             '• Always-On Mode with Last Played Music & Quick Launch: When Always-On mode is active and playback stops ' +
             'or the machine reboots, the pill remembers and displays the last played track (title, artist, album art, and ' +
