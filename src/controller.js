@@ -1160,7 +1160,8 @@ export class MusicController {
             return fn();
 
         this._isMovingItem = true;
-        container.set_child_at_index(pill, -1);
+        // Clutter ignores negative indices in set_child_at_index(), so use the last real index.
+        container.set_child_at_index(pill, container.get_n_children() - 1);
         try {
             return fn();
         } finally {
