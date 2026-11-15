@@ -25,7 +25,7 @@ const PREFS_KEYS = [
     'popup-show-player-selector', 'hide-auto-smart-selection', 'popup-player-selector-position', 'show-pill-border', 'invert-scroll-direction', 'always-show-pill', 'popup-hide-on-leave',
     'popup-vertical-offset', 'popup-horizontal-offset',
     'visualizer-bars', 'enable-lyrics', 'pill-enable-word-level', 'lyrics-language-preference',
-    'local-lyrics-folder', 'lyrics-cache-revision', 'open-lyrics-import',
+    'local-lyrics-folder', 'lyrics-cache-revision',
     'app-name-mapping', 'lyric-fade-enable', 'lyric-fade-duration', 'visualizer-bar-width', 'visualizer-height',
     'popup-visualizer-bars', 'popup-visualizer-bar-width', 'popup-visualizer-height', 'edge-margin', 'popup-vinyl-speed', 'sync-accent-color',
     'enable-custom-buttons', 'custom-button-1', 'custom-button-2', 'playback-history', 'has-seen-first-hint',
@@ -300,20 +300,6 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         this._buildStylePage(window, settings);
         this._buildSystemPage(window, settings);
         this._buildAboutPage(window);
-
-        const checkOpenLyricsImport = () => {
-            if (settings.get_boolean('open-lyrics-import')) {
-                settings.set_boolean('open-lyrics-import', false);
-                if (this._lyricsPage) {
-                    window.set_visible_page(this._lyricsPage);
-                }
-                if (this._openLyricsImportDialog) {
-                    this._openLyricsImportDialog();
-                }
-            }
-        };
-        settings.connect('changed::open-lyrics-import', checkOpenLyricsImport);
-        checkOpenLyricsImport();
     }
 
     // =========================================================================
@@ -1637,10 +1623,6 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 });
                 writeIndex(entries);
 
-                if (!settings.get_boolean('enable-lyrics')) {
-                    settings.set_boolean('enable-lyrics', true);
-                }
-
                 refreshImportedList();
                 window.add_toast(new Adw.Toast({
                     title: _('Imported lyrics for "%s"').replace('%s', trackTitle || origFileName),
@@ -1667,12 +1649,6 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
         lyricsPage.add(localGroup);
         refreshImportedList();
         lyricsPage.add(importedGroup);
-
-        this._lyricsPage = lyricsPage;
-        this._openLyricsImportDialog = () => {
-            refreshHistoryDropdown();
-            openImportFileDialog();
-        };
 
         window.add(lyricsPage);
     }

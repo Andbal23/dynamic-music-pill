@@ -429,11 +429,6 @@
       <summary>Lyrics Cache Revision</summary>
       <description>Incremented when manually imported lyrics are added or removed.</description>
     </key>
-    <key name="open-lyrics-import" type="b">
-      <default>false</default>
-      <summary>Open Lyrics Import Dialog</summary>
-      <description>Transient trigger to open the Lyrics page and file chooser in Preferences.</description>
-    </key>
     <key name="enable-gamemode" type="b">
       <default>true</default>
       <summary>Game Mode</summary>
