@@ -1,4 +1,5 @@
 import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import Graphene from 'gi://Graphene';
 import Shell from 'gi://Shell';
@@ -46,6 +47,7 @@ if (!SUPPORTS_CORNER_RADIUS) {
 }
 
 let BmsDynamicPipelineClass = null;
+let BmsUnifiedMetaDetected = false;
 
 function getBmsDirectory() {
     let bms = Main.extensionManager.lookup('blur-my-shell@aunetx');
@@ -69,23 +71,37 @@ function findBmsDynamicPipelinePath(bmsDir) {
     return null;
 }
 
+function checkBmsMetadataAsync(bmsDir) {
+    if (!bmsDir) return Promise.resolve(false);
+    let metaPath = GLib.build_filenamev([bmsDir, 'metadata.json']);
+    if (!GLib.file_test(metaPath, GLib.FileTest.EXISTS))
+        return Promise.resolve(false);
+    let file = Gio.File.new_for_path(metaPath);
+    return new Promise(resolve => {
+        file.load_contents_async(null, (f, res) => {
+            try {
+                let [ok, contents] = f.load_contents_finish(res);
+                if (ok && contents) {
+                    let meta = JSON.parse(new TextDecoder().decode(contents));
+                    resolve(Boolean(meta && typeof meta.version === 'number' && meta.version >= 76));
+                    return;
+                }
+            } catch {
+                // Ignore metadata read errors
+            }
+            resolve(false);
+        });
+    });
+}
+
 export function isBmsUnifiedInstalled() {
+    let bms = Main.extensionManager.lookup('blur-my-shell@aunetx');
+    if (bms?.metadata && typeof bms.metadata.version === 'number' && bms.metadata.version >= 76)
+        return true;
     let bmsDir = getBmsDirectory();
     if (!bmsDir) return false;
     if (findBmsDynamicPipelinePath(bmsDir) !== null) return true;
-    let metaPath = GLib.build_filenamev([bmsDir, 'metadata.json']);
-    if (GLib.file_test(metaPath, GLib.FileTest.EXISTS)) {
-        try {
-            let [ok, contents] = GLib.file_get_contents(metaPath);
-            if (ok) {
-                let meta = JSON.parse(new TextDecoder().decode(contents));
-                if (meta && typeof meta.version === 'number' && meta.version >= 76) return true;
-            }
-        } catch {
-            return false;
-        }
-    }
-    return false;
+    return BmsUnifiedMetaDetected;
 }
 
 export async function initBlurBackend(force = false) {
@@ -93,6 +109,7 @@ export async function initBlurBackend(force = false) {
     let bmsDir = getBmsDirectory();
     let dynPath = findBmsDynamicPipelinePath(bmsDir);
     if (dynPath) {
+        BmsUnifiedMetaDetected = true;
         try {
             let mod = await import('file://' + dynPath);
             if (mod && mod.DynamicPipeline) {
@@ -102,6 +119,8 @@ export async function initBlurBackend(force = false) {
         } catch (e) {
             console.debug(`[Dynamic Music Pill] Failed to import BMS DynamicPipeline: ${e.message}`);
         }
+    } else {
+        BmsUnifiedMetaDetected = await checkBmsMetadataAsync(bmsDir);
     }
     BmsDynamicPipelineClass = null;
     return null;

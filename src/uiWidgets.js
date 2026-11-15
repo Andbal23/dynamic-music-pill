@@ -234,6 +234,7 @@ export const ScrollLabel = GObject.registerClass(
             this.disconnectObject(this);
             if (this._fadeEffect) {
                 this._fadeEffect.setEdges(false, false, false);
+                this._fadeEffect.destroy();
                 if (this._fadeEffectAttached) this.remove_effect(this._fadeEffect);
                 this._fadeEffect = null;
                 this._fadeEffectAttached = false;

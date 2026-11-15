@@ -96,6 +96,21 @@ export const TextFadeEffect = SHELL_MAJOR >= 51
                 });
             }
 
+            vfunc_set_actor(actor) {
+                if (!actor && this._animId) {
+                    GLib.Source.remove(this._animId);
+                    this._animId = null;
+                }
+                super.vfunc_set_actor(actor);
+            }
+
+            destroy() {
+                if (this._animId) {
+                    GLib.Source.remove(this._animId);
+                    this._animId = null;
+                }
+            }
+
             vfunc_paint_target(node, paint_context) {
                 let actor = this.get_actor();
                 if (actor) {
@@ -126,5 +141,7 @@ export const TextFadeEffect = SHELL_MAJOR >= 51
             }
 
             setEdges(_left, _right, _animate = false) {}
+
+            destroy() {}
         }
     );
