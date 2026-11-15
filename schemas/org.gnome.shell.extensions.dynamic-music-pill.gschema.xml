@@ -122,7 +122,7 @@
       <summary>Enable shadow for the pop-up menu</summary>
     </key>
     <key name="popup-follow-transparency" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Pop-up inherits transparency settings</summary>
     </key>
     <key name="popup-follow-radius" type="b">
@@ -302,12 +302,12 @@
       <summary>Transparent Visualizer</summary>
     </key>
     <key name="enable-blur-pill" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Enable Dynamic Blur for Pill</summary>
       <description>Apply real-time gaussian blur behind the main music pill using Blur my Shell and gnome-rounded-blur.</description>
     </key>
     <key name="enable-blur-popup" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Enable Dynamic Blur for Pop-up</summary>
       <description>Apply real-time gaussian blur behind the pop-up player.</description>
     </key>
