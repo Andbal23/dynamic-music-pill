@@ -2691,7 +2691,6 @@ export class MusicController {
         let newVolume = up ? currentVol + step : currentVol - step;
         newVolume = Math.max(0, Math.min(maxVolume, newVolume));
 
-        stream.change_volume(newVolume);
         stream.volume = newVolume;
         stream.push_volume();
 
