@@ -36,9 +36,19 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
+        version: '1.7.1',
+        subtitle: 'Volume Scroll & Display Scaling Text Fixes',
+        expanded: true,
+        notes: 'Bug Fixes:\n' +
+            '• Fixed scroll-to-adjust-volume on the pill not working (#206).\n' +
+            '• Fixed text misalignment and lyric scrolling issues on scaled / HiDPI displays (#207).\n\n' +
+            'Translations:\n' +
+            '• Added Arabic translation via Hosted Weblate (#205).',
+    },
+    {
         version: '1.7',
         subtitle: 'Local & Imported Lyrics, Dock Icon Stability, Independent Margins, Dhruva Dock & CPU Fixes',
-        expanded: true,
+        expanded: false,
         notes: 'New Features & Enhancements:\n' +
             '• Local & Imported Lyrics (#199): Automatic detection of sidecar .lrc, .ttml, and .txt files next to ' +
             'local audio tracks, an optional Local Lyrics Folder setting, and manual lyrics import & management in ' +
