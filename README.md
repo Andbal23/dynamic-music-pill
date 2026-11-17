@@ -1,158 +1,86 @@
-<p align="center">
-  <img src="screenshots/banner.svg" alt="Dynamic Music Pill" width="100%">
-</p>
-
-A dynamic, elegant, and highly customizable music widget for GNOME Shell. It brings a pill-shaped media controller with a live audio visualizer directly to your Dash or Panel, complete with a rich Pop-Up Menu.
-
----
-
 <div align="center">
 
-![Gnome Extensions Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal) ![Views](https://komarev.com/ghpvc/?username=Andbal23&repo=dynamic-music-pill&label=Views&color=green) ![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2049-blue?logo=gnome&logoColor=white) ![GitHub License](https://img.shields.io/github/license/Andbal23/dynamic-music-pill)
-[![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/stargazers) [![Watchers](https://img.shields.io/github/watchers/Andbal23/dynamic-music-pill?style=social)](https://github.com/Andbal23/dynamic-music-pill/watchers) [![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
+<img src="screenshots/ego-banner.png" alt="Dynamic Music Pill — GNOME 51 Showcase" width="100%">
 
+# Dynamic Music Pill
+
+**Adaptive media controller, real-time Cava visualizer, and synchronized karaoke lyrics for GNOME Shell.**
+
+<p align="center">
+  <a href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/">
+    <img src="https://img.shields.io/badge/Install%20on-GNOME%20Extensions-blue?style=for-the-badge&logo=gnome&logoColor=white" alt="Install on GNOME Extensions">
+  </a>
+</p>
+
+[![Downloads](https://img.shields.io/gnome-extensions/dt/dynamic-music-pill@andbal?style=flat-square&color=38bdf8)](https://extensions.gnome.org/extension/9334/dynamic-music-pill/)
+[![GNOME Shell](https://img.shields.io/badge/GNOME-45%20--%2051-a855f7?style=flat-square&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/9334/dynamic-music-pill/)
+[![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
+[![Stars](https://img.shields.io/github/stars/Andbal23/dynamic-music-pill?style=flat-square&color=eab308)](https://github.com/Andbal23/dynamic-music-pill/stargazers)
+[![License: GPL-3.0](https://img.shields.io/github/license/Andbal23/dynamic-music-pill?style=flat-square&color=10b981)](LICENSE)
 
 </div>
 
 ---
+
+## Live Preview
+
 <div align="center">
-  <a align="center" href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/">
-    <img alt="Get it on GNOME Extensions" height="150" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true"/>
-  </a>
-  &nbsp;&nbsp;&nbsp;
-  <a align="center" href="https://hosted.weblate.org/engage/dynamic-music-pill/">
-    <img alt="Translation status" height="300" src="https://hosted.weblate.org/widget/dynamic-music-pill/multi-auto.svg"/>
-  </a>
+  <img src="screenshots/demo.gif" alt="Dynamic Music Pill Live Preview" width="88%">
+  <br>
+  <sub>Real GNOME 51 capture featuring <b>Dash to Dock</b>, <b>Blur my Shell</b> refraction, live <b>Cava</b> spectrum bars, word-by-word karaoke lyrics, and quick subpages — <a href="screenshots/demo.mp4">download crisp MP4</a>.</sub>
 </div>
 
 ---
 
-## Features
+## Visual Modes & Placement
 
-### Visuals & Rendering
-
-**Adaptive Color Engine** — The pill's background color and visualizer accent are automatically extracted from the dominant color of the current track's album art, and update smoothly on every track change.
-
-**Four Visualizer Modes** — Choose between Off, Wave (smooth continuous sine-like waveform), Beat (jumpy bar animation), or Real-Time (requires the `cava` package for live audio visualization). Bar count, bar width, height, and margin are all independently configurable.
-
-**Per-Layer Transparency** — Transparency can be enabled globally and then applied individually to the background, album art, text, and visualizer, giving full compositing control without coupling layers together.
-
-**Sync GNOME Accent Color** — Dynamically changes the GNOME Shell system accent color to match the dominant color of the currently playing album art, unifying the whole desktop aesthetic.
-
-**Custom Color Override** — When adaptive colors are not desired, a full custom color mode lets you set fixed background and text colors via a color picker, overriding the dynamic system entirely.
-
-**Pill Shadow** — An optional drop shadow can be applied to the main pill widget with independent control over blur radius and intensity.
-
-**Outline Border** — A subtle border around the pill can be shown or hidden independently of the background and transparency settings.
-
-**Dynamic Width** — The pill can automatically resize its width to fit the current track title, with the configured width acting as a maximum cap. Changes are animated with a crossfade.
-
-### Playback Controls
-
-**Configurable Click Actions** — Five interaction types can each be assigned an independent action: Left Click, Double Click, Middle Click, Right Click, and Hover. Available actions are: None, Play/Pause, Next Track, Previous Track, Open Player App, Close Player App, Open Pop-Up Menu, Select Player, and Open Settings.
-
-**Hover Delay** — When a Hover action is assigned, a configurable delay (0–3000 ms) prevents the action from triggering immediately on accidental cursor contact.
-
-**Scroll to Change Volume** — Scrolling over the pill adjusts system volume via PulseAudio/PipeWire with GNOME OSD feedback. A built-in delta accumulator ensures smooth and accurate behavior on high-resolution touchpads.
-
-**Scroll to Change Track** — The scroll action can alternatively be set to skip forward or backward through the track queue.
-
-**Scroll to Switch Player** — A third scroll mode cycles through active MPRIS-compatible media players, letting you control multiple apps without opening a menu.
-
-**Scroll Direction Inversion** — Both the scroll animation direction (visual jump effect) and the actual scroll direction (up/down mapping for track and volume) can be inverted independently.
-
-**Tablet Mode Controls** — A dedicated on-pill button overlay for touch and tablet use. Configurable to show Skip Only, Play/Pause Only, or All Controls directly on the pill surface.
-
-**Always ON Mode** — The pill retains the last known track metadata and stays visible even after the media player is closed, instead of disappearing when no active player is detected.
-
-**Hide Default GNOME Player** — Suppresses the built-in media controls widget in the GNOME Quick Settings panel to avoid duplicate interfaces.
-
-### Display & Text
-
-**Scrolling Track Title** — When the track title or artist name exceeds the available pill width, the text scrolls horizontally.
-
-**Inline Artist** — When the pill is narrow or squeezed, the display can switch to a combined "Title • Artist" single-line format.
-
-**Compact Mode** — Hides the title and artist text entirely, leaving only the album art and visualizer visible for a minimal footprint.
-
-**Fallback Album Art** — A custom image file (PNG or JPEG) can be set as a fallback to display when the current track provides no album art.
-
-**Synchronized Lyrics** — Real-time lyric display synchronized to the current track's playback position. Lyrics can optionally fade in with a configurable transition duration (50–2000 ms).
-
-### Pop-Up Menu
-
-**Seek Bar** — A fully interactive seek bar allows jumping to any position in the current track directly from the pop-up, without opening the player application.
-
-**Spinning Vinyl** — The album art in the pop-up rotates continuously while music is playing, pausing automatically on pause. Rotation speed is adjustable (1–50).
-
-**Square Album Art Mode** — The album art in the pop-up can be shown as a square instead of circular. When square mode is active, the spinning animation is automatically disabled.
-
-**Shuffle and Loop Controls** — Optional shuffle and repeat toggle buttons can be shown in the pop-up alongside the standard playback controls.
-
-**Custom Control Buttons** — Up to two additional buttons can be added to the pop-up controls row. Each button can be assigned one of: Volume, Seek Step, Audio Output, Sleep Timer, Playback Speed, or Recently Played history.
-
-**Player Selector** — An optional row at the top of the pop-up displays icons for all currently active MPRIS players, allowing switching between players with a single click.
-
-**Pop-up Visualizer** — The audio visualizer can also be displayed inside the pop-up menu, with its own independent bar count (2–64), bar width (1–20 px), and height (20–200 px) settings. A complementary option hides the main pill visualizer when the pop-up is open, creating a visual transfer effect.
-
-**Dynamic Menu Resizing** — When skipping tracks from the pop-up, the menu smoothly resizes and crossfades to accommodate different album art dimensions.
-
-**Close on Mouse Leave** — The pop-up can be configured to automatically close when the cursor moves away from it.
-
-**Custom Pop-up Width** — The pop-up menu's automatic dynamic sizing can be overridden with a fixed custom width (260–800 px).
-
-**Pop-up Styling Inheritance** — The pop-up can independently inherit the pill's background transparency, corner radius, custom background color, and custom text color.
-
-**Dynamic Contrast** — Pop-up text and control buttons automatically switch between light and dark based on the album art's luminance, maintaining readability on both bright and dark covers.
-
-### Layout & Positioning
-
-**Four Placement Targets** — The pill can be placed in the Dock (requires Dash-to-Dock or Ubuntu Dock), or in any of the three Top Panel zones: Left Box, Center Box, or Right Box.
-
-**Alignment Presets** — Within the chosen container, the pill can be aligned to First (Start), Center, Last (End), or placed at a manually specified index position.
-
-**Independent Offset Control** — Vertical (Y) and Horizontal (X) offsets can be fine-tuned independently, with separate profiles stored for Dock mode and Panel mode.
-
-**Independent Size Profiles** — Widget width, height, and album art thumbnail size are stored separately for Dock and Panel modes, with different valid ranges appropriate to each context.
-
-**Corner Radius** — Controls the roundness of the widget edges globally, from fully square (0) to a complete pill shape (50+).
-
-**Outer Edge Margin** — Adds spacing before the album art and after the visualizer to control padding at the pill's outer edges.
-
-### Performance
-
-**Game Mode** — Detects when a fullscreen application is focused and automatically disables the visualizer and all CSS animations to eliminate compositor overhead. Resumes automatically when the fullscreen application closes.
-
-**Slow Player Workaround** — Adds a slight delay to track change handling to fix synchronization issues with players that emit metadata updates slightly after the track change signal.
-
-### Multi-Player Management
-
-**Player Filter** — Players can be filtered using a Blacklist (exclude named players) or Whitelist (allow only named players) mode, with the filter list editable as comma-separated MPRIS app names. Currently active players are detected live via D-Bus and can be added to the filter list with a single click.
-
-**Manual App ID Mapping** — When the extension cannot automatically identify a player's window for Open/Close App actions, a manual mapping table allows pairing an MPRIS player name to its correct window App ID. Running players are detected via D-Bus and can be registered with one click, then edited in-place or deleted individually.
-
-**Selected Player Lock** — The extension tracks which player is currently selected and maintains focus on it across track changes and player restarts.
-
-### Settings Management
-
-**Export Settings** — The complete configuration is serialized to a `.json` file saved to a user-selected path for backup or transfer between machines.
-
-**Import Settings** — A previously exported `.json` file can be loaded to instantly restore a full configuration.
-
-**Factory Reset** — All settings are reset to their defaults in a single action.
+Dynamic Music Pill fits naturally anywhere in GNOME Shell — inside your **Dock** (**Dash to Dock**, **Ubuntu Dock**, **Simple Taskbar**) or in any **Top Panel** zone (**Left**, **Center**, **Right**) with independent width, height, margin, and offset profiles.
 
 <p align="center">
-  <img src="screenshots/features.svg" alt="Dynamic Music Pill" width="100%">
+  <img src="screenshots/showcase-modes.png" alt="Top Panel, Compact Mode, Circular Vinyl & Player Selector" width="100%">
 </p>
+
+- **Adaptive Color Engine & Dynamic Contrast** — Automatically extracts the dominant palette from the playing track's cover art and adapts text and icons cleanly on both bright and dark covers.
+- **Native Blur Integration (`Blur my Shell v76+`)** — Real-time Dual Kawase and Liquid refraction behind both the main pill and expanded pop-up, with optional album-art color tinting and pipeline following.
+- **Four Visualizer Engines** — Choose **Off**, **Wave**, **Beat**, or **Real-Time** (powered by `cava`) with independently configurable bar counts, thickness, height, and margins.
+- **Compact & Always-On Modes** — Collapse down to a minimal cover + visualizer pill, or retain your last played track on startup with one-click quick launch.
+- **Spinning Vinyl & Multi-Player Selector** — Switch between square album art or a smoothly spinning vinyl disc, and jump between active MPRIS players right from the top of the pop-up.
 
 ---
 
+## Expanded Pop-up & Custom Control Buttons
 
-### Preview
+Beyond Play/Pause, Next, Previous, Seek Bar, Shuffle, and Repeat, the pop-up includes **two customizable quick-action button slots** that open sleek frosted subpages directly inside the pop-up — no switching windows required.
 
 <p align="center">
-  <img src="screenshots/demo.gif" alt="Dynamic Music Pill Demo" width=100%>
+  <img src="screenshots/showcase-custom-buttons.png" alt="Custom Button Subpages: History, Volume Mixer, Sleep Timer, Playback Speed" width="100%">
 </p>
+
+- **Recently Played History** — Browse recent tracks with cover art, dominant color tinting, timestamps, and one-click copy.
+- **System & App Volume Mixer** — Adjust master volume and per-player audio streams via PipeWire/PulseAudio, plus quick mute.
+- **Audio Output Switcher** — Switch seamlessly between speakers, DACs, and Bluetooth headphones in place.
+- **Sleep Timer** — Built-in shell countdown presets (`5m` – `90m`) that keep running even when the screen locks.
+- **Playback Speed Control** — Adjust playback rate (`0.5×` – `2.0×`) for compatible MPRIS players (e.g. podcasts or browsers).
+- **Quick Seek Step** — Optional fast skip backward/forward action slot can also be assigned to either custom button.
+
+---
+
+## Synchronized Karaoke Lyrics
+
+- **Word-by-Word Karaoke Highlighting** — Displays live synced lyrics in both the **Expanded Pop-up** and directly inline on the **Dock or Top Panel Pill** with smooth timing and configurable fade transitions.
+- **Multi-Source & Preferred Script** — Automatic lyrics lookup (LRCLib, Apple Music karaoke, and MPRIS metadata) with auto, original script (CJK/Hangul), or romanized/Latin preference.
+- **Local Sidecar & Manual Import** — Automatically detects `.lrc`, `.ttml`, and `.txt` files placed alongside local audio, or lets you pick a custom folder and import lyrics manually for any song.
+
+---
+
+## Controls, Multi-Player & System Integration
+
+- **Five Mouse & Hover Bindings** — Independently bind **Left Click**, **Double Click**, **Middle Click**, **Right Click**, and **Hover** (with `0–3000 ms` delay) to Play/Pause, Skip, Open/Close Player App, Open Pop-up Menu, Switch Player, or Open Settings.
+- **HiDPI Scroll Gestures** — Scroll on the pill to change **Track**, **System/App Volume**, or **Switch Player** with touchpad delta accumulation and independent scroll direction/animation inversion.
+- **Tablet & Touch Controls** — Optional on-pill Skip and Play/Pause buttons for touchscreens and 2-in-1s.
+- **Game Mode & Performance** — Automatically pauses visualizers and CSS animations whenever a fullscreen app is focused.
+- **Player Filtering & App ID Mapping** — Whitelist or blacklist MPRIS players (plus live browser detection) and map custom `.desktop` App IDs cleanly.
+- **Import / Export & Factory Reset** — Save or restore your complete extension configuration to a `.json` file at any time.
 
 ---
 
@@ -160,96 +88,70 @@ A dynamic, elegant, and highly customizable music widget for GNOME Shell. It bri
 
 ### From GNOME Extensions Store (Recommended)
 
-<p align="center">
+<div align="center">
   <a href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/">
-    <img alt="Get it on GNOME Extensions" width="400" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true"/>
+    <img alt="Get it on GNOME Extensions" width="320" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true"/>
   </a>
-</p>
+</div>
 
 ### Manual Installation from Source
 
-**1.** Clone the repository:
-
 ```bash
 git clone https://github.com/Andbal23/dynamic-music-pill.git
-```
-
-**2.** Enter the directory:
-
-```bash
 cd dynamic-music-pill
-```
-
-**3.** Create the extension directory:
-
-```bash
 mkdir -p ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
-```
-
-**4.** Copy all files:
-
-```bash
 cp -r * ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal/
+glib-compile-schemas ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal/schemas/
 ```
 
-**5.** Compile GSettings schemas:
-
-```bash
-cd ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
-glib-compile-schemas schemas/
-```
-
-**6.** Restart GNOME Shell:
-
-- **X11:** Press `Alt+F2`, type `r`, and press `Enter`.
-- **Wayland:** Log out and log back in.
-
-**7.** Enable the extension via **GNOME Extensions**, **Extension Manager**, or:
+Log out and log back in (GNOME 50+ is Wayland-only; on GNOME 51 the `Alt+F2` reload command was removed), then enable the extension via **Extensions / Extension Manager** or:
 
 ```bash
 gnome-extensions enable dynamic-music-pill@andbal
 ```
+
 ### NixOS Installation
 
-#### Install via Flake (latest from GitHub)
+<details>
+<summary>Install via Nix Flake (CLI or declarative configuration)</summary>
 
-This extension also provides a Nix Flake for easy installation directly from GitHub.
-
-##### Quick Install (via terminal)
+#### Quick Install
 
 ```bash
 # GNOME 45-49:
 nix profile add github:Andbal23/dynamic-music-pill
 
-# GNOME 50:
-nix profile add github:Andbal23/dynamic-music-pill/gnome50
+# GNOME 50+:
+nix profile add github:Andbal23/dynamic-music-pill#gnome50
 ```
 
-##### Declarative (flake-based configuration)
+#### Declarative (`flake.nix`)
 
-Add the input to your `flake.nix`:
+Add the input:
+
+```nix
+inputs.dynamic-music-pill.url = "github:Andbal23/dynamic-music-pill";
+```
+
+Then add the package to `configuration.nix` or Home Manager:
 
 ```nix
 # GNOME 45-49:
-inputs.dynamic-music-pill.url = "github:Andbal23/dynamic-music-pill";
-
-# GNOME 50:
-inputs.dynamic-music-pill.url = "github:Andbal23/dynamic-music-pill/gnome50";
-```
-
-Then add the package to your `configuration.nix` or Home Manager config:
-
-```nix
 environment.systemPackages = [
   inputs.dynamic-music-pill.packages.${pkgs.system}.default
 ];
+
+# GNOME 50+:
+environment.systemPackages = [
+  inputs.dynamic-music-pill.packages.${pkgs.system}.gnome50
+];
 ```
 
-Rebuild your system with `sudo nixos-rebuild switch` and you're good to go!
+</details>
 
-### Real-Time Visualizer (optional)
+### Real-Time Cava Visualizer (Optional)
 
-The Real-Time visualizer mode requires the `cava` package to be installed.
+The Real-Time visualizer mode (`visualizer-style = 3`) uses the `cava` CLI package:
 
 | Distribution | Command |
 |---|---|
@@ -259,247 +161,168 @@ The Real-Time visualizer mode requires the `cava` package to be installed.
 
 ---
 
-### Contributing a Translation
+## Configuration (Preferences)
 
-Translations are managed on Weblate. No coding knowledge is required.
-
-1. Click the badge below to visit the translation page.
-2. Sign in with your GitHub account.
-3. Select your language and start translating.
-
-[![Translation status](https://hosted.weblate.org/widgets/dynamic-music-pill/-/svg-badge.svg)](https://hosted.weblate.org/engage/dynamic-music-pill/)
-
-
----
+The Libadwaita preferences window is organized into **7 searchable tabs**:
 
 <p align="center">
-  <img src="screenshots/how-it-works.svg" alt="Dynamic Music Pill" width="100%">
+  <img src="screenshots/showcase-preferences.png" alt="GNOME 51 Libadwaita Preferences Window" width="100%">
 </p>
 
-## Configuration
+<details>
+<summary><b>Tab 1 — Main Pill</b> (General display, positioning & per-mode sizing)</summary>
 
-The Preferences window is organized into five tabs.
-
----
-
-### Tab 1 — Main Pill
-
-<p align="center">
-  <img src="screenshots/main.png" width="400">
-</p>
-
-#### General Settings
-
-
-
+<p align="center"><img src="screenshots/main.png" width="420" alt="Main Pill Preferences"></p>
 
 | Setting | Description |
 |---|---|
 | Always ON | Retains the last known track and keeps the pill visible after the media player is closed. |
 | Show Album Art | Displays the cover art thumbnail inside the pill. |
-| Fallback Album Art | Sets a custom PNG or JPEG image to show when the current track provides no album art. |
-| Enable Scroll Controls | Enables track, volume, or player switching via scroll wheel or touchpad gestures. |
-| Scroll Action | What scrolling does: **Change Track**, **Change Volume**, or **Switch Player**. |
-| Invert Scroll Animation | Reverses the direction of the visual jump animation on scroll (Natural vs. Traditional). |
-| Invert Scroll Direction | Swaps the up/down mapping for track skipping and volume adjustment. |
-| Scrolling Text | Animates long track titles and artist names that exceed the pill's width. |
-| Lyrics Display | Shows real-time synchronized lyrics for the current track. |
-| Lyrics Fade-in Effect | Smoothly fades in each new lyric line as it becomes active. |
-| Fade Duration | Duration of the lyric fade-in transition in milliseconds (50–2000 ms). |
-| Tablet Mode Controls | Overlays media buttons directly on the pill: **Off**, **Skip Only**, **Play/Pause Only**, or **All Controls**. |
-| Inline Artist | Switches to a combined "Title • Artist" format when the pill is narrow. |
-| Compact Mode (Hide Text) | Hides the title and artist text entirely for a minimal pill appearance. |
+| Fallback Album Art | Sets a custom PNG or JPEG image when the current track provides no cover art. |
+| Show Artist / Inline Artist | Displays the artist line or switches to `"Title • Artist"` when narrow. |
+| Compact Mode (Hide Text) | Hides title and artist text for a minimal cover + visualizer pill. |
+| Scrolling Text | Smoothly scrolls long titles/artists (with optional hover-only & freeze-on-pause). |
+| Container Target | Hosts the pill in **Dock**, **Panel Left**, **Panel Center**, or **Panel Right**. |
+| Multi-Monitor Docks | Choose between Main Dock Only, All Docks, or Secondary Docks Only. |
+| Dynamic Width / Alignment / Offsets | Auto-fits width up to cap, sets alignment/manual index, and tunes X/Y offsets & dimensions separately for Dock and Panel modes. |
 
-#### Mouse Actions
+</details>
 
-Each of the five interaction types can be assigned one of the following actions: **None**, **Play/Pause**, **Next Track**, **Previous Track**, **Open Player App**, **Close Player App**, **Open Pop-Up Menu**, **Select Player**, **Open Settings**.
+<details>
+<summary><b>Tab 2 — Pop-up Menu</b> (Vinyl art, custom buttons, player selector & pop-up visualizer)</summary>
+
+<p align="center"><img src="screenshots/popup.png" width="420" alt="Pop-up Menu Preferences"></p>
 
 | Setting | Description |
 |---|---|
-| Left Click | Action triggered by a single left-click on the pill. |
-| Double Click | Action triggered by a double left-click on the pill. |
-| Middle Click | Action triggered by a middle-click on the pill. |
-| Right Click | Action triggered by a right-click on the pill. |
-| Hover Action | Action triggered when the cursor rests over the pill. |
-| Hover Delay | Time in milliseconds before the Hover Action fires after the cursor enters the pill (0–3000 ms). |
+| Close on Mouse Leave | Auto-hides the pop-up when the cursor moves outside it. |
+| Show Album Title / HH:MM:SS | Optionally append album name after artist and display hours for long tracks. |
+| Enable Shadow & Inheritance | Toggle pop-up shadow and independently inherit transparency, border radius, and custom colors. |
+| Show / Rotate / Square Vinyl | Display circular rotating vinyl disc (adjustable speed) or static rounded square cover. |
+| Shuffle & Repeat Controls | Toggle shuffle and repeat loop buttons inside the pop-up bar. |
+| Custom Control Buttons (Slot 1 & 2) | Bind two extra pop-up buttons to **Volume**, **Audio Output**, **Sleep Timer**, **Playback Speed**, **Recently Played**, or **Seek Step**. |
+| Player Selector | Displays active MPRIS players cleanly at the top of the pop-up (optional Auto selector toggle). |
+| Pop-up Visualizer | Independent bar count (`2–64`), width (`1–20 px`), height, and option to hide the main pill visualizer while open. |
+
+</details>
+
+<details>
+<summary><b>Tab 3 — Controls</b> (Mouse bindings, hover delay, touchpad/wheel scroll & tablet overlay)</summary>
+
+<p align="center"><img src="screenshots/controls.png" width="420" alt="Controls Preferences"></p>
+
+| Setting | Description |
+|---|---|
+| Mouse & Hover Actions | Map **Left Click**, **Double Click**, **Middle Click**, **Right Click**, and **Hover** (`0–3000 ms` delay) independently. |
+| Scroll Controls | Enable scrolling on the pill to **Change Track**, **Change Volume**, or **Switch Player**. |
+| Volume Scroll Target | Choose **System Master Volume** or **Active Player Application** volume. |
+| Invert Animation / Direction | Independently invert the scroll jump animation and scroll wheel/touchpad direction. |
+| Tablet Mode Controls | Overlay **Skip Only**, **Play/Pause Only**, or **All Controls** directly on the pill. |
+
+</details>
+
+<details>
+<summary><b>Tab 4 — Lyrics</b> (Synced karaoke display, script preference & local `.lrc`/`.ttml` import)</summary>
+
+<p align="center"><img src="screenshots/lyrics.png" width="420" alt="Lyrics Preferences"></p>
+
+| Setting | Description |
+|---|---|
+| Lyrics Display & Fade | Toggle live synchronized lyrics and configure line transition duration (`50–2000 ms`). |
+| Word-Level Karaoke | Enable per-word karaoke highlight progression directly on the pill and pop-up. |
+| Preferred Script | Choose **Auto**, **Prefer Original Script (CJK/Hangul)**, or **Prefer Latin / Romanized**. |
+| Local Lyrics Folder | Point to a folder of `.lrc`, `.ttml`, or `.txt` files for automatic offline lookup. |
+| Manual Lyrics Import | Attach a local `.lrc`, `.ttml`, or `.txt` file to the currently playing track or any custom title/artist. |
+
+</details>
+
+<details>
+<summary><b>Tab 5 — Style & Layout</b> (Audio visualizer, Blur my Shell pipelines, colors & transparency)</summary>
+
+<p align="center"><img src="screenshots/style.png" width="420" alt="Style and Layout Preferences"></p>
+
+| Setting | Description |
+|---|---|
+| Visualizer Style & Dimensions | **Off**, **Wave**, **Beat**, or **Real-Time (`cava`)**, plus bar count, bar width, height, and margin. |
+| Dynamic Blur (`Blur my Shell`) | Enable blur behind Pill and Pop-up, tint blur with album art, or follow your `Blur my Shell` Dual Kawase / Liquid pipelines. |
+| Colors & Light Mode | **Light Mode**, **Sync GNOME Accent Color**, or custom background, text, and visualizer color overrides. |
+| Per-Layer Transparency & Outline | Global opacity slider plus independent transparency switches for art, text, and visualizer, outline border, and drop shadow. |
+
+</details>
+
+<details>
+<summary><b>Tab 6 — System & Reset</b> (Game Mode, player filtering, App ID mapping & JSON backup)</summary>
+
+<p align="center"><img src="screenshots/system.png" width="420" alt="System Preferences"></p>
+
+| Setting | Description |
+|---|---|
+| Hide Default GNOME Player | Removes the duplicate built-in media controls from GNOME Quick Settings. |
+| Game Mode & Slow Player Fix | Auto-pauses animations in fullscreen apps, and optional compatibility delay for slower MPRIS players. |
+| Player Filter & App ID Mapping | Live D-Bus player detection to Whitelist/Blacklist players or pair custom MPRIS names to `.desktop` App IDs. |
+| Export / Import / Reset | Serialize full preferences to `.json`, restore backups, or reset to defaults. |
+
+</details>
+
+<details>
+<summary><b>Tab 7 — About</b> (Version changelog, Weblate status & project links)</summary>
+
+<p align="center"><img src="screenshots/about.png" width="420" alt="About and Changelog Preferences"></p>
+
+</details>
 
 ---
 
-### Tab 2 — Pop-up Menu
+## Contributors
+
+Dynamic Music Pill is built by **András László ([@Andbal23](https://github.com/Andbal23))** together with community code contributors and translators worldwide!
 
 <p align="center">
-  <img src="screenshots/popup.png" width="400">
+  <a href="https://github.com/Andbal23/dynamic-music-pill/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Andbal23/dynamic-music-pill" alt="GitHub Contributors">
+  </a>
 </p>
 
-| Setting | Description |
-|---|---|
-| Rotate Vinyl | Spins the album art like a vinyl record while music is playing. Pauses on playback pause. |
-| Rotation Speed | Speed of the vinyl spin animation (1 = slowest, 50 = fastest, default 10). |
-| Enable Shadow | Adds a drop shadow behind the pop-up menu panel. |
-| Close on Mouse Leave | Automatically hides the pop-up when the cursor moves outside it. |
-| Follow Custom Background Color | Applies the pill's custom background color to the pop-up (requires Custom Colors enabled). |
-| Follow Custom Text Color | Applies the pill's custom text color to the pop-up (requires Custom Colors enabled). |
-| Follow Transparency | Inherits the pill's background opacity for the pop-up background. |
-| Follow Border Radius | Inherits the pill's corner radius for the pop-up menu border. |
-| Show Vinyl | Displays the album art image in the pop-up. |
-| Square Vinyl Image | Shows the album art as a square instead of a circle. Disables vinyl rotation. |
-| Show Shuffle and Loop | Displays shuffle and repeat toggle buttons in the pop-up controls. |
-| Enable Custom Buttons | Adds up to two extra buttons to the pop-up controls row. |
-| Custom Button 1 Action | Action for the first custom button: **None**, **Volume**, **Seek Step**, **Audio Output**, **Sleep Timer**, **Playback Speed**, or **Recently Played**. |
-| Custom Button 2 Action | Action for the second custom button: **None**, **Volume**, **Seek Step**, **Audio Output**, **Sleep Timer**, **Playback Speed**, or **Recently Played**. |
-| Show Player Selector | Shows active player icons at the top of the pop-up for one-click player switching. |
-| Use Custom Width | Disables dynamic pop-up sizing and uses a fixed width instead. |
-| Custom Width Value | Fixed width for the pop-up menu in pixels (260–800 px). |
-| Show Visualizer in Pop-up | Displays the audio visualizer inside the pop-up menu. |
-| Hide Pill Visualizer | Hides the main pill's visualizer when the pop-up is open, creating a visual transfer effect. |
-| Popup Visualizer Bar Count | Number of bars shown in the pop-up visualizer (2–64). |
-| Popup Visualizer Bar Width | Width of each bar in the pop-up visualizer in pixels (1–20 px). |
-| Popup Visualizer Height | Maximum height of the pop-up visualizer in pixels (20–200 px). |
+### Translations ([Hosted Weblate](https://hosted.weblate.org/engage/dynamic-music-pill/))
+
+<div align="center">
+  <a href="https://hosted.weblate.org/engage/dynamic-music-pill/">
+    <img alt="Translation status" width="520" src="https://hosted.weblate.org/widget/dynamic-music-pill/multi-auto.svg"/>
+  </a>
+</div>
+
+- **Arabic**: Issam Khalaf
+- **Chinese (Simplified)**: LuceLoong, O2bmm
+- **Dutch**: Heimen Stoffels, László András
+- **French**: Ocin4ever, elmagio, lebao3105
+- **German**: Christian Lauinger
+- **Hindi**: Dhananjay Porwal
+- **Hungarian**: László András
+- **Indonesian**: Arif Budiman, Joy, RafifSakti
+- **Italian**: albanobattistella, talpinum, gio
+- **Japanese**: penne
+- **Portuguese**: ssantos
+- **Portuguese (Brazil)**: Guilherme Odai, [@silveirajhess-cyber](https://github.com/silveirajhess-cyber)
+- **Russian**: Daniel Freak, slytheduck
+- **Spanish**: [@champinondev-lab](https://github.com/champinondev-lab), Elsie, yael
+- **Swedish**: Andreas Rheindorf, László András
+- **Tamil**: [@tamilneram247](https://github.com/tamilneram247)
+- **Turkish**: Yiğithan Karabel, Buğra Çağlar
+- **Ukrainian**: Олег Попов, László András
+- **Vietnamese**: Huynh Tuan Dung, lebao3105
 
 ---
 
-### Tab 3 — Style & Layout
-
-<p align="center">
-  <img src="screenshots/style.png" width="400">
-</p>
-
-#### Visualizer and Shape
-
-
-
-| Setting | Description |
-|---|---|
-| Visualizer Animation | **Off**, **Wave** (smooth), **Beat** (jumpy bars), or **Real-Time** (requires `cava`). |
-| Visualizer Bar Count | Number of bars in the pill visualizer (2–32). |
-| Visualizer Bar Width | Thickness of each bar in pixels (1–10 px). |
-| Visualizer Height | Maximum height of the visualizer, auto-clamped to pill height (10–100 px). |
-| Visualizer Margin | Gap between the track text and the visualizer animation (0–50 px). |
-| Outer Edge Margin | Padding before the album art and after the visualizer at the pill's outer edges (0–50 px). |
-| Corner Radius | Border radius of the pill: 0 = fully square, 50 = full pill shape. |
-| Show Pill Outline | Displays a subtle border around the main pill widget. |
-
-#### Background and Transparency
-
-| Setting | Description |
-|---|---|
-| Enable Transparency | Switches from the solid theme background to a transparent custom look. |
-| Background Opacity | Strength of the background fill transparency (0–100). |
-| Apply to Album Art | Extends the transparency to the album art thumbnail. |
-| Apply to Text | Extends the transparency to the track title and artist name. |
-| Apply to Visualizer | Extends the transparency to the visualizer animation. |
-
-#### Main Pill Shadow
-
-| Setting | Description |
-|---|---|
-| Enable Shadow | Adds a drop shadow behind the main pill widget. |
-| Shadow Intensity | Opacity of the shadow (0–100). |
-| Shadow Blur | Blur radius of the shadow in pixels (0–50). |
-
-#### Custom Colors
-
-| Setting | Description |
-|---|---|
-| Sync GNOME Accent Color | Dynamically changes the GNOME Shell system accent color to match the album art's dominant color. |
-| Use Custom Colors | Enables manual color overrides, disabling the adaptive color engine. |
-| Background Color | Fixed pill background color (color picker). |
-| Text Color | Fixed text color for track title and artist name (color picker). |
-
-#### Positioning
-
-| Setting | Description |
-|---|---|
-| Container Target | Where the pill is hosted: **Dock**, **Panel: Left Box**, **Panel: Center Box**, or **Panel: Right Box**. |
-| Dynamic Width | Auto-adjusts pill width to fit the track title; the configured width acts as the maximum. |
-| Alignment Preset | How the pill aligns in its container: **Manual Index**, **First (Start)**, **Center**, or **Last (End)**. |
-| Manual Index Position | Explicit position index in the container (0 = first). Only active when Alignment Preset is Manual Index. |
-| Vertical Offset (Y) | Shifts the pill up (negative) or down (positive) in pixels (−30 to +30). |
-| Horizontal Offset (X) | Shifts the pill left (negative) or right (positive) in pixels (−50 to +50). |
-
-#### Dimensions — Dock Mode
-
-| Setting | Range | Description |
-|---|---|---|
-| Album Art Size | 16–48 px | Size of the album art thumbnail. |
-| Widget Width | 100–600 px | Total width of the pill. |
-| Widget Height | 32–100 px | Total height of the pill. |
-
-#### Dimensions — Panel Mode
-
-| Setting | Range | Description |
-|---|---|---|
-| Album Art Size | 14–32 px | Size of the album art thumbnail. |
-| Widget Width | 100–600 px | Total width of the pill. |
-| Widget Height | 20–60 px | Total height of the pill. |
-
----
-
-### Tab 4 — System & Reset
-
-<p align="center">
-  <img src="screenshots/system.png" width="400">
-</p>
-
-#### System
-
-| Setting | Description |
-|---|---|
-| Hide Default GNOME Player | Removes the built-in GNOME media controls widget from the Quick Settings panel. |
-| Game Mode | Automatically disables the visualizer and all animations when a fullscreen application is focused. Re-enables when the fullscreen app closes. |
-| Slow Player Workaround | Adds a slight delay to track change handling to fix sync issues with slower players. |
-| Player Filter Mode | Controls which media players the extension responds to: **Off (Allow All)**, **Blacklist (Exclude listed)**, or **Whitelist (Only allow listed)**. |
-| Filtered Players | Comma-separated list of MPRIS app names to include or exclude. Active players are detected live via D-Bus and can be added with one click. |
-
-#### App ID Mapping
-
-When the extension cannot automatically identify a media player's window for the Open/Close App actions, a manual mapping table allows pairing the MPRIS player name to its correct window App ID.
-
-Running players are detected live via D-Bus. Clicking **Use This** next to a detected player adds it to the mapping table. You then type in the correct App ID and save. Saved mappings can be edited in-place or deleted individually.
-
-To find a player's App ID: press `Alt+F2`, type `lg`, open the **Windows** tab, and look at the `wmclass:` or `app:` field for the player window. Remove the `.desktop` suffix if present.
-
-Common App ID examples:
-
-| Player | App ID |
-|---|---|
-| Spotify (Flatpak) | `com.spotify.Client` |
-| VLC | `vlc` |
-| YouTube Music (web app) | `youtube-music` |
-| High Tide | `io.github.nokse22.high-tide` |
-| Chromium | `chromium` |
-| Firefox | `firefox` |
-
-#### Backup & Restore
-
-| Action | Description |
-|---|---|
-| Export Settings | Serializes the entire current configuration to a `.json` file at a user-chosen path. |
-| Import Settings | Loads a previously exported `.json` file and applies all stored settings instantly. |
-| Factory Reset | Resets every setting to its default value. This action cannot be undone. |
-
----
-
-<p align="center">
-  <img src="screenshots/about.png" width="400">
-</p>
-
----
-
-## Support the Project
+## Support & More Extensions
 
 <div align="center">
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/andbal)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-red?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/andbal)
 
-</div>
+Check out more GNOME extensions: **[Extension Profiles](https://github.com/Andbal23/extension-profiles)** · **[Timed Do Not Disturb](https://github.com/Andbal23/timed-do-not-disturb)**
 
----
-## Check out this one too:)
-https://github.com/Andbal23/extension-profiles <br>
-https://github.com/Andbal23/timed-do-not-disturb
----
+</div>
 
 ## Star History
 
@@ -510,7 +333,5 @@ https://github.com/Andbal23/timed-do-not-disturb
 ## License
 
 This project is licensed under the [GPL-3.0 License](LICENSE).
-
----
 
 <p align="center">Made with ❤️ for the GNOME community.</p>

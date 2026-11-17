@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-09 15:50+0200\n"
-"PO-Revision-Date: 2026-03-06 02:09+0000\n"
-"Last-Translator: LuceLoong <luceloong@qq.com>\n"
+"POT-Creation-Date: 2026-08-07 16:22+0200\n"
+"PO-Revision-Date: 2026-08-30 00:51+0000\n"
+"Last-Translator: O2bmm <xifangczy@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/dynamic-music-pill/settings/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,946 +17,934 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
-#: src/controller.js:1394
-msgid "Unknown Player"
-msgstr "未知艺术家"
-
-#: src/controller.js:1395
-msgid "No active media"
-msgstr "暂无播放内容"
-
-#: src/controller.js:1911
-msgid "Auto (Smart)"
-msgstr "自动（智能）"
-
-#: src/controller.js:1931 src/controller.js:1949 src/controller.js:1972
-#: src/controller.js:1998
-msgid "Not supported"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:388
-msgid "First time? Check settings for custom buttons, scroll actions & more"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:675
-msgid "Unknown Title"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:678
-msgid "Unknown Artist"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1286
-msgid "Volume"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1290
-msgid "No audio stream available"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1327 src/uiExpandedPlayer.js:1338
-msgid "Unmute"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1327 src/uiExpandedPlayer.js:1338
-msgid "Mute"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1382
-msgid "Seek"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1386
-msgid "This player does not support seeking"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1412
-msgid "Audio Output"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1414
-msgid "Audio control unavailable"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1417
-msgid "No output devices found"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1420
-msgid "Unknown Device"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1441 prefs.js:601
-msgid "Sleep Timer"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1441
-msgid "min left"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1444
-msgid "Cancel Timer"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1477
-msgid "Runs inside the shell — works on lock screen"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1482 prefs.js:602
-msgid "Playback Speed"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1489
-msgid "This player does not support playback speed"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1529
-msgid "Player must support MPRIS Rate"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1529
-msgid "Not supported by this player"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1535
-msgid "Recently Played"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1537
-msgid "No history yet"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1570
-msgid "Unknown"
-msgstr ""
-
-#: src/uiExpandedPlayer.js:1625
-msgid "Clear History"
-msgstr ""
-
-#: src/uiMusicPill.js:701 src/uiMusicPill.js:1002
-msgid "No Media"
-msgstr ""
-
-#: src/uiMusicPill.js:1003
-msgid "Waiting for playback..."
-msgstr ""
-
-#: src/uiMusicPill.js:1216
-msgid "Loading..."
-msgstr ""
-
-#: src/uiPlayerSelector.js:122
-msgid "Select Media Player"
-msgstr ""
-
-#: src/uiPlayerSelector.js:133
-msgid "Auto (Smart Selection)"
-msgstr ""
-
-#: src/uiVisualizers.js:303
-msgid "Please install \"cava\" for real-time mode."
-msgstr ""
-
-#: prefs.js:38
+#: prefs.js:39
 msgid "Main Pill"
 msgstr "主胶囊"
 
-#: prefs.js:44
+#: prefs.js:45
 msgid "General Settings"
 msgstr "常规设置"
 
-#: prefs.js:47
+#: prefs.js:48
 msgid "Always ON"
 msgstr "始终开启"
 
-#: prefs.js:48
+#: prefs.js:49
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr "保留最后播放曲目，并在关闭播放器后保持胶囊可见"
 
-#: prefs.js:60
+#: prefs.js:61
 msgid "Show Album Art"
 msgstr "显示专辑封面"
 
-#: prefs.js:61
+#: prefs.js:62
 msgid "Display the cover art of the currently playing song"
 msgstr "显示当前歌曲专辑封面"
 
-#: prefs.js:72
+#: prefs.js:73
 msgid "Fallback Album Art"
 msgstr "备选专辑封面"
 
-#: prefs.js:73 prefs.js:113
+#: prefs.js:74 prefs.js:114
 msgid "No image selected"
 msgstr "未选择图片"
 
-#: prefs.js:83
+#: prefs.js:84
 msgid "Select Fallback Image"
 msgstr "选择备选图片"
 
-#: prefs.js:127
+#: prefs.js:128
 msgid "Enable Scroll Controls"
 msgstr "启用滚动控制"
 
-#: prefs.js:128
+#: prefs.js:129
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr "使用鼠标滚轮或触摸板切换曲目、调节音量或控制播放器"
 
-#: prefs.js:139
+#: prefs.js:140
 msgid "Change Track"
 msgstr "切换歌曲"
 
-#: prefs.js:140
+#: prefs.js:141
 msgid "Change Volume"
 msgstr "调节音量"
 
-#: prefs.js:141
+#: prefs.js:142
 msgid "Switch Player"
 msgstr "更改播放器"
 
-#: prefs.js:149
+#: prefs.js:143
+msgid "Seek ±10s"
+msgstr "跳转 ±10 秒"
+
+#: prefs.js:152
 msgid "Scroll Action"
 msgstr "滚动动作"
 
-#: prefs.js:150
+#: prefs.js:153
 msgid "Choose what scrolling on the pill should do"
 msgstr "选择在胶囊上滚动时的操作"
 
-#: prefs.js:174
+#: prefs.js:178
+msgid "System Master Volume"
+msgstr "系统主音量"
+
+#: prefs.js:179
+msgid "Active Media App Volume"
+msgstr "当前媒体应用音量"
+
+#: prefs.js:183
+msgid "Volume Scroll Target"
+msgstr "音量滚动控件"
+
+#: prefs.js:184
+msgid "Choose which sound source to control when scrolling volume"
+msgstr "在调节音量时，选择要控制哪个声源"
+
+#: prefs.js:204
+msgid "Scroll Animation"
+msgstr ""
+
+#: prefs.js:205
+msgid "Animate the pill with a jump effect when scrolling"
+msgstr ""
+
+#: prefs.js:217
 msgid "Invert Scroll Animation"
 msgstr "反向滚动动画"
 
-#: prefs.js:175
+#: prefs.js:204
 msgid "Direction of the jump effect (Natural vs Traditional)"
 msgstr "跳动效果方向"
 
-#: prefs.js:186
+#: prefs.js:215
 msgid "Invert Scroll Direction"
 msgstr "反转滚动方向"
 
-#: prefs.js:187
+#: prefs.js:216
 msgid "Swap up/down scrolling for track and volume actions"
 msgstr "对调向上/向下滚动所对应的切歌与音量操作"
 
-#: prefs.js:199
+#: prefs.js:228
 msgid "Scrolling Text"
 msgstr "滚动文字"
 
-#: prefs.js:200
+#: prefs.js:229
 msgid "Animate long track titles and artist names"
 msgstr "自动滚动过长的歌曲标题和歌手名"
 
-#: prefs.js:211
+#: prefs.js:240
 msgid "Scroll Only on Hover"
-msgstr ""
+msgstr "仅在悬停时滚动"
 
-#: prefs.js:212
+#: prefs.js:241
 msgid "Text stays still until you hover the pill"
-msgstr ""
+msgstr "仅当鼠标悬停在胶囊上时文字才开始滚动"
 
-#: prefs.js:225
+#: prefs.js:253
+msgid "Freeze Scroll on Pause"
+msgstr "暂停时停止滚动"
+
+#: prefs.js:254
+msgid "Stop the text scrolling animation when the media player is paused"
+msgstr "媒体播放器暂停时停止文字滚动动画"
+
+#: prefs.js:267
 msgid "Lyrics Display"
 msgstr "显示歌词"
 
-#: prefs.js:226
+#: prefs.js:268
 msgid "Show real-time synchronized lyrics for current track."
-msgstr "显示当前曲目的实时同步歌词"
+msgstr "显示当前曲目的实时同步歌词。"
 
-#: prefs.js:237
+#: prefs.js:279
+msgid "Word-level Karaoke in Pill"
+msgstr "胶囊逐字卡拉ok效果"
+
+#: prefs.js:280
+msgid ""
+"Highlight individual words on the main pill when available (pop-up always "
+"uses word-level)."
+msgstr "在可用时于主胶囊上逐字高亮显示（弹出菜单始终使用逐字模式）。"
+
+#: prefs.js:292
 msgid "Lyrics language preference"
-msgstr ""
+msgstr "歌词语言偏好"
 
-#: prefs.js:238
+#: prefs.js:293
 msgid "When multiple versions exist"
-msgstr ""
+msgstr "存在多个版本时"
 
-#: prefs.js:240
+#: prefs.js:295
 msgid "Auto"
-msgstr ""
+msgstr "自动"
 
-#: prefs.js:241
+#: prefs.js:296
 msgid "Prefer original script"
-msgstr ""
+msgstr "优先原始文字"
 
-#: prefs.js:242
+#: prefs.js:297
 msgid "Prefer Latin"
-msgstr ""
+msgstr "优先拉丁字母"
 
-#: prefs.js:251
+#: prefs.js:306
 msgid "Lyrics Fade-in Effect"
 msgstr "歌词渐入效果"
 
-#: prefs.js:252
+#: prefs.js:307
 msgid "Smoothly fade in new lyric lines"
 msgstr "使新行歌词以渐入效果平滑显现"
 
-#: prefs.js:264
+#: prefs.js:319
 msgid "Fade Duration (ms)"
 msgstr "淡入/淡出时长 (毫秒)"
 
-#: prefs.js:273
+#: prefs.js:328
 msgid "Tablet Mode Controls"
 msgstr "平板模式控制"
 
-#: prefs.js:274
+#: prefs.js:329
 msgid "Show media buttons directly on the pill"
 msgstr "在胶囊上直接显示媒体按钮"
 
-#: prefs.js:276
+#: prefs.js:331
 msgid "Off"
 msgstr "关闭"
 
-#: prefs.js:276
+#: prefs.js:331
 msgid "Skip Only"
 msgstr "仅限跳过"
 
-#: prefs.js:276
+#: prefs.js:331
 msgid "Play/Pause Only"
 msgstr "仅限播放/暂停"
 
-#: prefs.js:276
+#: prefs.js:331
 msgid "All Controls"
 msgstr "所有控制"
 
-#: prefs.js:284
+#: prefs.js:340
+msgid "Controls Position"
+msgstr "控制按钮位置"
+
+#: prefs.js:341
+msgid "Where to place the tablet controls on the pill"
+msgstr "选择平板模式控制按钮在胶囊上的位置"
+
+#: prefs.js:343
+msgid "Before Text"
+msgstr "文字之前"
+
+#: prefs.js:343
+msgid "After Text"
+msgstr "文字之后"
+
+#: prefs.js:343
+msgid "After Visualizer"
+msgstr "频谱之后"
+
+#: prefs.js:357
 msgid "Inline Artist"
 msgstr "行内显示艺术家"
 
-#: prefs.js:284
+#: prefs.js:357
 msgid "Show \"Title • Artist\" when the widget is squeezed"
 msgstr "空间不足时采用“歌名 • 歌手”单行布局"
 
-#: prefs.js:291
+#: prefs.js:363
+msgid "Show Artist"
+msgstr "显示歌手"
+
+#: prefs.js:363
+msgid "Show the artist name in the main music pill"
+msgstr "在主胶囊中显示歌手名"
+
+#: prefs.js:375
 msgid "Compact Mode (Hide Text)"
 msgstr "紧凑模式 (隐藏文字)"
 
-#: prefs.js:292
+#: prefs.js:376
 msgid "Hide title and artist"
 msgstr "隐藏标题与艺术家"
 
-#: prefs.js:305
+#: prefs.js:389
 msgid "Mouse Actions"
 msgstr "鼠标操作"
 
-#: prefs.js:308 prefs.js:597
+#: prefs.js:392 prefs.js:712
 msgid "None"
 msgstr "无"
 
-#: prefs.js:308
+#: prefs.js:392
 msgid "Play / Pause"
 msgstr "播放/暂停"
 
-#: prefs.js:308
+#: prefs.js:392
 msgid "Next Track"
 msgstr "下一首"
 
-#: prefs.js:308
+#: prefs.js:392
 msgid "Previous Track"
 msgstr "上一首"
 
-#: prefs.js:309
+#: prefs.js:393
 msgid "Open Player App"
 msgstr "打开播放器应用"
 
-#: prefs.js:309
+#: prefs.js:393
 msgid "Open Menu"
 msgstr "打开菜单"
 
-#: prefs.js:309
+#: prefs.js:393
 msgid "Select Player"
 msgstr "选择播放器"
 
-#: prefs.js:309
+#: prefs.js:393
 msgid "Open Settings"
 msgstr "打开设置"
 
-#: prefs.js:309
+#: prefs.js:393
 msgid "Close Player App"
 msgstr "关闭播放器应用"
 
-#: prefs.js:316
+#: prefs.js:400
 msgid "Left Click"
 msgstr "左键单击"
 
-#: prefs.js:324
+#: prefs.js:408
 msgid "Double Click"
 msgstr "双击"
 
-#: prefs.js:332
+#: prefs.js:416
 msgid "Middle Click"
 msgstr "中键点击"
 
-#: prefs.js:340
+#: prefs.js:424
 msgid "Right Click"
 msgstr "右键单击"
 
-#: prefs.js:348
+#: prefs.js:432
 msgid "Hover Action"
 msgstr "悬停操作"
 
-#: prefs.js:359
+#: prefs.js:443
 msgid "Hover Delay (ms)"
 msgstr "悬停延迟 (ms)"
 
-#: prefs.js:373
+#: prefs.js:457
 msgid "Pop-up Menu"
 msgstr "弹出菜单"
 
-#: prefs.js:377
+#: prefs.js:461
 msgid "Pop-up Appearance"
 msgstr "弹出样式"
 
-#: prefs.js:379
+#: prefs.js:463
 msgid "Rotate Vinyl"
 msgstr "黑胶旋转"
 
-#: prefs.js:380
+#: prefs.js:464
 msgid "Spin the album art when playing"
 msgstr "播放时旋转专辑封面"
 
-#: prefs.js:391
+#: prefs.js:475
 msgid "Rotation Speed"
-msgstr ""
+msgstr "旋转速度"
 
-#: prefs.js:392
+#: prefs.js:476
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
-msgstr ""
+msgstr "调整黑胶唱片的旋转速度（数值越小越慢，默认：10）"
 
-#: prefs.js:400 prefs.js:789
+#: prefs.js:484 prefs.js:904
 msgid "Enable Shadow"
 msgstr "开启阴影"
 
-#: prefs.js:401
+#: prefs.js:485
 msgid "Show drop shadow behind the pop-up menu"
 msgstr "为弹出菜单开启阴影"
 
-#: prefs.js:412
+#: prefs.js:496
 msgid "Close on Mouse Leave"
 msgstr "鼠标移出后自动关闭"
 
-#: prefs.js:413
+#: prefs.js:497
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr "鼠标移开时自动隐藏弹出菜单"
 
-#: prefs.js:424
+#: prefs.js:508
 msgid "Follow Custom Background Color"
 msgstr "跟随自定义背景颜色"
 
-#: prefs.js:425
+#: prefs.js:509
 msgid "Use the custom background color for the pop-up (if active)"
-msgstr "为弹出菜单使用自定义背景色（若启用"
+msgstr "为弹出菜单使用自定义背景色（若启用）"
 
-#: prefs.js:434
+#: prefs.js:518
 msgid "Follow Custom Text Color"
 msgstr "跟随自定义文字颜色"
 
-#: prefs.js:435
+#: prefs.js:519
 msgid "Use the custom text color for the pop-up (if active)"
 msgstr "为弹出菜单使用自定义文字颜色（若启用）"
 
-#: prefs.js:444
+#: prefs.js:528
 msgid "Follow Transparency"
 msgstr "跟随透明度设置"
 
-#: prefs.js:445
+#: prefs.js:529
 msgid "Inherit opacity settings from the main pill"
 msgstr "跟随主胶囊的透明度"
 
-#: prefs.js:456
+#: prefs.js:540
 msgid "Follow Border Radius"
 msgstr "匹配圆角设置"
 
-#: prefs.js:457
+#: prefs.js:541
 msgid "Inherit corner roundness from the main pill"
 msgstr "跟随主胶囊的圆角设置"
 
-#: prefs.js:466
+#: prefs.js:550
 msgid "Show Vinyl"
 msgstr "显示黑胶唱片"
 
-#: prefs.js:466
+#: prefs.js:550
 msgid "Display the album art in the pop-up"
 msgstr "在弹出菜单中显示专辑封面"
 
-#: prefs.js:472
+#: prefs.js:556
 msgid "Square Vinyl Image"
 msgstr "方形黑胶封面"
 
-#: prefs.js:472
+#: prefs.js:556
 msgid "Use a square album art (disables rotation)"
 msgstr "使用方形专辑封面（禁用旋转）"
 
-#: prefs.js:478
+#: prefs.js:562
+msgid "Album Art Shadow"
+msgstr "专辑封面阴影"
+
+#: prefs.js:562
+msgid "Show drop shadow behind the album art in the pop-up"
+msgstr "在弹出菜单中为专辑封面显示投影"
+
+#: prefs.js:568
 msgid "Show Shuffle and Loop"
 msgstr "显示随机和循环按钮"
 
-#: prefs.js:478
+#: prefs.js:568
 msgid "Display extra controls in the pop-up"
 msgstr "在弹出菜单中显示额外控制按钮"
 
-#: prefs.js:484
+#: prefs.js:574
 msgid "Use Custom Width"
 msgstr "使用自定义宽度"
 
-#: prefs.js:484
+#: prefs.js:574
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "禁用弹出菜单的动态尺寸"
 
-#: prefs.js:491
+#: prefs.js:581
 msgid "Custom Width Value"
 msgstr "自定义宽度"
 
-#: prefs.js:507
+#: prefs.js:597
 msgid "Show Player Selector"
 msgstr "显示播放器选择器"
 
-#: prefs.js:508
-msgid "Display active player icons at the top of the pop-up"
-msgstr "在弹出菜单顶部显示活跃播放器图标"
+#: prefs.js:598
+msgid "Display active player icons in the pop-up"
+msgstr "在弹出菜单中显示活跃播放器图标"
 
-#: prefs.js:516
+#: prefs.js:606
+msgid "Hide Auto (Smart Selection)"
+msgstr "隐藏“自动（智能选择）”"
+
+#: prefs.js:607
+msgid ""
+"Remove the automatic player selection entry from the player selector menu"
+msgstr "从播放器选择菜单中移除“自动选择”条目"
+
+#: prefs.js:618
+msgid "Player Selector Position"
+msgstr "播放器选择器位置"
+
+#: prefs.js:619
+msgid "Where to place the player icons inside the pop-up"
+msgstr "选择播放器图标在弹出菜单中的位置"
+
+#: prefs.js:620
+msgid "Top"
+msgstr "顶部"
+
+#: prefs.js:620
+msgid "Bottom"
+msgstr "底部"
+
+#: prefs.js:620
+msgid "Left"
+msgstr "左侧"
+
+#: prefs.js:620
+msgid "Right"
+msgstr "右侧"
+
+#: prefs.js:631
 msgid "Show Album Title"
-msgstr ""
+msgstr "显示专辑名"
 
-#: prefs.js:517
+#: prefs.js:632
 msgid "Display album name next to the artist (Artist • Album)"
-msgstr ""
+msgstr "在歌手名旁显示专辑名（歌手 • 专辑）"
 
-#: prefs.js:525
+#: prefs.js:640
 msgid "Show HH:MM:SS"
-msgstr ""
+msgstr "显示 HH:MM:SS"
 
-#: prefs.js:526
+#: prefs.js:641
 msgid "Display hours in the time labels when media is longer than 60 minutes"
-msgstr ""
+msgstr "当媒体时长超过 60 分钟时，在时间标签中显示小时"
 
-#: prefs.js:537
+#: prefs.js:652
 msgid "Show Visualizer in Pop-up"
 msgstr "在弹窗中显示可视化效果"
 
-#: prefs.js:544
+#: prefs.js:659
 msgid "Hide Pill Visualizer"
 msgstr "隐藏胶囊的可视化效果"
 
-#: prefs.js:545
+#: prefs.js:660
 msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
 msgstr "隐藏主胶囊频谱，营造动感交互效果"
 
-#: prefs.js:554
+#: prefs.js:669
 msgid "Popup Visualizer Bar Count"
 msgstr "弹窗频谱条数量"
 
-#: prefs.js:562
+#: prefs.js:677
 msgid "Popup Visualizer Bar Width"
 msgstr "弹窗频谱条宽度"
 
-#: prefs.js:570
+#: prefs.js:685
 msgid "Popup Visualizer Height"
 msgstr "弹窗频谱高度"
 
-#: prefs.js:580
+#: prefs.js:695
 msgid "Custom Control Buttons"
-msgstr ""
+msgstr "自定义控制按钮"
 
-#: prefs.js:581
+#: prefs.js:696
 msgid "Add up to two extra buttons in the expanded player's controls row."
-msgstr ""
+msgstr "在展开播放器的控制按钮行中添加最多两个额外按钮。"
 
-#: prefs.js:585
+#: prefs.js:700
 msgid "Enable Custom Buttons"
-msgstr ""
+msgstr "启用自定义按钮"
 
-#: prefs.js:586
+#: prefs.js:701
 msgid "Show additional action buttons next to Shuffle and Loop"
-msgstr ""
+msgstr "在随机播放和循环按钮旁显示额外的操作按钮"
 
-#: prefs.js:598
+#: prefs.js:713
 msgid "Volume Control"
-msgstr ""
+msgstr "音量控制"
 
-#: prefs.js:599
+#: prefs.js:714
 msgid "Seek ±10 Seconds"
-msgstr ""
+msgstr "跳转 ±10 秒"
 
-#: prefs.js:600
+#: prefs.js:715
 msgid "Audio Output Switcher"
-msgstr ""
+msgstr "音频输出切换器"
 
-#: prefs.js:603
+#: prefs.js:716 src/uiExpandedPlayer.js:1552
+msgid "Sleep Timer"
+msgstr "睡眠定时器"
+
+#: prefs.js:717 src/uiExpandedPlayer.js:1593
+msgid "Playback Speed"
+msgstr "播放速度"
+
+#: prefs.js:718
 msgid "Track History"
-msgstr ""
+msgstr "播放历史"
 
-#: prefs.js:634
+#: prefs.js:749
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
 msgstr ""
+"若两个按钮都设为“跳转”，则直接执行操作（按钮 1 = 后退 10 秒，按钮 2 = 前进 "
+"10 秒）。否则点击“跳转”将打开子页面。"
 
-#: prefs.js:637
+#: prefs.js:752
 msgid "Custom Button 1"
-msgstr ""
+msgstr "自定义按钮 1"
 
-#: prefs.js:637
+#: prefs.js:752
 msgid "Placed left of Shuffle."
-msgstr ""
+msgstr "位于随机播放按钮左侧。"
 
-#: prefs.js:640
+#: prefs.js:755
 msgid "Custom Button 2"
-msgstr ""
+msgstr "自定义按钮 2"
 
-#: prefs.js:640
+#: prefs.js:755
 msgid "Placed right of Loop."
-msgstr ""
+msgstr "位于循环按钮右侧。"
 
-#: prefs.js:651
+#: prefs.js:766
 msgid "Style & Layout"
 msgstr "外观与布局"
 
-#: prefs.js:655
+#: prefs.js:770
 msgid "Visualizer and Shape"
 msgstr "可视化与形状"
 
-#: prefs.js:658
+#: prefs.js:773
 msgid "Off (Disabled)"
 msgstr "关闭 (禁用)"
 
-#: prefs.js:659
+#: prefs.js:774
 msgid "Wave (Smooth)"
 msgstr "波浪 (平滑)"
 
-#: prefs.js:660
+#: prefs.js:775
 msgid "Beat (Jumpy)"
 msgstr "节拍 (跳动)"
 
-#: prefs.js:661
+#: prefs.js:776
 msgid "Real-Time (Cava needed)"
-msgstr "实时模式 (需安装 CAVA)"
+msgstr "实时模式 (需安装 Cava)"
 
-#: prefs.js:664
+#: prefs.js:779
 msgid "Visualizer Animation"
 msgstr "频谱动画"
 
-#: prefs.js:665
+#: prefs.js:780
 msgid "Select the style of the audio reaction bars"
 msgstr "设置频谱条的动态响应风格"
 
-#: prefs.js:673
+#: prefs.js:788
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
-msgstr "“实时”模式需要您的 Linux 系统中已安装 “cava” 软件包"
+msgstr "“实时”模式需要您的 Linux 系统中已安装 “cava” 软件包。"
 
-#: prefs.js:682
+#: prefs.js:797
 msgid "Visualizer Bar Count"
 msgstr "频谱条数量"
 
-#: prefs.js:683
+#: prefs.js:798
 msgid "Number of bars displayed in the animation"
 msgstr "动画中显示的频谱条数量"
 
-#: prefs.js:690
+#: prefs.js:805
 msgid "Visualizer Bar Width"
 msgstr "频谱条宽度"
 
-#: prefs.js:691
+#: prefs.js:806
 msgid "Thickness of individual bars (pixels)"
 msgstr "单根频谱条宽度 (像素)"
 
-#: prefs.js:698
+#: prefs.js:813
 msgid "Visualizer Height"
 msgstr "频谱高度"
 
-#: prefs.js:699
+#: prefs.js:814
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr "频谱的最大高度"
 
-#: prefs.js:706
+#: prefs.js:821
 msgid "Visualizer Margin"
-msgstr ""
+msgstr "频谱边距"
 
-#: prefs.js:707
+#: prefs.js:822
 msgid "Distance between the text and the wave animation"
-msgstr ""
+msgstr "文字与波形动画之间的距离"
 
-#: prefs.js:714
+#: prefs.js:829
 msgid "Outer Edge Margin"
-msgstr ""
+msgstr "外侧边缘边距"
 
-#: prefs.js:715
+#: prefs.js:830
 msgid "Spacing before the album art and after the visualizer"
-msgstr ""
+msgstr "专辑封面之前与频谱之后的间距"
 
-#: prefs.js:722
+#: prefs.js:837
 msgid "Corner Radius"
-msgstr ""
+msgstr "圆角半径"
 
-#: prefs.js:723
+#: prefs.js:838
 msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
-msgstr ""
-
-#: prefs.js:730
-msgid "Show Pill Outline"
-msgstr ""
-
-#: prefs.js:731
-msgid "Display a subtle border around the main pill"
-msgstr ""
-
-#: prefs.js:744
-msgid "Background and Transparency"
-msgstr ""
-
-#: prefs.js:746
-msgid "Enable Transparency"
-msgstr ""
-
-#: prefs.js:747
-msgid "Switch between a solid theme background and a custom transparent look"
-msgstr ""
-
-#: prefs.js:758
-msgid "Background Opacity"
-msgstr ""
-
-#: prefs.js:759
-msgid "Adjust transparency level"
-msgstr ""
-
-#: prefs.js:766
-msgid "Apply to Album Art"
-msgstr ""
-
-#: prefs.js:773
-msgid "Apply to Text"
-msgstr ""
-
-#: prefs.js:780
-msgid "Apply to Visualizer"
-msgstr ""
-
-#: prefs.js:788
-msgid "Main Pill Shadow"
-msgstr ""
-
-#: prefs.js:796
-msgid "Shadow Intensity"
-msgstr ""
-
-#: prefs.js:803
-msgid "Shadow Blur"
-msgstr ""
-
-#: prefs.js:810
-msgid "Positioning"
-msgstr ""
-
-#: prefs.js:812
-msgid "Dock"
-msgstr ""
-
-#: prefs.js:813
-msgid "Panel: Left Box"
-msgstr ""
-
-#: prefs.js:814
-msgid "Panel: Center Box"
-msgstr ""
-
-#: prefs.js:815
-msgid "Panel: Right Box"
-msgstr ""
-
-#: prefs.js:818
-msgid "Container Target"
-msgstr ""
-
-#: prefs.js:819
-msgid "Select which UI element should host the music pill"
-msgstr ""
-
-#: prefs.js:830
-msgid "Dynamic Width"
-msgstr ""
-
-#: prefs.js:830
-msgid "Auto-adjust pill width (slider acts as max width)"
-msgstr ""
+msgstr "小部件边缘的圆角程度（0 = 方形，25 = 胶囊形）"
 
 #: prefs.js:845
-msgid "Manual Index"
-msgstr ""
+msgid "Show Pill Outline"
+msgstr "显示胶囊边框"
 
 #: prefs.js:846
-msgid "First (Start)"
-msgstr ""
+msgid "Display a subtle border around the main pill"
+msgstr "在主胶囊周围显示细微边框"
 
-#: prefs.js:847
-msgid "Center"
-msgstr ""
-
-#: prefs.js:848
-msgid "Last (End)"
-msgstr ""
-
-#: prefs.js:851
-msgid "Alignment Preset"
-msgstr ""
-
-#: prefs.js:852
-msgid "How the widget aligns relative to other items"
-msgstr ""
-
-#: prefs.js:860
-msgid "Manual Index Position"
-msgstr ""
+#: prefs.js:859
+msgid "Background and Transparency"
+msgstr "背景与透明度"
 
 #: prefs.js:861
-msgid "Order in the list (0 is first). Only for Manual mode."
-msgstr ""
+msgid "Enable Transparency"
+msgstr "启用透明度"
 
-#: prefs.js:868
-msgid "Vertical Offset (Y)"
-msgstr ""
+#: prefs.js:862
+msgid "Switch between a solid theme background and a custom transparent look"
+msgstr "在主题纯色背景与自定义透明外观之间切换"
 
-#: prefs.js:869
-msgid "Shift Up (-) or Down (+)"
-msgstr ""
+#: prefs.js:873
+msgid "Background Opacity"
+msgstr "背景不透明度"
 
-#: prefs.js:876
-msgid "Horizontal Offset (X)"
-msgstr ""
+#: prefs.js:874
+msgid "Adjust transparency level"
+msgstr "调整透明程度"
 
-#: prefs.js:877
-msgid "Shift Left (-) or Right (+)"
-msgstr ""
+#: prefs.js:881
+msgid "Apply to Album Art"
+msgstr "应用于专辑封面"
 
-#: prefs.js:883
-msgid "Dimensions (Dock Mode)"
-msgstr ""
+#: prefs.js:888
+msgid "Apply to Text"
+msgstr "应用于文字"
 
-#: prefs.js:885 prefs.js:907
-msgid "Album Art Size"
-msgstr ""
+#: prefs.js:895
+msgid "Apply to Visualizer"
+msgstr "应用于频谱"
 
-#: prefs.js:891 prefs.js:913
-msgid "Widget Width"
-msgstr ""
+#: prefs.js:903
+msgid "Main Pill Shadow"
+msgstr "主胶囊阴影"
 
-#: prefs.js:898 prefs.js:920
-msgid "Widget Height"
-msgstr ""
+#: prefs.js:911
+msgid "Shadow Intensity"
+msgstr "阴影强度"
 
-#: prefs.js:905
-msgid "Dimensions (Panel Mode)"
-msgstr ""
+#: prefs.js:918
+msgid "Shadow Blur"
+msgstr "阴影模糊"
 
-#: prefs.js:926
-msgid "Custom Colors"
-msgstr ""
+#: prefs.js:925
+msgid "Positioning"
+msgstr "位置"
+
+#: prefs.js:927
+msgid "Dock"
+msgstr "Dock 栏"
+
+#: prefs.js:928
+msgid "Panel: Left Box"
+msgstr "面板：左侧框"
 
 #: prefs.js:929
-msgid "Sync GNOME Accent Color"
-msgstr ""
+msgid "Panel: Center Box"
+msgstr "面板：中间框"
 
 #: prefs.js:930
-msgid "Dynamically change the GNOME Shell accent color to match the album art"
-msgstr ""
+msgid "Panel: Right Box"
+msgstr "面板：右侧框"
 
-#: prefs.js:940
-msgid "Use Custom Colors"
-msgstr ""
+#: prefs.js:933
+msgid "Container Target"
+msgstr "容器目标"
 
-#: prefs.js:940
-msgid "Override dynamic colors"
-msgstr ""
+#: prefs.js:934
+msgid "Select which UI element should host the music pill"
+msgstr "选择承载音乐胶囊的界面元素"
 
-#: prefs.js:969
-msgid "Background Color"
-msgstr ""
+#: prefs.js:945
+msgid "Dynamic Width"
+msgstr "动态宽度"
 
-#: prefs.js:970
-msgid "Text Color"
-msgstr ""
+#: prefs.js:945
+msgid "Auto-adjust pill width (slider acts as max width)"
+msgstr "自动调整胶囊宽度（滑块作为最大宽度）"
 
-#: prefs.js:981
-msgid "System & Reset"
-msgstr ""
+#: prefs.js:960
+msgid "Manual Index"
+msgstr "手动索引"
 
-#: prefs.js:985
-msgid "System"
-msgstr ""
+#: prefs.js:961
+msgid "First (Start)"
+msgstr "最前（开头）"
 
-#: prefs.js:988
-msgid "Hide Default GNOME Player"
-msgstr ""
+#: prefs.js:962
+msgid "Center"
+msgstr "居中"
 
-#: prefs.js:989
-msgid "Remove the duplicate built-in media controls"
-msgstr ""
+#: prefs.js:963
+msgid "Last (End)"
+msgstr "最后（末尾）"
 
-#: prefs.js:999
-msgid "Game Mode"
-msgstr ""
+#: prefs.js:966
+msgid "Alignment Preset"
+msgstr "对齐预设"
 
-#: prefs.js:999
-msgid "Disable animations when a fullscreen app is active"
-msgstr ""
+#: prefs.js:967
+msgid "How the widget aligns relative to other items"
+msgstr "小部件相对于其他项目的对齐方式"
 
-#: prefs.js:1006
-msgid "Slow Player Workaround"
-msgstr ""
+#: prefs.js:975
+msgid "Manual Index Position"
+msgstr "手动索引位置"
 
-#: prefs.js:1007
-msgid "Adds a slight delay to track changes (fixes sync issues)"
-msgstr ""
+#: prefs.js:976
+msgid "Order in the list (0 is first). Only for Manual mode."
+msgstr "在列表中的顺序（0 为最前）。仅限手动模式。"
 
-#: prefs.js:1015
-msgid "Off (Allow All)"
-msgstr ""
+#: prefs.js:983
+msgid "Vertical Offset (Y)"
+msgstr "垂直偏移 (Y)"
 
-#: prefs.js:1016
-msgid "Blacklist (Exclude listed)"
-msgstr ""
+#: prefs.js:984
+msgid "Shift Up (-) or Down (+)"
+msgstr "向上 (-) 或向下 (+) 移动"
 
-#: prefs.js:1017
-msgid "Whitelist (Only allow listed)"
-msgstr ""
+#: prefs.js:991
+msgid "Horizontal Offset (X)"
+msgstr "水平偏移 (X)"
+
+#: prefs.js:992
+msgid "Shift Left (-) or Right (+)"
+msgstr "向左 (-) 或向右 (+) 移动"
+
+#: prefs.js:998
+msgid "Dimensions (Dock Mode)"
+msgstr "尺寸（Dock 模式）"
+
+#: prefs.js:1000 prefs.js:1022
+msgid "Album Art Size"
+msgstr "专辑封面大小"
+
+#: prefs.js:1006 prefs.js:1028
+msgid "Widget Width"
+msgstr "小部件宽度"
+
+#: prefs.js:1013 prefs.js:1035
+msgid "Widget Height"
+msgstr "小部件高度"
 
 #: prefs.js:1020
-msgid "Player Filter Mode"
+msgid "Dimensions (Panel Mode)"
+msgstr "尺寸（面板模式）"
+
+#: prefs.js:1041
+msgid "Custom Colors"
+msgstr "自定义颜色"
+
+#: prefs.js:1044
+msgid "Sync GNOME Accent Color"
+msgstr "同步 GNOME 强调色"
+
+#: prefs.js:1045
+msgid "Dynamically change the GNOME Shell accent color to match the album art"
+msgstr "根据专辑封面动态更改 GNOME Shell 的强调色"
+
+#: prefs.js:1055
+msgid "Use Custom Colors"
+msgstr "使用自定义颜色"
+
+#: prefs.js:1055
+msgid "Override dynamic colors"
+msgstr "覆盖动态颜色"
+
+#: prefs.js:1084
+msgid "Background Color"
+msgstr "背景颜色"
+
+#: prefs.js:1085
+msgid "Text Color"
+msgstr "文字颜色"
+
+#: prefs.js:1086
+msgid "Visualizer Color"
 msgstr ""
 
-#: prefs.js:1021
-msgid "Choose how to filter media players (e.g. browsers)"
-msgstr ""
+#: prefs.js:1096
+msgid "System & Reset"
+msgstr "系统与重置"
 
-#: prefs.js:1032
-msgid "Filtered Players (comma separated)"
-msgstr ""
+#: prefs.js:1100
+msgid "System"
+msgstr "系统"
 
-#: prefs.js:1046
-msgid "Detected Players"
-msgstr ""
+#: prefs.js:1103
+msgid "Hide Default GNOME Player"
+msgstr "隐藏 GNOME 默认播放器"
 
-#: prefs.js:1047
-msgid "Click an active player to add it to the filter list"
-msgstr ""
+#: prefs.js:1104
+msgid "Remove the duplicate built-in media controls"
+msgstr "移除重复的内置媒体控制"
 
-#: prefs.js:1082
-msgid "No players found"
-msgstr ""
+#: prefs.js:1114
+msgid "Game Mode"
+msgstr "游戏模式"
 
-#: prefs.js:1116
-msgid "💡 How to find the correct App ID?"
-msgstr ""
-
-#: prefs.js:1117
-msgid "Click here for a quick guide and examples"
-msgstr ""
+#: prefs.js:1114
+msgid "Disable animations when a fullscreen app is active"
+msgstr "当有全屏应用运行时禁用动画"
 
 #: prefs.js:1121
+msgid "Slow Player Workaround"
+msgstr "慢速播放器变通方案"
+
+#: prefs.js:1122
+msgid "Adds a slight delay to track changes (fixes sync issues)"
+msgstr "为切歌添加轻微延迟（修复同步问题）"
+
+#: prefs.js:1130
+msgid "Off (Allow All)"
+msgstr "关闭（允许全部）"
+
+#: prefs.js:1131
+msgid "Blacklist (Exclude listed)"
+msgstr "黑名单（排除所列项）"
+
+#: prefs.js:1132
+msgid "Whitelist (Only allow listed)"
+msgstr "白名单（仅允许所列项）"
+
+#: prefs.js:1135
+msgid "Player Filter Mode"
+msgstr "播放器过滤模式"
+
+#: prefs.js:1136
+msgid "Choose how to filter media players (e.g. browsers)"
+msgstr "选择过滤媒体播放器的方式（例如浏览器）"
+
+#: prefs.js:1147
+msgid "Filtered Players (comma separated)"
+msgstr "已过滤的播放器（逗号分隔）"
+
+#: prefs.js:1161
+msgid "Detected Players"
+msgstr "检测到的播放器"
+
+#: prefs.js:1162
+msgid "Click an active player to add it to the filter list"
+msgstr "点击活跃的播放器将其加入过滤列表"
+
+#: prefs.js:1197
+msgid "No players found"
+msgstr "未找到播放器"
+
+#: prefs.js:1231
+msgid "How to find the correct App ID?"
+msgstr "如何找到正确的 App ID？"
+
+#: prefs.js:1232
+msgid "Click here for a quick guide and examples"
+msgstr "点击此处查看快速指南和示例"
+
+#: prefs.js:1236
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -976,151 +964,499 @@ msgid ""
 "<i>(Remove the .desktop part)</i>\n"
 "5. Press Esc to close the debugger."
 msgstr ""
+"要让扩展能够打开/关闭您的播放器，需要提供其准确的窗口名称（App ID）。\n"
+"\n"
+"<b>常见示例：</b>\n"
+"• Spotify (Flatpak)：<b>com.spotify.Client</b>\n"
+"• VLC：<b>vlc</b>\n"
+"• YouTube Music（网页应用）：<b>youtube-music</b>\n"
+"• High Tide：<b>io.github.nokse22.high-tide</b>\n"
+"• 浏览器：<b>chromium</b>、<b>firefox</b>、<b>brave-browser</b>\n"
+"\n"
+"<b>手动查找方法：</b>\n"
+"1. 按 <b>Alt + F2</b>，输入 <b>lg</b>，然后按回车。\n"
+"2. 点击右上角的 <b>Windows（窗口）</b> 选项卡。\n"
+"3. 在列表中找到您的音乐播放器。\n"
+"4. 查看 <b>wmclass:</b> 或 <b>app:</b> 字段，那就是您的 App ID！<i>（去"
+"掉 .desktop 部分）</i>\n"
+"5. 按 Esc 关闭调试器。"
 
-#: prefs.js:1149
+#: prefs.js:1264
 msgid "Saved App Mappings"
-msgstr ""
+msgstr "已保存的应用映射"
 
-#: prefs.js:1150
+#: prefs.js:1265
 msgid "Edit the target App ID for manually mapped players, or remove them."
-msgstr ""
+msgstr "编辑手动映射播放器的目标 App ID，或将其移除。"
 
-#: prefs.js:1171
+#: prefs.js:1286
 msgid "No manual mappings saved."
-msgstr ""
+msgstr "尚无手动映射。"
 
-#: prefs.js:1176
+#: prefs.js:1291
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
-msgstr ""
+msgstr "输入正确的 App ID，然后按回车或点击保存图标！"
 
-#: prefs.js:1195
+#: prefs.js:1310
 msgid "Save App ID"
-msgstr ""
+msgstr "保存 App ID"
 
-#: prefs.js:1227
+#: prefs.js:1342
 msgid "Delete Mapping"
-msgstr ""
-
-#: prefs.js:1256
-msgid "Running Players Detection"
-msgstr ""
-
-#: prefs.js:1257
-msgid "Click on a detected player to automatically fill the mapping."
-msgstr ""
-
-#: prefs.js:1280
-msgid "No active players detected. Open a music app first!"
-msgstr ""
-
-#: prefs.js:1282
-msgid "Select a player to help the extension identify it:"
-msgstr ""
-
-#: prefs.js:1302
-msgid "Use This"
-msgstr ""
-
-#: prefs.js:1332
-msgid "Refresh List"
-msgstr ""
-
-#: prefs.js:1333
-msgid "Click to scan for active players again"
-msgstr ""
-
-#: prefs.js:1348
-msgid "Backup & Restore"
-msgstr ""
-
-#: prefs.js:1351
-msgid "Export Settings"
-msgstr ""
-
-#: prefs.js:1352
-msgid "Export"
-msgstr ""
-
-#: prefs.js:1356
-msgid "Save Settings"
-msgstr ""
+msgstr "删除映射"
 
 #: prefs.js:1371
-msgid "Import Settings"
-msgstr ""
+msgid "Running Players Detection"
+msgstr "检测正在运行的播放器"
 
 #: prefs.js:1372
-msgid "Import"
-msgstr ""
+msgid "Click on a detected player to automatically fill the mapping."
+msgstr "点击检测到的播放器以自动填充映射。"
 
-#: prefs.js:1374
-msgid "Open Settings Backup"
-msgstr ""
+#: prefs.js:1395
+msgid "No active players detected. Open a music app first!"
+msgstr "未检测到活跃播放器。请先打开音乐应用！"
 
-#: prefs.js:1401
-msgid "Art Cache"
-msgstr ""
+#: prefs.js:1397
+msgid "Select a player to help the extension identify it:"
+msgstr "选择一个播放器，帮助扩展识别它："
 
-#: prefs.js:1423
-msgid "covers cached"
-msgstr ""
+#: prefs.js:1417
+msgid "Use This"
+msgstr "使用此项"
 
-#: prefs.js:1426
-msgid "Album Art Cache"
-msgstr ""
+#: prefs.js:1447
+msgid "Refresh List"
+msgstr "刷新列表"
 
-#: prefs.js:1431
-msgid "Clear"
-msgstr ""
+#: prefs.js:1448
+msgid "Click to scan for active players again"
+msgstr "点击重新扫描活跃播放器"
 
-#: prefs.js:1453
-msgid "Danger Zone"
-msgstr ""
+#: prefs.js:1463
+msgid "Backup & Restore"
+msgstr "备份与还原"
 
-#: prefs.js:1454
-msgid "Reset All"
-msgstr ""
-
-#: prefs.js:1456
-msgid "Factory Reset"
-msgstr ""
+#: prefs.js:1466
+msgid "Export Settings"
+msgstr "导出设置"
 
 #: prefs.js:1467
-msgid "About"
-msgstr ""
+msgid "Export"
+msgstr "导出"
 
-#: prefs.js:1472
-msgid "What's New"
-msgstr ""
+#: prefs.js:1471
+msgid "Save Settings"
+msgstr "保存设置"
+
+#: prefs.js:1486
+msgid "Import Settings"
+msgstr "导入设置"
+
+#: prefs.js:1487
+msgid "Import"
+msgstr "导入"
+
+#: prefs.js:1489
+msgid "Open Settings Backup"
+msgstr "打开设置备份文件"
+
+#: prefs.js:1516
+msgid "Art Cache"
+msgstr "封面缓存"
+
+#: prefs.js:1538
+msgid "covers cached"
+msgstr "张封面已缓存"
+
+#: prefs.js:1541
+msgid "Album Art Cache"
+msgstr "专辑封面缓存"
+
+#: prefs.js:1546
+msgid "Clear"
+msgstr "清除"
+
+#: prefs.js:1568
+msgid "Danger Zone"
+msgstr "危险区域"
+
+#: prefs.js:1569
+msgid "Reset All"
+msgstr "全部重置"
+
+#: prefs.js:1571
+msgid "Factory Reset"
+msgstr "恢复出厂设置"
+
+#: prefs.js:1582
+msgid "About"
+msgstr "关于"
 
 #: prefs.js:1587
+msgid "What's New"
+msgstr "更新内容"
+
+#: prefs.js:1757
 msgid "Support the Project"
-msgstr ""
+msgstr "支持本项目"
 
-#: prefs.js:1590
+#: prefs.js:1760
 msgid "Support on Ko-fi"
-msgstr ""
+msgstr "在 Ko-fi 上支持"
 
-#: prefs.js:1591
+#: prefs.js:1761
 msgid "Buy me a coffee on Ko-fi"
+msgstr "在 Ko-fi 上请我喝杯咖啡"
+
+#: prefs.js:1763 prefs.js:1772
+msgid "Open"
+msgstr "打开"
+
+#: prefs.js:1769
+msgid "Buy Me a Coffee"
+msgstr "Buy Me a Coffee"
+
+#: prefs.js:1770
+msgid "Support via BuyMeACoffee"
+msgstr "通过 BuyMeACoffee 支持"
+
+#: prefs.js:1778
+msgid "Source Code"
+msgstr "源代码"
+
+#: prefs.js:1779
+msgid "Report bugs or view source on GitHub"
+msgstr "在 GitHub 上报告错误或查看源代码"
+
+#: src/controller.js:1415
+msgid "Unknown Player"
+msgstr "未知播放器"
+
+#: src/controller.js:1416
+msgid "No active media"
+msgstr "暂无播放内容"
+
+#: src/controller.js:1996
+msgid "Auto (Smart)"
+msgstr "自动（智能）"
+
+#: src/controller.js:2016 src/controller.js:2034 src/controller.js:2057
+#: src/controller.js:2083
+msgid "Not supported"
+msgstr "不支持"
+
+#: src/uiExpandedPlayer.js:415
+msgid "First time? Check settings for custom buttons, scroll actions & more"
+msgstr "首次使用？可在设置中查看自定义按钮、滚动操作等更多选项"
+
+#: src/uiExpandedPlayer.js:738
+msgid "Unknown Title"
+msgstr "未知标题"
+
+#: src/uiExpandedPlayer.js:741
+msgid "Unknown Artist"
+msgstr "未知歌手"
+
+#: src/uiExpandedPlayer.js:1355
+msgid "Volume"
+msgstr "音量"
+
+#: src/uiExpandedPlayer.js:1363
+msgid "System Volume"
+msgstr "系统音量"
+
+#: src/uiExpandedPlayer.js:1375
+msgid "Player"
+msgstr "播放器"
+
+#: src/uiExpandedPlayer.js:1381
+msgid "No audio stream available"
+msgstr "没有可用的音频流"
+
+#: src/uiExpandedPlayer.js:1473
+msgid "Toggle Mute All"
+msgstr "全部静音切换"
+
+#: src/uiExpandedPlayer.js:1493
+msgid "Seek"
+msgstr "跳转"
+
+#: src/uiExpandedPlayer.js:1497
+msgid "This player does not support seeking"
+msgstr "该播放器不支持进度跳转"
+
+#: src/uiExpandedPlayer.js:1523
+msgid "Audio Output"
+msgstr "音频输出"
+
+#: src/uiExpandedPlayer.js:1525
+msgid "Audio control unavailable"
+msgstr "音频控制不可用"
+
+#: src/uiExpandedPlayer.js:1528
+msgid "No output devices found"
+msgstr "未找到输出设备"
+
+#: src/uiExpandedPlayer.js:1531
+msgid "Unknown Device"
+msgstr "未知设备"
+
+#: src/uiExpandedPlayer.js:1552
+msgid "min left"
+msgstr "分钟后剩余"
+
+#: src/uiExpandedPlayer.js:1555
+msgid "Cancel Timer"
+msgstr "取消定时"
+
+#: src/uiExpandedPlayer.js:1588
+msgid "Runs inside the shell — works on lock screen"
+msgstr "在 Shell 内运行——锁屏界面也可使用"
+
+#: src/uiExpandedPlayer.js:1600
+msgid "This player does not support playback speed"
+msgstr "该播放器不支持调整播放速度"
+
+#: src/uiExpandedPlayer.js:1640
+msgid "Player must support MPRIS Rate"
+msgstr "播放器必须支持 MPRIS Rate"
+
+#: src/uiExpandedPlayer.js:1640
+msgid "Not supported by this player"
+msgstr "该播放器不支持"
+
+#: src/uiExpandedPlayer.js:1646
+msgid "Recently Played"
+msgstr "最近播放"
+
+#: src/uiExpandedPlayer.js:1648
+msgid "No history yet"
+msgstr "暂无历史记录"
+
+#: src/uiExpandedPlayer.js:1681
+msgid "Unknown"
+msgstr "未知"
+
+#: src/uiExpandedPlayer.js:1736
+msgid "Clear History"
+msgstr "清除历史记录"
+
+#: src/uiMusicPill.js:734 src/uiMusicPill.js:1063
+msgid "No Media"
+msgstr "无媒体"
+
+#: src/uiMusicPill.js:1064
+msgid "Waiting for playback..."
+msgstr "等待播放……"
+
+#: src/uiMusicPill.js:1302
+msgid "Loading..."
+msgstr "加载中……"
+
+#: src/uiPlayerSelector.js:122
+msgid "Select Media Player"
+msgstr "选择媒体播放器"
+
+#: src/uiPlayerSelector.js:134
+msgid "Auto (Smart Selection)"
+msgstr "自动（智能选择）"
+
+#: src/uiVisualizers.js:303
+msgid "Please install \"cava\" for real-time mode."
+msgstr "请安装 “cava” 以使用实时模式。"
+
+#: prefs.js:905
+msgid "Dynamic Blur (Blur my Shell)"
+msgstr "动态模糊 (Blur my Shell)"
+
+#: prefs.js:906
+msgid ""
+"Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
+"rounded-blur."
+msgstr "使用 Blur my Shell 或 gnome-rounded-blur 在胶囊和弹出窗口后应用高斯模糊。"
+
+#: prefs.js:910
+msgid "Enable Blur for Pill"
+msgstr "为胶囊启用模糊"
+
+#: prefs.js:911
+msgid "Blur the background behind the music pill"
+msgstr "模糊音乐胶囊背后的背景"
+
+#: prefs.js:920
+msgid "Enable Blur for Pop-up"
+msgstr "为弹出窗口启用模糊"
+
+#: prefs.js:921
+msgid "Blur the background behind the expanded player pop-up"
+msgstr "模糊展开的播放器弹出窗口背后的背景"
+
+#: prefs.js:930
+msgid "Tint Blur with Album Art Color"
+msgstr "使用专辑封面颜色为模糊着色"
+
+#: prefs.js:931
+msgid ""
+"Blend dynamic album colors over the blurred background instead of neutral "
+"frosted glass"
+msgstr "在模糊背景上混合动态专辑颜色，而非中性磨砂玻璃效果"
+
+#: prefs.js:940
+msgid "Blur my Shell Extension"
+msgstr "Blur my Shell 扩展"
+
+#: prefs.js:941
+msgid "Recommended for native Wayland dynamic blur"
+msgstr "推荐用于原生 Wayland 动态模糊"
+
+#: prefs.js:953
+msgid "gnome-rounded-blur Library"
+msgstr "gnome-rounded-blur 库"
+
+#: prefs.js:954
+msgid "Installation guide for native rounded corners blur"
+msgstr "原生圆角模糊安装指南"
+
+#: prefs.js:945
+msgid "GitHub"
+msgstr "GitHub"
+
+#: prefs.js:958
+msgid "Guide"
+msgstr "指南"
+
+#: src/blurHelper.js:47
+msgid ""
+"For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
+"blur."
+msgstr "为获得最佳的圆角动态模糊效果，请安装 Blur my Shell 和 gnome-rounded-blur。"
+
+#: src/blurHelper.js:49
+msgid ""
+"gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
+"blur."
+msgstr "推荐使用 gnome-rounded-blur 以在动态模糊下获得平滑的圆角效果。"
+
+#: src/blurHelper.js:51
+msgid "Blur my Shell is recommended for dynamic blur integration."
+msgstr "推荐使用 Blur my Shell 以集成动态模糊效果。"
+
+#: prefs.js:1112
+msgid "Main Dock Only"
+msgstr "仅主程序坞"
+
+#: prefs.js:1113
+msgid "All Docks"
+msgstr "所有程序坞"
+
+#: prefs.js:1114
+msgid "Secondary Docks Only"
+msgstr "仅副显示器程序坞"
+
+#: prefs.js:1117
+msgid "Multi-Monitor Docks"
+msgstr "多显示器程序坞"
+
+#: prefs.js:1118
+msgid "Which docks show the pill when the dock is on all monitors"
+msgstr "当程序坞显示在所有显示器上时，哪些程序坞显示音乐胶囊"
+
+#: prefs.js:1030
+msgid "Blur Radius (Sigma)"
+msgstr "模糊半径 (Sigma)"
+
+#: prefs.js:1031
+msgid "Strength of the Gaussian blur effect"
+msgstr "高斯模糊效果的强度"
+
+#: prefs.js:1257
+msgid "Light Mode"
+msgstr "浅色模式"
+
+#: prefs.js:1258
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr "为动态背景使用明亮柔和的配色，并使用深色文本和图标"
+
+#: prefs.js:996
+msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
 msgstr ""
 
-#: prefs.js:1593 prefs.js:1602
-msgid "Open"
+#: prefs.js:1071
+msgid "Follow Blur my Shell Pipelines"
+msgstr ""
+
+#: prefs.js:1072
+msgid "Use the blur pipelines and effects configured in Blur my Shell"
+msgstr ""
+
+#: prefs.js:1086
+msgid "Controlled by Blur my Shell pipeline"
+msgstr ""
+
+#: prefs.js:1098
+msgid "Native Dual Kawase blur backend active (v76+)"
+msgstr ""
+
+#: src/blurHelper.js:137
+msgid "Please install \"Blur my Shell\" for dynamic blur."
+msgstr ""
+
+#: src/blurHelper.js:139
+msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgstr ""
+
+#: prefs.js:954
+msgid "Controls"
+msgstr ""
+
+#: prefs.js:1037
+msgid "Scroll Controls"
+msgstr ""
+
+#: prefs.js:1111
+msgid "On-Pill Buttons (Tablet Mode)"
+msgstr ""
+
+#: prefs.js:1146
+msgid "Lyrics"
+msgstr ""
+
+#: prefs.js:1153
+msgid "Interactive Pop-up Lyrics"
+msgstr ""
+
+#: prefs.js:1154
+msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgstr ""
+
+#: prefs.js:1162
+msgid "Lyrics & Karaoke"
+msgstr ""
+
+#: prefs.js:1163
+msgid "Real-time synchronized lyrics with multi-provider karaoke support."
+msgstr ""
+
+#: prefs.js:1339
+msgid "Please install %s for dynamic blur."
+msgstr ""
+
+#: prefs.js:1339
+msgid "and"
+msgstr ""
+
+#: prefs.js:1358
+msgid "Note: Dynamic blur requires %s to be installed."
 msgstr ""
 
 #: prefs.js:1599
-msgid "Buy Me a Coffee"
+msgid "Audio Visualizers"
 msgstr ""
 
-#: prefs.js:1600
-msgid "Support via BuyMeACoffee"
+#: prefs.js:1682
+msgid "Enable audio visualizer bars inside the expanded player"
 msgstr ""
 
-#: prefs.js:1608
-msgid "Source Code"
-msgstr ""
-
-#: prefs.js:1609
-msgid "Report bugs or view source on GitHub"
-msgstr ""
+#~ msgid "Display active player icons at the top of the pop-up"
+#~ msgstr "在弹出菜单顶部显示活跃播放器图标"

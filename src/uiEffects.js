@@ -3,7 +3,12 @@ import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 
 export const TextFadeEffect = GObject.registerClass(
+    { GTypeName: 'DmpTextFadeEffect' },
     class TextFadeEffect extends Clutter.ShaderEffect {
+        static isSupported() {
+            return true;
+        }
+
         _init(fadePixels = 32) {
             super._init({ 'shader-type': 1 });
             this._fadePixels = fadePixels;
@@ -39,6 +44,8 @@ export const TextFadeEffect = GObject.registerClass(
 
         setFadePixels(pixels) {
             this._fadePixels = pixels;
+            let actor = this.get_actor();
+            if (actor) actor.queue_redraw();
         }
 
         setEdges(left, right, animate = false) {
@@ -87,17 +94,32 @@ export const TextFadeEffect = GObject.registerClass(
             });
         }
 
+        vfunc_set_actor(actor) {
+            if (!actor && this._animId) {
+                GLib.Source.remove(this._animId);
+                this._animId = null;
+            }
+            super.vfunc_set_actor(actor);
+        }
+
+        destroy() {
+            if (this._animId) {
+                GLib.Source.remove(this._animId);
+                this._animId = null;
+            }
+        }
+
         vfunc_paint_target(paint_node, paint_context) {
             let actor = this.get_actor();
             if (actor) {
                 let widthVal = new GObject.Value();
                 widthVal.init(GObject.TYPE_FLOAT);
-                widthVal.set_float(actor.get_width());
+                widthVal.set_float(Math.max(1.0, actor.get_width()));
                 this.set_uniform_value('width', widthVal);
 
                 let fadeVal = new GObject.Value();
                 fadeVal.init(GObject.TYPE_FLOAT);
-                fadeVal.set_float(this._fadePixels);
+                fadeVal.set_float(Math.max(1.0, this._fadePixels));
                 this.set_uniform_value('fade_pixels', fadeVal);
 
                 let leftVal = new GObject.Value();

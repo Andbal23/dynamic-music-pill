@@ -22,6 +22,11 @@
       <summary>Scroll Action</summary>
       <description>What to do when scrolling (track, volume, player, or seek)</description>
     </key>
+    <key name="volume-scroll-target" type="s">
+      <default>'system'</default>
+      <summary>Volume Scroll Target</summary>
+      <description>Target for volume scroll action (system master volume or current app volume)</description>
+    </key>
 	<key name="hide-text" type="b">
 	<default>false</default>
 	<summary>Hide title and artist entirely</summary>
@@ -47,6 +52,17 @@
     <key name="popup-show-player-selector" type="b">
       <default>false</default>
       <summary>Show player selector in pop-up</summary>
+    </key>
+    <key name="hide-auto-smart-selection" type="b">
+      <default>false</default>
+      <summary>Hide Auto (Smart Selection)</summary>
+      <description>Remove the automatic player selection entry from the player selector menu.</description>
+    </key>
+    <key name="popup-player-selector-position" type="i">
+      <default>0</default>
+      <range min="0" max="3"/>
+      <summary>Player Selector Position</summary>
+      <description>Position of the player selector in the pop-up: 0=Top, 1=Bottom, 2=Left, 3=Right</description>
     </key>
     <key name="popup-follow-custom-bg" type="b">
       <default>false</default>
@@ -106,7 +122,7 @@
       <summary>Enable shadow for the pop-up menu</summary>
     </key>
     <key name="popup-follow-transparency" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Pop-up inherits transparency settings</summary>
     </key>
     <key name="popup-follow-radius" type="b">
@@ -118,7 +134,7 @@
       <summary>Square Vinyl (No Rotation)</summary>
     </key>
     <key name="pill-dynamic-width" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Dynamic Pill Width</summary>
     </key>
     <key name="popup-use-custom-width" type="b">
@@ -133,12 +149,22 @@
       <default>true</default>
       <summary>Show Vinyl in Pop-up</summary>
     </key>
+    <key name="popup-vinyl-shadow" type="b">
+      <default>true</default>
+      <summary>Show Album Art Drop Shadow in Pop-up</summary>
+      <description>Display a drop shadow behind the album art in the pop-up menu.</description>
+    </key>
 
     <key name="show-shuffle-loop" type="b">
       <default>true</default>
       <summary>Show Shuffle and Loop buttons</summary>
     </key>
 
+    <key name="light-mode" type="b">
+      <default>false</default>
+      <summary>Light Mode</summary>
+      <description>Use a bright pastel palette for dynamic backgrounds and dark text/icons.</description>
+    </key>
     <key name="use-custom-colors" type="b">
       <default>false</default>
       <summary>Use Custom Colors</summary>
@@ -150,6 +176,10 @@
     <key name="custom-text-color" type="s">
       <default>'255,255,255'</default>
       <summary>Custom Text Color (R,G,B)</summary>
+    </key>
+    <key name="custom-vis-color" type="s">
+      <default>'255,255,255'</default>
+      <summary>Custom Visualizer Color (R,G,B)</summary>
     </key>
     <key name="app-name-mapping" type="s">
       <default>''</default>
@@ -189,14 +219,37 @@
       <summary>Tablet Controls Mode</summary>
       <description>0: Off, 1: Skip Only, 2: Play/Pause Only, 3: All Controls</description>
     </key>
+    <key name="pill-controls-position" type="i">
+      <default>0</default>
+      <range min="0" max="2"/>
+      <summary>Pill Controls Position</summary>
+      <description>Position of tablet controls in the pill: 0=Before Text, 1=After Text (before visualizer), 2=After Visualizer</description>
+    </key>
     <key name="popup-hide-on-leave" type="b">
       <default>false</default>
       <summary>Hide popup when mouse leaves</summary>
       <description>Automatically close the expanded player when the mouse cursor leaves its area.</description>
     </key>
+    <key name="popup-vertical-offset" type="i">
+      <default>0</default>
+      <range min="-100" max="100"/>
+      <summary>Popup vertical offset</summary>
+      <description>Shift popup position vertically up or down</description>
+    </key>
+    <key name="popup-horizontal-offset" type="i">
+      <default>0</default>
+      <range min="-100" max="100"/>
+      <summary>Popup horizontal offset</summary>
+      <description>Shift popup position horizontally left or right</description>
+    </key>
     <key name="inline-artist" type="b">
       <default>true</default>
       <summary>Append artist to title when squeezed</summary>
+    </key>
+    <key name="show-artist" type="b">
+      <default>true</default>
+      <summary>Show Artist</summary>
+      <description>Show the artist name in the main music pill.</description>
     </key>
 
     <key name="dock-art-size" type="i">
@@ -222,6 +275,11 @@
       <summary>Scroll Text Only on Hover</summary>
       <description>When enabled, text only scrolls while hovering over the pill.</description>
     </key>
+    <key name="freeze-scroll-on-pause" type="b">
+      <default>false</default>
+      <summary>Freeze Scroll on Pause</summary>
+      <description>Stop the text scrolling animation when the media player is paused.</description>
+    </key>
     <key name="enable-transparency" type="b">
       <default>false</default>
       <summary>Enable Transparency</summary>
@@ -242,6 +300,37 @@
     <key name="transparency-vis" type="b">
       <default>false</default>
       <summary>Transparent Visualizer</summary>
+    </key>
+    <key name="enable-blur-pill" type="b">
+      <default>true</default>
+      <summary>Enable Dynamic Blur for Pill</summary>
+      <description>Apply real-time gaussian blur behind the main music pill using Blur my Shell and gnome-rounded-blur.</description>
+    </key>
+    <key name="enable-blur-popup" type="b">
+      <default>true</default>
+      <summary>Enable Dynamic Blur for Pop-up</summary>
+      <description>Apply real-time gaussian blur behind the pop-up player.</description>
+    </key>
+    <key name="blur-blend-color" type="b">
+      <default>true</default>
+      <summary>Tint Blur with Album Color</summary>
+      <description>Blend dynamic album art color over the blurred background.</description>
+    </key>
+    <key name="blur-sigma" type="i">
+      <default>30</default>
+      <range min="0" max="100"/>
+      <summary>Blur Radius (Sigma)</summary>
+      <description>Strength of the Gaussian blur effect behind the pill and pop-up.</description>
+    </key>
+    <key name="bms-follow-pipeline" type="b">
+      <default>true</default>
+      <summary>Follow Blur my Shell Pipelines</summary>
+      <description>Use the blur pipelines configured in Blur my Shell for the panel pill and pop-up.</description>
+    </key>
+    <key name="enable-scroll-animation" type="b">
+      <default>true</default>
+      <summary>Enable Scroll Animation</summary>
+      <description>Play a jump animation on the pill when scrolling</description>
     </key>
     <key name="invert-scroll-animation" type="b">
       <default>false</default>
@@ -282,6 +371,18 @@
       <default>0</default>
       <range min="-50" max="50"/>
     </key>
+    <key name="pill-margin-start" type="i">
+      <default>10</default>
+      <range min="0" max="50"/>
+      <summary>Pill Start Margin (Left / Top)</summary>
+      <description>Outer spacing before the pill in the dock or panel.</description>
+    </key>
+    <key name="pill-margin-end" type="i">
+      <default>10</default>
+      <range min="0" max="50"/>
+      <summary>Pill End Margin (Right / Bottom)</summary>
+      <description>Outer spacing after the pill in the dock or panel.</description>
+    </key>
     <key name="position-mode" type="i">
       <default>3</default>
       <range min="0" max="3"/>
@@ -294,6 +395,12 @@
       <default>0</default>
       <range min="0" max="3"/>
     </key>
+    <key name="dock-monitors" type="i">
+      <default>0</default>
+      <range min="0" max="2"/>
+      <summary>Multi-Monitor Docks</summary>
+      <description>Which docks show the pill when the dock is on multiple monitors</description>
+    </key>
     <key name="show-album-art" type="b">
       <default>true</default>
       <summary>Show Album Art</summary>
@@ -302,10 +409,25 @@
       <default>false</default>
       <summary>Enable Lyrics Display</summary>
     </key>
+    <key name="pill-enable-word-level" type="b">
+      <default>true</default>
+      <summary>Enable Word-Level Karaoke in Pill</summary>
+      <description>Show word-by-word karaoke highlight on the main pill when available</description>
+    </key>
     <key name="lyrics-language-preference" type="i">
       <default>0</default>
       <summary>Preferred lyrics script</summary>
       <description>0=auto, 1=prefer original script (CJK/Hangul), 2=prefer Latin (romanized or translated)</description>
+    </key>
+    <key name="local-lyrics-folder" type="s">
+      <default>''</default>
+      <summary>Local Lyrics Folder</summary>
+      <description>Optional directory path containing local .lrc, .ttml, or .txt lyrics files.</description>
+    </key>
+    <key name="lyrics-cache-revision" type="i">
+      <default>0</default>
+      <summary>Lyrics Cache Revision</summary>
+      <description>Incremented when manually imported lyrics are added or removed.</description>
     </key>
     <key name="enable-gamemode" type="b">
       <default>true</default>
