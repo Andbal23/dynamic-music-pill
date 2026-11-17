@@ -129,6 +129,7 @@ export const ScrollLabel = GObject.registerClass(
             this._hovered = false;
             this._forceScroll = false;
             this._pendingScrollStop = false;
+            this._lastAllocatedWidth = 0;
             this._container = new PixelSnappedBox({ x_expand: true, y_expand: true, x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER });
             this._container.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
             this.add_child(this._container);
@@ -159,6 +160,10 @@ export const ScrollLabel = GObject.registerClass(
             }, this);
 
             this.connectObject('notify::allocation', () => {
+                if (this.has_allocation()) {
+                    let allocW = this.get_allocation_box().get_width();
+                    if (allocW > 1) this._lastAllocatedWidth = allocW;
+                }
                 if (this._ignoreResizeUntil && Date.now() < this._ignoreResizeUntil) return;
                 if (this._resizeTimer) { GLib.Source.remove(this._resizeTimer); this._resizeTimer = null; }
                 this._resizeTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
@@ -181,17 +186,10 @@ export const ScrollLabel = GObject.registerClass(
         getNaturalTextWidth() {
             if (!this._label1 || !this._label1.clutter_text || !this._label1.get_stage()) return 0;
             this._label1.ensure_style();
-            let ct = this._label1.clutter_text;
-            let layout = ct.get_layout();
-            if (!layout) return 0;
-            let measureLayout = layout;
-            if (layout.is_ellipsized() || layout.get_ellipsize() !== Pango.EllipsizeMode.NONE) {
-                measureLayout = layout.copy();
-                measureLayout.set_ellipsize(Pango.EllipsizeMode.NONE);
-                measureLayout.set_width(-1);
-            }
-            let [pixelW] = measureLayout.get_pixel_size();
-            return Math.ceil(pixelW);
+            // St.Label.get_preferred_width returns un-ellipsized logical pixels already normalized for resource_scale,
+            // whereas ct.get_layout().get_pixel_size() scales by resource_scale on HiDPI / fractional scaling.
+            let [, natW] = this._label1.get_preferred_width(-1);
+            return Math.ceil(natW);
         }
 
         setLabelStyle(css) {
@@ -349,6 +347,7 @@ export const ScrollLabel = GObject.registerClass(
 
                 let boxWidth = this.get_allocation_box().get_width();
                 if (boxWidth <= 1) return GLib.SOURCE_REMOVE;
+                this._lastAllocatedWidth = boxWidth;
 
                 let textWidth = this.getNaturalTextWidth();
                 let overflows = textWidth > boxWidth + 2;
@@ -395,10 +394,10 @@ export const ScrollLabel = GObject.registerClass(
             if (!force && this._text === text) return;
             this._text = text || "";
             this._lyricTime = lyricTime;
-            this._lyricFinished = false;
             this._pendingScrollStop = false;
 
             this._stopAnimation(true);
+            this._lyricFinished = false;
 
             this._label1.text = this._text;
             this._label2.text = this._text;
@@ -407,14 +406,14 @@ export const ScrollLabel = GObject.registerClass(
 
             // Determine if the text overflows and will scroll to avoid ellipsis flicker
             let isDynamic = !this._isPopup && this._settings && this._settings.get_boolean('pill-dynamic-width');
-            let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
+            let rawBoxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
+            let boxWidth = rawBoxWidth > 1 ? rawBoxWidth : (this._lastAllocatedWidth || 0);
             let textWidth = this.getNaturalTextWidth();
             let confWidth = this._settings ? (this._settings.get_int('target-container') > 0 ? this._settings.get_int('panel-pill-width') : this._settings.get_int('pill-width')) : 300;
             let maxAvailableWidth = this._isPopup ? (boxWidth > 1 ? boxWidth : 260) : (isDynamic ? Math.max(60, confWidth - 80) : (boxWidth > 1 ? boxWidth : confWidth - 80));
             let overflows = (boxWidth > 1) ? (textWidth > boxWidth + 2) : (textWidth > maxAvailableWidth);
-            let willOverflowMax = textWidth > maxAvailableWidth;
             let scrollSetting = this._settings ? this._settings.get_boolean('scroll-text') : false;
-            let willScroll = (overflows || willOverflowMax) && (scrollSetting || lyricTime > 0);
+            let willScroll = overflows && (scrollSetting || lyricTime > 0);
 
             if (willScroll) {
                 this._container.x_align = Clutter.ActorAlign.START;
@@ -429,13 +428,7 @@ export const ScrollLabel = GObject.registerClass(
                 this._clearFadeOutEffect();
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                 this._label1.x_expand = true;
-                if (isDynamic && lyricTime <= 0 && !overflows && !willOverflowMax) {
-                    this._container.x_align = Clutter.ActorAlign.CENTER;
-                } else if (overflows || willOverflowMax) {
-                    this._container.x_align = Clutter.ActorAlign.START;
-                } else {
-                    this._container.x_align = Clutter.ActorAlign.CENTER;
-                }
+                this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
             }
 
             this._label1.remove_transition('opacity');
@@ -468,7 +461,7 @@ export const ScrollLabel = GObject.registerClass(
             // Don't schedule scroll measurement while paused
             if (this._paused) return;
 
-            let delay = isDynamic ? 450 : 100;
+            let delay = (isDynamic && lyricTime <= 0) ? 450 : 100;
             this.ignoreResizeFor(delay);
         }
 
@@ -627,9 +620,11 @@ export const ScrollLabel = GObject.registerClass(
                 this._scrollTimer = null;
                 if (this._gameMode || !this.get_parent()) return GLib.SOURCE_REMOVE;
 
-                this._animateTranslationX(-distance, scrollDuration, () => {
+                this._animateTranslationX(-distance, scrollDuration, (isFinished) => {
                     this._isScrolling = false;
-                    this._lyricFinished = true;
+                    if (isFinished) {
+                        this._lyricFinished = true;
+                    }
                 });
                 return GLib.SOURCE_REMOVE;
             });
