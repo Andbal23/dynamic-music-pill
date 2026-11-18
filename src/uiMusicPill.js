@@ -1292,8 +1292,9 @@ export const MusicPill = GObject.registerClass(
                     }
                 }
             } else {
+                let startW = Math.round(this._body.width);
                 if (this._settings.get_boolean('pill-dynamic-width') || hideText) {
-                    let currentWidth = this._body.width;
+                    let currentWidth = startW;
                     this._body.remove_transition('width');
                     if (this._blurBackdrop) this._blurBackdrop.remove_transition('width');
 
@@ -1338,9 +1339,13 @@ export const MusicPill = GObject.registerClass(
                 this._targetWidth = targetWidth;
                 this._targetHeight = targetHeight;
 
-                if (this._isActiveState && this._body.width > 0 && this._body.width !== targetWidth) {
+                if (this._isActiveState && startW > 0 && startW !== targetWidth) {
                     if (this._titleScroll) this._titleScroll.ignoreResizeFor(450);
                     if (this._artistScroll) this._artistScroll.ignoreResizeFor(450);
+                    this._body.set_width(startW);
+                    if (this._blurBackdrop) {
+                        this._blurBackdrop.set_width(startW);
+                    }
                     this._body.ease({ width: targetWidth, height: targetHeight, duration: 400, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                     if (this._blurBackdrop) {
                         this._blurBackdrop.ease({
@@ -1348,7 +1353,8 @@ export const MusicPill = GObject.registerClass(
                             height: targetHeight,
                             duration: 400,
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                            onStopped: () => {
+                            onStopped: (isFinished) => {
+                                if (!isFinished) return;
                                 if (this._blurBackdrop) {
                                     this._blurBackdrop.set_width(targetWidth);
                                     this._blurBackdrop.set_height(targetHeight);
@@ -1429,7 +1435,8 @@ export const MusicPill = GObject.registerClass(
                             width: newTarget,
                             duration: 300,
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                            onStopped: () => {
+                            onStopped: (isFinished) => {
+                                if (!isFinished) return;
                                 if (this._titleScroll) this._titleScroll._checkResize();
                                 if (this._artistScroll) this._artistScroll._checkResize();
                             }
@@ -1438,7 +1445,14 @@ export const MusicPill = GObject.registerClass(
                             this._blurBackdrop.ease({
                                 width: newTarget,
                                 duration: 300,
-                                mode: Clutter.AnimationMode.EASE_OUT_QUAD
+                                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                                onStopped: (isFinished) => {
+                                    if (!isFinished) return;
+                                    if (this._blurController) {
+                                        this._blurController.updateDimensions(newTarget, this._targetHeight);
+                                        this._blurController.invalidate();
+                                    }
+                                }
                             });
                         }
                     }
@@ -1715,7 +1729,8 @@ export const MusicPill = GObject.registerClass(
                                 height: finalHeight,
                                 duration: 500,
                                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                                onStopped: () => {
+                                onStopped: (isFinished) => {
+                                    if (!isFinished) return;
                                     if (this._blurBackdrop) {
                                         this._blurBackdrop.set_width(finalWidth);
                                         this._blurBackdrop.set_height(finalHeight);
@@ -1918,7 +1933,8 @@ export const MusicPill = GObject.registerClass(
                         height: finalHeight,
                         duration: 500,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                        onStopped: () => {
+                        onStopped: (isFinished) => {
+                            if (!isFinished) return;
                             if (this._blurBackdrop) {
                                 this._blurBackdrop.set_width(finalWidth);
                                 this._blurBackdrop.set_height(finalHeight);
