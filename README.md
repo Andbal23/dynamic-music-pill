@@ -97,7 +97,12 @@ Beyond Play/Pause, Next, Previous, Seek Bar, Shuffle, and Repeat, the pop-up inc
 ### Manual Installation from Source
 
 ```bash
+# GNOME 50+ (default main branch):
 git clone https://github.com/Andbal23/dynamic-music-pill.git
+
+# Or for GNOME 45–49:
+git clone -b gnome45-49 https://github.com/Andbal23/dynamic-music-pill.git
+
 cd dynamic-music-pill
 mkdir -p ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal
 cp -r * ~/.local/share/gnome-shell/extensions/dynamic-music-pill@andbal/
@@ -118,11 +123,11 @@ gnome-extensions enable dynamic-music-pill@andbal
 #### Quick Install
 
 ```bash
-# GNOME 45-49:
+# GNOME 50+ (main branch):
 nix profile add github:Andbal23/dynamic-music-pill
 
-# GNOME 50+:
-nix profile add github:Andbal23/dynamic-music-pill#gnome50
+# GNOME 45–49:
+nix profile add github:Andbal23/dynamic-music-pill/gnome45-49
 ```
 
 #### Declarative (`flake.nix`)
@@ -130,20 +135,18 @@ nix profile add github:Andbal23/dynamic-music-pill#gnome50
 Add the input:
 
 ```nix
+# GNOME 50+ (main branch):
 inputs.dynamic-music-pill.url = "github:Andbal23/dynamic-music-pill";
+
+# Or for GNOME 45–49:
+# inputs.dynamic-music-pill.url = "github:Andbal23/dynamic-music-pill/gnome45-49";
 ```
 
 Then add the package to `configuration.nix` or Home Manager:
 
 ```nix
-# GNOME 45-49:
 environment.systemPackages = [
   inputs.dynamic-music-pill.packages.${pkgs.system}.default
-];
-
-# GNOME 50+:
-environment.systemPackages = [
-  inputs.dynamic-music-pill.packages.${pkgs.system}.gnome50
 ];
 ```
 

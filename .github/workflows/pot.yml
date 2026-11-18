@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - gnome50
+      - gnome45-49
     paths:
       - 'extension.js'
       - 'prefs.js'
