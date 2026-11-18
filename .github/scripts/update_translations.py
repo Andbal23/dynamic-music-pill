@@ -187,16 +187,34 @@ def get_target_po_files(before: str, current: str) -> list[pathlib.Path]:
     return sorted(pathlib.Path('po').glob('*.po'))
 
 
+TRANSLATIONS_SECTION_RE = re.compile(
+    r'(### Translations .*?</div>\s*\n\n)((?:- \*\*.*?\n)+)(\n---)',
+    re.S,
+)
+
+
+def replace_translations_section(target_text: str, source_text: str) -> str | None:
+    """Copy the ### Translations bullet section from source_text into target_text."""
+    src_match = TRANSLATIONS_SECTION_RE.search(source_text)
+    dst_match = TRANSLATIONS_SECTION_RE.search(target_text)
+    if not src_match or not dst_match:
+        return None
+    src_block = src_match.group(2)
+    return (
+        target_text[: dst_match.start()]
+        + dst_match.group(1)
+        + src_block
+        + dst_match.group(3)
+        + target_text[dst_match.end() :]
+    )
+
+
 def update_readme(readme_path: pathlib.Path, additions: dict[str, list[tuple[str, str]]]) -> bool:
     if not additions or not readme_path.is_file():
         return False
 
     text = readme_path.read_text(encoding='utf-8')
-    section_re = re.compile(
-        r'(### Translations .*?</div>\s*\n\n)((?:- \*\*.*?\n)+)(\n---)',
-        re.S,
-    )
-    m = section_re.search(text)
+    m = TRANSLATIONS_SECTION_RE.search(text)
     if not m:
         print('Translations section not found in README.md; skipping.', file=sys.stderr)
         return False
