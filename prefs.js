@@ -1610,7 +1610,7 @@ export default class DynamicMusicPrefs extends ExtensionPreferences {
                 }
 
                 if (!trackTitle) {
-                    const baseNoExt = origFileName.replace(/\.[^/.]+$/, '').trim();
+                    const baseNoExt = origFileName.replace(new RegExp('\\.[^/.]+$'), '').trim();
                     const dashParts = baseNoExt.split(/\s+[-–—]\s+/);
                     if (dashParts.length >= 2) {
                         if (!trackArtist) trackArtist = dashParts[0].trim();
