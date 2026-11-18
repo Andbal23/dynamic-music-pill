@@ -791,6 +791,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
+            this._historyCancellable = null;
+            this._historyThumbTimerId = 0;
+            this._historyThumbIdleId = 0;
+            this._subpageSources = new Set();
             this.connect('destroy', () => this._cleanup());
         }
 
@@ -1398,6 +1402,27 @@ export const ExpandedPlayer = GObject.registerClass(
             };
         }
 
+        _clearSubpageAsync() {
+            if (this._historyCancellable) {
+                this._historyCancellable.cancel();
+                this._historyCancellable = null;
+            }
+            if (this._historyThumbTimerId) {
+                GLib.Source.remove(this._historyThumbTimerId);
+                this._historyThumbTimerId = 0;
+            }
+            if (this._historyThumbIdleId) {
+                GLib.Source.remove(this._historyThumbIdleId);
+                this._historyThumbIdleId = 0;
+            }
+            if (this._subpageSources) {
+                for (const id of this._subpageSources) {
+                    GLib.Source.remove(id);
+                }
+                this._subpageSources.clear();
+            }
+        }
+
         _pushPage(title, iconName, buildFn) {
             if (this._currentSubPage) {
                 this._currentSubPage.destroy();
@@ -1524,6 +1549,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 duration: 120,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => {
+                    if (!this._box || !this._settings || !this.get_parent()) return;
                     if (this._lyricsWidget) {
                         this._lyricsWidget.destroy();
                         this._lyricsWidget = null;
@@ -2223,11 +2249,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 let history = this._controller.getTrackHistory();
                 if (!history || history.length === 0) { contentBox.add_child(new St.Label({ text: _('No history yet'), style: `color:${ta};` })); return; }
 
-                let copyTimeouts = [];
+                this._clearSubpageAsync();
                 let copyIcons = [];
-                let historyCancellable = new Gio.Cancellable();
-                let thumbTimerId = 0;
-                let thumbIdleId = 0;
+                const historyCancellable = new Gio.Cancellable();
+                this._historyCancellable = historyCancellable;
                 const pendingThumbs = [];
 
                 const fmtTime = (ms) => {
@@ -2294,8 +2319,7 @@ export const ExpandedPlayer = GObject.registerClass(
                         copyIcon.opacity = 0;
                         copyIcon.ease({ opacity: 255, duration: COPY_ICON_FADE_IN_DURATION, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                         let tid = GLib.timeout_add(GLib.PRIORITY_DEFAULT, COPY_ICON_RESET_DELAY, () => {
-                            const idx = copyTimeouts.indexOf(tid);
-                            if (idx >= 0) copyTimeouts.splice(idx, 1);
+                            this._subpageSources?.delete(tid);
                             if (!copyIcon.get_parent()) return GLib.SOURCE_REMOVE;
                             copyIcon.ease({
                                 opacity: 0, duration: COPY_ICON_FADE_OUT_DURATION, mode: Clutter.AnimationMode.EASE_IN_QUAD, onStopped: () => {
@@ -2304,7 +2328,7 @@ export const ExpandedPlayer = GObject.registerClass(
                             });
                             return GLib.SOURCE_REMOVE;
                         });
-                        copyTimeouts.push(tid);
+                        this._subpageSources?.add(tid);
                     };
                     rowBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, contentBox);
                     rowBtn.connectObject('button-release-event', (a, e) => {
@@ -2393,13 +2417,14 @@ export const ExpandedPlayer = GObject.registerClass(
                 };
 
                 if (items.length > 7 || pendingThumbs.length > 0) {
-                    thumbTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, SUBPAGE_ANIM_IN_DURATION + 20, () => {
-                        thumbTimerId = 0;
+                    this._historyThumbTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, SUBPAGE_ANIM_IN_DURATION + 20, () => {
+                        this._historyThumbTimerId = 0;
+                        if (historyCancellable.is_cancelled()) return GLib.SOURCE_REMOVE;
                         let rowIdx = 7;
                         let thumbIdx = 0;
-                        thumbIdleId = GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                        this._historyThumbIdleId = GLib.idle_add(GLib.PRIORITY_LOW, () => {
                             if (historyCancellable.is_cancelled()) {
-                                thumbIdleId = 0;
+                                this._historyThumbIdleId = 0;
                                 return GLib.SOURCE_REMOVE;
                             }
                             if (rowIdx < items.length) {
@@ -2416,18 +2441,15 @@ export const ExpandedPlayer = GObject.registerClass(
                                 }
                                 if (thumbIdx < pendingThumbs.length) return GLib.SOURCE_CONTINUE;
                             }
-                            thumbIdleId = 0;
+                            this._historyThumbIdleId = 0;
                             return GLib.SOURCE_REMOVE;
                         });
                         return GLib.SOURCE_REMOVE;
                     });
                 }
 
-                if (subpage) subpage.connect('destroy', () => {
-                    historyCancellable.cancel();
-                    if (thumbTimerId) { GLib.Source.remove(thumbTimerId); thumbTimerId = 0; }
-                    if (thumbIdleId) { GLib.Source.remove(thumbIdleId); thumbIdleId = 0; }
-                    copyTimeouts.forEach(id => GLib.Source.remove(id));
+                subpage.connect('destroy', () => {
+                    this._clearSubpageAsync();
                     copyIcons.forEach(icon => { icon.remove_transition('opacity'); });
                 });
             });
@@ -2683,6 +2705,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _finalizeClose() {
+            if (!this._box) return;
             if (this._safetyTimeoutId) {
                 GLib.Source.remove(this._safetyTimeoutId);
                 this._safetyTimeoutId = null;
@@ -2718,12 +2741,22 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _cleanup() {
+            this._isSpinning = false;
+            this._clearSubpageAsync();
+            if (this._currentSubPage) {
+                this._currentSubPage.remove_all_transitions();
+                this._currentSubPage = null;
+            }
             if (this._settings) {
                 this._settings.disconnectObject(this);
                 this._settings = null;
             }
             this.disconnectObject(this);
-            if (this._box) this._box.remove_all_transitions();
+            const box = this._box;
+            this._box = null;
+            this._mainPage = null;
+            this._sliderFill = null;
+            if (box) box.remove_all_transitions();
             if (this._blurBackdrop) this._blurBackdrop.remove_all_transitions();
             if (this._updateTimer) { GLib.Source.remove(this._updateTimer); this._updateTimer = null; }
             if (this._resizeDebounceId) { GLib.Source.remove(this._resizeDebounceId); this._resizeDebounceId = null; }
@@ -2733,9 +2766,10 @@ export const ExpandedPlayer = GObject.registerClass(
             if (this._hintSettingsTimeoutId) { GLib.Source.remove(this._hintSettingsTimeoutId); this._hintSettingsTimeoutId = null; }
             if (this._subpageActionTimeoutId) { GLib.Source.remove(this._subpageActionTimeoutId); this._subpageActionTimeoutId = null; }
             if (this._vinyl) {
-                this._vinyl.remove_transition('rotation-angle-z');
+                const vinyl = this._vinyl;
+                this._vinyl = null;
+                vinyl.remove_transition('rotation-angle-z');
             }
-            this._isSpinning = false;
             this._coverArtWidget = null;
             if (this._lyricsTimerId) { GLib.Source.remove(this._lyricsTimerId); this._lyricsTimerId = null; }
             this._lyricsWidget = null;
@@ -2745,7 +2779,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 this._lyricsClient = null;
             }
-            this._currentSubPage = null;
+            this._controller = null;
             this._visualizer = null;
             if (this._blurController) {
                 this._blurController.destroy();
@@ -3311,7 +3345,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let finishCalled = false;
                 const callFinish = () => {
-                    if (finishCalled) return;
+                    if (finishCalled || !this._box) return;
                     finishCalled = true;
                     if (onFinished) onFinished();
                 };
