@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 12:03+0100\n"
+"POT-Creation-Date: 2026-11-18 12:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -815,6 +815,23 @@ msgstr ""
 
 #: prefs.js:1561
 msgid "Lyrics Files (*.lrc, *.ttml, *.txt)"
+msgstr ""
+
+#: prefs.js:1649
+#, javascript-format
+msgid "Imported lyrics for \"%s\""
+msgstr ""
+
+#: prefs.js:1655
+msgid "Import Lyrics File…"
+msgstr ""
+
+#: prefs.js:1656
+msgid "Select a local .lrc, .ttml, or .txt lyrics file for the target song"
+msgstr ""
+
+#: prefs.js:1661
+msgid "Choose File…"
 msgstr ""
 
 #: prefs.js:1760
