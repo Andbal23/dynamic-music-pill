@@ -36,12 +36,23 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
-        version: '1.7.3',
-        subtitle: 'Smooth History Subpage Opening & Thumbnail Caching',
+        version: '1.7.4',
+        subtitle: 'Dynamic Pill Width Smoothness (Final GNOME 45–49 Update)',
         expanded: true,
-        notes: 'Bug Fixes:\n' +
+        notes: 'Improvements:\n' +
+            '• Improved dynamic pill width resize smoothness and prevented backdrop/dock size transitions from jumping ahead of the pill during rapid track changes.\n' +
+            '• Kept centered title and artist alignment smooth when expanding or shrinking without layout jitter.\n\n' +
+            'Note:\n' +
+            '• Final maintenance update for the GNOME 45–49 legacy branch; new features and future updates target GNOME 50+.',
+    },
+    {
+        version: '1.7.3',
+        subtitle: 'History Caching, Cleanup & Circular Vinyl Fixes',
+        expanded: false,
+        notes: 'Bug Fixes & Performance:\n' +
             '• Deferred Recently Played row batching and asynchronously scaled cached thumbnails (112x112) after the ' +
-            'subpage slide animation to eliminate opening lag and missing-file log errors.',
+            'subpage slide animation to eliminate opening lag and missing-file log errors.\n' +
+            '• Fixed circular vinyl rotation startup recursion and ensured subpage async timers are cleaned up on destroy/disable.',
     },
     {
         version: '1.7.2',
