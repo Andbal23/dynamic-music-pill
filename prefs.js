@@ -36,9 +36,17 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
+        version: '1.7.2',
+        subtitle: 'Tray / Background Player Window Raise Fix',
+        expanded: true,
+        notes: 'Bug Fixes:\n' +
+            '• Fixed opening a background or tray-minimized player (e.g. Audacious) via Open App restarting local playback ' +
+            'or creating a duplicate playlist instead of raising the existing window (#209).',
+    },
+    {
         version: '1.7.1',
         subtitle: 'Volume Scroll & Display Scaling Text Fixes',
-        expanded: true,
+        expanded: false,
         notes: 'Bug Fixes:\n' +
             '• Fixed scroll-to-adjust-volume on the pill not working (#206).\n' +
             '• Fixed text misalignment and lyric scrolling issues on scaled / HiDPI displays (#207).\n\n' +
