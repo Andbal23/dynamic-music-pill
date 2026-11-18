@@ -1296,7 +1296,9 @@ msgstr "Làm mờ động (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Áp dụng làm mờ Gaussian phía sau viên thuốc và cửa sổ bật lên bằng Blur my Shell hoặc gnome-rounded-blur."
+msgstr ""
+"Áp dụng làm mờ Gaussian phía sau viên thuốc và cửa sổ bật lên bằng Blur my "
+"Shell hoặc gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1352,13 +1354,17 @@ msgstr "Hướng dẫn"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "Để có hiệu ứng làm mờ động bo góc tốt nhất, hãy cài đặt Blur my Shell và gnome-rounded-blur."
+msgstr ""
+"Để có hiệu ứng làm mờ động bo góc tốt nhất, hãy cài đặt Blur my Shell và "
+"gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr "gnome-rounded-blur được khuyên dùng để có góc bo tròn mượt mà với làm mờ động."
+msgstr ""
+"gnome-rounded-blur được khuyên dùng để có góc bo tròn mượt mà với làm mờ "
+"động."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1382,7 +1388,8 @@ msgstr "Thanh dock đa màn hình"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr "Thanh dock nào hiển thị viên thuốc khi dock xuất hiện trên tất cả màn hình"
+msgstr ""
+"Thanh dock nào hiển thị viên thuốc khi dock xuất hiện trên tất cả màn hình"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
@@ -1398,7 +1405,8 @@ msgstr "Chế độ sáng"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Sử dụng bảng màu pastel sáng cho nền động cùng chữ và biểu tượng tối màu"
+msgstr ""
+"Sử dụng bảng màu pastel sáng cho nền động cùng chữ và biểu tượng tối màu"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1411,7 +1419,8 @@ msgstr "Tuân theo pipeline của Blur my Shell"
 
 #: prefs.js:1072
 msgid "Use the blur pipelines and effects configured in Blur my Shell"
-msgstr "Sử dụng các pipeline và hiệu ứng làm mờ đã cấu hình trong Blur my Shell"
+msgstr ""
+"Sử dụng các pipeline và hiệu ứng làm mờ đã cấu hình trong Blur my Shell"
 
 #: prefs.js:1086
 msgid "Controlled by Blur my Shell pipeline"
@@ -1426,7 +1435,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr "Vui lòng cài đặt \"Blur my Shell\" để áp dụng hiệu ứng làm mờ động."
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 "Vui lòng cập nhật \"Blur my Shell\" hoặc cài đặt \"gnome-rounded-blur\" để "
 "áp dụng hiệu ứng làm mờ động."
@@ -1452,10 +1463,12 @@ msgid "Interactive Pop-up Lyrics"
 msgstr "Lời bài hát tương tác trên pop-up"
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
-"Mẹo: Nhấn vào ảnh bìa album hoặc đĩa nhạc trong pop-up để mở chế độ xem "
-"lời bài hát đồng bộ theo thời gian!"
+"Mẹo: Nhấn vào ảnh bìa album hoặc đĩa nhạc trong pop-up để mở chế độ xem lời "
+"bài hát đồng bộ theo thời gian!"
 
 #: prefs.js:1162
 msgid "Lyrics & Karaoke"

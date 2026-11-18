@@ -9,8 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
 "PO-Revision-Date: 2026-11-17 16:51+0000\n"
-"Last-Translator: Issam Khalaf <issam.5alaf@users.noreply.hosted.weblate.org>"
-"\n"
+"Last-Translator: Issam Khalaf "
+"<issam.5alaf@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/ar/>\n"
 "Language: ar\n"
@@ -1259,7 +1259,9 @@ msgid "Dynamic Blur (Blur my Shell)"
 msgstr ""
 
 #: prefs.js:906
-msgid "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur."
+msgid ""
+"Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
+"rounded-blur."
 msgstr ""
 
 #: prefs.js:910
@@ -1283,7 +1285,9 @@ msgid "Tint Blur with Album Art Color"
 msgstr ""
 
 #: prefs.js:931
-msgid "Blend dynamic album colors over the blurred background instead of neutral frosted glass"
+msgid ""
+"Blend dynamic album colors over the blurred background instead of neutral "
+"frosted glass"
 msgstr ""
 
 #: prefs.js:940
@@ -1311,11 +1315,15 @@ msgid "Guide"
 msgstr ""
 
 #: src/blurHelper.js:47
-msgid "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-blur."
+msgid ""
+"For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
+"blur."
 msgstr ""
 
 #: src/blurHelper.js:49
-msgid "gnome-rounded-blur is recommended for smooth rounded corners with dynamic blur."
+msgid ""
+"gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
+"blur."
 msgstr ""
 
 #: src/blurHelper.js:51
@@ -1383,7 +1391,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1407,7 +1417,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

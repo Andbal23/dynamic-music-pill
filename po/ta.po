@@ -1293,7 +1293,9 @@ msgstr "இயங்கு மங்கல் (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Blur my Shell அல்லது gnome-rounded-blur பயன்படுத்தி மாத்திரை மற்றும் பாப்-அப் பின்னால் காசியன் மங்கலைப் பயன்படுத்து."
+msgstr ""
+"Blur my Shell அல்லது gnome-rounded-blur பயன்படுத்தி மாத்திரை மற்றும் பாப்-அப் பின்னால் "
+"காசியன் மங்கலைப் பயன்படுத்து."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1319,7 +1321,8 @@ msgstr "ஆல்பம் படத்தின் நிறத்தால் 
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr "சாதாரண உறைந்த கண்ணாடிக்குப் பதிலாக மங்கலான பின்புலத்தில் இயங்கு ஆல்பம் நிறங்களைக் கலக்கவும்"
+msgstr ""
+"சாதாரண உறைந்த கண்ணாடிக்குப் பதிலாக மங்கலான பின்புலத்தில் இயங்கு ஆல்பம் நிறங்களைக் கலக்கவும்"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1349,13 +1352,17 @@ msgstr "வழிகாட்டி"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "சிறந்த வளைந்த இயங்கு மங்கலுக்கு Blur my Shell மற்றும் gnome-rounded-blur ஆகியவற்றை நிறுவவும்."
+msgstr ""
+"சிறந்த வளைந்த இயங்கு மங்கலுக்கு Blur my Shell மற்றும் gnome-rounded-blur ஆகியவற்றை "
+"நிறுவவும்."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr "இயங்கு மங்கலுடன் மென்மையான வளைந்த முனைகளுக்கு gnome-rounded-blur பரிந்துரைக்கப்படுகிறது."
+msgstr ""
+"இயங்கு மங்கலுடன் மென்மையான வளைந்த முனைகளுக்கு gnome-rounded-blur "
+"பரிந்துரைக்கப்படுகிறது."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1379,7 +1386,8 @@ msgstr "பல-திரை டாக்குகள்"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr "அனைத்துத் திரைகளிலும் டாக் இருக்கும்போது எந்த டாக்குகளில் மாத்திரையைக் காட்ட வேண்டும்"
+msgstr ""
+"அனைத்துத் திரைகளிலும் டாக் இருக்கும்போது எந்த டாக்குகளில் மாத்திரையைக் காட்ட வேண்டும்"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
@@ -1395,7 +1403,8 @@ msgstr "வெளிச்ச பயன்முறை"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "இயங்கு பின்புலங்களுக்கு வெளிர் வண்ணங்களையும் அடர் நிற எழுத்து/படவுருக்களையும் பயன்படுத்து"
+msgstr ""
+"இயங்கு பின்புலங்களுக்கு வெளிர் வண்ணங்களையும் அடர் நிற எழுத்து/படவுருக்களையும் பயன்படுத்து"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1422,7 +1431,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1446,7 +1457,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

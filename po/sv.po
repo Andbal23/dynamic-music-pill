@@ -1258,7 +1258,9 @@ msgstr "Dynamisk oskärpa (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Använd gaussisk oskärpa bakom pillret och popup-fönstret med Blur my Shell eller gnome-rounded-blur."
+msgstr ""
+"Använd gaussisk oskärpa bakom pillret och popup-fönstret med Blur my Shell "
+"eller gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1284,7 +1286,9 @@ msgstr "Färga oskärpa med skivomslagets färg"
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr "Blanda dynamiska albumfärger över den oskarpa bakgrunden istället för neutralt frostat glas"
+msgstr ""
+"Blanda dynamiska albumfärger över den oskarpa bakgrunden istället för "
+"neutralt frostat glas"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1314,13 +1318,16 @@ msgstr "Guide"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "För bästa rundade dynamiska oskärpa, installera Blur my Shell och gnome-rounded-blur."
+msgstr ""
+"För bästa rundade dynamiska oskärpa, installera Blur my Shell och gnome-"
+"rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr "gnome-rounded-blur rekommenderas för mjuka rundade hörn med dynamisk oskärpa."
+msgstr ""
+"gnome-rounded-blur rekommenderas för mjuka rundade hörn med dynamisk oskärpa."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1360,7 +1367,9 @@ msgstr "Ljust läge"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Använd en ljus pastellpalett för dynamiska bakgrunder samt mörk text och mörka ikoner"
+msgstr ""
+"Använd en ljus pastellpalett för dynamiska bakgrunder samt mörk text och "
+"mörka ikoner"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1387,7 +1396,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1411,7 +1422,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

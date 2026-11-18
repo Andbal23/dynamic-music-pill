@@ -1296,7 +1296,9 @@ msgstr "Blur Dinamis (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Terapkan blur Gaussian di belakang kapsul dan pop-up menggunakan Blur my Shell atau gnome-rounded-blur."
+msgstr ""
+"Terapkan blur Gaussian di belakang kapsul dan pop-up menggunakan Blur my "
+"Shell atau gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1322,7 +1324,9 @@ msgstr "Warnai Blur dengan Warna Sampul Album"
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr "Padukan warna album dinamis di atas latar belakang buram alih-alih kaca buram netral"
+msgstr ""
+"Padukan warna album dinamis di atas latar belakang buram alih-alih kaca "
+"buram netral"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1352,13 +1356,17 @@ msgstr "Panduan"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "Untuk blur dinamis membulat terbaik, instal Blur my Shell dan gnome-rounded-blur."
+msgstr ""
+"Untuk blur dinamis membulat terbaik, instal Blur my Shell dan gnome-rounded-"
+"blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr "gnome-rounded-blur direkomendasikan untuk sudut membulat halus dengan blur dinamis."
+msgstr ""
+"gnome-rounded-blur direkomendasikan untuk sudut membulat halus dengan blur "
+"dinamis."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1398,7 +1406,8 @@ msgstr "Mode Terang"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Gunakan palet pastel cerah untuk latar belakang dinamis serta teks/ikon gelap"
+msgstr ""
+"Gunakan palet pastel cerah untuk latar belakang dinamis serta teks/ikon gelap"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1426,7 +1435,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr "Instal \"Blur my Shell\" untuk efek buram dinamis."
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 "Perbarui \"Blur my Shell\" atau instal \"gnome-rounded-blur\" untuk efek "
 "buram dinamis."
@@ -1452,7 +1463,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr "Lirik Pop-up Interaktif"
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 "Tips: Klik sampul album atau piringan hitam pada pop-up pemutar yang "
 "diperluas untuk langsung membuka tampilan lirik tersinkron!"

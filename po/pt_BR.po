@@ -1360,13 +1360,17 @@ msgstr "Guia"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "Para o melhor desfoque dinâmico arredondado, instale o Blur my Shell e o gnome-rounded-blur."
+msgstr ""
+"Para o melhor desfoque dinâmico arredondado, instale o Blur my Shell e o "
+"gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr "O gnome-rounded-blur é recomendado para cantos arredondados suaves com desfoque dinâmico."
+msgstr ""
+"O gnome-rounded-blur é recomendado para cantos arredondados suaves com "
+"desfoque dinâmico."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1434,7 +1438,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr "Instale a extensão \"Blur my Shell\" para usar o desfoque dinâmico."
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 "Por favor, atualize o \"Blur my Shell\" ou instale o pacote \"gnome-rounded-"
 "blur\" para usar o desfoque dinâmico."
@@ -1460,7 +1466,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr "Letras Interativas no Pop-up"
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 "💡Dica: Clicar na capa do álbum ou vinil dentro do reprodutor expandido abre "
 "instantaneamente a visualização de letras sincronizadas!"
@@ -1493,4 +1501,5 @@ msgstr "Visualizadores de Áudio"
 
 #: prefs.js:1682
 msgid "Enable audio visualizer bars inside the expanded player"
-msgstr "Habilita barras de visualização de áudio dentro do reprodutor expandido"
+msgstr ""
+"Habilita barras de visualização de áudio dentro do reprodutor expandido"

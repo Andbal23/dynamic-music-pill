@@ -1291,7 +1291,9 @@ msgstr "Динамическое размытие (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Применять размытие по Гауссу позади капсулы и всплывающего окна с помощью Blur my Shell или gnome-rounded-blur."
+msgstr ""
+"Применять размытие по Гауссу позади капсулы и всплывающего окна с помощью "
+"Blur my Shell или gnome-rounded-blur."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1317,7 +1319,9 @@ msgstr "Тонировать размытие цветом обложки"
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr "Смешивать динамические цвета обложки с размытым фоном вместо нейтрального матового стекла"
+msgstr ""
+"Смешивать динамические цвета обложки с размытым фоном вместо нейтрального "
+"матового стекла"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1347,13 +1351,17 @@ msgstr "Инструкция"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "Для лучшего динамического размытия со скруглёнными углами установите Blur my Shell и gnome-rounded-blur."
+msgstr ""
+"Для лучшего динамического размытия со скруглёнными углами установите Blur my "
+"Shell и gnome-rounded-blur."
 
 #: src/blurHelper.js:49
 msgid ""
 "gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
 "blur."
-msgstr "gnome-rounded-blur рекомендуется для плавных скруглённых углов при динамическом размытии."
+msgstr ""
+"gnome-rounded-blur рекомендуется для плавных скруглённых углов при "
+"динамическом размытии."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1377,7 +1385,8 @@ msgstr "Панели (доки) на нескольких мониторах"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr "На каких панелях показывать капсулу, когда док отображается на всех мониторах"
+msgstr ""
+"На каких панелях показывать капсулу, когда док отображается на всех мониторах"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
@@ -1393,7 +1402,9 @@ msgstr "Светлый режим"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Использовать светлую пастельную палитру для динамического фона и тёмный текст/значки"
+msgstr ""
+"Использовать светлую пастельную палитру для динамического фона и тёмный "
+"текст/значки"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1420,7 +1431,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1444,7 +1457,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

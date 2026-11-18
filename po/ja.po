@@ -1257,7 +1257,9 @@ msgstr "動的ブラー (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "Blur my Shell または gnome-rounded-blur を使用して、ピルとポップアップの背後にガウスぼかしを適用します。"
+msgstr ""
+"Blur my Shell または gnome-rounded-blur を使用して、ピルとポップアップの背後"
+"にガウスぼかしを適用します。"
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1283,7 +1285,9 @@ msgstr "アルバムアートの色でブラーを着色"
 msgid ""
 "Blend dynamic album colors over the blurred background instead of neutral "
 "frosted glass"
-msgstr "無彩色のすりガラスの代わりに、ぼかした背景に動的なアルバムカラーをブレンドします"
+msgstr ""
+"無彩色のすりガラスの代わりに、ぼかした背景に動的なアルバムカラーをブレンドし"
+"ます"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1313,7 +1317,9 @@ msgstr "ガイド"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "最適な角丸動的ブラーのために、Blur my Shell と gnome-rounded-blur をインストールしてください。"
+msgstr ""
+"最適な角丸動的ブラーのために、Blur my Shell と gnome-rounded-blur をインス"
+"トールしてください。"
 
 #: src/blurHelper.js:49
 msgid ""
@@ -1343,7 +1349,8 @@ msgstr "マルチモニタードック"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr "ドックがすべてのモニターに表示されている場合にどのドックにピルを表示するか"
+msgstr ""
+"ドックがすべてのモニターに表示されている場合にどのドックにピルを表示するか"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
@@ -1359,7 +1366,9 @@ msgstr "ライトモード"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "動的な背景に明るいパステルパレットを使用し、暗いテキストとアイコンを使用します"
+msgstr ""
+"動的な背景に明るいパステルパレットを使用し、暗いテキストとアイコンを使用しま"
+"す"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1386,7 +1395,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1410,7 +1421,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

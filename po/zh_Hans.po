@@ -1274,7 +1274,8 @@ msgstr "动态模糊 (Blur my Shell)"
 msgid ""
 "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
 "rounded-blur."
-msgstr "使用 Blur my Shell 或 gnome-rounded-blur 在胶囊和弹出窗口后应用高斯模糊。"
+msgstr ""
+"使用 Blur my Shell 或 gnome-rounded-blur 在胶囊和弹出窗口后应用高斯模糊。"
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1330,7 +1331,8 @@ msgstr "指南"
 msgid ""
 "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
 "blur."
-msgstr "为获得最佳的圆角动态模糊效果，请安装 Blur my Shell 和 gnome-rounded-blur。"
+msgstr ""
+"为获得最佳的圆角动态模糊效果，请安装 Blur my Shell 和 gnome-rounded-blur。"
 
 #: src/blurHelper.js:49
 msgid ""
@@ -1403,7 +1405,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1427,7 +1431,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162

@@ -1292,8 +1292,12 @@ msgid "Dynamic Blur (Blur my Shell)"
 msgstr "Dinamikus homályosítás (Blur my Shell)"
 
 #: prefs.js:906
-msgid "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur."
-msgstr "Gauss-homályosítás alkalmazása a kapszula és a felugró ablak mögött a Blur my Shell vagy a gnome-rounded-blur segítségével."
+msgid ""
+"Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
+"rounded-blur."
+msgstr ""
+"Gauss-homályosítás alkalmazása a kapszula és a felugró ablak mögött a Blur "
+"my Shell vagy a gnome-rounded-blur segítségével."
 
 #: prefs.js:910
 msgid "Enable Blur for Pill"
@@ -1316,8 +1320,12 @@ msgid "Tint Blur with Album Art Color"
 msgstr "Homályosítás színezése az albumborító színével"
 
 #: prefs.js:931
-msgid "Blend dynamic album colors over the blurred background instead of neutral frosted glass"
-msgstr "Dinamikus albumszínek keverése a homályosított háttérre a semleges matt üveg helyett"
+msgid ""
+"Blend dynamic album colors over the blurred background instead of neutral "
+"frosted glass"
+msgstr ""
+"Dinamikus albumszínek keverése a homályosított háttérre a semleges matt üveg "
+"helyett"
 
 #: prefs.js:940
 msgid "Blur my Shell Extension"
@@ -1344,12 +1352,20 @@ msgid "Guide"
 msgstr "Útmutató"
 
 #: src/blurHelper.js:47
-msgid "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-blur."
-msgstr "A legjobb lekerekített dinamikus homályosításhoz telepítsd a Blur my Shell és a gnome-rounded-blur csomagokat."
+msgid ""
+"For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-"
+"blur."
+msgstr ""
+"A legjobb lekerekített dinamikus homályosításhoz telepítsd a Blur my Shell "
+"és a gnome-rounded-blur csomagokat."
 
 #: src/blurHelper.js:49
-msgid "gnome-rounded-blur is recommended for smooth rounded corners with dynamic blur."
-msgstr "A gnome-rounded-blur ajánlott a sima lekerekített sarkokhoz dinamikus homályosítás esetén."
+msgid ""
+"gnome-rounded-blur is recommended for smooth rounded corners with dynamic "
+"blur."
+msgstr ""
+"A gnome-rounded-blur ajánlott a sima lekerekített sarkokhoz dinamikus "
+"homályosítás esetén."
 
 #: src/blurHelper.js:51
 msgid "Blur my Shell is recommended for dynamic blur integration."
@@ -1373,7 +1389,8 @@ msgstr "Többmonitoros dokkok"
 
 #: prefs.js:1118
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr "Melyik dokkok mutassák a kapszulát, ha a dokk minden monitoron megjelenik"
+msgstr ""
+"Melyik dokkok mutassák a kapszulát, ha a dokk minden monitoron megjelenik"
 
 #: prefs.js:1030
 msgid "Blur Radius (Sigma)"
@@ -1389,7 +1406,9 @@ msgstr "Világos mód"
 
 #: prefs.js:1258
 msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Világos pasztell színvilág használata a dinamikus hátterekhez, sötét szöveggel és ikonokkal"
+msgstr ""
+"Világos pasztell színvilág használata a dinamikus hátterekhez, sötét "
+"szöveggel és ikonokkal"
 
 #: prefs.js:996
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
@@ -1416,7 +1435,9 @@ msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
 
 #: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
 msgstr ""
 
 #: prefs.js:954
@@ -1440,7 +1461,9 @@ msgid "Interactive Pop-up Lyrics"
 msgstr ""
 
 #: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
 msgstr ""
 
 #: prefs.js:1162
