@@ -1,0 +1,55 @@
+name: Compile Translations & Update Credits
+
+on:
+  push:
+    branches:
+      - main
+      - gnome50
+    paths:
+      - 'po/*.po'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  translations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gettext
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+
+      - name: Compile .po files to .mo
+        run: |
+          for po in po/*.po; do
+            [ -f "$po" ] || continue
+            lang=$(basename "$po" .po)
+            mkdir -p "locale/$lang/LC_MESSAGES"
+            msgfmt -c -o "locale/$lang/LC_MESSAGES/dynamic-music-pill.mo" "$po"
+          done
+
+      - name: Update translator credits in README.md
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: python3 .github/scripts/update_translations.py
+
+      - name: Commit and push updated .mo and README.md
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add locale/ README.md
+          if git diff --cached --quiet; then
+            echo "No translation artifacts or README changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(locale): compile .mo translations and update credits"
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
+          git push
