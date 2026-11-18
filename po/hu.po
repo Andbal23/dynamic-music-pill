@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: 2026-06-29 09:02+0000\n"
+"POT-Creation-Date: 2026-11-18 12:35+0100\n"
+"PO-Revision-Date: 2026-11-18 12:36+0100\n"
 "Last-Translator: László András <laszlo2002andras@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/hu/>\n"
@@ -19,566 +19,415 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.7.dev0\n"
 
-#: prefs.js:39
+#: prefs.js:518
 msgid "Main Pill"
 msgstr "Fő Elem"
 
-#: prefs.js:45
+#: prefs.js:524
 msgid "General Settings"
 msgstr "Általános beállítások"
 
-#: prefs.js:48
+#: prefs.js:529
 msgid "Always ON"
 msgstr "Mindig látható"
 
-#: prefs.js:49
+#: prefs.js:530
 msgid "Retain last known track and keep pill visible after closing the player"
 msgstr ""
 "Az utolsó zeneszám megtartása és a widget megjelenítése a lejátszó bezárása "
 "után is"
 
-#: prefs.js:61
+#: prefs.js:538
 msgid "Show Album Art"
 msgstr "Albumborító megjelenítése"
 
-#: prefs.js:62
+#: prefs.js:539
 msgid "Display the cover art of the currently playing song"
 msgstr "Az éppen játszott dal borítójának mutatása"
 
-#: prefs.js:73
+#: prefs.js:544
 msgid "Fallback Album Art"
 msgstr "Helyettesítő albumborító"
 
-#: prefs.js:74 prefs.js:114
+#: prefs.js:545 prefs.js:585 prefs.js:589
 msgid "No image selected"
 msgstr "Nincs kép kiválasztva"
 
-#: prefs.js:84
+#: prefs.js:555
 msgid "Select Fallback Image"
 msgstr "Helyettesítő kép kiválasztása"
 
-#: prefs.js:128
-msgid "Enable Scroll Controls"
-msgstr "Görgetéssel való irányítás engedélyezése"
+#: prefs.js:604
+msgid "Show Artist"
+msgstr "Előadó mutatása"
 
-#: prefs.js:129
-msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
-msgstr ""
-"Szám, hangerő vagy lejátszó váltása az egér görgőjével vagy a touchpaddal"
+#: prefs.js:605
+msgid "Show the artist name in the main music pill"
+msgstr "Az előadó nevének megjelenítése a fő kapszulán"
 
-#: prefs.js:140
-msgid "Change Track"
-msgstr "Zeneszám váltása"
+#: prefs.js:611
+msgid "Inline Artist"
+msgstr "Előadó egysorban"
 
-#: prefs.js:141
-msgid "Change Volume"
-msgstr "Hangerő módosítása"
+#: prefs.js:612
+msgid "Show \"Title • Artist\" when the widget is squeezed"
+msgstr "A \"Cím • Előadó\" megjelenítése, ha a widget össze van nyomva"
 
-#: prefs.js:142
-msgid "Switch Player"
-msgstr "Lejátszó váltása"
+#: prefs.js:620
+msgid "Compact Mode (Hide Text)"
+msgstr "Kompakt mód (Szöveg elrejtése)"
 
-#: prefs.js:143
-msgid "Seek ±10s"
-msgstr "Tekerés ±10s"
+#: prefs.js:621
+msgid "Hide title and artist"
+msgstr "Cím és előadó elrejtése"
 
-#: prefs.js:152
-msgid "Scroll Action"
-msgstr "Görgetési művelet"
-
-#: prefs.js:153
-msgid "Choose what scrolling on the pill should do"
-msgstr "Válaszd ki, mit tegyen a görgetés a widgeten"
-
-#: prefs.js:178
-msgid "System Master Volume"
-msgstr "Rendszer fő hangerő"
-
-#: prefs.js:179
-msgid "Active Media App Volume"
-msgstr "Aktív médialejátszó alkalmazás hangereje"
-
-#: prefs.js:183
-msgid "Volume Scroll Target"
-msgstr "Görgetett hangerő forrása"
-
-#: prefs.js:184
-msgid "Choose which sound source to control when scrolling volume"
-msgstr "Válaszd ki, melyik hangforrás módosuljon a Pill-en történő görgetéskor"
-
-#: prefs.js:204
-msgid "Scroll Animation"
-msgstr "Görgetési animáció"
-
-#: prefs.js:205
-msgid "Animate the pill with a jump effect when scrolling"
-msgstr "Ugró effektus animálása a pillen görgetéskor"
-
-#: prefs.js:217
-msgid "Invert Scroll Animation"
-msgstr "Görgetési animáció megfordítása"
-
-#: prefs.js:204
-msgid "Direction of the jump effect (Natural vs Traditional)"
-msgstr "Az animáció iránya (Természetes vs Hagyományos)"
-
-#: prefs.js:215
-msgid "Invert Scroll Direction"
-msgstr "Görgetés irányának megfordítása"
-
-#: prefs.js:216
-msgid "Swap up/down scrolling for track and volume actions"
-msgstr "A fel/le görgetés felcserélése a zeneszám és a hangerő műveleteknél"
-
-#: prefs.js:228
+#: prefs.js:629
 msgid "Scrolling Text"
 msgstr "Gördülő szöveg"
 
-#: prefs.js:229
+#: prefs.js:630
 msgid "Animate long track titles and artist names"
 msgstr "Hosszú címek és előadók animálása"
 
-#: prefs.js:240
+#: prefs.js:636
 msgid "Scroll Only on Hover"
 msgstr "Görgetés csak rámutatáskor"
 
-#: prefs.js:241
+#: prefs.js:637
 msgid "Text stays still until you hover the pill"
 msgstr ""
 "A szöveg álló helyzetben marad, amíg az egérrel a pill fölé nem mutatsz"
 
-#: prefs.js:253
+#: prefs.js:644
 msgid "Freeze Scroll on Pause"
 msgstr "Görgetés leállítása szünetnél"
 
-#: prefs.js:254
+#: prefs.js:645
 msgid "Stop the text scrolling animation when the media player is paused"
 msgstr "A futó szöveg animációjának leállítása, ha a lejátszás szünetel"
 
-#: prefs.js:267
-msgid "Lyrics Display"
-msgstr "Dalszöveg megjelenítése"
+#: prefs.js:655
+msgid "Positioning"
+msgstr "Pozicionálás és elrendezés"
 
-#: prefs.js:268
-msgid "Show real-time synchronized lyrics for current track."
-msgstr "Valós időben szinkronizált dalszöveg mutatása az aktuális számhoz."
+#: prefs.js:660
+msgid "Container Target"
+msgstr "Tároló célpont"
 
-#: prefs.js:279
-msgid "Word-level Karaoke in Pill"
-msgstr "Szószintű Karaoke a Pill-ben"
+#: prefs.js:661
+msgid "Select which UI element should host the music pill"
+msgstr "Válaszd ki, melyik felületi elem tartalmazza a widgetet"
 
-#: prefs.js:280
-msgid ""
-"Highlight individual words on the main pill when available (pop-up always "
-"uses word-level)."
+#: prefs.js:663
+msgid "Dock"
+msgstr "Dokk"
+
+#: prefs.js:663
+msgid "Panel: Left Box"
+msgstr "Panel: Bal oldal"
+
+#: prefs.js:663
+msgid "Panel: Center Box"
+msgstr "Panel: Közép"
+
+#: prefs.js:663
+msgid "Panel: Right Box"
+msgstr "Panel: Jobb oldal"
+
+#: prefs.js:669
+msgid "Multi-Monitor Docks"
+msgstr "Többmonitoros dokkok"
+
+#: prefs.js:670
+msgid "Which docks show the pill when the dock is on all monitors"
 msgstr ""
-"Egyes szavak valós idejű kiemelése a fő Pill-en, ha elérhető (a Pop-up "
-"menüben mindig szószintű marad)."
+"Melyik dokkok mutassák a kapszulát, ha a dokk minden monitoron megjelenik"
 
-#: prefs.js:292
-msgid "Lyrics language preference"
-msgstr "Dalszöveg nyelvi beállításai"
+#: prefs.js:672
+msgid "Main Dock Only"
+msgstr "Csak az elsődleges dokk"
 
-#: prefs.js:293
-msgid "When multiple versions exist"
-msgstr "Ha több verzió is elérhető"
+#: prefs.js:672
+msgid "All Docks"
+msgstr "Minden dokk"
 
-#: prefs.js:295
-msgid "Auto"
-msgstr "Automatikus"
+#: prefs.js:672
+msgid "Secondary Docks Only"
+msgstr "Csak a másodlagos dokkok"
 
-#: prefs.js:296
-msgid "Prefer original script"
-msgstr "Eredeti írásmód preferálása"
+#: prefs.js:678
+msgid "Dynamic Width"
+msgstr "Dinamikus szélesség"
 
-#: prefs.js:297
-msgid "Prefer Latin"
-msgstr "Latin írásmód preferálása"
+#: prefs.js:679
+msgid "Auto-adjust pill width (slider acts as max width)"
+msgstr ""
+"A widget szélességének automatikus igazítása (a csúszka a maximumot jelöli)"
 
-#: prefs.js:306
-msgid "Lyrics Fade-in Effect"
-msgstr "Dalszöveg áttűnési effektus"
+#: prefs.js:686
+msgid "Alignment Preset"
+msgstr "Igazítási sablon"
 
-#: prefs.js:307
-msgid "Smoothly fade in new lyric lines"
-msgstr "Az új dalszövegsorok finom áttűnéssel jelenjenek meg"
+#: prefs.js:687
+msgid "How the widget aligns relative to other items"
+msgstr "Hogyan igazodjon a widget a többi elemhez képest"
 
-#: prefs.js:319
-msgid "Fade Duration (ms)"
-msgstr "Áttűnés hossza (ms)"
+#: prefs.js:689
+msgid "Manual Index"
+msgstr "Manuális index"
 
-#: prefs.js:328
-msgid "Tablet Mode Controls"
-msgstr "Táblagép mód vezérlői"
+#: prefs.js:689
+msgid "First (Start)"
+msgstr "Első (Eleje)"
 
-#: prefs.js:329
-msgid "Show media buttons directly on the pill"
-msgstr "Média gombok megjelenítése közvetlenül a widgeten"
+#: prefs.js:689
+msgid "Center"
+msgstr "Közép"
 
-#: prefs.js:331
-msgid "Off"
-msgstr "Ki"
+#: prefs.js:689
+msgid "Last (End)"
+msgstr "Utolsó (Vége)"
 
-#: prefs.js:331
-msgid "Skip Only"
-msgstr "Csak léptetés"
+#: prefs.js:695
+msgid "Manual Index Position"
+msgstr "Manuális index pozíció"
 
-#: prefs.js:331
-msgid "Play/Pause Only"
-msgstr "Csak Lejátszás/Szünet"
+#: prefs.js:696
+msgid "Order in the list (0 is first). Only for Manual mode."
+msgstr "Sorrend a listában (0 az első). Csak manuális módban."
 
-#: prefs.js:331
-msgid "All Controls"
-msgstr "Minden vezérlő"
+#: prefs.js:710 prefs.js:928
+msgid "Vertical Offset (Y)"
+msgstr "Függőleges eltolás (Y)"
 
-#: prefs.js:340
-msgid "Controls Position"
-msgstr "Vezérlők pozíciója"
+#: prefs.js:711 prefs.js:929
+msgid "Shift Up (-) or Down (+)"
+msgstr "Mozgatás fel (-) vagy le (+)"
 
-#: prefs.js:341
-msgid "Where to place the tablet controls on the pill"
-msgstr "A vezérlők helye a kapszulán tablet módban"
+#: prefs.js:720 prefs.js:938
+msgid "Horizontal Offset (X)"
+msgstr "Vízszintes eltolás (X)"
 
-#: prefs.js:343
-msgid "Before Text"
-msgstr "Szöveg előtt"
+#: prefs.js:721 prefs.js:939
+msgid "Shift Left (-) or Right (+)"
+msgstr "Mozgatás balra (-) vagy jobbra (+)"
 
-#: prefs.js:343
-msgid "After Text"
-msgstr "Szöveg után"
+#: prefs.js:730
+msgid "Start Margin (Left / Top)"
+msgstr "Kezdő margó (Bal / Fent)"
 
-#: prefs.js:343
-msgid "After Visualizer"
-msgstr "A vizualizáció után"
+#: prefs.js:731
+msgid "Outer spacing before the pill in the dock or panel"
+msgstr "Külső térköz a kapszula előtt a dokkban vagy a panelen"
 
-#: prefs.js:357
-msgid "Inline Artist"
-msgstr "Előadó egysorban"
+#: prefs.js:740
+msgid "End Margin (Right / Bottom)"
+msgstr "Záró margó (Jobb / Lent)"
 
-#: prefs.js:357
-msgid "Show \"Title • Artist\" when the widget is squeezed"
-msgstr "A \"Cím • Előadó\" megjelenítése, ha a widget össze van nyomva"
+#: prefs.js:741
+msgid "Outer spacing after the pill in the dock or panel"
+msgstr "Külső térköz a kapszula után a dokkban vagy a panelen"
 
-#: prefs.js:363
-msgid "Show Artist"
-msgstr "Előadó mutatása"
+#: prefs.js:752
+msgid "Dimensions (Dock Mode)"
+msgstr "Méretek (Dokk mód)"
 
-#: prefs.js:363
-msgid "Show the artist name in the main music pill"
-msgstr "Az előadó nevének megjelenítése a fő kapszulán"
+#: prefs.js:756 prefs.js:783
+msgid "Album Art Size"
+msgstr "Albumborító mérete"
 
-#: prefs.js:375
-msgid "Compact Mode (Hide Text)"
-msgstr "Kompakt mód (Szöveg elrejtése)"
+#: prefs.js:763 prefs.js:790
+msgid "Widget Width"
+msgstr "Widget szélessége"
 
-#: prefs.js:376
-msgid "Hide title and artist"
-msgstr "Cím és előadó elrejtése"
+#: prefs.js:770 prefs.js:797
+msgid "Widget Height"
+msgstr "Widget magassága"
 
-#: prefs.js:389
-msgid "Mouse Actions"
-msgstr "Egérműveletek"
+#: prefs.js:779
+msgid "Dimensions (Panel Mode)"
+msgstr "Méretek (Panel mód)"
 
-#: prefs.js:392 prefs.js:712
-msgid "None"
-msgstr "Nincs"
+#: prefs.js:798
+msgid "Set to 32 or higher to display Title above Artist on two lines"
+msgstr "Állítsd legalább 32-re, hogy a Cím és az Előadó két sorban jelenjen meg"
 
-#: prefs.js:392
-msgid "Play / Pause"
-msgstr "Lejátszás / Szünet"
-
-#: prefs.js:392
-msgid "Next Track"
-msgstr "Következő szám"
-
-#: prefs.js:392
-msgid "Previous Track"
-msgstr "Előző szám"
-
-#: prefs.js:393
-msgid "Open Player App"
-msgstr "Lejátszó megnyitása"
-
-#: prefs.js:393
-msgid "Open Menu"
-msgstr "Menü megnyitása"
-
-#: prefs.js:393
-msgid "Select Player"
-msgstr "Lejátszó kiválasztása"
-
-#: prefs.js:393
-msgid "Open Settings"
-msgstr "Beállítások megnyitása"
-
-#: prefs.js:393
-msgid "Close Player App"
-msgstr "Lejátszó bezárása"
-
-#: prefs.js:400
-msgid "Left Click"
-msgstr "Bal kattintás"
-
-#: prefs.js:408
-msgid "Double Click"
-msgstr "Dupla kattintás"
-
-#: prefs.js:416
-msgid "Middle Click"
-msgstr "Középső kattintás"
-
-#: prefs.js:424
-msgid "Right Click"
-msgstr "Jobb kattintás"
-
-#: prefs.js:432
-msgid "Hover Action"
-msgstr "Rámutatási művelet"
-
-#: prefs.js:443
-msgid "Hover Delay (ms)"
-msgstr "Rámutatás késleltetése (ms)"
-
-#: prefs.js:457
+#: prefs.js:823
 msgid "Pop-up Menu"
 msgstr "Felugró menü"
 
-#: prefs.js:461
+#: prefs.js:829
 msgid "Pop-up Appearance"
 msgstr "Felugró menü kinézete"
 
-#: prefs.js:463
-msgid "Rotate Vinyl"
-msgstr "Bakelit forgatása"
-
-#: prefs.js:464
-msgid "Spin the album art when playing"
-msgstr "Az albumborító forgatása lejátszás közben"
-
-#: prefs.js:475
-msgid "Rotation Speed"
-msgstr "Forgás Sebessége"
-
-#: prefs.js:476
-msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
-msgstr "Lemez forgási sebessége (Kisebb érték lassabb, Alapértelmezett: 10)"
-
-#: prefs.js:484 prefs.js:904
-msgid "Enable Shadow"
-msgstr "Árnyék engedélyezése"
-
-#: prefs.js:485
-msgid "Show drop shadow behind the pop-up menu"
-msgstr "Vetett árnyék megjelenítése a felugró menü mögött"
-
-#: prefs.js:496
+#: prefs.js:834
 msgid "Close on Mouse Leave"
 msgstr "Bezárás, ha az egér elhagyja"
 
-#: prefs.js:497
+#: prefs.js:835
 msgid "Automatically hide the pop-up when you move the cursor away"
 msgstr "A felugró menü automatikus elrejtése, ha elviszed az egeret"
 
-#: prefs.js:508
-msgid "Follow Custom Background Color"
-msgstr "Egyedi háttérszín követése"
+#: prefs.js:842
+msgid "Show Album Title"
+msgstr "Mutassa az album címét"
 
-#: prefs.js:509
-msgid "Use the custom background color for the pop-up (if active)"
-msgstr "Az egyedi háttérszín használata a felugró menünél (ha aktív)"
+#: prefs.js:843
+msgid "Display album name next to the artist (Artist • Album)"
+msgstr "Mutassa az album címét az előadó mellett (Előadó • Album)"
 
-#: prefs.js:518
-msgid "Follow Custom Text Color"
-msgstr "Egyedi szövegszín követése"
+#: prefs.js:850
+msgid "Show HH:MM:SS"
+msgstr "Mutassa HH:MM:SS"
 
-#: prefs.js:519
-msgid "Use the custom text color for the pop-up (if active)"
-msgstr "Az egyedi szövegszín használata a felugró menünél (ha aktív)"
+#: prefs.js:851
+msgid "Display hours in the time labels when media is longer than 60 minutes"
+msgstr "Jelenítse meg órában az időbélyeget ha a média hosszabb mint 60 perc"
 
-#: prefs.js:528
+#: prefs.js:858 prefs.js:2046
+msgid "Enable Shadow"
+msgstr "Árnyék engedélyezése"
+
+#: prefs.js:859
+msgid "Show drop shadow behind the pop-up menu"
+msgstr "Vetett árnyék megjelenítése a felugró menü mögött"
+
+#: prefs.js:866
 msgid "Follow Transparency"
 msgstr "Átlátszóság követése"
 
-#: prefs.js:529
+#: prefs.js:867
 msgid "Inherit opacity settings from the main pill"
 msgstr "Átlátszósági beállítások öröklése a fő widgetről"
 
-#: prefs.js:540
+#: prefs.js:874
 msgid "Follow Border Radius"
 msgstr "Saroklekerekítés követése"
 
-#: prefs.js:541
+#: prefs.js:875
 msgid "Inherit corner roundness from the main pill"
 msgstr "A saroklekerekítés öröklése a fő widgetről"
 
-#: prefs.js:550
-msgid "Show Vinyl"
-msgstr "Bakelit megjelenítése"
+#: prefs.js:882
+msgid "Follow Custom Background Color"
+msgstr "Egyedi háttérszín követése"
 
-#: prefs.js:550
-msgid "Display the album art in the pop-up"
-msgstr "Az albumborító megjelenítése a felugró menüben"
+#: prefs.js:883
+msgid "Use the custom background color for the pop-up (if active)"
+msgstr "Az egyedi háttérszín használata a felugró menünél (ha aktív)"
 
-#: prefs.js:556
-msgid "Square Vinyl Image"
-msgstr "Szögletes albumborító"
+#: prefs.js:890
+msgid "Follow Custom Text Color"
+msgstr "Egyedi szövegszín követése"
 
-#: prefs.js:556
-msgid "Use a square album art (disables rotation)"
-msgstr "Szögletes albumborító használata (kikapcsolja a forgatást)"
+#: prefs.js:891
+msgid "Use the custom text color for the pop-up (if active)"
+msgstr "Az egyedi szövegszín használata a felugró menünél (ha aktív)"
 
-#: prefs.js:562
-msgid "Album Art Shadow"
-msgstr "Albumborító árnyéka"
-
-#: prefs.js:562
-msgid "Show drop shadow behind the album art in the pop-up"
-msgstr "Vetett árnyék megjelenítése a Pop-up borítóképe mögött"
-
-#: prefs.js:568
-msgid "Show Shuffle and Loop"
-msgstr "Keverés és ismétlés megjelenítése"
-
-#: prefs.js:568
-msgid "Display extra controls in the pop-up"
-msgstr "Extra vezérlők megjelenítése a felugró menüben"
-
-#: prefs.js:574
+#: prefs.js:899
 msgid "Use Custom Width"
 msgstr "Egyedi szélesség használata"
 
-#: prefs.js:574
+#: prefs.js:900
 msgid "Disable dynamic sizing for the pop-up"
 msgstr "Dinamikus méretezés kikapcsolása a felugró menünél"
 
-#: prefs.js:581
+#: prefs.js:906
 msgid "Custom Width Value"
 msgstr "Egyedi szélesség értéke"
 
-#: prefs.js:597
+#: prefs.js:949
+msgid "Show Vinyl"
+msgstr "Bakelit megjelenítése"
+
+#: prefs.js:950
+msgid "Display the album art in the pop-up"
+msgstr "Az albumborító megjelenítése a felugró menüben"
+
+#: prefs.js:956
+msgid "Square Vinyl Image"
+msgstr "Szögletes albumborító"
+
+#: prefs.js:957
+msgid "Use a square album art (disables rotation)"
+msgstr "Szögletes albumborító használata (kikapcsolja a forgatást)"
+
+#: prefs.js:964
+msgid "Album Art Shadow"
+msgstr "Albumborító árnyéka"
+
+#: prefs.js:965
+msgid "Show drop shadow behind the album art in the pop-up"
+msgstr "Vetett árnyék megjelenítése a Pop-up borítóképe mögött"
+
+#: prefs.js:972
+msgid "Rotate Vinyl"
+msgstr "Bakelit forgatása"
+
+#: prefs.js:973
+msgid "Spin the album art when playing"
+msgstr "Az albumborító forgatása lejátszás közben"
+
+#: prefs.js:979
+msgid "Rotation Speed"
+msgstr "Forgás Sebessége"
+
+#: prefs.js:980
+msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
+msgstr "Lemez forgási sebessége (Kisebb érték lassabb, Alapértelmezett: 10)"
+
+#: prefs.js:1004
 msgid "Show Player Selector"
 msgstr "Lejátszóválasztó megjelenítése"
 
-#: prefs.js:598
+#: prefs.js:1005
 msgid "Display active player icons in the pop-up"
 msgstr "Az aktív lejátszók ikonjainak megjelenítése a felugró ablakban"
 
-#: prefs.js:606
+#: prefs.js:1011
+msgid "Player Selector Position"
+msgstr "Lejátszóválasztó pozíciója"
+
+#: prefs.js:1012
+msgid "Where to place the player icons inside the pop-up"
+msgstr "A lejátszóikonok elhelyezkedése a felugró ablakon belül"
+
+#: prefs.js:1013
+msgid "Top"
+msgstr "Fent"
+
+#: prefs.js:1013
+msgid "Bottom"
+msgstr "Alul"
+
+#: prefs.js:1013
+msgid "Left"
+msgstr "Baloldalt"
+
+#: prefs.js:1013
+msgid "Right"
+msgstr "Jobboldalt"
+
+#: prefs.js:1020
 msgid "Hide Auto (Smart Selection)"
 msgstr "„Auto (Okos kiválasztás)” elrejtése"
 
-#: prefs.js:607
+#: prefs.js:1021
 msgid ""
 "Remove the automatic player selection entry from the player selector menu"
 msgstr ""
 "Az automatikus lejátszó-választási opció eltávolítása a lejátszóválasztó "
 "menüből"
 
-#: prefs.js:618
-msgid "Player Selector Position"
-msgstr "Lejátszóválasztó pozíciója"
-
-#: prefs.js:619
-msgid "Where to place the player icons inside the pop-up"
-msgstr "A lejátszóikonok elhelyezkedése a felugró ablakon belül"
-
-#: prefs.js:620
-msgid "Top"
-msgstr "Fent"
-
-#: prefs.js:620
-msgid "Bottom"
-msgstr "Alul"
-
-#: prefs.js:620
-msgid "Left"
-msgstr "Baloldalt"
-
-#: prefs.js:620
-msgid "Right"
-msgstr "Jobboldalt"
-
-#: prefs.js:631
-msgid "Show Album Title"
-msgstr "Mutassa az album címét"
-
-#: prefs.js:632
-msgid "Display album name next to the artist (Artist • Album)"
-msgstr "Mutassa az album címét az előadó mellett (Előadó • Album)"
-
-#: prefs.js:640
-msgid "Show HH:MM:SS"
-msgstr "Mutassa HH:MM:SS"
-
-#: prefs.js:641
-msgid "Display hours in the time labels when media is longer than 60 minutes"
-msgstr "Jelenítse meg órában az időbélyeget ha a média hosszabb mint 60 perc"
-
-#: prefs.js:652
-msgid "Show Visualizer in Pop-up"
-msgstr "Vizualizáció a felugró menüben"
-
-#: prefs.js:659
-msgid "Hide Pill Visualizer"
-msgstr "Fő vizualizáció elrejtése"
-
-#: prefs.js:660
-msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
-msgstr "\"Mozgó\" hatást kelt a fő widget vizualizációjának elrejtésével"
-
-#: prefs.js:669
-msgid "Popup Visualizer Bar Count"
-msgstr "Felugró vizualizáció oszlopainak száma"
-
-#: prefs.js:677
-msgid "Popup Visualizer Bar Width"
-msgstr "Felugró vizualizáció oszlopainak vastagsága"
-
-#: prefs.js:685
-msgid "Popup Visualizer Height"
-msgstr "Felugró vizualizáció magassága"
-
-#: prefs.js:695
+#: prefs.js:1031
 msgid "Custom Control Buttons"
 msgstr "Testreszabható gombok"
 
-#: prefs.js:696
+#: prefs.js:1032
 msgid "Add up to two extra buttons in the expanded player's controls row."
 msgstr "Legfeljebb két további gombot adhatsz hozzá a lejátszó vezérlősorához."
 
-#: prefs.js:700
-msgid "Enable Custom Buttons"
-msgstr "Egyéni gombok engedélyezése"
-
-#: prefs.js:701
-msgid "Show additional action buttons next to Shuffle and Loop"
-msgstr "További akciógombok megjelenítése a keverés és ismétlés mellett"
-
-#: prefs.js:713
-msgid "Volume Control"
-msgstr "Hangerő-szabályozás"
-
-#: prefs.js:714
-msgid "Seek ±10 Seconds"
-msgstr "Tekerés ±10 másodpercet"
-
-#: prefs.js:715
-msgid "Audio Output Switcher"
-msgstr "Hangkimenet-váltó"
-
-#: prefs.js:716 src/uiExpandedPlayer.js:1552
-msgid "Sleep Timer"
-msgstr "Elalvásidőzitő"
-
-#: prefs.js:717 src/uiExpandedPlayer.js:1593
-msgid "Playback Speed"
-msgstr "Lejátszási sebesség"
-
-#: prefs.js:718
-msgid "Track History"
-msgstr "Lejátszási előzmények"
-
-#: prefs.js:749
+#: prefs.js:1033
 msgid ""
 "If both buttons are set to Seek, they act directly (Button 1 = −10s, Button "
 "2 = +10s). Otherwise Seek opens a sub-page."
@@ -587,55 +436,686 @@ msgstr ""
 "10 mp, 2. gomb = +10 mp). Ellenkező esetben a tekerés gomb egy aloldalt nyit "
 "meg."
 
-#: prefs.js:752
+#: prefs.js:1038
+msgid "Show Shuffle and Loop"
+msgstr "Keverés és ismétlés megjelenítése"
+
+#: prefs.js:1039
+msgid "Display extra controls in the pop-up"
+msgstr "Extra vezérlők megjelenítése a felugró menüben"
+
+#: prefs.js:1046
+msgid "Enable Custom Buttons"
+msgstr "Egyéni gombok engedélyezése"
+
+#: prefs.js:1047
+msgid "Show additional action buttons next to Shuffle and Loop"
+msgstr "További akciógombok megjelenítése a keverés és ismétlés mellett"
+
+#: prefs.js:1052 prefs.js:1101
+msgid "None"
+msgstr "Nincs"
+
+#: prefs.js:1053
+msgid "Volume Control"
+msgstr "Hangerő-szabályozás"
+
+#: prefs.js:1054
+msgid "Seek ±10 Seconds"
+msgstr "Tekerés ±10 másodpercet"
+
+#: prefs.js:1055
+msgid "Audio Output Switcher"
+msgstr "Hangkimenet-váltó"
+
+#: prefs.js:1056 src/uiExpandedPlayer.js:2075
+msgid "Sleep Timer"
+msgstr "Elalvásidőzitő"
+
+#: prefs.js:1057 src/uiExpandedPlayer.js:2153
+msgid "Playback Speed"
+msgstr "Lejátszási sebesség"
+
+#: prefs.js:1058
+msgid "Track History"
+msgstr "Lejátszási előzmények"
+
+#: prefs.js:1064
 msgid "Custom Button 1"
 msgstr "Egyéni gomb 1"
 
-#: prefs.js:752
+#: prefs.js:1065
 msgid "Placed left of Shuffle."
 msgstr "A keverés gombtól balra helyezkedik el."
 
-#: prefs.js:755
+#: prefs.js:1073
 msgid "Custom Button 2"
 msgstr "Egyéni gomb 2"
 
-#: prefs.js:755
+#: prefs.js:1074
 msgid "Placed right of Loop."
 msgstr "Az ismétlés gombtól jobbra helyezkedik el."
 
-#: prefs.js:766
+#: prefs.js:1091
+msgid "Controls"
+msgstr "Vezérlők"
+
+#: prefs.js:1097
+msgid "Mouse Actions"
+msgstr "Egérműveletek"
+
+#: prefs.js:1102
+msgid "Play / Pause"
+msgstr "Lejátszás / Szünet"
+
+#: prefs.js:1103
+msgid "Next Track"
+msgstr "Következő szám"
+
+#: prefs.js:1104
+msgid "Previous Track"
+msgstr "Előző szám"
+
+#: prefs.js:1105
+msgid "Open Player App"
+msgstr "Lejátszó megnyitása"
+
+#: prefs.js:1106
+msgid "Open Menu"
+msgstr "Menü megnyitása"
+
+#: prefs.js:1107
+msgid "Select Player"
+msgstr "Lejátszó kiválasztása"
+
+#: prefs.js:1108
+msgid "Open Settings"
+msgstr "Beállítások megnyitása"
+
+#: prefs.js:1109
+msgid "Close Player App"
+msgstr "Lejátszó bezárása"
+
+#: prefs.js:1125
+msgid "Left Click"
+msgstr "Bal kattintás"
+
+#: prefs.js:1131
+msgid "Double Click"
+msgstr "Dupla kattintás"
+
+#: prefs.js:1137
+msgid "Middle Click"
+msgstr "Középső kattintás"
+
+#: prefs.js:1143
+msgid "Right Click"
+msgstr "Jobb kattintás"
+
+#: prefs.js:1150
+msgid "Hover Action"
+msgstr "Rámutatási művelet"
+
+#: prefs.js:1158
+msgid "Hover Delay (ms)"
+msgstr "Rámutatás késleltetése (ms)"
+
+#: prefs.js:1174
+msgid "Scroll Controls"
+msgstr "Görgetéses vezérlés"
+
+#: prefs.js:1179
+msgid "Enable Scroll Controls"
+msgstr "Görgetéssel való irányítás engedélyezése"
+
+#: prefs.js:1180
+msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
+msgstr ""
+"Szám, hangerő vagy lejátszó váltása az egér görgőjével vagy a touchpaddal"
+
+#: prefs.js:1186
+msgid "Scroll Action"
+msgstr "Görgetési művelet"
+
+#: prefs.js:1187
+msgid "Choose what scrolling on the pill should do"
+msgstr "Válaszd ki, mit tegyen a görgetés a widgeten"
+
+#: prefs.js:1188
+msgid "Change Track"
+msgstr "Zeneszám váltása"
+
+#: prefs.js:1188
+msgid "Change Volume"
+msgstr "Hangerő módosítása"
+
+#: prefs.js:1188
+msgid "Switch Player"
+msgstr "Lejátszó váltása"
+
+#: prefs.js:1188
+msgid "Seek ±10s"
+msgstr "Tekerés ±10s"
+
+#: prefs.js:1196
+msgid "Volume Scroll Target"
+msgstr "Görgetett hangerő forrása"
+
+#: prefs.js:1197
+msgid "Choose which sound source to control when scrolling volume"
+msgstr "Válaszd ki, melyik hangforrás módosuljon a Pill-en történő görgetéskor"
+
+#: prefs.js:1198
+msgid "System Master Volume"
+msgstr "Rendszer fő hangerő"
+
+#: prefs.js:1198
+msgid "Active Media App Volume"
+msgstr "Aktív médialejátszó alkalmazás hangereje"
+
+#: prefs.js:1213
+msgid "Invert Scroll Direction"
+msgstr "Görgetés irányának megfordítása"
+
+#: prefs.js:1214
+msgid "Swap up/down scrolling for track and volume actions"
+msgstr "A fel/le görgetés felcserélése a zeneszám és a hangerő műveleteknél"
+
+#: prefs.js:1221
+msgid "Scroll Animation"
+msgstr "Görgetési animáció"
+
+#: prefs.js:1222
+msgid "Animate the pill with a jump effect when scrolling"
+msgstr "Ugró effektus animálása a pillen görgetéskor"
+
+#: prefs.js:1228
+msgid "Invert Scroll Animation"
+msgstr "Görgetési animáció megfordítása"
+
+#: prefs.js:1229
+msgid "Direction of the jump effect (Natural vs Traditional)"
+msgstr "Az animáció iránya (Természetes vs Hagyományos)"
+
+#: prefs.js:1248
+msgid "On-Pill Buttons (Tablet Mode)"
+msgstr "Kapszula gombok (Tablet mód)"
+
+#: prefs.js:1253
+msgid "Tablet Mode Controls"
+msgstr "Táblagép mód vezérlői"
+
+#: prefs.js:1254
+msgid "Show media buttons directly on the pill"
+msgstr "Média gombok megjelenítése közvetlenül a widgeten"
+
+#: prefs.js:1256
+msgid "Off"
+msgstr "Ki"
+
+#: prefs.js:1256
+msgid "Skip Only"
+msgstr "Csak léptetés"
+
+#: prefs.js:1256
+msgid "Play/Pause Only"
+msgstr "Csak Lejátszás/Szünet"
+
+#: prefs.js:1256
+msgid "All Controls"
+msgstr "Minden vezérlő"
+
+#: prefs.js:1262
+msgid "Controls Position"
+msgstr "Vezérlők pozíciója"
+
+#: prefs.js:1263
+msgid "Where to place the tablet controls on the pill"
+msgstr "A vezérlők helye a kapszulán tablet módban"
+
+#: prefs.js:1264
+msgid "Before Text"
+msgstr "Szöveg előtt"
+
+#: prefs.js:1264
+msgid "After Text"
+msgstr "Szöveg után"
+
+#: prefs.js:1264
+msgid "After Visualizer"
+msgstr "A vizualizáció után"
+
+#: prefs.js:1283
+msgid "Lyrics"
+msgstr "Dalszöveg"
+
+#: prefs.js:1290
+msgid "Interactive Pop-up Lyrics"
+msgstr "Interaktív felugró dalszöveg"
+
+#: prefs.js:1291
+msgid ""
+"Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
+"opens the synchronized lyrics view!"
+msgstr ""
+"Tipp: A kibontott lejátszóban az albumborítóra vagy a bakelitlemezre "
+"kattintva azonnal megnyílik a szinkronizált dalszöveg!"
+
+#: prefs.js:1299
+msgid "Lyrics & Karaoke"
+msgstr "Dalszöveg és karaoke"
+
+#: prefs.js:1300
+msgid "Real-time synchronized lyrics with multi-provider karaoke support."
+msgstr ""
+"Valós idejű, szinkronizált dalszöveg több szolgáltatót támogató karaoke "
+"móddal."
+
+#: prefs.js:1305
+msgid "Lyrics Display"
+msgstr "Dalszöveg megjelenítése"
+
+#: prefs.js:1306
+msgid "Show real-time synchronized lyrics for current track."
+msgstr "Valós időben szinkronizált dalszöveg mutatása az aktuális számhoz."
+
+#: prefs.js:1312
+msgid "Word-level Karaoke in Pill"
+msgstr "Szószintű Karaoke a Pill-ben"
+
+#: prefs.js:1313
+msgid ""
+"Highlight individual words on the main pill when available (pop-up always "
+"uses word-level)."
+msgstr ""
+"Egyes szavak valós idejű kiemelése a fő Pill-en, ha elérhető (a Pop-up "
+"menüben mindig szószintű marad)."
+
+#: prefs.js:1319
+msgid "Lyrics language preference"
+msgstr "Dalszöveg nyelvi beállításai"
+
+#: prefs.js:1320
+msgid "When multiple versions exist"
+msgstr "Ha több verzió is elérhető"
+
+#: prefs.js:1321
+msgid "Auto"
+msgstr "Automatikus"
+
+#: prefs.js:1321
+msgid "Prefer original script"
+msgstr "Eredeti írásmód preferálása"
+
+#: prefs.js:1321
+msgid "Prefer Latin"
+msgstr "Latin írásmód preferálása"
+
+#: prefs.js:1327
+msgid "Lyrics Fade-in Effect"
+msgstr "Dalszöveg áttűnési effektus"
+
+#: prefs.js:1328
+msgid "Smoothly fade in new lyric lines"
+msgstr "Az új dalszövegsorok finom áttűnéssel jelenjenek meg"
+
+#: prefs.js:1335
+msgid "Fade Duration (ms)"
+msgstr "Áttűnés hossza (ms)"
+
+#: prefs.js:1353
+msgid "Local & Imported Lyrics"
+msgstr "Helyi és importált dalszövegek"
+
+#: prefs.js:1355
+msgid ""
+"Sidecar .lrc, .ttml, and .txt files placed next to local audio files are "
+"detected automatically. You can also select a lyrics folder or manually "
+"import lyrics for any song below."
+msgstr ""
+"A helyi zenefájlok mellé helyezett .lrc, .ttml és .txt fájlokat "
+"automatikusan felismeri. Alább kiválaszthatsz egy dalszövegmappát, vagy "
+"kézzel is importálhatsz dalszöveget bármelyik dalhoz."
+
+#: prefs.js:1361
+msgid "Local Lyrics Folder"
+msgstr "Helyi dalszövegmappa"
+
+#: prefs.js:1362 prefs.js:1379 prefs.js:1394 prefs.js:1398
+msgid "No folder selected"
+msgstr "Nincs mappa kiválasztva"
+
+#: prefs.js:1372
+msgid "Select Lyrics Folder"
+msgstr "Dalszövegmappa kiválasztása"
+
+#: prefs.js:1417
+msgid "Target Song"
+msgstr "Célzott dal"
+
+#: prefs.js:1418
+msgid "Choose a recent song or enter custom title & artist"
+msgstr ""
+"Válassz egy nemrég játszott dalt, vagy add meg kézzel a címet és az előadót"
+
+#: prefs.js:1423
+msgid "Track Title"
+msgstr "Dal címe"
+
+#: prefs.js:1426
+msgid "Artist Name"
+msgstr "Előadó neve"
+
+#: prefs.js:1447
+msgid "Current / Last: "
+msgstr "Jelenlegi / Utolsó: "
+
+#: prefs.js:1451
+msgid "Custom / Detect from File"
+msgstr "Egyéni / Felismerés fájlból"
+
+#: prefs.js:1493
+msgid "Imported Lyrics"
+msgstr "Importált dalszövegek"
+
+#: prefs.js:1506
+msgid "No manually imported lyrics yet"
+msgstr "Még nincsenek kézzel importált dalszövegek"
+
+#: prefs.js:1507
+msgid ""
+"Use \"Import Lyrics File…\" above to attach a .lrc, .ttml, or .txt file to a "
+"song."
+msgstr ""
+"Használd a fenti „Dalszövegfájl importálása…” lehetőséget egy .lrc, .ttml "
+"vagy .txt fájl dalhoz csatolásához."
+
+#: prefs.js:1517
+msgid "Unknown Track"
+msgstr "Ismeretlen dal"
+
+#: prefs.js:1556
+msgid "Import Lyrics File (.lrc, .ttml, .txt)"
+msgstr "Dalszövegfájl importálása (.lrc, .ttml, .txt)"
+
+#: prefs.js:1558
+msgid "Lyrics Files (*.lrc, *.ttml, *.txt)"
+msgstr "Dalszövegfájlok (*.lrc, *.ttml, *.txt)"
+
+#: prefs.js:1646
+#, javascript-format
+msgid "Imported lyrics for \"%s\""
+msgstr "Dalszöveg importálva: „%s”"
+
+#: prefs.js:1652
+msgid "Import Lyrics File…"
+msgstr "Dalszövegfájl importálása…"
+
+#: prefs.js:1653
+msgid "Select a local .lrc, .ttml, or .txt lyrics file for the target song"
+msgstr ""
+"Válassz egy helyi .lrc, .ttml vagy .txt dalszövegfájlt a kiválasztott dalhoz"
+
+#: prefs.js:1658
+msgid "Choose File…"
+msgstr "Fájl kiválasztása…"
+
+#: prefs.js:1748
 msgid "Style & Layout"
 msgstr "Stílus és elrendezés"
 
-#: prefs.js:770
-msgid "Visualizer and Shape"
-msgstr "Vizualizáció és alak"
+#: prefs.js:1754
+msgid "Custom Colors"
+msgstr "Egyedi színek"
 
-#: prefs.js:773
-msgid "Off (Disabled)"
-msgstr "Ki (Letiltva)"
+#: prefs.js:1759
+msgid "Light Mode"
+msgstr "Világos mód"
 
-#: prefs.js:774
-msgid "Wave (Smooth)"
-msgstr "Hullám (Sima)"
+#: prefs.js:1760
+msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
+msgstr ""
+"Világos pasztell színvilág használata a dinamikus hátterekhez, sötét "
+"szöveggel és ikonokkal"
 
-#: prefs.js:775
-msgid "Beat (Jumpy)"
-msgstr "Ütem (Ugrálós)"
+#: prefs.js:1767
+msgid "Sync GNOME Accent Color"
+msgstr "GNOME rendszerszín igazítása az albumképhez"
 
-#: prefs.js:776
-msgid "Real-Time (Cava needed)"
-msgstr "Valós idejű (Cava szükséges)"
+#: prefs.js:1768
+msgid "Dynamically change the GNOME Shell accent color to match the album art"
+msgstr ""
+"A GNOME Shell kiemelő színének dinamikus módosítása az albumképhez igazodva"
 
-#: prefs.js:779
+#: prefs.js:1775
+msgid "Use Custom Colors"
+msgstr "Egyedi színek használata"
+
+#: prefs.js:1776
+msgid "Override dynamic colors"
+msgstr "A dinamikus színek felülbírálása"
+
+#: prefs.js:1782
+msgid "Background Color"
+msgstr "Háttérszín"
+
+#: prefs.js:1787
+msgid "Text Color"
+msgstr "Szövegszín"
+
+#: prefs.js:1792
+msgid "Visualizer Color"
+msgstr "Vizualizáció színe"
+
+#: prefs.js:1813
+#, javascript-format
+msgid "Please install %s for dynamic blur."
+msgstr "A dinamikus homályosításhoz telepítsd a következőt: %s."
+
+#: prefs.js:1813 prefs.js:1832
+msgid "and"
+msgstr "és"
+
+#: prefs.js:1821
+msgid "Dynamic Blur (Blur my Shell)"
+msgstr "Dinamikus homályosítás (Blur my Shell)"
+
+#: prefs.js:1823
+msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
+msgstr ""
+"Natív Dual Kawase Gauss-homályosítás alkalmazása a kapszula és a felugró "
+"ablak mögött."
+
+#: prefs.js:1824
+msgid ""
+"Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-"
+"rounded-blur."
+msgstr ""
+"Gauss-homályosítás alkalmazása a kapszula és a felugró ablak mögött a Blur "
+"my Shell vagy a gnome-rounded-blur segítségével."
+
+#: prefs.js:1832
+#, javascript-format
+msgid "Note: Dynamic blur requires %s to be installed."
+msgstr ""
+"Megjegyzés: A dinamikus homályosításhoz telepítve kell lennie a "
+"következőnek: %s."
+
+#: prefs.js:1846
+msgid "Enable Blur for Pill"
+msgstr "Kapszula homályosításának bekapcsolása"
+
+#: prefs.js:1847
+msgid "Blur the background behind the music pill"
+msgstr "A zenei kapszula mögötti háttér elhomályosítása"
+
+#: prefs.js:1858
+msgid "Enable Blur for Pop-up"
+msgstr "Felugró ablak homályosításának bekapcsolása"
+
+#: prefs.js:1859
+msgid "Blur the background behind the expanded player pop-up"
+msgstr "A lenyíló lejátszó ablak mögötti háttér elhomályosítása"
+
+#: prefs.js:1870
+msgid "Tint Blur with Album Art Color"
+msgstr "Homályosítás színezése az albumborító színével"
+
+#: prefs.js:1871
+msgid ""
+"Blend dynamic album colors over the blurred background instead of neutral "
+"frosted glass"
+msgstr ""
+"Dinamikus albumszínek keverése a homályosított háttérre a semleges matt üveg "
+"helyett"
+
+#: prefs.js:1877
+msgid "Blur Radius (Sigma)"
+msgstr "Homályosítás sugara (Sigma)"
+
+#: prefs.js:1878 prefs.js:1897
+msgid "Strength of the Gaussian blur effect"
+msgstr "A Gauss-homályosítás erőssége"
+
+#: prefs.js:1887
+msgid "Follow Blur my Shell Pipelines"
+msgstr "Blur my Shell pipeline-ok követése"
+
+#: prefs.js:1888
+msgid "Use the blur pipelines and effects configured in Blur my Shell"
+msgstr ""
+"A Blur my Shellben beállított homályosítási pipeline-ok és effektusok "
+"használata"
+
+#: prefs.js:1896
+msgid "Controlled by Blur my Shell pipeline"
+msgstr "A Blur my Shell pipeline vezérli"
+
+#: prefs.js:1906
+msgid "Blur my Shell Extension"
+msgstr "Blur my Shell kiegészítő"
+
+#: prefs.js:1908
+msgid "Native Dual Kawase blur backend active (v76+)"
+msgstr "Natív Dual Kawase homályosítási motor aktív (v76+)"
+
+#: prefs.js:1909
+msgid "Recommended for native Wayland dynamic blur"
+msgstr "Ajánlott a natív Wayland dinamikus homályosításhoz"
+
+#: prefs.js:1912
+msgid "GitHub"
+msgstr "GitHub"
+
+#: prefs.js:1922
+msgid "gnome-rounded-blur Library"
+msgstr "gnome-rounded-blur könyvtár"
+
+#: prefs.js:1923
+msgid "Installation guide for native rounded corners blur"
+msgstr "Telepítési útmutató a lekerekített sarkok natív homályosításához"
+
+#: prefs.js:1926
+msgid "Guide"
+msgstr "Útmutató"
+
+#: prefs.js:1973
+msgid "Background and Transparency"
+msgstr "Háttér és átlátszóság"
+
+#: prefs.js:1978
+msgid "Enable Transparency"
+msgstr "Átlátszóság engedélyezése"
+
+#: prefs.js:1979
+msgid "Switch between a solid theme background and a custom transparent look"
+msgstr "Váltás a téma egyszínű háttere és az egyedi átlátszó kinézet között"
+
+#: prefs.js:1985
+msgid "Background Opacity"
+msgstr "Háttér átlátszósága"
+
+#: prefs.js:1986
+msgid "Adjust transparency level"
+msgstr "Átlátszóság mértékének beállítása"
+
+#: prefs.js:1995
+msgid "Apply to Album Art"
+msgstr "Alkalmazás az albumborítón"
+
+#: prefs.js:2001
+msgid "Apply to Text"
+msgstr "Alkalmazás a szövegen"
+
+#: prefs.js:2007
+msgid "Apply to Visualizer"
+msgstr "Alkalmazás a vizualizáción"
+
+#: prefs.js:2016
+msgid "Main Pill Shadow"
+msgstr "Fő widget árnyéka"
+
+#: prefs.js:2021
+msgid "Corner Radius"
+msgstr "Saroklekerekítés"
+
+#: prefs.js:2022
+msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
+msgstr "A szélek kerekítése (0 = Szögletes, 25 = Pirula)"
+
+#: prefs.js:2031
+msgid "Outer Edge Margin"
+msgstr "Külső szél margója"
+
+#: prefs.js:2032
+msgid "Spacing before the album art and after the visualizer"
+msgstr "Távolság az albumkép előtt és a vizualizáció után"
+
+#: prefs.js:2040
+msgid "Show Pill Outline"
+msgstr "Widget körvonalának megjelenítése"
+
+#: prefs.js:2041
+msgid "Display a subtle border around the main pill"
+msgstr "Visszafogott keret megjelenítése a fő widget körül"
+
+#: prefs.js:2052
+msgid "Shadow Intensity"
+msgstr "Árnyék intenzitása"
+
+#: prefs.js:2061
+msgid "Shadow Blur"
+msgstr "Árnyék elmosása"
+
+#: prefs.js:2073
+msgid "Audio Visualizers"
+msgstr "Hangvizualizáció"
+
+#: prefs.js:2078
 msgid "Visualizer Animation"
 msgstr "Vizualizációs animáció"
 
-#: prefs.js:780
+#: prefs.js:2079
 msgid "Select the style of the audio reaction bars"
 msgstr "Válaszd ki a vizualizáció stílusát"
 
-#: prefs.js:788
+#: prefs.js:2082
+msgid "Off (Disabled)"
+msgstr "Ki (Letiltva)"
+
+#: prefs.js:2083
+msgid "Wave (Smooth)"
+msgstr "Hullám (Sima)"
+
+#: prefs.js:2084
+msgid "Beat (Jumpy)"
+msgstr "Ütem (Ugrálós)"
+
+#: prefs.js:2085
+msgid "Real-Time (Cava needed)"
+msgstr "Valós idejű (Cava szükséges)"
+
+#: prefs.js:2091
 msgid ""
 "Note: 'Real-Time' mode requires the 'cava' package to be installed on your "
 "Linux system."
@@ -643,323 +1123,145 @@ msgstr ""
 "Megjegyzés: A 'Valós idejű' módhoz telepíteni kell a 'cava' csomagot a Linux "
 "rendszeredre."
 
-#: prefs.js:797
+#: prefs.js:2104
 msgid "Visualizer Bar Count"
 msgstr "Vizualizáció oszlopainak száma"
 
-#: prefs.js:798
+#: prefs.js:2105
 msgid "Number of bars displayed in the animation"
 msgstr "Az animációban megjelenő oszlopok száma"
 
-#: prefs.js:805
+#: prefs.js:2114
 msgid "Visualizer Bar Width"
 msgstr "Vizualizáció oszlopainak vastagsága"
 
-#: prefs.js:806
+#: prefs.js:2115
 msgid "Thickness of individual bars (pixels)"
 msgstr "Az egyes oszlopok vastagsága (pixelben)"
 
-#: prefs.js:813
+#: prefs.js:2124
 msgid "Visualizer Height"
 msgstr "Vizualizáció magassága"
 
-#: prefs.js:814
+#: prefs.js:2125
 msgid "Maximum height of the visualizer (auto-clamped to pill height)"
 msgstr ""
 "A vizualizáció maximális magassága (automatikusan a widgethez igazítva)"
 
-#: prefs.js:821
+#: prefs.js:2134
 msgid "Visualizer Margin"
 msgstr "Vizualizáció margója"
 
-#: prefs.js:822
+#: prefs.js:2135
 msgid "Distance between the text and the wave animation"
 msgstr "Távolság a szöveg és a hullámanimáció között"
 
-#: prefs.js:829
-msgid "Outer Edge Margin"
-msgstr "Külső szél margója"
+#: prefs.js:2155
+msgid "Show Visualizer in Pop-up"
+msgstr "Vizualizáció a felugró menüben"
 
-#: prefs.js:830
-msgid "Spacing before the album art and after the visualizer"
-msgstr "Távolság az albumkép előtt és a vizualizáció után"
+#: prefs.js:2156
+msgid "Enable audio visualizer bars inside the expanded player"
+msgstr "Hangvizualizációs oszlopok megjelenítése a kibontott lejátszóban"
 
-#: prefs.js:837
-msgid "Corner Radius"
-msgstr "Saroklekerekítés"
+#: prefs.js:2162
+msgid "Hide Pill Visualizer"
+msgstr "Fő vizualizáció elrejtése"
 
-#: prefs.js:838
-msgid "Roundness of the widget edges (0 = Square, 25 = Pill)"
-msgstr "A szélek kerekítése (0 = Szögletes, 25 = Pirula)"
+#: prefs.js:2163
+msgid "Creates a \"moving\" effect by hiding the main pill visualizer"
+msgstr "\"Mozgó\" hatást kelt a fő widget vizualizációjának elrejtésével"
 
-#: prefs.js:845
-msgid "Show Pill Outline"
-msgstr "Widget körvonalának megjelenítése"
+#: prefs.js:2170
+msgid "Popup Visualizer Bar Count"
+msgstr "Felugró vizualizáció oszlopainak száma"
 
-#: prefs.js:846
-msgid "Display a subtle border around the main pill"
-msgstr "Visszafogott keret megjelenítése a fő widget körül"
+#: prefs.js:2179
+msgid "Popup Visualizer Bar Width"
+msgstr "Felugró vizualizáció oszlopainak vastagsága"
 
-#: prefs.js:859
-msgid "Background and Transparency"
-msgstr "Háttér és átlátszóság"
+#: prefs.js:2188
+msgid "Popup Visualizer Height"
+msgstr "Felugró vizualizáció magassága"
 
-#: prefs.js:861
-msgid "Enable Transparency"
-msgstr "Átlátszóság engedélyezése"
-
-#: prefs.js:862
-msgid "Switch between a solid theme background and a custom transparent look"
-msgstr "Váltás a téma egyszínű háttere és az egyedi átlátszó kinézet között"
-
-#: prefs.js:873
-msgid "Background Opacity"
-msgstr "Háttér átlátszósága"
-
-#: prefs.js:874
-msgid "Adjust transparency level"
-msgstr "Átlátszóság mértékének beállítása"
-
-#: prefs.js:881
-msgid "Apply to Album Art"
-msgstr "Alkalmazás az albumborítón"
-
-#: prefs.js:888
-msgid "Apply to Text"
-msgstr "Alkalmazás a szövegen"
-
-#: prefs.js:895
-msgid "Apply to Visualizer"
-msgstr "Alkalmazás a vizualizáción"
-
-#: prefs.js:903
-msgid "Main Pill Shadow"
-msgstr "Fő widget árnyéka"
-
-#: prefs.js:911
-msgid "Shadow Intensity"
-msgstr "Árnyék intenzitása"
-
-#: prefs.js:918
-msgid "Shadow Blur"
-msgstr "Árnyék elmosása"
-
-#: prefs.js:925
-msgid "Positioning"
-msgstr "Pozicionálás és elrendezés"
-
-#: prefs.js:927
-msgid "Dock"
-msgstr "Dokk"
-
-#: prefs.js:928
-msgid "Panel: Left Box"
-msgstr "Panel: Bal oldal"
-
-#: prefs.js:929
-msgid "Panel: Center Box"
-msgstr "Panel: Közép"
-
-#: prefs.js:930
-msgid "Panel: Right Box"
-msgstr "Panel: Jobb oldal"
-
-#: prefs.js:933
-msgid "Container Target"
-msgstr "Tároló célpont"
-
-#: prefs.js:934
-msgid "Select which UI element should host the music pill"
-msgstr "Válaszd ki, melyik felületi elem tartalmazza a widgetet"
-
-#: prefs.js:945
-msgid "Dynamic Width"
-msgstr "Dinamikus szélesség"
-
-#: prefs.js:945
-msgid "Auto-adjust pill width (slider acts as max width)"
-msgstr ""
-"A widget szélességének automatikus igazítása (a csúszka a maximumot jelöli)"
-
-#: prefs.js:960
-msgid "Manual Index"
-msgstr "Manuális index"
-
-#: prefs.js:961
-msgid "First (Start)"
-msgstr "Első (Eleje)"
-
-#: prefs.js:962
-msgid "Center"
-msgstr "Közép"
-
-#: prefs.js:963
-msgid "Last (End)"
-msgstr "Utolsó (Vége)"
-
-#: prefs.js:966
-msgid "Alignment Preset"
-msgstr "Igazítási sablon"
-
-#: prefs.js:967
-msgid "How the widget aligns relative to other items"
-msgstr "Hogyan igazodjon a widget a többi elemhez képest"
-
-#: prefs.js:975
-msgid "Manual Index Position"
-msgstr "Manuális index pozíció"
-
-#: prefs.js:976
-msgid "Order in the list (0 is first). Only for Manual mode."
-msgstr "Sorrend a listában (0 az első). Csak manuális módban."
-
-#: prefs.js:983
-msgid "Vertical Offset (Y)"
-msgstr "Függőleges eltolás (Y)"
-
-#: prefs.js:984
-msgid "Shift Up (-) or Down (+)"
-msgstr "Mozgatás fel (-) vagy le (+)"
-
-#: prefs.js:991
-msgid "Horizontal Offset (X)"
-msgstr "Vízszintes eltolás (X)"
-
-#: prefs.js:992
-msgid "Shift Left (-) or Right (+)"
-msgstr "Mozgatás balra (-) vagy jobbra (+)"
-
-#: prefs.js:998
-msgid "Dimensions (Dock Mode)"
-msgstr "Méretek (Dokk mód)"
-
-#: prefs.js:1000 prefs.js:1022
-msgid "Album Art Size"
-msgstr "Albumborító mérete"
-
-#: prefs.js:1006 prefs.js:1028
-msgid "Widget Width"
-msgstr "Widget szélessége"
-
-#: prefs.js:1013 prefs.js:1035
-msgid "Widget Height"
-msgstr "Widget magassága"
-
-#: prefs.js:1020
-msgid "Dimensions (Panel Mode)"
-msgstr "Méretek (Panel mód)"
-
-#: prefs.js:1041
-msgid "Custom Colors"
-msgstr "Egyedi színek"
-
-#: prefs.js:1044
-msgid "Sync GNOME Accent Color"
-msgstr "GNOME rendszerszín igazítása az albumképhez"
-
-#: prefs.js:1045
-msgid "Dynamically change the GNOME Shell accent color to match the album art"
-msgstr ""
-"A GNOME Shell kiemelő színének dinamikus módosítása az albumképhez igazodva"
-
-#: prefs.js:1055
-msgid "Use Custom Colors"
-msgstr "Egyedi színek használata"
-
-#: prefs.js:1055
-msgid "Override dynamic colors"
-msgstr "A dinamikus színek felülbírálása"
-
-#: prefs.js:1084
-msgid "Background Color"
-msgstr "Háttérszín"
-
-#: prefs.js:1085
-msgid "Text Color"
-msgstr "Szövegszín"
-
-#: prefs.js:1086
-msgid "Visualizer Color"
-msgstr "Vizualizáció színe"
-
-#: prefs.js:1096
+#: prefs.js:2207
 msgid "System & Reset"
 msgstr "Rendszer és visszaállítás"
 
-#: prefs.js:1100
+#: prefs.js:2213
 msgid "System"
 msgstr "Rendszer"
 
-#: prefs.js:1103
+#: prefs.js:2218
 msgid "Hide Default GNOME Player"
 msgstr "Alapértelmezett GNOME lejátszó elrejtése"
 
-#: prefs.js:1104
+#: prefs.js:2219
 msgid "Remove the duplicate built-in media controls"
 msgstr "A duplikált beépített médiavezérlők eltávolítása"
 
-#: prefs.js:1114
+#: prefs.js:2225
 msgid "Game Mode"
 msgstr "Játék mód"
 
-#: prefs.js:1114
+#: prefs.js:2226
 msgid "Disable animations when a fullscreen app is active"
 msgstr "Animációk tiltása teljes képernyős alkalmazásnál"
 
-#: prefs.js:1121
+#: prefs.js:2232
 msgid "Slow Player Workaround"
 msgstr "Lassú lejátszó megkerülése"
 
-#: prefs.js:1122
+#: prefs.js:2233
 msgid "Adds a slight delay to track changes (fixes sync issues)"
 msgstr ""
 "Enyhe késleltetés a számváltásoknál (javítja a szinkronizációs hibákat)"
 
-#: prefs.js:1130
-msgid "Off (Allow All)"
-msgstr "Ki (Minden engedélyezve)"
-
-#: prefs.js:1131
-msgid "Blacklist (Exclude listed)"
-msgstr "Feketelista (Felsoroltak kizárása)"
-
-#: prefs.js:1132
-msgid "Whitelist (Only allow listed)"
-msgstr "Fehérlista (Csak a felsoroltak)"
-
-#: prefs.js:1135
+#: prefs.js:2239
 msgid "Player Filter Mode"
 msgstr "Lejátszó szűrési módja"
 
-#: prefs.js:1136
+#: prefs.js:2240
 msgid "Choose how to filter media players (e.g. browsers)"
 msgstr "Válaszd ki a lejátszók szűrési módját (pl. böngészők)"
 
-#: prefs.js:1147
+#: prefs.js:2243
+msgid "Off (Allow All)"
+msgstr "Ki (Minden engedélyezve)"
+
+#: prefs.js:2244
+msgid "Blacklist (Exclude listed)"
+msgstr "Feketelista (Felsoroltak kizárása)"
+
+#: prefs.js:2245
+msgid "Whitelist (Only allow listed)"
+msgstr "Fehérlista (Csak a felsoroltak)"
+
+#: prefs.js:2251
 msgid "Filtered Players (comma separated)"
 msgstr "Szűrt lejátszók (vesszővel elválasztva)"
 
-#: prefs.js:1161
+#: prefs.js:2258
 msgid "Detected Players"
 msgstr "Észlelt lejátszók"
 
-#: prefs.js:1162
+#: prefs.js:2259
 msgid "Click an active player to add it to the filter list"
 msgstr "Kattints egy aktív lejátszóra a szűrőlistához adáshoz"
 
-#: prefs.js:1197
+#: prefs.js:2305
 msgid "No players found"
 msgstr "Nem található lejátszó"
 
-#: prefs.js:1231
+#: prefs.js:2341
 msgid "How to find the correct App ID?"
 msgstr "Hogyan találd meg a helyes App ID-t?"
 
-#: prefs.js:1232
+#: prefs.js:2342
 msgid "Click here for a quick guide and examples"
 msgstr "Kattints ide egy rövid útmutatóért és példákért"
 
-#: prefs.js:1236
+#: prefs.js:2347
 msgid ""
 "To allow the extension to open/close your player, you need to provide its "
 "exact window name (App ID).\n"
@@ -998,484 +1300,306 @@ msgstr ""
 "<i>(A .desktop részt hagyd el)</i>\n"
 "5. Nyomd meg az Esc gombot a hibakereső bezárásához."
 
-#: prefs.js:1264
+#: prefs.js:2375
 msgid "Saved App Mappings"
 msgstr "Mentett alkalmazás-párosítások"
 
-#: prefs.js:1265
+#: prefs.js:2376
 msgid "Edit the target App ID for manually mapped players, or remove them."
 msgstr ""
 "Szerkeszd a manuálisan párosított lejátszók App ID-ját, vagy töröld őket."
 
-#: prefs.js:1286
+#: prefs.js:2381
+msgid "Running Players Detection"
+msgstr "Futó lejátszók észlelése"
+
+#: prefs.js:2382
+msgid "Click on a detected player to automatically fill the mapping."
+msgstr "Kattints egy észlelt lejátszóra a párosítás automatikus kitöltéséhez."
+
+#: prefs.js:2398
+msgid "Refresh List"
+msgstr "Lista frissítése"
+
+#: prefs.js:2399
+msgid "Click to scan for active players again"
+msgstr "Kattints az aktív lejátszók ismételt kereséséhez"
+
+#: prefs.js:2438
+msgid "No active players detected. Open a music app first!"
+msgstr "Nincs aktív lejátszó. Nyiss meg egy zenelejátszót először!"
+
+#: prefs.js:2440
+msgid "Select a player to help the extension identify it:"
+msgstr "Válassz egy lejátszót, hogy segíts a bővítménynek azonosítani:"
+
+#: prefs.js:2459
+msgid "Use This"
+msgstr "Használja ezt"
+
+#: prefs.js:2504
 msgid "No manual mappings saved."
 msgstr "Nincsenek mentett manuális párosítások."
 
-#: prefs.js:1291
+#: prefs.js:2509
 msgid "Type the correct App ID, then hit Enter or click the Save icon!"
 msgstr ""
 "Írd be a helyes App ID-t, majd nyomj Entert vagy kattints a Mentés ikonra!"
 
-#: prefs.js:1310
+#: prefs.js:2528
 msgid "Save App ID"
 msgstr "App ID mentése"
 
-#: prefs.js:1342
+#: prefs.js:2563
 msgid "Delete Mapping"
 msgstr "Párosítás törlése"
 
-#: prefs.js:1371
-msgid "Running Players Detection"
-msgstr "Futó lejátszók észlelése"
-
-#: prefs.js:1372
-msgid "Click on a detected player to automatically fill the mapping."
-msgstr "Kattints egy észlelt lejátszóra a párosítás automatikus kitöltéséhez."
-
-#: prefs.js:1395
-msgid "No active players detected. Open a music app first!"
-msgstr "Nincs aktív lejátszó. Nyiss meg egy zenelejátszót először!"
-
-#: prefs.js:1397
-msgid "Select a player to help the extension identify it:"
-msgstr "Válassz egy lejátszót, hogy segíts a bővítménynek azonosítani:"
-
-#: prefs.js:1417
-msgid "Use This"
-msgstr "Használja ezt"
-
-#: prefs.js:1447
-msgid "Refresh List"
-msgstr "Lista frissítése"
-
-#: prefs.js:1448
-msgid "Click to scan for active players again"
-msgstr "Kattints az aktív lejátszók ismételt kereséséhez"
-
-#: prefs.js:1463
+#: prefs.js:2599
 msgid "Backup & Restore"
 msgstr "Biztonsági mentés és visszaállítás"
 
-#: prefs.js:1466
+#: prefs.js:2602
 msgid "Export Settings"
 msgstr "Beállítások exportálása"
 
-#: prefs.js:1467
+#: prefs.js:2604
 msgid "Export"
 msgstr "Exportálás"
 
-#: prefs.js:1471
+#: prefs.js:2611
 msgid "Save Settings"
 msgstr "Beállítások mentése"
 
-#: prefs.js:1486
+#: prefs.js:2629
 msgid "Import Settings"
 msgstr "Beállítások importálása"
 
-#: prefs.js:1487
+#: prefs.js:2631
 msgid "Import"
 msgstr "Importálás"
 
-#: prefs.js:1489
+#: prefs.js:2633
 msgid "Open Settings Backup"
 msgstr "Mentett beállítások megnyitása"
 
-#: prefs.js:1516
+#: prefs.js:2668
 msgid "Art Cache"
 msgstr "Borítókép-gyorsítótár"
 
-#: prefs.js:1538
+#: prefs.js:2699
 msgid "covers cached"
 msgstr "borító a gyorsítótárban"
 
-#: prefs.js:1541
+#: prefs.js:2702
 msgid "Album Art Cache"
 msgstr "Albumborító-gyorsítótár"
 
-#: prefs.js:1546
+#: prefs.js:2708
 msgid "Clear"
 msgstr "Törlés"
 
-#: prefs.js:1568
+#: prefs.js:2735
 msgid "Danger Zone"
 msgstr "Veszélyzóna"
 
-#: prefs.js:1569
-msgid "Reset All"
-msgstr "Minden visszaállítása"
-
-#: prefs.js:1571
+#: prefs.js:2738
 msgid "Factory Reset"
 msgstr "Gyári visszaállítás"
 
-#: prefs.js:1582
+#: prefs.js:2742
+msgid "Reset All"
+msgstr "Minden visszaállítása"
+
+#: prefs.js:2764
 msgid "About"
 msgstr "Névjegy"
 
-#: prefs.js:1587
-msgid "What's New"
-msgstr "Újdonságok"
-
-#: prefs.js:1757
+#: prefs.js:2770
 msgid "Support the Project"
 msgstr "A projekt támogatása"
 
-#: prefs.js:1760
-msgid "Support on Ko-fi"
-msgstr "Támogatás Ko-fi-n"
-
-#: prefs.js:1761
-msgid "Buy me a coffee on Ko-fi"
-msgstr "Hívj meg egy kávéra Ko-fi-n"
-
-#: prefs.js:1763 prefs.js:1772
-msgid "Open"
-msgstr "Megnyitás"
-
-#: prefs.js:1769
-msgid "Buy Me a Coffee"
-msgstr "Buy Me a Coffee"
-
-#: prefs.js:1770
-msgid "Support via BuyMeACoffee"
-msgstr "Támogatás BuyMeACoffee-n keresztül"
-
-#: prefs.js:1778
+#: prefs.js:2792
 msgid "Source Code"
 msgstr "Forráskód"
 
-#: prefs.js:1779
+#: prefs.js:2793
 msgid "Report bugs or view source on GitHub"
 msgstr "Hibajelentés vagy kód megtekintése GitHubon"
 
-#: src/controller.js:1415
+#: prefs.js:2807
+msgid "Support on Ko-fi"
+msgstr "Támogatás Ko-fi-n"
+
+#: prefs.js:2808
+msgid "Buy me a coffee on Ko-fi"
+msgstr "Hívj meg egy kávéra Ko-fi-n"
+
+#: prefs.js:2812 prefs.js:2828
+msgid "Open"
+msgstr "Megnyitás"
+
+#: prefs.js:2823
+msgid "Buy Me a Coffee"
+msgstr "Buy Me a Coffee"
+
+#: prefs.js:2824
+msgid "Support via BuyMeACoffee"
+msgstr "Támogatás BuyMeACoffee-n keresztül"
+
+#: prefs.js:2842
+msgid "What's New"
+msgstr "Újdonságok"
+
+#: src/blurHelper.js:192
+msgid "Please install \"Blur my Shell\" for dynamic blur."
+msgstr ""
+"Kérlek, telepítsd a \"Blur my Shell\" kiegészítőt a dinamikus "
+"homályosításhoz."
+
+#: src/blurHelper.js:194
+msgid ""
+"Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
+"dynamic blur."
+msgstr ""
+"Kérlek, frissítsd a \"Blur my Shell\" kiegészítőt, vagy telepítsd a \"gnome-"
+"rounded-blur\" csomagot a dinamikus homályosításhoz."
+
+#: src/controller.js:1974
 msgid "Unknown Player"
 msgstr "Ismeretlen lejátszó"
 
-#: src/controller.js:1416
+#: src/controller.js:1975
 msgid "No active media"
 msgstr "Nincs aktív média"
 
-#: src/controller.js:1996
+#: src/controller.js:2753
 msgid "Auto (Smart)"
 msgstr "Auto (Okos)"
 
-#: src/controller.js:2016 src/controller.js:2034 src/controller.js:2057
-#: src/controller.js:2083
+#: src/controller.js:2773 src/controller.js:2797 src/controller.js:2826
+#: src/controller.js:2858
 msgid "Not supported"
 msgstr "Nem támogatott"
 
-#: src/uiExpandedPlayer.js:415
+#: src/uiExpandedPlayer.js:698
 msgid "First time? Check settings for custom buttons, scroll actions & more"
 msgstr ""
 "Első alkalom? Nézz be a beállításokba az egyéni gombokért, görgetési "
 "műveletekért és sok másért"
 
-#: src/uiExpandedPlayer.js:738
-msgid "Unknown Title"
-msgstr "Ismeretlen cím"
-
-#: src/uiExpandedPlayer.js:741
+#: src/uiExpandedPlayer.js:1204
 msgid "Unknown Artist"
 msgstr "Ismeretlen előadó"
 
-#: src/uiExpandedPlayer.js:1355
+#: src/uiExpandedPlayer.js:1319 src/uiExpandedPlayer.js:1322
+#: src/uiExpandedPlayer.js:1323
+msgid "Unknown Title"
+msgstr "Ismeretlen cím"
+
+#: src/uiExpandedPlayer.js:1813
 msgid "Volume"
 msgstr "Hangerő"
 
-#: src/uiExpandedPlayer.js:1363
+#: src/uiExpandedPlayer.js:1821
 msgid "System Volume"
 msgstr "Rendszer hangereje"
 
-#: src/uiExpandedPlayer.js:1375
+#: src/uiExpandedPlayer.js:1833
 msgid "Player"
 msgstr "Lejátszó"
 
-#: src/uiExpandedPlayer.js:1381
+#: src/uiExpandedPlayer.js:1839
 msgid "No audio stream available"
 msgstr "Nincs elérhető hangfolyam"
 
-#: src/uiExpandedPlayer.js:1473
+#: src/uiExpandedPlayer.js:1979
 msgid "Toggle Mute All"
 msgstr "Összes elnémítása"
 
-#: src/uiExpandedPlayer.js:1493
+#: src/uiExpandedPlayer.js:2003
 msgid "Seek"
 msgstr "Tekerés"
 
-#: src/uiExpandedPlayer.js:1497
+#: src/uiExpandedPlayer.js:2009
 msgid "This player does not support seeking"
 msgstr "A lejátszó nem támogatja a tekerést"
 
-#: src/uiExpandedPlayer.js:1523
+#: src/uiExpandedPlayer.js:2036
 msgid "Audio Output"
 msgstr "Hangkimenet"
 
-#: src/uiExpandedPlayer.js:1525
+#: src/uiExpandedPlayer.js:2041
 msgid "Audio control unavailable"
 msgstr "Hangerő-szabályozás nem elérhető"
 
-#: src/uiExpandedPlayer.js:1528
+#: src/uiExpandedPlayer.js:2044
 msgid "No output devices found"
 msgstr "Nem találhatók kimeneti eszközök"
 
-#: src/uiExpandedPlayer.js:1531
+#: src/uiExpandedPlayer.js:2047
 msgid "Unknown Device"
 msgstr "Ismeretlen Eszköz"
 
-#: src/uiExpandedPlayer.js:1552
+#: src/uiExpandedPlayer.js:2075
 msgid "min left"
 msgstr "perc maradt"
 
-#: src/uiExpandedPlayer.js:1555
+#: src/uiExpandedPlayer.js:2082
 msgid "Cancel Timer"
 msgstr "Időzítő törlése"
 
-#: src/uiExpandedPlayer.js:1588
+#: src/uiExpandedPlayer.js:2145
 msgid "Runs inside the shell — works on lock screen"
 msgstr "A shellben fut – a zárolási képernyőn is működik"
 
-#: src/uiExpandedPlayer.js:1600
+#: src/uiExpandedPlayer.js:2164
 msgid "This player does not support playback speed"
 msgstr "Ennél a lejátszónál nem állítható a sebesség"
 
-#: src/uiExpandedPlayer.js:1640
+#: src/uiExpandedPlayer.js:2215
 msgid "Player must support MPRIS Rate"
 msgstr "A lejátszónak támogatnia kell az MPRIS sebességállítást"
 
-#: src/uiExpandedPlayer.js:1640
+#: src/uiExpandedPlayer.js:2215
 msgid "Not supported by this player"
 msgstr "A lejátszó nem támogatja"
 
-#: src/uiExpandedPlayer.js:1646
+#: src/uiExpandedPlayer.js:2221
 msgid "Recently Played"
 msgstr "Mostanában hallgatott"
 
-#: src/uiExpandedPlayer.js:1648
+#: src/uiExpandedPlayer.js:2223
 msgid "No history yet"
 msgstr "Még nincs előzmény"
 
-#: src/uiExpandedPlayer.js:1681
+#: src/uiExpandedPlayer.js:2260
 msgid "Unknown"
 msgstr "Ismeretlen"
 
-#: src/uiExpandedPlayer.js:1736
+#: src/uiExpandedPlayer.js:2319
 msgid "Clear History"
 msgstr "Összes törlése"
 
-#: src/uiMusicPill.js:734 src/uiMusicPill.js:1063
+#: src/uiMusicPill.js:1154 src/uiMusicPill.js:1619
 msgid "No Media"
 msgstr "Nincs Lejátszás"
 
-#: src/uiMusicPill.js:1064
+#: src/uiMusicPill.js:1620
 msgid "Waiting for playback..."
 msgstr "Várakozás a lejátszásra..."
 
-#: src/uiMusicPill.js:1302
+#: src/uiMusicPill.js:1989
 msgid "Loading..."
 msgstr "Betöltés..."
 
-#: src/uiPlayerSelector.js:122
+#: src/uiPlayerSelector.js:217
 msgid "Select Media Player"
 msgstr "Lejátszó kiválasztása"
 
-#: src/uiPlayerSelector.js:134
+#: src/uiPlayerSelector.js:229
 msgid "Auto (Smart Selection)"
 msgstr "Auto (Okos választás)"
 
-#: src/uiVisualizers.js:303
+#: src/uiVisualizers.js:435
 msgid "Please install \"cava\" for real-time mode."
 msgstr "Kérlek, telepítsd a \"cava\" csomagot a valós idejű módhoz."
-
-#: prefs.js:905
-msgid "Dynamic Blur (Blur my Shell)"
-msgstr "Dinamikus homályosítás (Blur my Shell)"
-
-#: prefs.js:906
-msgid "Apply Gaussian blur behind the pill and pop-up using Blur my Shell or gnome-rounded-blur."
-msgstr "Gauss-homályosítás alkalmazása a kapszula és a felugró ablak mögött a Blur my Shell vagy a gnome-rounded-blur segítségével."
-
-#: prefs.js:910
-msgid "Enable Blur for Pill"
-msgstr "Kapszula homályosításának bekapcsolása"
-
-#: prefs.js:911
-msgid "Blur the background behind the music pill"
-msgstr "A zenei kapszula mögötti háttér elhomályosítása"
-
-#: prefs.js:920
-msgid "Enable Blur for Pop-up"
-msgstr "Felugró ablak homályosításának bekapcsolása"
-
-#: prefs.js:921
-msgid "Blur the background behind the expanded player pop-up"
-msgstr "A lenyíló lejátszó ablak mögötti háttér elhomályosítása"
-
-#: prefs.js:930
-msgid "Tint Blur with Album Art Color"
-msgstr "Homályosítás színezése az albumborító színével"
-
-#: prefs.js:931
-msgid "Blend dynamic album colors over the blurred background instead of neutral frosted glass"
-msgstr "Dinamikus albumszínek keverése a homályosított háttérre a semleges matt üveg helyett"
-
-#: prefs.js:940
-msgid "Blur my Shell Extension"
-msgstr "Blur my Shell kiegészítő"
-
-#: prefs.js:941
-msgid "Recommended for native Wayland dynamic blur"
-msgstr "Ajánlott a natív Wayland dinamikus homályosításhoz"
-
-#: prefs.js:953
-msgid "gnome-rounded-blur Library"
-msgstr "gnome-rounded-blur könyvtár"
-
-#: prefs.js:954
-msgid "Installation guide for native rounded corners blur"
-msgstr "Telepítési útmutató a lekerekített sarkok natív homályosításához"
-
-#: prefs.js:945
-msgid "GitHub"
-msgstr "GitHub"
-
-#: prefs.js:958
-msgid "Guide"
-msgstr "Útmutató"
-
-#: src/blurHelper.js:47
-msgid "For the best rounded dynamic blur, install Blur my Shell and gnome-rounded-blur."
-msgstr "A legjobb lekerekített dinamikus homályosításhoz telepítsd a Blur my Shell és a gnome-rounded-blur csomagokat."
-
-#: src/blurHelper.js:49
-msgid "gnome-rounded-blur is recommended for smooth rounded corners with dynamic blur."
-msgstr "A gnome-rounded-blur ajánlott a sima lekerekített sarkokhoz dinamikus homályosítás esetén."
-
-#: src/blurHelper.js:51
-msgid "Blur my Shell is recommended for dynamic blur integration."
-msgstr "A Blur my Shell ajánlott a dinamikus homályosítás integrációjához."
-
-#: prefs.js:1112
-msgid "Main Dock Only"
-msgstr "Csak az elsődleges dokk"
-
-#: prefs.js:1113
-msgid "All Docks"
-msgstr "Minden dokk"
-
-#: prefs.js:1114
-msgid "Secondary Docks Only"
-msgstr "Csak a másodlagos dokkok"
-
-#: prefs.js:1117
-msgid "Multi-Monitor Docks"
-msgstr "Többmonitoros dokkok"
-
-#: prefs.js:1118
-msgid "Which docks show the pill when the dock is on all monitors"
-msgstr "Melyik dokkok mutassák a kapszulát, ha a dokk minden monitoron megjelenik"
-
-#: prefs.js:1030
-msgid "Blur Radius (Sigma)"
-msgstr "Homályosítás sugara (Sigma)"
-
-#: prefs.js:1031
-msgid "Strength of the Gaussian blur effect"
-msgstr "A Gauss-homályosítás erőssége"
-
-#: prefs.js:1257
-msgid "Light Mode"
-msgstr "Világos mód"
-
-#: prefs.js:1258
-msgid "Use a bright pastel palette for dynamic backgrounds and dark text/icons"
-msgstr "Világos pasztell színvilág használata a dinamikus hátterekhez, sötét szöveggel és ikonokkal"
-
-#: prefs.js:996
-msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
-msgstr ""
-
-#: prefs.js:1071
-msgid "Follow Blur my Shell Pipelines"
-msgstr ""
-
-#: prefs.js:1072
-msgid "Use the blur pipelines and effects configured in Blur my Shell"
-msgstr ""
-
-#: prefs.js:1086
-msgid "Controlled by Blur my Shell pipeline"
-msgstr ""
-
-#: prefs.js:1098
-msgid "Native Dual Kawase blur backend active (v76+)"
-msgstr ""
-
-#: src/blurHelper.js:137
-msgid "Please install \"Blur my Shell\" for dynamic blur."
-msgstr ""
-
-#: src/blurHelper.js:139
-msgid "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for dynamic blur."
-msgstr ""
-
-#: prefs.js:954
-msgid "Controls"
-msgstr ""
-
-#: prefs.js:1037
-msgid "Scroll Controls"
-msgstr ""
-
-#: prefs.js:1111
-msgid "On-Pill Buttons (Tablet Mode)"
-msgstr ""
-
-#: prefs.js:1146
-msgid "Lyrics"
-msgstr ""
-
-#: prefs.js:1153
-msgid "Interactive Pop-up Lyrics"
-msgstr ""
-
-#: prefs.js:1154
-msgid "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly opens the synchronized lyrics view!"
-msgstr ""
-
-#: prefs.js:1162
-msgid "Lyrics & Karaoke"
-msgstr ""
-
-#: prefs.js:1163
-msgid "Real-time synchronized lyrics with multi-provider karaoke support."
-msgstr ""
-
-#: prefs.js:1339
-msgid "Please install %s for dynamic blur."
-msgstr ""
-
-#: prefs.js:1339
-msgid "and"
-msgstr ""
-
-#: prefs.js:1358
-msgid "Note: Dynamic blur requires %s to be installed."
-msgstr ""
-
-#: prefs.js:1599
-msgid "Audio Visualizers"
-msgstr ""
-
-#: prefs.js:1682
-msgid "Enable audio visualizer bars inside the expanded player"
-msgstr ""
-
-#~ msgid "Unmute"
-#~ msgstr "Némítás feloldása"
-
-#~ msgid "Mute"
-#~ msgstr "Némítás"
-
-#~ msgid "Display active player icons at the top of the pop-up"
-#~ msgstr "Aktív lejátszók ikonjainak megjelenítése a felugró menü tetején"
