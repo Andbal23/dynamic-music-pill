@@ -8,15 +8,18 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-07 16:22+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-11-17 16:51+0000\n"
+"Last-Translator: Issam Khalaf <issam.5alaf@users.noreply.hosted.weblate.org>"
+"\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/dynamic-music-"
+"pill/settings/ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: prefs.js:39
 msgid "Main Pill"
@@ -24,333 +27,337 @@ msgstr ""
 
 #: prefs.js:45
 msgid "General Settings"
-msgstr ""
+msgstr "الإعدادات العامة"
 
 #: prefs.js:48
 msgid "Always ON"
-msgstr ""
+msgstr "التشغيل دائمًا"
 
 #: prefs.js:49
 msgid "Retain last known track and keep pill visible after closing the player"
-msgstr ""
+msgstr "إظهار آخر أغنية تم تشغيلها على البرشامة بعد إغلاق مشغل الأغاني"
 
 #: prefs.js:61
 msgid "Show Album Art"
-msgstr ""
+msgstr "إظهار صورة الألبوم"
 
 #: prefs.js:62
 msgid "Display the cover art of the currently playing song"
-msgstr ""
+msgstr "إظهار صورة الألبوم للأغنية الجاري تشغيلها"
 
 #: prefs.js:73
+#, fuzzy
 msgid "Fallback Album Art"
-msgstr ""
+msgstr "صورة الألبوم البديلة"
 
 #: prefs.js:74 prefs.js:114
 msgid "No image selected"
-msgstr ""
+msgstr "لم يتم اختيار صورة"
 
 #: prefs.js:84
 msgid "Select Fallback Image"
-msgstr ""
+msgstr "اختيار صورة بديلة"
 
 #: prefs.js:128
 msgid "Enable Scroll Controls"
-msgstr ""
+msgstr "تفعيل التحكم من خلال دولاب الفأرة"
 
 #: prefs.js:129
 msgid "Change Tracks, Volume or Media Player using scroll wheel or touchpad"
 msgstr ""
+"تغيير الأغاني، حجم الصوت، أو مشغل الأغاني من خلال دولاب الفأرة أو لوحة اللمس"
 
 #: prefs.js:140
 msgid "Change Track"
-msgstr ""
+msgstr "تغيير الأغنية"
 
 #: prefs.js:141
 msgid "Change Volume"
-msgstr ""
+msgstr "تغيير حجم الصوت"
 
 #: prefs.js:142
 msgid "Switch Player"
-msgstr ""
+msgstr "تبديل مشغل الأغاني"
 
 #: prefs.js:143
 msgid "Seek ±10s"
-msgstr ""
+msgstr "الإنتقال ± ثوانٍ"
 
 #: prefs.js:152
 msgid "Scroll Action"
-msgstr ""
+msgstr "إجراء التمرير"
 
 #: prefs.js:153
 msgid "Choose what scrolling on the pill should do"
-msgstr ""
+msgstr "اختر ما ستفعله البرشامة عند التمرير"
 
 #: prefs.js:178
 msgid "System Master Volume"
-msgstr ""
+msgstr "حجم الصوت للنظام"
 
 #: prefs.js:179
 msgid "Active Media App Volume"
-msgstr ""
+msgstr "حجم الصوت لمشغل الأغاني"
 
 #: prefs.js:183
 msgid "Volume Scroll Target"
-msgstr ""
+msgstr "هدف التمرير الخاص بحجم الصوت"
 
 #: prefs.js:184
 msgid "Choose which sound source to control when scrolling volume"
-msgstr ""
+msgstr "اختر مصدر الصوت الذي يجب أن يتغير عند التمرير"
 
 #: prefs.js:204
 msgid "Scroll Animation"
-msgstr ""
+msgstr "رسومات التمرير"
 
 #: prefs.js:205
 msgid "Animate the pill with a jump effect when scrolling"
-msgstr ""
+msgstr "اجعل البرشامة تقفز عند التمرير"
 
 #: prefs.js:217
 msgid "Invert Scroll Animation"
-msgstr ""
+msgstr "عكس رسومات التمرير"
 
 #: prefs.js:204
 msgid "Direction of the jump effect (Natural vs Traditional)"
-msgstr ""
+msgstr "اتجاه تأثير القفز (طبيعي أو تقليدي)"
 
 #: prefs.js:215
 msgid "Invert Scroll Direction"
-msgstr ""
+msgstr "عكس اتجاه التمرير"
 
 #: prefs.js:216
 msgid "Swap up/down scrolling for track and volume actions"
-msgstr ""
+msgstr "تبديل التمرير للأعلى/الأسفل لتحكمات الصوت والأغنية"
 
 #: prefs.js:228
 msgid "Scrolling Text"
-msgstr ""
+msgstr "تمرير النص"
 
 #: prefs.js:229
 msgid "Animate long track titles and artist names"
-msgstr ""
+msgstr "تحريك عناوين المقطوعات الطويلة وأسماء الفنانين"
 
 #: prefs.js:240
 msgid "Scroll Only on Hover"
-msgstr ""
+msgstr "التمرير عند وضع المؤشر على البرشامة فقط"
 
 #: prefs.js:241
 msgid "Text stays still until you hover the pill"
-msgstr ""
+msgstr "النص سيبقى ثابتًا حتى تحرك المؤشر على البرشامة"
 
 #: prefs.js:253
 msgid "Freeze Scroll on Pause"
-msgstr ""
+msgstr "تثبيت التمرير عند التوقف المؤقت"
 
 #: prefs.js:254
 msgid "Stop the text scrolling animation when the media player is paused"
-msgstr ""
+msgstr "إيقاف رسومات تمرير النص عند إيقاف المشغل مؤقتًا"
 
 #: prefs.js:267
 msgid "Lyrics Display"
-msgstr ""
+msgstr "إظهار كلمات الأغاني"
 
 #: prefs.js:268
 msgid "Show real-time synchronized lyrics for current track."
-msgstr ""
+msgstr "إظهار كلمات متزامنة للأغنية في الوقت الحقيقي"
 
 #: prefs.js:279
 msgid "Word-level Karaoke in Pill"
-msgstr ""
+msgstr "وضع كاريوكي (كلمة-كلمة) في البرشامة"
 
 #: prefs.js:280
 msgid ""
 "Highlight individual words on the main pill when available (pop-up always "
 "uses word-level)."
 msgstr ""
+"تمييز الكلمات الفردية في البرشامة عند توفرها (تستخدم النافذة المنبثقة دائمًا "
+"مستوى الكلمة)."
 
 #: prefs.js:292
 msgid "Lyrics language preference"
-msgstr ""
+msgstr "تفضيلات اللغة لكلمات الأغاني"
 
 #: prefs.js:293
 msgid "When multiple versions exist"
-msgstr ""
+msgstr "عند توفر نسخ متعددة"
 
 #: prefs.js:295
 msgid "Auto"
-msgstr ""
+msgstr "أوتوماتيكي"
 
 #: prefs.js:296
 msgid "Prefer original script"
-msgstr ""
+msgstr "تفضيل النص الأصلي"
 
 #: prefs.js:297
 msgid "Prefer Latin"
-msgstr ""
+msgstr "تفضيل اللاتيني"
 
 #: prefs.js:306
 msgid "Lyrics Fade-in Effect"
-msgstr ""
+msgstr "تأثير التلاشي التدريجي لكلمات الأغنية"
 
 #: prefs.js:307
 msgid "Smoothly fade in new lyric lines"
-msgstr ""
+msgstr "أظهِر أسطر كلمات الأغنية الجديدة بتلاشٍ تدريجي سلس"
 
 #: prefs.js:319
 msgid "Fade Duration (ms)"
-msgstr ""
+msgstr "مدة التلاشي (ميلي ثانية)"
 
 #: prefs.js:328
 msgid "Tablet Mode Controls"
-msgstr ""
+msgstr "عناصر التحكم في وضع الجهاز اللوحي"
 
 #: prefs.js:329
 msgid "Show media buttons directly on the pill"
-msgstr ""
+msgstr "اظهار أزرار التحكم مباشرة على البرشامة"
 
 #: prefs.js:331
 msgid "Off"
-msgstr ""
+msgstr "إيقاف"
 
 #: prefs.js:331
 msgid "Skip Only"
-msgstr ""
+msgstr "التخطي فقط"
 
 #: prefs.js:331
 msgid "Play/Pause Only"
-msgstr ""
+msgstr "تشغيل/إيقاف مؤقت فقط"
 
 #: prefs.js:331
 msgid "All Controls"
-msgstr ""
+msgstr "جميع أزرار التحكم"
 
 #: prefs.js:340
 msgid "Controls Position"
-msgstr ""
+msgstr "توضع أزرار التحكم على البرشامة"
 
 #: prefs.js:341
 msgid "Where to place the tablet controls on the pill"
-msgstr ""
+msgstr "في وضع الجهاز اللوحي، أين تريد وضع أزرار التحكم على البرشامة"
 
 #: prefs.js:343
 msgid "Before Text"
-msgstr ""
+msgstr "قبل النص"
 
 #: prefs.js:343
 msgid "After Text"
-msgstr ""
+msgstr "بعد النص"
 
 #: prefs.js:343
 msgid "After Visualizer"
-msgstr ""
+msgstr "بعد المؤثرات الصوتية"
 
 #: prefs.js:357
 msgid "Inline Artist"
-msgstr ""
+msgstr "اسم الفنان ضمن النص"
 
 #: prefs.js:357
 msgid "Show \"Title • Artist\" when the widget is squeezed"
-msgstr ""
+msgstr "إظهار \"اسم الأغنية واسم الفنان\" عند ضغط الأداة"
 
 #: prefs.js:363
 msgid "Show Artist"
-msgstr ""
+msgstr "إظهار الفنان"
 
 #: prefs.js:363
 msgid "Show the artist name in the main music pill"
-msgstr ""
+msgstr "إظهار اسم الفنان في برشامة الموسيقى الرئيسية"
 
 #: prefs.js:375
 msgid "Compact Mode (Hide Text)"
-msgstr ""
+msgstr "الوضع المدمج (إخفاء النص)"
 
 #: prefs.js:376
 msgid "Hide title and artist"
-msgstr ""
+msgstr "إخفاء اسم الأغنية واسم الفنان"
 
 #: prefs.js:389
 msgid "Mouse Actions"
-msgstr ""
+msgstr "تحكمات الفأرة"
 
 #: prefs.js:392 prefs.js:712
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #: prefs.js:392
 msgid "Play / Pause"
-msgstr ""
+msgstr "تشغيل/إيقاف مؤقت"
 
 #: prefs.js:392
 msgid "Next Track"
-msgstr ""
+msgstr "الأغنية التالية"
 
 #: prefs.js:392
 msgid "Previous Track"
-msgstr ""
+msgstr "الأغنية السابقة"
 
 #: prefs.js:393
 msgid "Open Player App"
-msgstr ""
+msgstr "فتح مشغل الأغاني"
 
 #: prefs.js:393
 msgid "Open Menu"
-msgstr ""
+msgstr "فتح قائمة الإعدادات"
 
 #: prefs.js:393
 msgid "Select Player"
-msgstr ""
+msgstr "اختيار المشغل"
 
 #: prefs.js:393
 msgid "Open Settings"
-msgstr ""
+msgstr "فتح الإعدادات"
 
 #: prefs.js:393
 msgid "Close Player App"
-msgstr ""
+msgstr "إغلاق المشغل"
 
 #: prefs.js:400
 msgid "Left Click"
-msgstr ""
+msgstr "النقرة اليسارية"
 
 #: prefs.js:408
 msgid "Double Click"
-msgstr ""
+msgstr "النقر المزدوج"
 
 #: prefs.js:416
 msgid "Middle Click"
-msgstr ""
+msgstr "نقرة الزر الأوسط"
 
 #: prefs.js:424
 msgid "Right Click"
-msgstr ""
+msgstr "نقرة الزر الأيمن"
 
 #: prefs.js:432
 msgid "Hover Action"
-msgstr ""
+msgstr "إجراء الطفو"
 
 #: prefs.js:443
 msgid "Hover Delay (ms)"
-msgstr ""
+msgstr "تأخير الطفو (ميلي ثانية)"
 
 #: prefs.js:457
 msgid "Pop-up Menu"
-msgstr ""
+msgstr "القائمة المنبثقة"
 
 #: prefs.js:461
 msgid "Pop-up Appearance"
-msgstr ""
+msgstr "ظهور الإنبثاق"
 
 #: prefs.js:463
 msgid "Rotate Vinyl"
-msgstr ""
+msgstr "تدوير القرص"
 
 #: prefs.js:464
 msgid "Spin the album art when playing"
-msgstr ""
+msgstr "تدوير صورة الألبوم عند التشغيل"
 
 #: prefs.js:475
 msgid "Rotation Speed"
-msgstr ""
+msgstr "سرعة التدوير"
 
 #: prefs.js:476
 msgid "Adjust the vinyl spin speed (Lower is slower, Default: 10)"
