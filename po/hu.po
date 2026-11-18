@@ -250,7 +250,8 @@ msgstr "Méretek (Panel mód)"
 
 #: prefs.js:798
 msgid "Set to 32 or higher to display Title above Artist on two lines"
-msgstr "Állítsd legalább 32-re, hogy a Cím és az Előadó két sorban jelenjen meg"
+msgstr ""
+"Állítsd legalább 32-re, hogy a Cím és az Előadó két sorban jelenjen meg"
 
 #: prefs.js:823
 msgid "Pop-up Menu"
