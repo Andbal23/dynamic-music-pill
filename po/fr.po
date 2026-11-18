@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 12:04+0100\n"
+"POT-Creation-Date: 2026-11-18 12:35+0100\n"
 "PO-Revision-Date: 2026-08-09 10:51+0000\n"
 "Last-Translator: Ocin4ever <85343782+Ocin4ever@users.noreply.github.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/dynamic-music-"
@@ -843,6 +843,26 @@ msgstr ""
 
 #: prefs.js:1558
 msgid "Lyrics Files (*.lrc, *.ttml, *.txt)"
+msgstr ""
+
+#: prefs.js:1646
+#, fuzzy, javascript-format
+#| msgid "Import Settings"
+msgid "Imported lyrics for \"%s\""
+msgstr "Importer les paramètres"
+
+#: prefs.js:1652
+#, fuzzy
+#| msgid "Import Settings"
+msgid "Import Lyrics File…"
+msgstr "Importer les paramètres"
+
+#: prefs.js:1653
+msgid "Select a local .lrc, .ttml, or .txt lyrics file for the target song"
+msgstr ""
+
+#: prefs.js:1658
+msgid "Choose File…"
 msgstr ""
 
 #: prefs.js:1748
