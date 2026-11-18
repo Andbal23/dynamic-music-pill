@@ -36,12 +36,21 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
-        version: '1.7.3',
-        subtitle: 'Smooth History Subpage Opening & Thumbnail Caching',
+        version: '1.7.4',
+        subtitle: 'Dynamic Pill Width Smoothness & Centered Alignment Fix',
         expanded: true,
-        notes: 'Bug Fixes:\n' +
+        notes: 'Improvements & Bug Fixes:\n' +
+            '• Fixed title and artist labels shifting off-center when using centered alignment with dynamic pill width.\n' +
+            '• Improved dynamic pill width resize smoothness and prevented backdrop/dock size transitions from jumping ahead of the pill during rapid track changes.',
+    },
+    {
+        version: '1.7.3',
+        subtitle: 'History Caching, Cleanup & Circular Vinyl Fixes',
+        expanded: false,
+        notes: 'Bug Fixes & Performance:\n' +
             '• Deferred Recently Played row batching and asynchronously scaled cached thumbnails (112x112) after the ' +
-            'subpage slide animation to eliminate opening lag and missing-file log errors.',
+            'subpage slide animation to eliminate opening lag and missing-file log errors.\n' +
+            '• Fixed circular vinyl rotation startup recursion and ensured subpage async timers are cleaned up on destroy/disable.',
     },
     {
         version: '1.7.2',
