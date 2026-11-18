@@ -36,9 +36,17 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
+        version: '1.7.3',
+        subtitle: 'Smooth History Subpage Opening & Thumbnail Caching',
+        expanded: true,
+        notes: 'Bug Fixes:\n' +
+            '• Deferred Recently Played row batching and asynchronously scaled cached thumbnails (112x112) after the ' +
+            'subpage slide animation to eliminate opening lag and missing-file log errors.',
+    },
+    {
         version: '1.7.2',
         subtitle: 'Tray / Background Player Window Raise Fix',
-        expanded: true,
+        expanded: false,
         notes: 'Bug Fixes:\n' +
             '• Fixed opening a background or tray-minimized player (e.g. Audacious) via Open App restarting local playback ' +
             'or creating a duplicate playlist instead of raising the existing window (#209).',

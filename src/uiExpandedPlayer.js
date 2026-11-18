@@ -2,6 +2,7 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
+import GdkPixbuf from 'gi://GdkPixbuf';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { formatTime, smartUnpack, disableDockAutohide, restoreDockAutohide, disableDashToDockAutohide, restoreDashToDockAutohide, getPlayerIcon } from './utils.js';
@@ -2282,6 +2283,10 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let copyTimeouts = [];
                 let copyIcons = [];
+                let historyCancellable = new Gio.Cancellable();
+                let thumbTimerId = 0;
+                let thumbIdleId = 0;
+                const pendingThumbs = [];
 
                 const fmtTime = (ms) => {
                     if (!ms) return '';
@@ -2299,7 +2304,10 @@ export const ExpandedPlayer = GObject.registerClass(
                     }
                 };
 
-                history.slice(0, 20).forEach(track => {
+                const items = history.slice(0, 20);
+                const thumbCacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'dynamic-music-pill', 'art']);
+
+                const appendRow = (track) => {
                     let c = track.avgColor;
                     let rowBg = (c && typeof c.r === 'number')
                         ? ('background-color:rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.28);')
@@ -2310,8 +2318,9 @@ export const ExpandedPlayer = GObject.registerClass(
                         name: 'history-item-thumb',
                         width: 38,
                         height: 38,
-                        style: track.artUrl ? ('background-image:url("' + track.artUrl + '");background-size:cover;border-radius:6px;') : 'background-color:rgba(128,128,128,0.2);border-radius:6px;'
+                        style: 'background-color:rgba(128,128,128,0.2);border-radius:6px;'
                     });
+                    if (track.artUrl) pendingThumbs.push({ thumb, artUrl: track.artUrl });
                     innerRow.add_child(thumb);
 
                     let infoBox = createBoxLayout({ orientation: Clutter.Orientation.VERTICAL, x_expand: true, style: 'spacing:1px;', y_align: Clutter.ActorAlign.CENTER });
@@ -2366,12 +2375,10 @@ export const ExpandedPlayer = GObject.registerClass(
                         return Clutter.EVENT_PROPAGATE;
                     }, contentBox);
                     contentBox.add_child(rowBtn);
-                });
+                };
 
-                if (subpage) subpage.connect('destroy', () => {
-                    copyTimeouts.forEach(id => GLib.Source.remove(id));
-                    copyIcons.forEach(icon => { icon.remove_transition('opacity'); });
-                });
+                const initialBatch = items.slice(0, 7);
+                initialBatch.forEach(appendRow);
 
                 let clearBtn = new St.Button({
                     label: _('Clear History'), x_expand: true, reactive: true, can_focus: false,
@@ -2390,7 +2397,97 @@ export const ExpandedPlayer = GObject.registerClass(
                     if (e.type() === Clutter.EventType.TOUCH_END) { doClear(); return Clutter.EVENT_STOP; }
                     return Clutter.EVENT_PROPAGATE;
                 }, contentBox);
-                contentBox.add_child(clearBtn);
+                if (items.length <= 7) contentBox.add_child(clearBtn);
+
+                const applyThumbArt = (thumb, uri) => {
+                    if (historyCancellable.is_cancelled() || !thumb.get_parent()) return;
+                    const safeUri = uri.replace(/"/g, '%22');
+                    thumb.set_style(`background-image:url("${safeUri}");background-size:cover;border-radius:6px;`);
+                };
+
+                const loadSmallThumb = (thumb, artUrl) => {
+                    if (!artUrl.startsWith('file://')) {
+                        applyThumbArt(thumb, artUrl);
+                        return;
+                    }
+                    const srcFile = Gio.File.new_for_uri(artUrl);
+                    const hash = GLib.compute_checksum_for_string(GLib.ChecksumType.MD5, artUrl, -1);
+                    const thumbFile = Gio.File.new_for_path(GLib.build_filenamev([thumbCacheDir, `thumb_${hash}.png`]));
+
+                    thumbFile.query_info_async('standard::size', Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_LOW, historyCancellable, (tf, res) => {
+                        if (historyCancellable.is_cancelled() || !thumb.get_parent()) return;
+                        try {
+                            const info = tf.query_info_finish(res);
+                            if (info && info.get_size() > 0) {
+                                applyThumbArt(thumb, tf.get_uri());
+                                return;
+                            }
+                        } catch { /* Build compact cached thumb lazily */ }
+
+                        srcFile.read_async(GLib.PRIORITY_LOW, historyCancellable, (sf, rRes) => {
+                            let stream;
+                            try { stream = sf.read_finish(rRes); } catch { return; }
+                            GdkPixbuf.Pixbuf.new_from_stream_at_scale_async(stream, 112, 112, true, historyCancellable, (_s, pixRes) => {
+                                stream.close_async(GLib.PRIORITY_LOW, null, null);
+                                let pb;
+                                try { pb = GdkPixbuf.Pixbuf.new_from_stream_finish(pixRes); } catch { return; }
+                                if (!pb || historyCancellable.is_cancelled() || !thumb.get_parent()) return;
+                                let ok, buf;
+                                try { [ok, buf] = pb.save_to_bufferv('png', ['compression'], ['6']); } catch { return; }
+                                if (!ok || !buf) return;
+                                GLib.mkdir_with_parents(thumbCacheDir, 0o755);
+                                thumbFile.replace_contents_bytes_async(
+                                    GLib.Bytes.new(buf), null, false, Gio.FileCreateFlags.NONE, historyCancellable,
+                                    (dest, wRes) => {
+                                        try {
+                                            dest.replace_contents_finish(wRes);
+                                            applyThumbArt(thumb, dest.get_uri());
+                                        } catch { /* Cancelled or write error */ }
+                                    }
+                                );
+                            });
+                        });
+                    });
+                };
+
+                if (items.length > 7 || pendingThumbs.length > 0) {
+                    thumbTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, SUBPAGE_ANIM_IN_DURATION + 20, () => {
+                        thumbTimerId = 0;
+                        let rowIdx = 7;
+                        let thumbIdx = 0;
+                        thumbIdleId = GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                            if (historyCancellable.is_cancelled()) {
+                                thumbIdleId = 0;
+                                return GLib.SOURCE_REMOVE;
+                            }
+                            if (rowIdx < items.length) {
+                                const endRow = Math.min(rowIdx + 4, items.length);
+                                for (; rowIdx < endRow; rowIdx++) appendRow(items[rowIdx]);
+                                if (rowIdx >= items.length) contentBox.add_child(clearBtn);
+                                return GLib.SOURCE_CONTINUE;
+                            }
+                            if (thumbIdx < pendingThumbs.length) {
+                                const endThumb = Math.min(thumbIdx + 2, pendingThumbs.length);
+                                for (; thumbIdx < endThumb; thumbIdx++) {
+                                    const { thumb, artUrl } = pendingThumbs[thumbIdx];
+                                    loadSmallThumb(thumb, artUrl);
+                                }
+                                if (thumbIdx < pendingThumbs.length) return GLib.SOURCE_CONTINUE;
+                            }
+                            thumbIdleId = 0;
+                            return GLib.SOURCE_REMOVE;
+                        });
+                        return GLib.SOURCE_REMOVE;
+                    });
+                }
+
+                if (subpage) subpage.connect('destroy', () => {
+                    historyCancellable.cancel();
+                    if (thumbTimerId) { GLib.Source.remove(thumbTimerId); thumbTimerId = 0; }
+                    if (thumbIdleId) { GLib.Source.remove(thumbIdleId); thumbIdleId = 0; }
+                    copyTimeouts.forEach(id => GLib.Source.remove(id));
+                    copyIcons.forEach(icon => { icon.remove_transition('opacity'); });
+                });
             });
         }
 
