@@ -12,6 +12,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: translations-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   translations:
     runs-on: ubuntu-latest
@@ -53,3 +57,7 @@ jobs:
           git commit -m "chore(locale): compile .mo translations and update credits"
           git pull --rebase --autostash origin "${{ github.ref_name }}"
           git push
+
+      - name: Sync translations to main
+        if: github.ref == 'refs/heads/gnome50'
+        run: python3 .github/scripts/sync_translations_to_main.py --source-ref HEAD --target-branch main
