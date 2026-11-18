@@ -313,6 +313,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 if (this.visible && this._player) {
                     let artUrl = this._lastArtUrl || this._currentArtUrl;
                     this.updateContent(this._lastTrackTitle, '', artUrl, this._lastStatus);
+                    if (this._settings.get_boolean('popup-vinyl-square'))
+                        this._stopVinyl();
+                    else if (this._lastStatus === 'Playing')
+                        this._startVinyl(true);
                 }
             }, this);
             this._settings.connectObject('changed::popup-vinyl-rotate', () => {
@@ -381,6 +385,11 @@ export const ExpandedPlayer = GObject.registerClass(
                 offscreen_redirect: Clutter.OffscreenRedirect.ALWAYS
             });
             this._vinyl.set_pivot_point(0.5, 0.5);
+            this._vinyl.connectObject('notify::mapped', () => {
+                if (this._vinyl && this._vinyl.mapped && this.visible && this._lastStatus === 'Playing' && !this._isSpinning) {
+                    this._startVinyl(true);
+                }
+            }, this);
 
             this._coverArtWidget = new CrossfadeArt({
                 width: 100,
@@ -3081,8 +3090,30 @@ export const ExpandedPlayer = GObject.registerClass(
             this._coverArtWidget.setArt(artUrl);
         }
 
+        _easeVinylRotation(targetAngle, duration, mode, onDone = null) {
+            if (!this._vinyl || !this._vinyl.mapped || !this._vinyl.visible) return false;
+            // Use ease_property('rotation-angle-z', ...) so GNOME 45-46's environment.js
+            // replace('_', '-', 'g') quirk doesn't look up 'rotation-angle_z' and fire onStopped synchronously.
+            let finishedSync = false;
+            let inEase = true;
+            this._vinyl.ease_property('rotation-angle-z', targetAngle, {
+                duration,
+                mode,
+                onStopped: isFinished => {
+                    if (!isFinished || !this._vinyl) return;
+                    if (inEase) {
+                        finishedSync = true;
+                        return;
+                    }
+                    if (onDone) onDone();
+                }
+            });
+            inEase = false;
+            return !finishedSync;
+        }
+
         _startVinyl(skipSpinUp = false) {
-            if (!this._vinyl || !this._settings.get_boolean('popup-vinyl-rotate')) return;
+            if (!this._vinyl || !this._vinyl.visible || !this._settings || !this._settings.get_boolean('popup-vinyl-rotate')) return;
             if (this._settings.get_boolean('popup-vinyl-square')) return;
 
             let speedVal = this._settings.get_int('popup-vinyl-speed') || 10;
@@ -3095,25 +3126,29 @@ export const ExpandedPlayer = GObject.registerClass(
                 return;
             }
 
-            this._isSpinning = true;
             this._vinyl.remove_transition('rotation-angle-z');
+            if (!this._vinyl.mapped) {
+                this._isSpinning = false;
+                return;
+            }
 
+            this._isSpinning = true;
             let currentAngle = (this._vinyl.rotation_angle_z || 0) % 360;
             this._vinyl.rotation_angle_z = currentAngle;
 
             const runLoop = () => {
-                if (!this._isSpinning || !this._vinyl) return;
+                if (!this._isSpinning || !this._vinyl || !this._vinyl.visible) {
+                    this._isSpinning = false;
+                    return;
+                }
                 let cur = (this._vinyl.rotation_angle_z || 0) % 360;
                 this._vinyl.rotation_angle_z = cur;
-                this._vinyl.ease({
-                    rotation_angle_z: cur + totalDegrees,
-                    duration: loopDuration,
-                    mode: Clutter.AnimationMode.LINEAR,
-                    onStopped: () => {
-                        if (!this._isSpinning || !this._vinyl) return;
-                        runLoop();
-                    }
-                });
+                if (!this._easeVinylRotation(cur + totalDegrees, loopDuration, Clutter.AnimationMode.LINEAR, () => {
+                    if (!this._isSpinning || !this._vinyl || !this._vinyl.visible) return;
+                    runLoop();
+                })) {
+                    this._isSpinning = false;
+                }
             };
 
             if (skipSpinUp) {
@@ -3121,15 +3156,12 @@ export const ExpandedPlayer = GObject.registerClass(
             } else {
                 let initialDuration = Math.round(1200 * durationFactor);
                 let spinUpAngle = Math.round(62 * (10 / speedVal));
-                this._vinyl.ease({
-                    rotation_angle_z: currentAngle + spinUpAngle,
-                    duration: initialDuration,
-                    mode: Clutter.AnimationMode.EASE_IN_QUAD,
-                    onStopped: () => {
-                        if (!this._isSpinning || !this._vinyl) return;
-                        runLoop();
-                    }
-                });
+                if (!this._easeVinylRotation(currentAngle + spinUpAngle, initialDuration, Clutter.AnimationMode.EASE_IN_QUAD, () => {
+                    if (!this._isSpinning || !this._vinyl || !this._vinyl.visible) return;
+                    runLoop();
+                })) {
+                    this._isSpinning = false;
+                }
             }
         }
 
@@ -3147,14 +3179,9 @@ export const ExpandedPlayer = GObject.registerClass(
 
             let stopAngle = Math.round(62 * (10 / speedVal));
 
-            this._vinyl.ease({
-                rotation_angle_z: currentAngle + stopAngle,
-                duration: stopDuration,
-                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                onStopped: () => {
-                    if (this._vinyl) {
-                        this._vinyl.rotation_angle_z = (this._vinyl.rotation_angle_z || 0) % 360;
-                    }
+            this._easeVinylRotation(currentAngle + stopAngle, stopDuration, Clutter.AnimationMode.EASE_OUT_QUAD, () => {
+                if (this._vinyl) {
+                    this._vinyl.rotation_angle_z = (this._vinyl.rotation_angle_z || 0) % 360;
                 }
             });
         }
