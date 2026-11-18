@@ -36,9 +36,17 @@ const PREFS_KEYS = [
 
 const CHANGELOG_ENTRIES = [
     {
+        version: '1.7.2',
+        subtitle: 'Tray / Background Player Window Raise Fix',
+        expanded: true,
+        notes: 'Bug Fixes:\n' +
+            '• Fixed opening a background or tray-minimized player (e.g. Audacious) via Open App restarting local playback ' +
+            'or creating a duplicate playlist instead of raising the existing window (#209).',
+    },
+    {
         version: '1.7.1',
         subtitle: 'Final GNOME 45–49 Feature Parity Release (Blur, Karaoke, Layout & Fixes)',
-        expanded: true,
+        expanded: false,
         notes: 'Final GNOME 45–49 Release:\n' +
             '• Brings the complete v1.7.1 feature set and native GNOME 45–49 API compatibility to GNOME 45–49.\n' +
             '• Includes Dynamic Gaussian Blur (Blur my Shell v76+ & gnome-rounded-blur), Light Mode, Word-Level Karaoke in Pill & Pop-up, Local/Imported Lyrics (#199), Always-On Quick Launch, Dynamic Pill Width, Dhruva & Simple Taskbar docks, and the 7-tab searchable Preferences UI.\n\n' +

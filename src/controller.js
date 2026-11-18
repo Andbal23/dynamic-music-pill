@@ -87,6 +87,7 @@ const MPRIS_IFACE = `
   <interface name="org.mpris.MediaPlayer2">
     <property name="Identity" type="s" access="read"/>
     <property name="DesktopEntry" type="s" access="read"/>
+    <property name="CanRaise" type="b" access="read"/>
     <method name="Raise"/>
     <method name="Quit"/>
   </interface>
@@ -586,7 +587,7 @@ export class MusicController {
         }
     }
 
-    openApp() {
+    openApp(skipRaise = false) {
         let player = this._getActivePlayer();
         let last = (!player) ? this.getLastPlayedTrack() : null;
         if (!player && !last) return;
@@ -701,7 +702,24 @@ export class MusicController {
             return;
         }
 
-        if (trackUrl && (trackUrl.startsWith('http://') || trackUrl.startsWith('https://'))) {
+        if (skipRaise !== true && player && player._busName && player._canRaise) {
+            this._connection.call(
+                player._busName, '/org/mpris/MediaPlayer2', 'org.mpris.MediaPlayer2', 'Raise',
+                null, null, Gio.DBusCallFlags.NONE, -1, this._cancellable,
+                (conn, res) => {
+                    try {
+                        conn.call_finish(res);
+                    } catch (e) {
+                        console.debug(`[Dynamic Music Pill] Raise call failed: ${e.message}`);
+                        if (this._settings && !this._cancellable?.is_cancelled())
+                            this.openApp(true);
+                    }
+                }
+            );
+            return;
+        }
+
+        if (!player && trackUrl && (trackUrl.startsWith('http://') || trackUrl.startsWith('https://'))) {
             let browserApp = null;
             let candidates = [
                 customTarget ? customTarget + '.desktop' : null,
@@ -768,7 +786,7 @@ export class MusicController {
             let launchCtx = global.create_app_launch_context(0, -1);
             let isShellApp = matchedApp instanceof Shell.App;
             let appInfo = isShellApp ? matchedApp.app_info : matchedApp;
-            if (appInfo && trackUrl && (trackUrl.startsWith('spotify:') || trackUrl.startsWith('file://'))) {
+            if (!player && appInfo && trackUrl && (trackUrl.startsWith('spotify:') || trackUrl.startsWith('file://'))) {
                 try {
                     appInfo.launch_uris([trackUrl], launchCtx);
                     return;
@@ -1358,6 +1376,7 @@ export class MusicController {
                 });
 
                 p._identity = null;
+                p._canRaise = false;
 
                 this._connection.call(
                     p._busName,
@@ -1383,6 +1402,10 @@ export class MusicController {
                             if (props['DesktopEntry']) {
                                 let v = props['DesktopEntry'];
                                 p._desktopEntry = v instanceof GLib.Variant ? v.unpack() : v;
+                            }
+                            if (props['CanRaise'] !== undefined) {
+                                let v = props['CanRaise'];
+                                p._canRaise = Boolean(v instanceof GLib.Variant ? v.unpack() : v);
                             }
 
                             p._gicon = this._resolvePlayerIcon(p);
