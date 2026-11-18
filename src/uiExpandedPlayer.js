@@ -791,9 +791,12 @@ export const ExpandedPlayer = GObject.registerClass(
                 return Clutter.EVENT_PROPAGATE;
             }, this);
 
-            this._isDestroyed = false;
             this._finalizingClose = false;
             this._poppingPage = null;
+            this._historyCancellable = null;
+            this._historyThumbTimerId = 0;
+            this._historyThumbIdleId = 0;
+            this._subpageSources = new Set();
             this.connect('destroy', () => this._cleanup());
         }
 
@@ -1401,12 +1404,32 @@ export const ExpandedPlayer = GObject.registerClass(
             };
         }
 
+        _clearSubpageAsync() {
+            if (this._historyCancellable) {
+                this._historyCancellable.cancel();
+                this._historyCancellable = null;
+            }
+            if (this._historyThumbTimerId) {
+                GLib.Source.remove(this._historyThumbTimerId);
+                this._historyThumbTimerId = 0;
+            }
+            if (this._historyThumbIdleId) {
+                GLib.Source.remove(this._historyThumbIdleId);
+                this._historyThumbIdleId = 0;
+            }
+            if (this._subpageSources) {
+                for (const id of this._subpageSources) {
+                    GLib.Source.remove(id);
+                }
+                this._subpageSources.clear();
+            }
+        }
+
         _disposeSubPage(p, destroyActor = true) {
-            if (!p || p._dmpDisposed) return;
-            p._dmpDisposed = true;
+            if (!p) return;
             if (this._poppingPage === p) this._poppingPage = null;
             p.remove_all_transitions();
-            if (!destroyActor || this._isDestroyed) return;
+            if (!destroyActor || !this._box) return;
             if (this._lyricsWidget) {
                 this._lyricsWidget.destroy();
                 this._lyricsWidget = null;
@@ -1550,7 +1573,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _popPage() {
-            if (this._isDestroyed || !this._currentSubPage) return;
+            if (!this._box || !this._currentSubPage) return;
             this._flushPoppingPage(true);
             let p = this._currentSubPage;
             this._currentSubPage = null;
@@ -1562,7 +1585,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 onStopped: () => {
                     if (this._poppingPage !== p) return;
                     this._poppingPage = null;
-                    if (this._isDestroyed || this._finalizingClose || this._isHiding || !this._box || !this.get_parent())
+                    if (this._finalizingClose || this._isHiding || !this._box || !this.get_parent())
                         return;
                     this._disposeSubPage(p, true);
                     let [, natH] = this._box.get_preferred_height(this._box.width > 0 ? this._box.width : -1);
@@ -1581,7 +1604,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _showLyricsPage() {
-            if (this._isDestroyed || this._currentSubPage) return;
+            if (!this._box || !this._settings || this._currentSubPage) return;
             this._flushPoppingPage(true);
 
             this._savedBoxHeight = this._box.height;
@@ -1972,16 +1995,18 @@ export const ExpandedPlayer = GObject.registerClass(
                         lastAllocW = curW;
                         if (syncIdleId) return;
                         syncIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                            if (this._subpageSources && syncIdleId) this._subpageSources.delete(syncIdleId);
                             syncIdleId = 0;
                             syncFromStream();
                             return GLib.SOURCE_REMOVE;
                         });
+                        if (this._subpageSources) this._subpageSources.add(syncIdleId);
                     }, subpage);
                     subpage.connect('destroy', () => {
-                        if (syncIdleId) {
+                        if (syncIdleId && this._subpageSources?.delete(syncIdleId)) {
                             GLib.Source.remove(syncIdleId);
-                            syncIdleId = 0;
                         }
+                        syncIdleId = 0;
                     });
 
                     sliderBg.connectObject('button-press-event', (a, e) => {
@@ -2281,11 +2306,10 @@ export const ExpandedPlayer = GObject.registerClass(
                 let history = this._controller.getTrackHistory();
                 if (!history || history.length === 0) { contentBox.add_child(new St.Label({ text: _('No history yet'), style: `color:${ta};` })); return; }
 
-                let copyTimeouts = [];
+                this._clearSubpageAsync();
                 let copyIcons = [];
-                let historyCancellable = new Gio.Cancellable();
-                let thumbTimerId = 0;
-                let thumbIdleId = 0;
+                const historyCancellable = new Gio.Cancellable();
+                this._historyCancellable = historyCancellable;
                 const pendingThumbs = [];
 
                 const fmtTime = (ms) => {
@@ -2352,8 +2376,7 @@ export const ExpandedPlayer = GObject.registerClass(
                         copyIcon.opacity = 0;
                         copyIcon.ease({ opacity: 255, duration: COPY_ICON_FADE_IN_DURATION, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
                         let tid = GLib.timeout_add(GLib.PRIORITY_DEFAULT, COPY_ICON_RESET_DELAY, () => {
-                            const idx = copyTimeouts.indexOf(tid);
-                            if (idx >= 0) copyTimeouts.splice(idx, 1);
+                            this._subpageSources?.delete(tid);
                             if (!copyIcon.get_parent()) return GLib.SOURCE_REMOVE;
                             copyIcon.ease({
                                 opacity: 0, duration: COPY_ICON_FADE_OUT_DURATION, mode: Clutter.AnimationMode.EASE_IN_QUAD, onStopped: () => {
@@ -2362,7 +2385,7 @@ export const ExpandedPlayer = GObject.registerClass(
                             });
                             return GLib.SOURCE_REMOVE;
                         });
-                        copyTimeouts.push(tid);
+                        this._subpageSources?.add(tid);
                     };
                     rowBtn.connectObject('button-press-event', () => Clutter.EVENT_STOP, contentBox);
                     rowBtn.connectObject('button-release-event', (a, e) => {
@@ -2451,13 +2474,14 @@ export const ExpandedPlayer = GObject.registerClass(
                 };
 
                 if (items.length > 7 || pendingThumbs.length > 0) {
-                    thumbTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, SUBPAGE_ANIM_IN_DURATION + 20, () => {
-                        thumbTimerId = 0;
+                    this._historyThumbTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, SUBPAGE_ANIM_IN_DURATION + 20, () => {
+                        this._historyThumbTimerId = 0;
+                        if (historyCancellable.is_cancelled()) return GLib.SOURCE_REMOVE;
                         let rowIdx = 7;
                         let thumbIdx = 0;
-                        thumbIdleId = GLib.idle_add(GLib.PRIORITY_LOW, () => {
+                        this._historyThumbIdleId = GLib.idle_add(GLib.PRIORITY_LOW, () => {
                             if (historyCancellable.is_cancelled()) {
-                                thumbIdleId = 0;
+                                this._historyThumbIdleId = 0;
                                 return GLib.SOURCE_REMOVE;
                             }
                             if (rowIdx < items.length) {
@@ -2474,18 +2498,15 @@ export const ExpandedPlayer = GObject.registerClass(
                                 }
                                 if (thumbIdx < pendingThumbs.length) return GLib.SOURCE_CONTINUE;
                             }
-                            thumbIdleId = 0;
+                            this._historyThumbIdleId = 0;
                             return GLib.SOURCE_REMOVE;
                         });
                         return GLib.SOURCE_REMOVE;
                     });
                 }
 
-                if (subpage) subpage.connect('destroy', () => {
-                    historyCancellable.cancel();
-                    if (thumbTimerId) { GLib.Source.remove(thumbTimerId); thumbTimerId = 0; }
-                    if (thumbIdleId) { GLib.Source.remove(thumbIdleId); thumbIdleId = 0; }
-                    copyTimeouts.forEach(id => GLib.Source.remove(id));
+                subpage.connect('destroy', () => {
+                    this._clearSubpageAsync();
                     copyIcons.forEach(icon => { icon.remove_transition('opacity'); });
                 });
             });
@@ -2581,7 +2602,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     duration: 230,
                     mode: Clutter.AnimationMode.EASE_OUT_EXPO,
                     onStopped: () => {
-                        if (!this._isDestroyed && this._blurController) this._blurController.setOpacityFactor(1.0);
+                        if (this._blurController) this._blurController.setOpacityFactor(1.0);
                     }
                 });
 
@@ -2732,7 +2753,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     duration: 170,
                     mode: Clutter.AnimationMode.EASE_OUT_CUBIC,
                     onStopped: () => {
-                        if (!this._isDestroyed && !this._finalizingClose) this._finalizeClose();
+                        if (this._box && !this._finalizingClose) this._finalizeClose();
                     }
                 });
             } else {
@@ -2741,7 +2762,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _finalizeClose() {
-            if (this._isDestroyed || this._finalizingClose) return;
+            if (!this._box || this._finalizingClose) return;
             this._finalizingClose = true;
             if (this._safetyTimeoutId) {
                 GLib.Source.remove(this._safetyTimeoutId);
@@ -2779,8 +2800,8 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _cleanup() {
-            this._isDestroyed = true;
             this._isSpinning = false;
+            this._clearSubpageAsync();
             this._flushPoppingPage(false);
             if (this._currentSubPage) {
                 this._currentSubPage.remove_all_transitions();
@@ -2791,7 +2812,12 @@ export const ExpandedPlayer = GObject.registerClass(
                 this._settings = null;
             }
             this.disconnectObject(this);
-            if (this._box) this._box.remove_all_transitions();
+            if (this._box) {
+                this._box.remove_all_transitions();
+                this._box = null;
+            }
+            this._mainPage = null;
+            this._sliderFill = null;
             if (this._blurBackdrop) this._blurBackdrop.remove_all_transitions();
             if (this._updateTimer) { GLib.Source.remove(this._updateTimer); this._updateTimer = null; }
             if (this._resizeDebounceId) { GLib.Source.remove(this._resizeDebounceId); this._resizeDebounceId = null; }
@@ -2813,6 +2839,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 }
                 this._lyricsClient = null;
             }
+            this._controller = null;
             this._currentSubPage = null;
             this._visualizer = null;
             if (this._blurController) {
@@ -3075,7 +3102,7 @@ export const ExpandedPlayer = GObject.registerClass(
             this._vinyl.rotation_angle_z = currentAngle;
 
             const runLoop = () => {
-                if (this._isDestroyed || !this._isSpinning || !this._vinyl) return;
+                if (!this._isSpinning || !this._vinyl) return;
                 let cur = (this._vinyl.rotation_angle_z || 0) % 360;
                 this._vinyl.rotation_angle_z = cur;
                 this._vinyl.ease({
@@ -3083,7 +3110,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     duration: loopDuration,
                     mode: Clutter.AnimationMode.LINEAR,
                     onStopped: () => {
-                        if (this._isDestroyed || !this._isSpinning || !this._vinyl) return;
+                        if (!this._isSpinning || !this._vinyl) return;
                         runLoop();
                     }
                 });
@@ -3099,7 +3126,7 @@ export const ExpandedPlayer = GObject.registerClass(
                     duration: initialDuration,
                     mode: Clutter.AnimationMode.EASE_IN_QUAD,
                     onStopped: () => {
-                        if (this._isDestroyed || !this._isSpinning || !this._vinyl) return;
+                        if (!this._isSpinning || !this._vinyl) return;
                         runLoop();
                     }
                 });
@@ -3107,7 +3134,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         _stopVinyl() {
-            if (this._isDestroyed || !this._vinyl || !this._isSpinning) return;
+            if (!this._vinyl || !this._isSpinning || !this._settings) return;
             this._isSpinning = false;
 
             let speedVal = this._settings.get_int('popup-vinyl-speed') || 10;
@@ -3125,7 +3152,7 @@ export const ExpandedPlayer = GObject.registerClass(
                 duration: stopDuration,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => {
-                    if (!this._isDestroyed && this._vinyl) {
+                    if (this._vinyl) {
                         this._vinyl.rotation_angle_z = (this._vinyl.rotation_angle_z || 0) % 360;
                     }
                 }
@@ -3164,7 +3191,7 @@ export const ExpandedPlayer = GObject.registerClass(
         }
 
         animateResize(immediate = false, onFinished = null) {
-            if (this._isDestroyed || this._finalizingClose || !this._box || !this._controller) {
+            if (this._finalizingClose || !this._box || !this._controller) {
                 if (onFinished) onFinished();
                 return;
             }
@@ -3187,7 +3214,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
             const executeResize = () => {
                 this._resizeDebounceId = null;
-                if (this._isDestroyed || this._finalizingClose || !this._box) {
+                if (this._finalizingClose || !this._box) {
                     if (onFinished) onFinished();
                     return GLib.SOURCE_REMOVE;
                 }
@@ -3379,7 +3406,7 @@ export const ExpandedPlayer = GObject.registerClass(
 
                 let finishCalled = false;
                 const callFinish = () => {
-                    if (finishCalled || this._isDestroyed || this._finalizingClose) return;
+                    if (finishCalled || !this._box || this._finalizingClose) return;
                     finishCalled = true;
                     if (onFinished) onFinished();
                 };
