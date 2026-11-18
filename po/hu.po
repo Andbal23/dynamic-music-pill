@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dynamic Music Pill\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 12:04+0100\n"
-"PO-Revision-Date: 2026-06-29 09:02+0000\n"
+"POT-Creation-Date: 2026-11-18 12:35+0100\n"
+"PO-Revision-Date: 2026-11-18 12:36+0100\n"
 "Last-Translator: László András <laszlo2002andras@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/hu/>\n"
@@ -214,19 +214,19 @@ msgstr "Mozgatás balra (-) vagy jobbra (+)"
 
 #: prefs.js:730
 msgid "Start Margin (Left / Top)"
-msgstr ""
+msgstr "Kezdő margó (Bal / Fent)"
 
 #: prefs.js:731
 msgid "Outer spacing before the pill in the dock or panel"
-msgstr ""
+msgstr "Külső térköz a kapszula előtt a dokkban vagy a panelen"
 
 #: prefs.js:740
 msgid "End Margin (Right / Bottom)"
-msgstr ""
+msgstr "Záró margó (Jobb / Lent)"
 
 #: prefs.js:741
 msgid "Outer spacing after the pill in the dock or panel"
-msgstr ""
+msgstr "Külső térköz a kapszula után a dokkban vagy a panelen"
 
 #: prefs.js:752
 msgid "Dimensions (Dock Mode)"
@@ -250,7 +250,7 @@ msgstr "Méretek (Panel mód)"
 
 #: prefs.js:798
 msgid "Set to 32 or higher to display Title above Artist on two lines"
-msgstr ""
+msgstr "Állítsd legalább 32-re, hogy a Cím és az Előadó két sorban jelenjen meg"
 
 #: prefs.js:823
 msgid "Pop-up Menu"
@@ -498,7 +498,7 @@ msgstr "Az ismétlés gombtól jobbra helyezkedik el."
 
 #: prefs.js:1091
 msgid "Controls"
-msgstr ""
+msgstr "Vezérlők"
 
 #: prefs.js:1097
 msgid "Mouse Actions"
@@ -562,7 +562,7 @@ msgstr "Rámutatás késleltetése (ms)"
 
 #: prefs.js:1174
 msgid "Scroll Controls"
-msgstr ""
+msgstr "Görgetéses vezérlés"
 
 #: prefs.js:1179
 msgid "Enable Scroll Controls"
@@ -639,7 +639,7 @@ msgstr "Az animáció iránya (Természetes vs Hagyományos)"
 
 #: prefs.js:1248
 msgid "On-Pill Buttons (Tablet Mode)"
-msgstr ""
+msgstr "Kapszula gombok (Tablet mód)"
 
 #: prefs.js:1253
 msgid "Tablet Mode Controls"
@@ -687,25 +687,29 @@ msgstr "A vizualizáció után"
 
 #: prefs.js:1283
 msgid "Lyrics"
-msgstr ""
+msgstr "Dalszöveg"
 
 #: prefs.js:1290
 msgid "Interactive Pop-up Lyrics"
-msgstr ""
+msgstr "Interaktív felugró dalszöveg"
 
 #: prefs.js:1291
 msgid ""
 "Tip: Clicking the album art or vinyl in the expanded player pop-up instantly "
 "opens the synchronized lyrics view!"
 msgstr ""
+"Tipp: A kibontott lejátszóban az albumborítóra vagy a bakelitlemezre "
+"kattintva azonnal megnyílik a szinkronizált dalszöveg!"
 
 #: prefs.js:1299
 msgid "Lyrics & Karaoke"
-msgstr ""
+msgstr "Dalszöveg és karaoke"
 
 #: prefs.js:1300
 msgid "Real-time synchronized lyrics with multi-provider karaoke support."
 msgstr ""
+"Valós idejű, szinkronizált dalszöveg több szolgáltatót támogató karaoke "
+"móddal."
 
 #: prefs.js:1305
 msgid "Lyrics Display"
@@ -761,7 +765,7 @@ msgstr "Áttűnés hossza (ms)"
 
 #: prefs.js:1353
 msgid "Local & Imported Lyrics"
-msgstr ""
+msgstr "Helyi és importált dalszövegek"
 
 #: prefs.js:1355
 msgid ""
@@ -769,78 +773,92 @@ msgid ""
 "detected automatically. You can also select a lyrics folder or manually "
 "import lyrics for any song below."
 msgstr ""
+"A helyi zenefájlok mellé helyezett .lrc, .ttml és .txt fájlokat "
+"automatikusan felismeri. Alább kiválaszthatsz egy dalszövegmappát, vagy "
+"kézzel is importálhatsz dalszöveget bármelyik dalhoz."
 
 #: prefs.js:1361
 msgid "Local Lyrics Folder"
-msgstr ""
+msgstr "Helyi dalszövegmappa"
 
 #: prefs.js:1362 prefs.js:1379 prefs.js:1394 prefs.js:1398
-#, fuzzy
-#| msgid "No image selected"
 msgid "No folder selected"
-msgstr "Nincs kép kiválasztva"
+msgstr "Nincs mappa kiválasztva"
 
 #: prefs.js:1372
-#, fuzzy
-#| msgid "Select Media Player"
 msgid "Select Lyrics Folder"
-msgstr "Lejátszó kiválasztása"
+msgstr "Dalszövegmappa kiválasztása"
 
 #: prefs.js:1417
 msgid "Target Song"
-msgstr ""
+msgstr "Célzott dal"
 
 #: prefs.js:1418
 msgid "Choose a recent song or enter custom title & artist"
 msgstr ""
+"Válassz egy nemrég játszott dalt, vagy add meg kézzel a címet és az előadót"
 
 #: prefs.js:1423
-#, fuzzy
-#| msgid "Track History"
 msgid "Track Title"
-msgstr "Lejátszási előzmények"
+msgstr "Dal címe"
 
 #: prefs.js:1426
 msgid "Artist Name"
-msgstr ""
+msgstr "Előadó neve"
 
 #: prefs.js:1447
 msgid "Current / Last: "
-msgstr ""
+msgstr "Jelenlegi / Utolsó: "
 
 #: prefs.js:1451
 msgid "Custom / Detect from File"
-msgstr ""
+msgstr "Egyéni / Felismerés fájlból"
 
 #: prefs.js:1493
-#, fuzzy
-#| msgid "Import Settings"
 msgid "Imported Lyrics"
-msgstr "Beállítások importálása"
+msgstr "Importált dalszövegek"
 
 #: prefs.js:1506
 msgid "No manually imported lyrics yet"
-msgstr ""
+msgstr "Még nincsenek kézzel importált dalszövegek"
 
 #: prefs.js:1507
 msgid ""
 "Use \"Import Lyrics File…\" above to attach a .lrc, .ttml, or .txt file to a "
 "song."
 msgstr ""
+"Használd a fenti „Dalszövegfájl importálása…” lehetőséget egy .lrc, .ttml "
+"vagy .txt fájl dalhoz csatolásához."
 
 #: prefs.js:1517
-#, fuzzy
-#| msgid "Unknown"
 msgid "Unknown Track"
-msgstr "Ismeretlen"
+msgstr "Ismeretlen dal"
 
 #: prefs.js:1556
 msgid "Import Lyrics File (.lrc, .ttml, .txt)"
-msgstr ""
+msgstr "Dalszövegfájl importálása (.lrc, .ttml, .txt)"
 
 #: prefs.js:1558
 msgid "Lyrics Files (*.lrc, *.ttml, *.txt)"
+msgstr "Dalszövegfájlok (*.lrc, *.ttml, *.txt)"
+
+#: prefs.js:1646
+#, javascript-format
+msgid "Imported lyrics for \"%s\""
+msgstr "Dalszöveg importálva: „%s”"
+
+#: prefs.js:1652
+msgid "Import Lyrics File…"
+msgstr "Dalszövegfájl importálása…"
+
+#: prefs.js:1653
+msgid "Select a local .lrc, .ttml, or .txt lyrics file for the target song"
 msgstr ""
+"Válassz egy helyi .lrc, .ttml vagy .txt dalszövegfájlt a kiválasztott dalhoz"
+
+#: prefs.js:1658
+msgid "Choose File…"
+msgstr "Fájl kiválasztása…"
 
 #: prefs.js:1748
 msgid "Style & Layout"
@@ -892,11 +910,11 @@ msgstr "Vizualizáció színe"
 #: prefs.js:1813
 #, javascript-format
 msgid "Please install %s for dynamic blur."
-msgstr ""
+msgstr "A dinamikus homályosításhoz telepítsd a következőt: %s."
 
 #: prefs.js:1813 prefs.js:1832
 msgid "and"
-msgstr ""
+msgstr "és"
 
 #: prefs.js:1821
 msgid "Dynamic Blur (Blur my Shell)"
@@ -905,6 +923,8 @@ msgstr "Dinamikus homályosítás (Blur my Shell)"
 #: prefs.js:1823
 msgid "Apply native Dual Kawase Gaussian blur behind the pill and pop-up."
 msgstr ""
+"Natív Dual Kawase Gauss-homályosítás alkalmazása a kapszula és a felugró "
+"ablak mögött."
 
 #: prefs.js:1824
 msgid ""
@@ -918,6 +938,8 @@ msgstr ""
 #, javascript-format
 msgid "Note: Dynamic blur requires %s to be installed."
 msgstr ""
+"Megjegyzés: A dinamikus homályosításhoz telepítve kell lennie a "
+"következőnek: %s."
 
 #: prefs.js:1846
 msgid "Enable Blur for Pill"
@@ -957,15 +979,17 @@ msgstr "A Gauss-homályosítás erőssége"
 
 #: prefs.js:1887
 msgid "Follow Blur my Shell Pipelines"
-msgstr ""
+msgstr "Blur my Shell pipeline-ok követése"
 
 #: prefs.js:1888
 msgid "Use the blur pipelines and effects configured in Blur my Shell"
 msgstr ""
+"A Blur my Shellben beállított homályosítási pipeline-ok és effektusok "
+"használata"
 
 #: prefs.js:1896
 msgid "Controlled by Blur my Shell pipeline"
-msgstr ""
+msgstr "A Blur my Shell pipeline vezérli"
 
 #: prefs.js:1906
 msgid "Blur my Shell Extension"
@@ -973,7 +997,7 @@ msgstr "Blur my Shell kiegészítő"
 
 #: prefs.js:1908
 msgid "Native Dual Kawase blur backend active (v76+)"
-msgstr ""
+msgstr "Natív Dual Kawase homályosítási motor aktív (v76+)"
 
 #: prefs.js:1909
 msgid "Recommended for native Wayland dynamic blur"
@@ -1065,7 +1089,7 @@ msgstr "Árnyék elmosása"
 
 #: prefs.js:2073
 msgid "Audio Visualizers"
-msgstr ""
+msgstr "Hangvizualizáció"
 
 #: prefs.js:2078
 msgid "Visualizer Animation"
@@ -1138,7 +1162,7 @@ msgstr "Vizualizáció a felugró menüben"
 
 #: prefs.js:2156
 msgid "Enable audio visualizer bars inside the expanded player"
-msgstr ""
+msgstr "Hangvizualizációs oszlopok megjelenítése a kibontott lejátszóban"
 
 #: prefs.js:2162
 msgid "Hide Pill Visualizer"
@@ -1429,12 +1453,16 @@ msgstr "Újdonságok"
 #: src/blurHelper.js:192
 msgid "Please install \"Blur my Shell\" for dynamic blur."
 msgstr ""
+"Kérlek, telepítsd a \"Blur my Shell\" kiegészítőt a dinamikus "
+"homályosításhoz."
 
 #: src/blurHelper.js:194
 msgid ""
 "Please update \"Blur my Shell\" or install \"gnome-rounded-blur\" for "
 "dynamic blur."
 msgstr ""
+"Kérlek, frissítsd a \"Blur my Shell\" kiegészítőt, vagy telepítsd a \"gnome-"
+"rounded-blur\" csomagot a dinamikus homályosításhoz."
 
 #: src/controller.js:1974
 msgid "Unknown Player"
