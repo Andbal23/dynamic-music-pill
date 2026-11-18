@@ -134,7 +134,7 @@ export const ScrollLabel = GObject.registerClass(
             this._container.layout_manager.orientation = Clutter.Orientation.HORIZONTAL;
             this.add_child(this._container);
 
-            this._label1 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
+            this._label1 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER, x_align: Clutter.ActorAlign.CENTER, x_expand: true });
             this._label2 = new St.Label({ style_class: styleClass, y_align: Clutter.ActorAlign.CENTER });
             this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             this._label1.clutter_text.line_wrap = false;
@@ -299,7 +299,7 @@ export const ScrollLabel = GObject.registerClass(
                     let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
                     let textW = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
                     let overflows = (boxWidth > 1) && (textW > boxWidth + 2);
-                    this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+                    this._applyStaticAlignment(overflows);
                     this._label2.hide();
                     this._separator.hide();
                 }
@@ -329,9 +329,11 @@ export const ScrollLabel = GObject.registerClass(
         }
 
         _applyStaticAlignment(overflows) {
-            this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
-            this._label1.clutter_text.ellipsize = overflows ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
-            this._label1.x_expand = overflows;
+            const align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+            this._container.x_align = align;
+            this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+            this._label1.x_expand = true;
+            this._label1.x_align = align;
         }
 
         _checkResize() {
@@ -367,6 +369,7 @@ export const ScrollLabel = GObject.registerClass(
                     else {
                         this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                         this._label1.x_expand = true;
+                        this._label1.x_align = Clutter.ActorAlign.START;
                     }
                 } else if (!needsScroll && isScrolling) {
                     this._stopAnimation(true);
@@ -422,6 +425,7 @@ export const ScrollLabel = GObject.registerClass(
                 this._container.x_align = Clutter.ActorAlign.START;
                 this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
                 this._label1.x_expand = false;
+                this._label1.x_align = Clutter.ActorAlign.START;
                 if (lyricTime <= 0) {
                     this._setFadeOutEffect(false, true, false);
                 } else {
@@ -520,6 +524,7 @@ export const ScrollLabel = GObject.registerClass(
                 } else {
                     this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.END;
                     this._label1.x_expand = true;
+                    this._label1.x_align = Clutter.ActorAlign.START;
                 }
             } else {
                 this._stopAnimation(true);
@@ -535,6 +540,7 @@ export const ScrollLabel = GObject.registerClass(
             this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
             this._label2.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
             this._label1.x_expand = false;
+            this._label1.x_align = Clutter.ActorAlign.START;
             this._label2.x_expand = false;
             const distance = textWidth + 30;
             const duration = (distance / 30) * 1000;
@@ -557,7 +563,7 @@ export const ScrollLabel = GObject.registerClass(
                         let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
                         let textW = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
                         let overflows = (boxWidth > 1) && (textW > boxWidth + 2);
-                        this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+                        this._applyStaticAlignment(overflows);
                         this._label2.hide();
                         this._separator.hide();
                         return GLib.SOURCE_REMOVE;
@@ -574,7 +580,7 @@ export const ScrollLabel = GObject.registerClass(
                             let boxWidth = this.has_allocation() ? this.get_allocation_box().get_width() : 0;
                             let textW = (boxWidth > 1) ? this.getNaturalTextWidth() : 0;
                             let overflows = (boxWidth > 1) && (textW > boxWidth + 2);
-                            this._container.x_align = overflows ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+                            this._applyStaticAlignment(overflows);
                             this._label2.hide();
                             this._separator.hide();
                             if (!isFinished && !wasPendingStop && !this._gameMode && !this._paused &&
@@ -601,6 +607,7 @@ export const ScrollLabel = GObject.registerClass(
             this._separator.hide();
             this._label1.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
             this._label1.x_expand = false;
+            this._label1.x_align = Clutter.ActorAlign.START;
 
             let boxWidth = this.get_allocation_box().get_width();
             const distance = Math.max(0, textWidth - boxWidth + 6);
