@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync po/*.po, compiled locale/*.mo, and README translator credits to main."""
+"""Sync po/*.po, compiled locale/*.mo, and README translator credits to another branch."""
 
 from __future__ import annotations
 
@@ -130,7 +130,7 @@ def sync_branch(
                     'git', '-C', str(tmp_dir),
                     '-c', f'user.name={BOT_NAME}',
                     '-c', f'user.email={BOT_EMAIL}',
-                    'commit', '-m', 'chore(locale): sync translations from gnome50',
+                    'commit', '-m', 'chore(locale): sync translations from main',
                 ],
                 check=True,
             )
@@ -173,7 +173,7 @@ def sync_branch(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--remote', default='origin')
-    parser.add_argument('--target-branch', default='main')
+    parser.add_argument('--target-branch', default='gnome45-49')
     parser.add_argument('--source-ref', default='HEAD')
     parser.add_argument('--no-push', action='store_true')
     args = parser.parse_args(argv)

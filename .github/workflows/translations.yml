@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - gnome50
+      - gnome45-49
     paths:
       - 'po/*.po'
   workflow_dispatch:
@@ -58,6 +58,6 @@ jobs:
           git pull --rebase --autostash origin "${{ github.ref_name }}"
           git push
 
-      - name: Sync translations to main
-        if: github.ref == 'refs/heads/gnome50'
-        run: python3 .github/scripts/sync_translations_to_main.py --source-ref HEAD --target-branch main
+      - name: Sync translations to gnome45-49
+        if: github.ref == 'refs/heads/main'
+        run: python3 .github/scripts/sync_translations.py --source-ref HEAD --target-branch gnome45-49

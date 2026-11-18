@@ -112,7 +112,6 @@
           };
 
         defaultSrc = mkSource ./.;
-        gnome50Path = ./dynamic-music-pill-gnome50;
       in
       {
         packages = {
@@ -120,19 +119,10 @@
             pname = "gnome-shell-extension-dynamic-music-pill";
             src = defaultSrc;
           };
-        }
-        // lib.optionalAttrs (builtins.pathExists gnome50Path) {
-          gnome50 = mkExtension {
-            pname = "gnome-shell-extension-dynamic-music-pill-gnome50";
-            src = mkSource gnome50Path;
-          };
         };
 
         checks = {
           default = self.packages.${system}.default;
-        }
-        // lib.optionalAttrs (builtins.pathExists gnome50Path) {
-          gnome50 = self.packages.${system}.gnome50;
         };
       }
     )
