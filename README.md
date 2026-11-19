@@ -20,6 +20,37 @@
 
 </div>
 
+<div align="center">
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://extensions.gnome.org/extension/9334/dynamic-music-pill/"><img
+        src="screenshots/logo.png"
+        alt="Dynamic Music Pill logo"
+        width="56"
+        align="absmiddle"></a>
+      &nbsp;&nbsp;×&nbsp;&nbsp;
+      <a href="https://extensions.gnome.org/extension/10448/simple-taskbar/"><img
+        src="https://raw.githubusercontent.com/Sultech/simple-taskbar/main/docs/images/readme-card-logo.png"
+        alt="Simple Taskbar logo"
+        width="56"
+        align="absmiddle"></a>
+      <p>
+        Works smoothest with <a href="https://github.com/Sultech/simple-taskbar"><b>Simple Taskbar</b></a> — dynamic pill width transitions glide cleanly inside Simple Taskbar's Dock and Taskbar modes without layout jumps.
+      </p>
+      <p>
+        <a href="https://extensions.gnome.org/extension/10448/simple-taskbar/"><img
+          src="https://img.shields.io/badge/GNOME%20Extensions-Install-0a72d6?style=flat-square&logo=gnome&logoColor=white"
+          alt="Install Simple Taskbar on GNOME Extensions"></a>
+        <a href="https://github.com/Sultech/simple-taskbar"><img
+          src="https://img.shields.io/badge/GitHub-Repository-24292f?style=flat-square&logo=github&logoColor=white"
+          alt="Simple Taskbar on GitHub"></a>
+      </p>
+    </td>
+  </tr>
+</table>
+</div>
+
 ---
 
 ## Live Preview
