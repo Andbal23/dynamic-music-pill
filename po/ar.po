@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-18 12:35+0100\n"
-"PO-Revision-Date: 2026-11-17 16:51+0000\n"
-"Last-Translator: Issam Khalaf "
-"<issam.5alaf@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2026-11-19 16:51+0000\n"
+"Last-Translator: Issam Khalaf <issam.5alaf@users.noreply.hosted.weblate.org>"
+"\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/ar/>\n"
 "Language: ar\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: prefs.js:518
 msgid "Main Pill"
-msgstr ""
+msgstr "البرشامة الرئيسية"
 
 #: prefs.js:524
 msgid "General Settings"
@@ -108,107 +108,107 @@ msgstr "إيقاف رسومات تمرير النص عند إيقاف المشغ
 
 #: prefs.js:655
 msgid "Positioning"
-msgstr ""
+msgstr "التمركز"
 
 #: prefs.js:660
 msgid "Container Target"
-msgstr ""
+msgstr "الحاوية المستهدفة"
 
 #: prefs.js:661
 msgid "Select which UI element should host the music pill"
-msgstr ""
+msgstr "اختر أي من عناصر الواجهة ستستضيف برشامة الموسيقى"
 
 #: prefs.js:663
 msgid "Dock"
-msgstr ""
+msgstr "الحوض"
 
 #: prefs.js:663
 msgid "Panel: Left Box"
-msgstr ""
+msgstr "الواجهة: الصندوق اليساري"
 
 #: prefs.js:663
 msgid "Panel: Center Box"
-msgstr ""
+msgstr "الواجهة: صندوق متوسط"
 
 #: prefs.js:663
 msgid "Panel: Right Box"
-msgstr ""
+msgstr "الواجهة: الصندوق اليميني"
 
 #: prefs.js:669
 msgid "Multi-Monitor Docks"
-msgstr ""
+msgstr "أحواض متعددة المراقبة"
 
 #: prefs.js:670
 msgid "Which docks show the pill when the dock is on all monitors"
-msgstr ""
+msgstr "أي من الأحواض سيظهر البرشامة عندما يظهر الحوض على جميع الشاشات"
 
 #: prefs.js:672
 msgid "Main Dock Only"
-msgstr ""
+msgstr "الحوض الرئيسي فقط"
 
 #: prefs.js:672
 msgid "All Docks"
-msgstr ""
+msgstr "جميع الأحواض"
 
 #: prefs.js:672
 msgid "Secondary Docks Only"
-msgstr ""
+msgstr "الحوض الثاني فقط"
 
 #: prefs.js:678
 msgid "Dynamic Width"
-msgstr ""
+msgstr "عرض ديناميكي"
 
 #: prefs.js:679
 msgid "Auto-adjust pill width (slider acts as max width)"
-msgstr ""
+msgstr "تعديل تلقائي للعرض"
 
 #: prefs.js:686
 msgid "Alignment Preset"
-msgstr ""
+msgstr "الضبط المسبق للتوسط"
 
 #: prefs.js:687
 msgid "How the widget aligns relative to other items"
-msgstr ""
+msgstr "تناسق الأداة بالنسبة لبقية العناصر"
 
 #: prefs.js:689
 msgid "Manual Index"
-msgstr ""
+msgstr "الفهرس اليدوي"
 
 #: prefs.js:689
 msgid "First (Start)"
-msgstr ""
+msgstr "أولًا (البدء)"
 
 #: prefs.js:689
 msgid "Center"
-msgstr ""
+msgstr "المنتصف"
 
 #: prefs.js:689
 msgid "Last (End)"
-msgstr ""
+msgstr "آخرًا (النهاية)"
 
 #: prefs.js:695
 msgid "Manual Index Position"
-msgstr ""
+msgstr "تموضع الفهرس يدويًا"
 
 #: prefs.js:696
 msgid "Order in the list (0 is first). Only for Manual mode."
-msgstr ""
+msgstr "الترتيب في القائمة (0 هو الأول). فقط في الوضع اليدوي."
 
 #: prefs.js:710 prefs.js:928
 msgid "Vertical Offset (Y)"
-msgstr ""
+msgstr "انحراف عمودي"
 
 #: prefs.js:711 prefs.js:929
 msgid "Shift Up (-) or Down (+)"
-msgstr ""
+msgstr "(-) إزاحة للأعلى أو (+) إزاحة للأسفل"
 
 #: prefs.js:720 prefs.js:938
 msgid "Horizontal Offset (X)"
-msgstr ""
+msgstr "إزاحة أفقية"
 
 #: prefs.js:721 prefs.js:939
 msgid "Shift Left (-) or Right (+)"
-msgstr ""
+msgstr "(-) إزاحة لليسار أو (+) إزاحة لليمين."
 
 #: prefs.js:730
 msgid "Start Margin (Left / Top)"
