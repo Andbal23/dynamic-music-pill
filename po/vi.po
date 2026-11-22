@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-18 12:35+0100\n"
-"PO-Revision-Date: 2026-10-23 06:51+0000\n"
+"PO-Revision-Date: 2026-11-22 04:51+0000\n"
 "Last-Translator: Huynh Tuan Dung "
 "<itslouisanderson@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/dynamic-music-"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.11.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: prefs.js:518
 msgid "Main Pill"
@@ -214,19 +214,19 @@ msgstr "Chỉnh lệch sang bên trái (-) hoặc bên phải (+)"
 
 #: prefs.js:730
 msgid "Start Margin (Left / Top)"
-msgstr ""
+msgstr "Khoảng cách lề đầu (trái/trên)"
 
 #: prefs.js:731
 msgid "Outer spacing before the pill in the dock or panel"
-msgstr ""
+msgstr "Khoảng cách trước pill trong thanh dock hoặc panel"
 
 #: prefs.js:740
 msgid "End Margin (Right / Bottom)"
-msgstr ""
+msgstr "Khoảng cách lề cuối (phải/dưới)"
 
 #: prefs.js:741
 msgid "Outer spacing after the pill in the dock or panel"
-msgstr ""
+msgstr "Khoảng cách sau pill trong thanh dock hoặc panel"
 
 #: prefs.js:752
 msgid "Dimensions (Dock Mode)"
@@ -251,6 +251,8 @@ msgstr "Kích thước (chế độ panel)"
 #: prefs.js:798
 msgid "Set to 32 or higher to display Title above Artist on two lines"
 msgstr ""
+"Đặt giá trị từ 32 trở lên để hiện tựa đề thành một dòng riêng phía trên tên "
+"nghệ sĩ"
 
 #: prefs.js:823
 msgid "Pop-up Menu"
@@ -762,7 +764,7 @@ msgstr "Thời lượng hiệu ứng fade (ms)"
 
 #: prefs.js:1353
 msgid "Local & Imported Lyrics"
-msgstr ""
+msgstr "Kho lời bài hát"
 
 #: prefs.js:1355
 msgid ""
@@ -770,98 +772,92 @@ msgid ""
 "detected automatically. You can also select a lyrics folder or manually "
 "import lyrics for any song below."
 msgstr ""
+"Các tệp .lrc, .ttml và .txt đặt cạnh tệp âm thanh trên máy sẽ được tự động "
+"phát hiện. Bạn cũng có thể chọn một kho thư mục lời bài hát trên máy hoặc tự "
+"nhập lời cho bất kỳ bài hát nào ở dưới."
 
 #: prefs.js:1361
 msgid "Local Lyrics Folder"
-msgstr ""
+msgstr "Kho thư mục lời bài hát"
 
 #: prefs.js:1362 prefs.js:1379 prefs.js:1394 prefs.js:1398
-#, fuzzy
-#| msgid "No image selected"
 msgid "No folder selected"
-msgstr "Không có ảnh nào được chọn"
+msgstr "Không có thư mục nào được chọn"
 
 #: prefs.js:1372
-#, fuzzy
-#| msgid "Select Media Player"
 msgid "Select Lyrics Folder"
-msgstr "Chọn trình phát phương tiện"
+msgstr "Chọn thư mục lời bài hát"
 
 #: prefs.js:1417
 msgid "Target Song"
-msgstr ""
+msgstr "Bài hát đích"
 
 #: prefs.js:1418
 msgid "Choose a recent song or enter custom title & artist"
-msgstr ""
+msgstr "Chọn một bài hát gần đây hoặc tự nhập tựa đề & nghệ sĩ"
 
 #: prefs.js:1423
-#, fuzzy
-#| msgid "Track History"
 msgid "Track Title"
-msgstr "Lịch sử bài hát"
+msgstr "Tựa đề bài hát"
 
 #: prefs.js:1426
 msgid "Artist Name"
-msgstr ""
+msgstr "Tên nghệ sĩ"
 
 #: prefs.js:1447
 msgid "Current / Last: "
-msgstr ""
+msgstr "Đang phát / gần nhất "
 
 #: prefs.js:1451
 msgid "Custom / Detect from File"
-msgstr ""
+msgstr "Tùy chỉnh / Phát hiện từ tệp"
 
 #: prefs.js:1493
-#, fuzzy
-#| msgid "Import Settings"
 msgid "Imported Lyrics"
-msgstr "Nhập cài đặt"
+msgstr "Lời bài hát đã nhập"
 
 #: prefs.js:1506
 msgid "No manually imported lyrics yet"
-msgstr ""
+msgstr "Chưa có lời bài hát nào được nhập thủ công"
 
 #: prefs.js:1507
 msgid ""
 "Use \"Import Lyrics File…\" above to attach a .lrc, .ttml, or .txt file to a "
 "song."
 msgstr ""
+"Chọn \"Nhập tệp lời bài hát...\" ở trên để gắn một tệp .lrc, .ttml hoặc "
+".txt. cho một bài hát."
 
 #: prefs.js:1517
-#, fuzzy
-#| msgid "Unknown"
 msgid "Unknown Track"
-msgstr "Chưa xác định"
+msgstr "Bài hát chưa xác định"
 
 #: prefs.js:1556
 msgid "Import Lyrics File (.lrc, .ttml, .txt)"
-msgstr ""
+msgstr "Nhập tệp lời bài hát (.lrc, .ttml, .txt)"
 
 #: prefs.js:1558
 msgid "Lyrics Files (*.lrc, *.ttml, *.txt)"
-msgstr ""
+msgstr "Tệp lời bài hát (*.lrc, *.ttml, *.txt)"
 
 #: prefs.js:1646
-#, fuzzy, javascript-format
-#| msgid "Import Settings"
+#, javascript-format
 msgid "Imported lyrics for \"%s\""
-msgstr "Nhập cài đặt"
+msgstr "Đã nhập lời bài hát cho \"%s\""
 
 #: prefs.js:1652
-#, fuzzy
-#| msgid "Import Settings"
 msgid "Import Lyrics File…"
-msgstr "Nhập cài đặt"
+msgstr "Nhập tệp lời bài hát…"
 
 #: prefs.js:1653
 msgid "Select a local .lrc, .ttml, or .txt lyrics file for the target song"
 msgstr ""
+"Chọn một tệp lời bài hát dạng .lrc, .ttml hoặc .txt trên máy để gắn với bài "
+"hát đích"
 
 #: prefs.js:1658
 msgid "Choose File…"
-msgstr ""
+msgstr "Chọn tệp…"
 
 #: prefs.js:1748
 msgid "Style & Layout"
