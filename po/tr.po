@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-18 12:35+0100\n"
-"PO-Revision-Date: 2026-10-24 19:23+0000\n"
+"PO-Revision-Date: 2026-11-24 08:51+0000\n"
 "Last-Translator: Yiğithan Karabel <yk38@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/dynamic-music-"
 "pill/settings/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.11.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: prefs.js:518
 msgid "Main Pill"
@@ -119,7 +119,7 @@ msgstr "Müzik simgesinin hangi kullanıcı arayüz ögesinde bulunacağını se
 
 #: prefs.js:663
 msgid "Dock"
-msgstr "Rıhtım"
+msgstr "Dock"
 
 #: prefs.js:663
 msgid "Panel: Left Box"
@@ -212,23 +212,23 @@ msgstr "Sola (-) veya sağa (+) kaydırın"
 
 #: prefs.js:730
 msgid "Start Margin (Left / Top)"
-msgstr ""
+msgstr "Başlangıç Kenar Boşluğu (Sol / Üst)"
 
 #: prefs.js:731
 msgid "Outer spacing before the pill in the dock or panel"
-msgstr ""
+msgstr "Simgenin dock veya panelden önceki dış kenar boşluğu"
 
 #: prefs.js:740
 msgid "End Margin (Right / Bottom)"
-msgstr ""
+msgstr "Bitiş Kenar Boşluğu (Sağ / Alt)"
 
 #: prefs.js:741
 msgid "Outer spacing after the pill in the dock or panel"
-msgstr ""
+msgstr "Simgenin dock veya panelden sonraki dış kenar boşluğu"
 
 #: prefs.js:752
 msgid "Dimensions (Dock Mode)"
-msgstr "Boyutlar (Rıhtım Modu)"
+msgstr "Boyutlar (Dock Modu)"
 
 #: prefs.js:756 prefs.js:783
 msgid "Album Art Size"
@@ -249,6 +249,8 @@ msgstr "Boyutlar (Panel Modu)"
 #: prefs.js:798
 msgid "Set to 32 or higher to display Title above Artist on two lines"
 msgstr ""
+"Başlığın sanatçının üzerinde iki satır olarak görünmesi için 32 veya daha "
+"yüksek bir değere ayarlayın"
 
 #: prefs.js:823
 msgid "Pop-up Menu"
@@ -766,7 +768,7 @@ msgstr "Giriş Süresi (ms)"
 
 #: prefs.js:1353
 msgid "Local & Imported Lyrics"
-msgstr ""
+msgstr "Yerel & İçe Aktarılan Şarkı Sözleri"
 
 #: prefs.js:1355
 msgid ""
@@ -774,98 +776,90 @@ msgid ""
 "detected automatically. You can also select a lyrics folder or manually "
 "import lyrics for any song below."
 msgstr ""
+"Yerel ses dosyalarının yanına yerleştirilen ek .lrc, .ttml ve .txt dosyaları "
+"otomatik olarak algılanır. Ayrıca aşağıda herhangi bir şarkının şarkı sözü "
+"klasörünü seçebilir veya el ile içe aktarabilirsiniz."
 
 #: prefs.js:1361
 msgid "Local Lyrics Folder"
-msgstr ""
+msgstr "Yerel Şarkı Sözü Klasörü"
 
 #: prefs.js:1362 prefs.js:1379 prefs.js:1394 prefs.js:1398
-#, fuzzy
-#| msgid "No image selected"
 msgid "No folder selected"
-msgstr "Bir görsel seçilmedi"
+msgstr "Bir klasör seçilmedi"
 
 #: prefs.js:1372
-#, fuzzy
-#| msgid "Select Media Player"
 msgid "Select Lyrics Folder"
-msgstr "Medya Oynatıcıyı Seç"
+msgstr "Şarkı Sözü Klasörünü Seç"
 
 #: prefs.js:1417
 msgid "Target Song"
-msgstr ""
+msgstr "Hedef Şarkı"
 
 #: prefs.js:1418
 msgid "Choose a recent song or enter custom title & artist"
-msgstr ""
+msgstr "Son şarkılardan birini seçin veya özel başlık ve sanatçı girin"
 
 #: prefs.js:1423
-#, fuzzy
-#| msgid "Track History"
 msgid "Track Title"
-msgstr "Parça Geçmişi"
+msgstr "Parça Başlığı"
 
 #: prefs.js:1426
 msgid "Artist Name"
-msgstr ""
+msgstr "Sanatçı Adı"
 
 #: prefs.js:1447
 msgid "Current / Last: "
-msgstr ""
+msgstr "Şu An / Son: "
 
 #: prefs.js:1451
 msgid "Custom / Detect from File"
-msgstr ""
+msgstr "Özel / Dosyadan Algıla"
 
 #: prefs.js:1493
-#, fuzzy
-#| msgid "Import Settings"
 msgid "Imported Lyrics"
-msgstr "Ayarları İçe Aktar"
+msgstr "İçe Aktarılan Şarkı Sözleri"
 
 #: prefs.js:1506
 msgid "No manually imported lyrics yet"
-msgstr ""
+msgstr "Henüz el ile içe aktarılan şarkı sözü yok"
 
 #: prefs.js:1507
 msgid ""
 "Use \"Import Lyrics File…\" above to attach a .lrc, .ttml, or .txt file to a "
 "song."
 msgstr ""
+"Yukarıdaki \"Şarkı Sözü Dosyasını İçe Aktar...\" kısmını kullanarak bir "
+"şarkıya .lrc, .ttml veya .txt dosyası ekleyin."
 
 #: prefs.js:1517
-#, fuzzy
-#| msgid "Unknown"
 msgid "Unknown Track"
-msgstr "Bilinmeyen"
+msgstr "Bilinmeyen Parça"
 
 #: prefs.js:1556
 msgid "Import Lyrics File (.lrc, .ttml, .txt)"
-msgstr ""
+msgstr "Şarkı Sözleri Dosyası Ekle (.lrc, .ttml, .txt)"
 
 #: prefs.js:1558
 msgid "Lyrics Files (*.lrc, *.ttml, *.txt)"
-msgstr ""
+msgstr "Şarkı Sözleri Dosyası (*.lrc, *.ttml, *.txt)"
 
 #: prefs.js:1646
-#, fuzzy, javascript-format
-#| msgid "Import Settings"
+#, javascript-format
 msgid "Imported lyrics for \"%s\""
-msgstr "Ayarları İçe Aktar"
+msgstr "\"%s\" için içe aktarılan şarkı sözleri"
 
 #: prefs.js:1652
-#, fuzzy
-#| msgid "Import Settings"
 msgid "Import Lyrics File…"
-msgstr "Ayarları İçe Aktar"
+msgstr "Şarkı Sözü Dosyasını İçe Aktar…"
 
 #: prefs.js:1653
 msgid "Select a local .lrc, .ttml, or .txt lyrics file for the target song"
-msgstr ""
+msgstr "Hedef şarkı için yerel .lrc, .ttml veya .txt şarkı sözü dosyasını seçin"
 
 #: prefs.js:1658
 msgid "Choose File…"
-msgstr ""
+msgstr "Dosya Seç…"
 
 #: prefs.js:1748
 msgid "Style & Layout"
